@@ -10,7 +10,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import type { TestHarness } from '../test/harness.js';
 import { createHarness } from '../test/harness.js';
 import { COLLECTIONS } from '../infrastructure/mongo.js';
-import type { ChannelDoc, PlaybackSourceDoc } from '../infrastructure/schema.js';
+import type { ChannelDoc, EpgSourceDoc, PlaybackSourceDoc } from '../infrastructure/schema.js';
 import { categoryForAmbit, extractReferenceChannels, planChannel } from '../jobs/catalogue-import.js';
 import { MigrationExecutor, type MigrationLedgerDoc } from '../jobs/migration-executor.js';
 import { migrate } from '../migrations/runner.js';
@@ -287,7 +287,7 @@ describe('executing the migration', () => {
     expect(channel?.editorialStatus).toBe('review');
     const sources = await harness.context.database
       .collection<PlaybackSourceDoc>(COLLECTIONS.sources)
-      .find({ channelId: channel?._id })
+      .find({ channelId: channel?._id ?? String() })
       .toArray();
     expect(sources.every((source) => source.editorialStatus !== 'published')).toBe(true);
   });
@@ -315,7 +315,7 @@ describe('migrations', () => {
   it('register the editorial guide source', async () => {
     await migrate(harness.context.database);
     const editorial = await harness.context.database
-      .collection(COLLECTIONS.epgSources)
+      .collection<EpgSourceDoc>(COLLECTIONS.epgSources)
       .findOne({ kind: 'editorial' });
     expect(editorial?.name).toBe('Redacción TDT Platform');
     expect(editorial?.ingestionEnabled).toBe(false);

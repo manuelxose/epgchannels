@@ -41,11 +41,22 @@ export interface TestHarness {
   close(): Promise<void>;
 }
 
+/**
+ * Test-only: the response cache is process-local, so a suite that mutates the
+ * catalogue must not be answered from a previous test cache entry.
+ */
+export function resetResponseCache(): void {
+  activeCache?.clear();
+}
+
+let activeCache: { clear(): void } | undefined;
+
 export async function createHarness(overrides: Partial<Record<string, string>> = {}): Promise<TestHarness> {
   const config = testConfig(overrides);
   const context = await createContext(config);
   await ensureIndexes(context.database.db);
-  const { app } = createApp(config, context);
+  const { app, cache } = createApp(config, context);
+  activeCache = cache;
   const databaseName = config.MONGODB_DB;
   return {
     app,

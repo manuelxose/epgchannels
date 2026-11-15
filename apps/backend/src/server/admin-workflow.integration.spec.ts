@@ -11,7 +11,7 @@ import request from 'supertest';
 import type { TestHarness } from '../test/harness.js';
 import { createHarness } from '../test/harness.js';
 import { COLLECTIONS } from '../infrastructure/mongo.js';
-import type { AuditDoc, PlaybackSourceDoc } from '../infrastructure/schema.js';
+import type { AdminSessionDoc, AuditDoc, ChannelDoc, PlaybackSourceDoc } from '../infrastructure/schema.js';
 
 const BOOTSTRAP_TOKEN = 'test-bootstrap-token-0123456789abcdef';
 const PASSWORD = 'Correct-Horse-Battery-9';
@@ -110,10 +110,13 @@ describe('authentication', () => {
   });
 
   it('stores only a hash of the session token', async () => {
-    const sessions = await harness.context.database.collection(COLLECTIONS.adminSessions).find({}).toArray();
+    const sessions = await harness.context.database
+      .collection<AdminSessionDoc>(COLLECTIONS.adminSessions)
+      .find({})
+      .toArray();
     expect(sessions.length).toBeGreaterThan(0);
     for (const session of sessions) {
-      expect(session['tokenSha256']).toMatch(/^[a-f0-9]{64}$/);
+      expect(session.tokenSha256).toMatch(/^[a-f0-9]{64}$/);
       expect(JSON.stringify(session)).not.toContain(token);
     }
   });
@@ -224,7 +227,7 @@ describe('channel lifecycle', () => {
     expect(merged.body.data.sourceRecords).toHaveLength(1);
 
     const duplicateRecord = await harness.context.database
-      .collection(COLLECTIONS.channels)
+      .collection<ChannelDoc>(COLLECTIONS.channels)
       .findOne({ _id: duplicate.id });
     expect(duplicateRecord?.editorialStatus).toBe('withdrawn');
     expect(duplicateRecord?.mergedInto).toBe(survivor.id);

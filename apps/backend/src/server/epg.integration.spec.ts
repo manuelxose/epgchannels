@@ -9,10 +9,10 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
 import type { TestHarness } from '../test/harness.js';
-import { createHarness } from '../test/harness.js';
+import { createHarness, resetResponseCache } from '../test/harness.js';
 import { createChannel } from '../test/fixtures.js';
 import { COLLECTIONS } from '../infrastructure/mongo.js';
-import type { ChannelDoc, EpgSourceDoc } from '../infrastructure/schema.js';
+import type { ChannelDoc, EpgSourceDoc, ProgrammeDoc } from '../infrastructure/schema.js';
 import { EpgIngestionService } from '../modules/epg/epg.ingestion.js';
 import { EpgService } from '../modules/epg/epg.service.js';
 
@@ -48,6 +48,7 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
+  resetResponseCache();
   await harness.context.database.collection(COLLECTIONS.programmes).deleteMany({});
   await harness.context.database.collection(COLLECTIONS.channels).deleteMany({});
   await harness.context.database.collection(COLLECTIONS.epgSources).deleteMany({});
@@ -162,7 +163,9 @@ describe('guide storage', () => {
       })),
     );
     expect(result.written).toBe(1);
-    const stored = await harness.context.database.collection(COLLECTIONS.programmes).findOne({ channelId: channel._id });
+    const stored = await harness.context.database
+      .collection<ProgrammeDoc>(COLLECTIONS.programmes)
+      .findOne({ channelId: channel._id });
     expect(stored?.start.toISOString()).toBe('2026-11-14T19:00:00.000Z');
   });
 });

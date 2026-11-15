@@ -25,7 +25,7 @@ import {
 } from '@tdt/contracts';
 import { buildOpenApi } from '../server/openapi.js';
 import type { TestHarness } from '../test/harness.js';
-import { createHarness } from '../test/harness.js';
+import { createHarness, resetResponseCache } from '../test/harness.js';
 import { createChannel, createSource, publishedPlayableChannel } from '../test/fixtures.js';
 import { COLLECTIONS } from '../infrastructure/mongo.js';
 import type { ChannelDoc } from '../infrastructure/schema.js';
@@ -41,6 +41,7 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
+  resetResponseCache();
   await harness.context.database.collection(COLLECTIONS.sources).deleteMany({});
   await harness.context.database.collection(COLLECTIONS.channels).deleteMany({});
   await harness.context.database.collection(COLLECTIONS.programmes).deleteMany({});

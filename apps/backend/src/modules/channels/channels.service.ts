@@ -172,13 +172,17 @@ export class ChannelsService {
     if (filter.playable === true) {
       return this.listPlayable(filter, page, pageSize, playback);
     }
-    const total = await this.channels().countDocuments(mongoFilter);
-    const docs = await this.channels()
-      .find(mongoFilter)
-      .sort(this.sortSpec(filter.sort))
-      .skip((page - 1) * pageSize)
-      .limit(pageSize)
-      .toArray();
+    // The count and the page are independent: issuing them together halves the
+    // round trips on the most requested endpoint.
+    const [total, docs] = await Promise.all([
+      this.channels().countDocuments(mongoFilter),
+      this.channels()
+        .find(mongoFilter)
+        .sort(this.sortSpec(filter.sort))
+        .skip((page - 1) * pageSize)
+        .limit(pageSize)
+        .toArray(),
+    ]);
     const statuses = await playback.statusesFor(docs);
     const pageCount = pageSize > 0 ? Math.ceil(total / pageSize) : 0;
     return {

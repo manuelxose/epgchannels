@@ -29,16 +29,25 @@ import {
   requestId,
 } from './middleware.js';
 import { createRouter } from './routes.js';
+import { ResponseCache, invalidateOnWrite, isCacheableCatalogueRead } from './response-cache.js';
 
 export interface AppBundle {
   readonly app: Express;
   readonly metrics: Metrics;
+  readonly cache: ResponseCache;
 }
 
 /** `/metrics` is operator-only: it is served before the API router. */
 export function createApp(config: Config, context: AppContext): AppBundle {
   const app = express();
   const metrics = new Metrics();
+  // Catalogue responses derived from the whole collection are cached in-process;
+  // response-cache.ts documents exactly what is cached and why.
+  const cache = new ResponseCache({
+    maxEntries: 256,
+    maxAgeMs: Math.max(5_000, config.CACHE_TTL_SECONDS * 1000),
+    shouldCache: isCacheableCatalogueRead,
+  });
 
   app.disable('x-powered-by');
   app.set('trust proxy', 'loopback');
@@ -89,6 +98,10 @@ export function createApp(config: Config, context: AppContext): AppBundle {
     config.API_BASE_PATH,
     rateLimit,
     createCacheHeaders({ maxAgeSeconds: config.CACHE_TTL_SECONDS, publicResponses: true }),
+    // The cache wraps the router; invalidation must wrap the cache, so it is
+    // registered *after* it and still observes every response of a write.
+    cache.middleware(),
+    invalidateOnWrite(cache),
     etagJson,
     createRouter(context, context.logger),
   );
@@ -141,5 +154,5 @@ export function createApp(config: Config, context: AppContext): AppBundle {
     },
   );
 
-  return { app, metrics };
+  return { app, metrics, cache };
 }
