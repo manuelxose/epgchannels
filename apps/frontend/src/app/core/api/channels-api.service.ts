@@ -10,12 +10,12 @@
  * Everything is provided by our API; there is no third-party request here.
  */
 import { Injectable, inject } from '@angular/core';
-import type { Channel as ApiChannel, ChannelList as ApiChannelList } from '@tdt/api-client';
+import type { Channel as ApiChannel, ChannelList as ApiChannelList } from '@tdt/contracts';
 import { ApiGateway } from '../api/api.gateway';
 import { REBUILD_CONFIG } from '../config/rebuild-config.token';
 import { toCategories, toChannel, listToChannel } from '../data/api-mappers';
 import type { Channel, ChannelCategory } from '../models/catalog.model';
-import type { PlaybackDescriptor } from '@tdt/api-client';
+import type { PlaybackDescriptor } from '@tdt/contracts';
 
 export interface CatalogueLoad {
   readonly channels: readonly Channel[];
@@ -47,7 +47,8 @@ export class ChannelsApiService {
     }
 
     const categoriesResponse = await this.gateway.client.catalogue.categories(signal ? { signal } : {});
-    const channels = listRecords.map(listToChannel);
+    const categoryNames = new Map(categoriesResponse.data.map((category) => [category.id, category.name]));
+    const channels = listRecords.map((record) => listToChannel(record, categoryNames));
     return {
       channels,
       listRecords,

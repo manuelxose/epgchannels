@@ -7,7 +7,7 @@
  * playback engine and never fabricates a URL.
  */
 import { Injectable, inject } from '@angular/core';
-import type { PlaybackDescriptor } from '@tdt/api-client';
+import type { Channel as ApiChannel, PlaybackDescriptor } from '@tdt/contracts';
 import { ApiGateway } from '../api/api.gateway';
 import { sourcesFromDescriptor } from '../data/api-mappers';
 import type { Channel, MediaSource } from '../models/catalog.model';
@@ -24,20 +24,15 @@ export interface ResolvedPlayback {
 export class PlaybackApiService {
   private readonly gateway = inject(ApiGateway);
 
-  async resolve(slug: string, signal?: AbortSignal): Promise<ResolvedPlayback> {
-    const descriptor = await this.gateway.client.playback.get(slug, signal ? { signal } : {});
+  /** Resolves the descriptor for one channel (already fetched, or fetched here). */
+  async resolve(slug: string, options: { signal?: AbortSignal } = {}): Promise<ResolvedPlayback> {
+    const [channel, descriptor] = await Promise.all([
+      this.gateway.client.channels.get(slug, options),
+      this.gateway.client.playback.get(slug, options),
+    ]);
     return {
       descriptor,
-      sources: sourcesFromDescriptor({
-        id: descriptor.channel.slug,
-        name: descriptor.channel.name,
-        categoryId: '',
-        categoryName: '',
-        country: '',
-        sources: [],
-        tags: [],
-        availability: 'unavailable',
-      }, descriptor),
+      sources: sourcesFromDescriptor(channel.data as ApiChannel, descriptor),
       requiresExternal: descriptor.playback.status === 'external',
     };
   }

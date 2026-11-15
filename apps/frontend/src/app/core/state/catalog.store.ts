@@ -107,7 +107,8 @@ export class CatalogStore {
    */
   async ensureEpg(slugs: readonly string[] = [], force = false): Promise<void> {
     const fresh = Date.now() - this.loadedAt < this.config.epgRefreshMs;
-    if (!force && fresh && this.epgStatusState() === 'ready') {
+    // Only a *successful* guide is considered fresh; a failed one is retried.
+    if (!force && fresh && this.epgStatusState() === 'ready' && this.epgState() !== undefined) {
       return;
     }
     const targets = slugs.length > 0 ? slugs : this.channels().slice(0, 21).map((channel) => channel.id);

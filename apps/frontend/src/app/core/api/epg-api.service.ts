@@ -27,7 +27,15 @@ export class EpgApiService {
     };
   }
 
-  /** Guide snapshots for several channels at once (used by the grid page). */
+  /**
+   * Guide snapshots for several channels at once (used by the grid page).
+   *
+   * The two failure kinds are deliberately treated differently:
+   * - `404`: this channel simply has no guide — a legitimate, per-channel answer;
+   * - anything else (network, 5xx, rate limit): the guide service itself is
+   *   unavailable, so the caller must be able to say so instead of showing an
+   *   empty guide that looks like "no programmes today".
+   */
   async schedules(
     slugs: readonly string[],
     options: { hours?: number; signal?: AbortSignal } = {},
@@ -37,9 +45,11 @@ export class EpgApiService {
         try {
           const result = await this.schedule(slug, options);
           return [slug, result.schedule] as const;
-        } catch {
-          // A channel whose guide is not published is not an error for the page.
-          return [slug, { epgId: slug, programs: [] }] as const;
+        } catch (error) {
+          if (ApiGateway.isNotFound(error)) {
+            return [slug, { epgId: slug, programs: [] }] as const;
+          }
+          throw error;
         }
       }),
     );

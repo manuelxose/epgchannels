@@ -6,43 +6,137 @@ import { PreferencesStore } from './preferences.store';
 import { provideRebuildConfig } from '../config/rebuild-config.token';
 import { DemoStorage } from './test-support';
 
-const catalog = {
-  epg: { json: 'https://example.org/epg.json' },
-  countries: [
-    {
-      name: 'España',
-      ambits: [
-        {
-          name: 'Generalistas',
-          channels: [
-            { name: 'La 1', options: [{ format: 'm3u8', url: 'https://cdn.example.org/la1.m3u8' }], epg_id: 'La1.TV' },
-            { name: 'La 2', options: [{ format: 'm3u8', url: 'https://cdn.example.org/la2.m3u8' }] },
-            { name: 'Cuatro', options: [], extra_info: ['EXTA'] },
-          ],
-        },
-        {
-          name: 'Andalucía',
-          channels: [{ name: 'Canal Sur', options: [], extra_info: ['NOEM'] }],
-        },
-      ],
+/**
+ * These tests exercise the store against **our own API's** contract.
+ *
+ * The fixtures below are API payloads (`/channels`, `/categories`,
+ * `/channels/:slug/schedule`), not a third-party catalogue: after TDT-API-01 the
+ * client has no other source, so a fixture that does not look like our API would
+ * not be testing anything real.
+ */
+
+const API = 'http://api.test/api/v1';
+
+interface ApiChannelFixture {
+  slug: string;
+  name: string;
+  category: string;
+  playbackStatus: string;
+  country?: string;
+  language?: string;
+  kind?: string;
+  region?: { code: string; name: string } | null;
+  /** Human category name used by the client-side search index. */
+  categoryName?: string;
+}
+
+const apiChannels: ApiChannelFixture[] = [
+  { slug: 'la-1', name: 'La 1', category: 'generalista', playbackStatus: 'available' },
+  { slug: 'la-2', name: 'La 2', category: 'generalista', playbackStatus: 'available' },
+  { slug: 'cuatro', name: 'Cuatro', category: 'generalista', playbackStatus: 'external' },
+  { slug: 'canal-sur', name: 'Canal Sur', category: 'autonomica', categoryName: 'Andalucía', playbackStatus: 'eventual', region: { code: 'AN', name: 'Andalucía' } },
+];
+
+function channelListBody(channels: ApiChannelFixture[] = apiChannels, page = 1, pageSize = 100) {
+  const start = (page - 1) * pageSize;
+  const window = channels.slice(start, start + pageSize);
+  const pageCount = Math.ceil(channels.length / pageSize);
+  return {
+    data: window.map((channel) => ({
+      id: `id-${channel.slug}`,
+      slug: channel.slug,
+      name: channel.name,
+      shortName: channel.name,
+      country: 'ES',
+      region: channel.region ?? null,
+      language: 'es',
+      category: channel.category,
+      categoryName: channel.categoryName ?? channel.category,
+      kind: 'linear',
+      playbackStatus: channel.playbackStatus,
+      logoSrc: null,
+      hasSchedule: true,
+    })),
+    pagination: {
+      page,
+      pageSize,
+      total: channels.length,
+      pageCount,
+      hasNext: page < pageCount,
+      hasPrevious: page > 1,
     },
+    attribution: {
+      notices: ['Datos de referencia: proyecto TDTChannels, Apache-2.0.'],
+      includesThirdPartyData: channels.length > 0,
+    },
+  };
+}
+
+const categoriesBody = {
+  data: [
+    { id: 'generalista', name: 'Generalistas', channelCount: 3, playableCount: 2 },
+    { id: 'autonomica', name: 'Andalucía', channelCount: 1, playableCount: 0 },
   ],
+  attribution: { notices: [], includesThirdPartyData: false },
 };
 
-const now = Math.floor(Date.now() / 1000);
-const epg = {
-  0: { name: 'La1.TV', events: [{ hi: now - 600, hf: now + 600, t: 'Ahora en La 1', d: 'x' }] },
-};
+function scheduleBody(slug: string) {
+  const now = Date.now();
+  const programmes =
+    slug === 'la-1'
+      ? [
+          {
+            id: 'p1',
+            title: 'Ahora en La 1',
+            description: 'x',
+            genre: null,
+            coverUrl: null,
+            start: new Date(now - 600_000).toISOString(),
+            end: new Date(now + 600_000).toISOString(),
+          },
+        ]
+      : [];
+  return {
+    data: {
+      channel: { id: `id-${slug}`, slug, name: slug },
+      timezone: 'Europe/Madrid',
+      availability: programmes.length > 0 ? 'available' : 'not-mapped',
+      now: programmes[0] ?? null,
+      next: [],
+      programmes,
+      asOf: new Date(now).toISOString(),
+      provenance: { sourceId: null, sourceName: null, licence: null, attribution: null, editedAt: null },
+      updatedAt: null,
+    },
+    attribution: { notices: [], includesThirdPartyData: false },
+  };
+}
 
 function jsonResponse(body: unknown): Response {
   return new Response(JSON.stringify(body), { status: 200, headers: { 'content-type': 'application/json' } });
 }
 
-describe('CatalogStore + CatalogueQuery integration', () => {
+function routeFetch(input: string, init?: RequestInit): Promise<Response> {
+  const url = new URL(input, 'http://localhost');
+  void init;
+  if (url.pathname === '/api/v1/channels') {
+    const page = Number(url.searchParams.get('page') ?? '1');
+    const pageSize = Number(url.searchParams.get('pageSize') ?? '100');
+    return Promise.resolve(jsonResponse(channelListBody(apiChannels, page, pageSize)));
+  }
+  if (url.pathname === '/api/v1/categories') return Promise.resolve(jsonResponse(categoriesBody));
+  if (url.pathname.startsWith('/api/v1/channels/') && url.pathname.endsWith('/schedule')) {
+    const slug = url.pathname.split('/')[4] ?? '';
+    return Promise.resolve(jsonResponse(scheduleBody(decodeURIComponent(slug))));
+  }
+  return Promise.reject(new Error(`unexpected fetch ${input}`));
+}
+
+describe('CatalogStore + CatalogueQuery integration (our API)', () => {
   let fetchMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    fetchMock = vi.fn();
+    fetchMock = vi.fn(routeFetch);
     vi.stubGlobal('fetch', fetchMock);
     // jsdom exposes localStorage as a read-only accessor, so it is replaced
     // through a property definition rather than assignment.
@@ -53,14 +147,7 @@ describe('CatalogStore + CatalogueQuery integration', () => {
     });
 
     TestBed.configureTestingModule({
-      providers: [
-        provideRebuildConfig({
-          catalogUrl: 'https://upstream.example.org/tv.json',
-          epgUrl: 'https://upstream.example.org/TV.epg.json',
-          demoCatalogUrl: 'demo/catalog.demo.json',
-          demoEpgUrl: 'demo/epg.demo.json',
-        }),
-      ],
+      providers: [provideRebuildConfig({ apiBaseUrl: API })],
     });
   });
 
@@ -69,18 +156,11 @@ describe('CatalogStore + CatalogueQuery integration', () => {
     vi.restoreAllMocks();
   });
 
-  it('loads the remote catalogue and the guide', async () => {
-    fetchMock.mockImplementation((input: string) => {
-      if (input.includes('tv.json')) return Promise.resolve(jsonResponse(catalog));
-      if (input.includes('TV.epg.json')) return Promise.resolve(jsonResponse(epg));
-      return Promise.reject(new Error(`unexpected fetch ${input}`));
-    });
-
+  it('loads the catalogue and the guide from our API', async () => {
     const store = TestBed.inject(CatalogStore);
     await store.ensureCatalog();
 
     expect(store.status()).toBe('ready');
-    expect(store.usingDemoCatalog()).toBe(false);
     expect(store.channels()).toHaveLength(4);
     expect(store.categories().map((category) => category.name)).toEqual(['Generalistas', 'Andalucía']);
     expect(store.channels()[0].availability).toBe('playable');
@@ -89,52 +169,44 @@ describe('CatalogStore + CatalogueQuery integration', () => {
 
     await vi.waitFor(() => expect(store.epgStatus()).toBe('ready'));
     expect(store.scheduleFor(store.channelById('la-1'))?.programs).toHaveLength(1);
-    expect(store.scheduleFor(store.channelById('la-2'))).toBeUndefined();
+    expect(store.scheduleFor(store.channelById('la-2'))?.programs).toHaveLength(0);
   });
 
-  it('falls back to the bundled demo catalogue when upstream fails', async () => {
-    fetchMock.mockImplementation((input: string) => {
-      if (input.includes('upstream.example.org/tv.json')) return Promise.reject(new Error('network down'));
-      if (input.includes('demo/catalog.demo.json')) return Promise.resolve(jsonResponse(catalog));
-      if (input.includes('demo/epg.demo.json')) return Promise.resolve(jsonResponse(epg));
-      return Promise.reject(new Error(`unexpected fetch ${input}`));
-    });
-
+  it('never falls back to a third-party catalogue: an unreachable API is an error', async () => {
+    fetchMock.mockRejectedValue(new Error('api down'));
     const store = TestBed.inject(CatalogStore);
     await store.ensureCatalog();
 
-    expect(store.status()).toBe('ready');
-    expect(store.usingDemoCatalog()).toBe(true);
-    expect(store.channels()).toHaveLength(4);
+    expect(store.status()).toBe('error');
+    expect(store.error()).toContain('api down');
+    expect(store.channels()).toHaveLength(0);
+    // Only our API was contacted; no other host appears in any request.
+    for (const [input] of fetchMock.mock.calls) {
+      expect(String(input)).toContain('/api/v1/');
+    }
   });
 
   it('keeps the catalogue usable when the guide fails', async () => {
-    fetchMock.mockImplementation((input: string) => {
-      if (input.includes('tv.json')) return Promise.resolve(jsonResponse(catalog));
-      return Promise.reject(new Error('guide down'));
+    // Guard every schedule answer, whatever query string the SDK appends.
+    fetchMock.mockImplementation((input: string, init?: RequestInit) => {
+      const url = new URL(String(input), 'http://localhost');
+      if (url.pathname.endsWith('/schedule')) return Promise.reject(new Error('guide down'));
+      return routeFetch(input as string, init);
     });
 
     const store = TestBed.inject(CatalogStore);
     await store.ensureCatalog();
-    await vi.waitFor(() => expect(store.epgStatus()).toBe('error'));
+    // `ensureCatalog` starts the guide load without awaiting it, so drive it
+    // explicitly instead of racing the store's internal fire-and-forget call.
+    await store.ensureEpg([], true);
+    expect(store.epgStatus()).toBe('error');
     expect(store.status()).toBe('ready');
     expect(store.channels()).toHaveLength(4);
-  });
-
-  it('surfaces an error when neither source is reachable', async () => {
-    fetchMock.mockRejectedValue(new Error('offline'));
-    const store = TestBed.inject(CatalogStore);
-    await store.ensureCatalog();
-    expect(store.status()).toBe('error');
-    expect(store.error()).toContain('offline');
   });
 
   describe('filters and paging', () => {
     beforeEach(async () => {
-      fetchMock.mockImplementation((input: string) => {
-        if (input.includes('tv.json')) return Promise.resolve(jsonResponse(catalog));
-        return Promise.resolve(jsonResponse(epg));
-      });
+      fetchMock.mockImplementation(routeFetch);
       const store = TestBed.inject(CatalogStore);
       await store.ensureCatalog();
     });
@@ -181,7 +253,7 @@ describe('CatalogStore + CatalogueQuery integration', () => {
     it('clears every filter at once', () => {
       const query = TestBed.inject(CatalogueQuery);
       query.setQuery('la');
-      query.setCategory('españa:generalistas');
+      query.setCategory('generalista');
       query.setAvailability('playable');
       query.clearFilters();
       expect(query.view().isFiltered).toBe(false);
@@ -189,23 +261,21 @@ describe('CatalogStore + CatalogueQuery integration', () => {
     });
 
     it(`pages by ${PAGE_SIZE} and clamps requests`, async () => {
-      const many = {
-        countries: [
-          {
-            name: 'España',
-            ambits: [
-              {
-                name: 'Generalistas',
-                channels: Array.from({ length: 25 }, (_, index) => ({
-                  name: `Canal ${index + 1}`,
-                  options: [{ format: 'm3u8', url: `https://cdn.example.org/${index}.m3u8` }],
-                })),
-              },
-            ],
-          },
-        ],
-      };
-      fetchMock.mockImplementation(() => Promise.resolve(jsonResponse(many)));
+      const manyChannels: ApiChannelFixture[] = Array.from({ length: 25 }, (_, index) => ({
+        slug: `canal-${index + 1}`,
+        name: `Canal ${index + 1}`,
+        category: 'generalista',
+        playbackStatus: 'available',
+      }));
+      fetchMock.mockImplementation((input: string, init?: RequestInit) => {
+        const url = new URL(String(input), 'http://localhost');
+        if (url.pathname === '/api/v1/channels') {
+          const page = Number(url.searchParams.get('page') ?? '1');
+          const pageSize = Number(url.searchParams.get('pageSize') ?? '100');
+          return Promise.resolve(jsonResponse(channelListBody(manyChannels, page, pageSize)));
+        }
+        return routeFetch(input as string, init);
+      });
       const store = TestBed.inject(CatalogStore);
       await store.reloadCatalog();
 

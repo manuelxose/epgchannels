@@ -1,7 +1,7 @@
 {
-  "name": "tdt-player-rebuild",
+  "name": "@tdt/frontend",
   "version": "1.0.0",
-  "description": "Original online television catalogue and HLS player (functional reconstruction).",
+  "description": "TDT Platform web client: catalogue, EPG and the HLS/DASH/YouTube player, consuming our own API.",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -31,7 +31,9 @@
     "@angular/router": "^22.2.0",
     "hls.js": "^1.7.4",
     "rxjs": "~7.8.0",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "@tdt/api-client": "file:../../packages/api-client",
+    "dashjs": "^5.3.0"
   },
   "devDependencies": {
     "@angular/build": "^22.2.7",

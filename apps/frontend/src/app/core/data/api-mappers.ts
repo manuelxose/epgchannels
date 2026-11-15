@@ -12,7 +12,7 @@
  * eligibility predicates in `catalog.model.ts` keep deciding, with the API's
  * per-source `geoRestricted` and engine facts as input.
  */
-import type { Channel as ApiChannel, ChannelList as ApiChannelList, PlaybackDescriptor } from '@tdt/api-client';
+import type { Channel as ApiChannel, ChannelList as ApiChannelList, PlaybackDescriptor } from '@tdt/contracts';
 import type {
   AvailabilityTag,
   CatalogSnapshot,
@@ -182,13 +182,21 @@ export function toSnapshot(
   };
 }
 
-/** The trimmed list record mapped onto the same model, before descriptors load. */
-export function listToChannel(record: ApiChannelList): Channel {
+/**
+ * The trimmed list record mapped onto the same model, before descriptors load.
+ *
+ * categoryNames is the API's category catalogue: the list carries the
+ * category *id*, and the UI shows (and searches over) the human name.
+ */
+export function listToChannel(
+  record: ApiChannelList & { readonly categoryName?: string },
+  categoryNames?: ReadonlyMap<string, string>,
+): Channel {
   return {
     id: record.slug,
     name: record.name,
     categoryId: record.category,
-    categoryName: record.category,
+    categoryName: categoryNames?.get(record.category) ?? record.categoryName ?? record.category,
     country: record.country,
     logoSrc: record.logoSrc ?? undefined,
     sources: [],

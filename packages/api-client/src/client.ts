@@ -20,10 +20,10 @@ import type {
   EpgFeedEntry,
   HealthResponse,
   PlaybackDescriptor,
-  PlaybackResponse,
   ScheduleResponse,
 } from '@tdt/contracts';
 import { HttpCore, type ClientOptions, type RequestOptions } from './http.js';
+import { describePlayback, type WirePlaybackDescriptor } from './wire.js';
 
 export interface ChannelsApi {
   list(query?: Partial<ChannelListQuery> & { signal?: AbortSignal }): Promise<ChannelListResponse>;
@@ -40,8 +40,22 @@ export interface EpgApi {
     slug: string,
     options?: { from?: string; hours?: number; signal?: AbortSignal },
   ): Promise<ScheduleResponse>;
-  now(options?: { channel?: string[]; country?: string; category?: string; limit?: number; from?: string; signal?: AbortSignal }): Promise<EpgFeedEntry[]>;
-  next(options?: { channel?: string[]; country?: string; category?: string; limit?: number; from?: string; signal?: AbortSignal }): Promise<EpgFeedEntry[]>;
+  now(options?: {
+    channel?: string[];
+    country?: string;
+    category?: string;
+    limit?: number;
+    from?: string;
+    signal?: AbortSignal;
+  }): Promise<EpgFeedEntry[]>;
+  next(options?: {
+    channel?: string[];
+    country?: string;
+    category?: string;
+    limit?: number;
+    from?: string;
+    signal?: AbortSignal;
+  }): Promise<EpgFeedEntry[]>;
 }
 
 export interface CatalogueApi {
@@ -59,15 +73,15 @@ export interface TdtClient {
   readonly epg: EpgApi;
   readonly catalogue: CatalogueApi;
   readonly system: SystemApi;
-  /** Clears cached validators, e.g. after the server signals a change. */
+  /** Clears cached validators, e.g. after an editorial change. */
   invalidate(): void;
 }
 
 export function createTdtClient(options: ClientOptions): TdtClient {
   const http = new HttpCore(options);
 
-  const toRequest = (options?: { signal?: AbortSignal } | undefined): RequestOptions => ({
-    ...(options?.signal ? { signal: options.signal } : {}),
+  const toRequest = (requestOptions?: { signal?: AbortSignal } | undefined): RequestOptions => ({
+    ...(requestOptions?.signal ? { signal: requestOptions.signal } : {}),
   });
 
   const channels: ChannelsApi = {
@@ -89,14 +103,13 @@ export function createTdtClient(options: ClientOptions): TdtClient {
     get: (slug, requestOptions) =>
       http.request<ChannelResponse>('GET', `/channels/${encodeURIComponent(slug)}`, toRequest(requestOptions)),
     /**
-     * Pages through the catalogue. Bounded: stops at `maxPages` (default 100)
-     * so a misconfigured consumer cannot loop forever.
+     * Walks the catalogue page by page. Bounded at 100 pages so a misconfigured
+     * consumer cannot loop forever.
      */
     all: async (query = {}) => {
       const pageSize = query.pageSize ?? 100;
-      const maxPages = 100;
       const collected: ChannelListResponse['data'][number][] = [];
-      for (let page = 1; page <= maxPages; page += 1) {
+      for (let page = 1; page <= 100; page += 1) {
         const response = await channels.list({ ...query, page, pageSize });
         collected.push(...response.data);
         if (!response.pagination.hasNext) break;
@@ -107,12 +120,12 @@ export function createTdtClient(options: ClientOptions): TdtClient {
 
   const playback: PlaybackApi = {
     get: async (slug, requestOptions) => {
-      const response = await http.request<PlaybackResponse>(
+      const response = await http.request<{ data: WirePlaybackDescriptor }>(
         'GET',
         `/channels/${encodeURIComponent(slug)}/playback`,
         toRequest(requestOptions),
       );
-      return response.data;
+      return describePlayback(response.data);
     },
   };
 
@@ -151,7 +164,8 @@ export function createTdtClient(options: ClientOptions): TdtClient {
   };
 
   const catalogue: CatalogueApi = {
-    categories: (requestOptions) => http.request<CategoryListResponse>('GET', '/categories', toRequest(requestOptions)),
+    categories: (requestOptions) =>
+      http.request<CategoryListResponse>('GET', '/categories', toRequest(requestOptions)),
     regions: (requestOptions) => http.request('GET', '/regions', toRequest(requestOptions)),
   };
 
