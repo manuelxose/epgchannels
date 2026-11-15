@@ -1,0 +1,2204 @@
+{
+  "command": "import:catalogue",
+  "file": "C:\\Users\\Admin\\Documents\\workspace\\streaming\\reference\\data\\tv.json",
+  "digestSha256": "f1ceaef3f9ffd31303ea1360ff629d2d5a190e3f2db93e2fce67634a43a50aeb",
+  "bytes": 515062,
+  "snapshotUpdated": 1793918983,
+  "recordsRejected": 0,
+  "channels": 768,
+  "channelsWithPublishedSource": 412,
+  "sourcesByType": {
+    "hls": 640,
+    "external": 509,
+    "youtube": 215
+  },
+  "publishedByPermission": {
+    "emitter-embeddable": 239,
+    "official-player-only": 153,
+    "emitter-public-stream": 81
+  },
+  "withheldByReason": {
+    "unlicensed": 841,
+    "emitter-app-only": 31,
+    "credentials-required": 12,
+    "requires-forged-header": 7
+  },
+  "topEmitters": {
+    "www.youtube.com": 215,
+    "rtve.es": 35,
+    "www.twitch.tv": 26,
+    "rtvelivestream.rtve.es": 24,
+    "directes-tv-cat.3catdirectes.cat": 19,
+    "stream-us-east-1.getpublica.com": 18,
+    "3cat.cat": 16,
+    "7tvandalucia.es": 16,
+    "streaming004.gestec-video.com": 16,
+    "liveingesta318.cdnmedia.tv": 16,
+    "laxarxames.cat": 13,
+    "mitele.es": 12,
+    "directes-tv-es.3catdirectes.cat": 12,
+    "cyltvplay.es": 11,
+    "etbon.eus": 11,
+    "geo.dailymotion.com": 10,
+    "cloudvideo.servers10.com": 10,
+    "dd782ed59e2a4e86aabf6fc508674b59.msvdn.net": 9,
+    "play.rtl.it": 9,
+    "aragonplay.es": 8,
+    "senadolive.akamaized.net": 8,
+    "101play.tv": 8,
+    "agalega.gal": 7,
+    "rtp.pt": 7,
+    "stream.ads.ottera.tv": 6
+  },
+  "stored": {
+    "runId": "catalogue-import:2026-11-15T22:26:54.505Z",
+    "stats": {
+      "channelsCreated": 0,
+      "channelsUpdated": 768,
+      "sourcePublished": 0,
+      "sourceWithheld": 0,
+      "sourcesSkippedDuplicate": 1364
+    },
+    "exclusions": 356,
+    "slugCollisions": 0
+  },
+  "exclusionDetails": [
+    {
+      "legacyId": "Spain/Generalistas/DMAX",
+      "name": "DMAX",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Generalistas/TRECE",
+      "name": "TRECE",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Generalistas/BOM Cine",
+      "name": "BOM Cine",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Informativos/El Confidencial",
+      "name": "El Confidencial",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Deportivos/ETB Deportes (Kirolak 360)",
+      "name": "ETB Deportes (Kirolak 360)",
+      "reason": "no-integratable-source",
+      "detail": "3 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Deportivos/Top Barça",
+      "name": "Top Barça",
+      "reason": "no-integratable-source",
+      "detail": "2 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Deportivos/Sevilla FC+",
+      "name": "Sevilla FC+",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Deportivos/Betis TV",
+      "name": "Betis TV",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Deportivos/Cádiz CF TV",
+      "name": "Cádiz CF TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Deportivos/Villarreal CF TV",
+      "name": "Villarreal CF TV",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Deportivos/Futsalmafer.tv",
+      "name": "Futsalmafer.tv",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Deportivos/Cazaflix",
+      "name": "Cazaflix",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Infantiles/Pequeradio TV",
+      "name": "Pequeradio TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Infantiles/EnerGeek Retro",
+      "name": "EnerGeek Retro",
+      "reason": "no-integratable-source",
+      "detail": "2 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Infantiles/EnerGeek Fan",
+      "name": "EnerGeek Fan",
+      "reason": "no-integratable-source",
+      "detail": "2 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Eventuales/¡HOLA! Play",
+      "name": "¡HOLA! Play",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Eventuales/Senado",
+      "name": "Senado",
+      "reason": "no-integratable-source",
+      "detail": "8 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/Almería 24h TV",
+      "name": "Almería 24h TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/Tuya La Janda TV",
+      "name": "Tuya La Janda TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/Onda Algeciras TV",
+      "name": "Onda Algeciras TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/Andalucía Cocina",
+      "name": "Andalucía Cocina",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/Marbella TV",
+      "name": "Marbella TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/M95 Marbella",
+      "name": "M95 Marbella",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/Estepona TV",
+      "name": "Estepona TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/Canal 45 TV",
+      "name": "Canal 45 TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/Canal Málaga",
+      "name": "Canal Málaga",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/Televisión Alhaurín",
+      "name": "Televisión Alhaurín",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/Canal Doñana",
+      "name": "Canal Doñana",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/Uvitel TV",
+      "name": "Uvitel TV",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/Interalmería TV",
+      "name": "Interalmería TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/Canal Luz Televisión",
+      "name": "Canal Luz Televisión",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/Almería TV",
+      "name": "Almería TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/Canal San Roque",
+      "name": "Canal San Roque",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/Telemotril",
+      "name": "Telemotril",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/Torremolinos TV",
+      "name": "Torremolinos TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/TG7",
+      "name": "TG7",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/Sal TV",
+      "name": "Sal TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/Manilva TV",
+      "name": "Manilva TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/Fuengirola TV",
+      "name": "Fuengirola TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/9 La Loma TV",
+      "name": "9 La Loma TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/Mijas 3.40 TV",
+      "name": "Mijas 3.40 TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/MIRA TV",
+      "name": "MIRA TV",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/Canal Coín",
+      "name": "Canal Coín",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/Cartaya TV",
+      "name": "Cartaya TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/TVM Córdoba",
+      "name": "TVM Córdoba",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/TeleGranada",
+      "name": "TeleGranada",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/Music TV Granada",
+      "name": "Music TV Granada",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Andalucía/Parlamento de Andalucía",
+      "name": "Parlamento de Andalucía",
+      "reason": "no-integratable-source",
+      "detail": "4 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Aragón/Calamocha TV",
+      "name": "Calamocha TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Canarias/Canal 4 Tenerife",
+      "name": "Canal 4 Tenerife",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Canarias/Mírame TV",
+      "name": "Mírame TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Canarias/Tenerife Más TV",
+      "name": "Tenerife Más TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Canarias/Atlántico Televisión",
+      "name": "Atlántico Televisión",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Canarias/Lancelot TV",
+      "name": "Lancelot TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Canarias/NORTEvisión",
+      "name": "NORTEvisión",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Canarias/Ahora TV",
+      "name": "Ahora TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Canarias/RTV Mogán",
+      "name": "RTV Mogán",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Canarias/Este Canal TV",
+      "name": "Este Canal TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Canarias/Noroeste TV",
+      "name": "Noroeste TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Canarias/Fuerteventura TV",
+      "name": "Fuerteventura TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Canarias/Factoría de Carnaval",
+      "name": "Factoría de Carnaval",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Canarias/Radio Calima TV",
+      "name": "Radio Calima TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Canarias/Afortunadas TV",
+      "name": "Afortunadas TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Cantabria/Saja Nansa TV",
+      "name": "Saja Nansa TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Cantabria/De Laredu Lin TV",
+      "name": "De Laredu Lin TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Cantabria/Tevecan 9",
+      "name": "Tevecan 9",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Castilla-La Mancha/Visión 6 TV",
+      "name": "Visión 6 TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Castilla-La Mancha/TV Hellín",
+      "name": "TV Hellín",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Castilla-La Mancha/Guada TV Media",
+      "name": "Guada TV Media",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Castilla-La Mancha/CanalImagen Almansa",
+      "name": "CanalImagen Almansa",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Castilla-La Mancha/Alcarria TV",
+      "name": "Alcarria TV",
+      "reason": "no-integratable-source",
+      "detail": "2 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Castilla-La Mancha/Imás TV",
+      "name": "Imás TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Castilla-La Mancha/Canal 4 Mancha",
+      "name": "Canal 4 Mancha",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Castilla-La Mancha/Canal 2000",
+      "name": "Canal 2000",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Castilla-La Mancha/TeleToledo",
+      "name": "TeleToledo",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Castilla-La Mancha/Gobierno de Castilla-La Mancha",
+      "name": "Gobierno de Castilla-La Mancha",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Castilla y León/TV Aranda",
+      "name": "TV Aranda",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Castilla y León/Cortes de Castilla y León",
+      "name": "Cortes de Castilla y León",
+      "reason": "no-integratable-source",
+      "detail": "4 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Castilla y León/Junta de Castilla y León",
+      "name": "Junta de Castilla y León",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Cataluña/betevé",
+      "name": "betevé",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Cataluña/Canal Reus",
+      "name": "Canal Reus",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Cataluña/Empordà TV",
+      "name": "Empordà TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Cataluña/Canal Terrassa",
+      "name": "Canal Terrassa",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Cataluña/TAC 12",
+      "name": "TAC 12",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Cataluña/Lleida TV",
+      "name": "Lleida TV",
+      "reason": "no-integratable-source",
+      "detail": "2 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Cataluña/TV Costa Brava",
+      "name": "TV Costa Brava",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Cataluña/L'Hospitalet TV",
+      "name": "L'Hospitalet TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Cataluña/Penedès TV",
+      "name": "Penedès TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Cataluña/Canal Taronja Central",
+      "name": "Canal Taronja Central",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Cataluña/RTV El Vendrell",
+      "name": "RTV El Vendrell",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Cataluña/Canal Taronja Anoia",
+      "name": "Canal Taronja Anoia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Cataluña/VOTV",
+      "name": "VOTV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Cataluña/Canal 10 Empordà",
+      "name": "Canal 10 Empordà",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Cataluña/Canal Taronja Osona i Moianés",
+      "name": "Canal Taronja Osona i Moianés",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Cataluña/BDN Badalona TV",
+      "name": "BDN Badalona TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Cataluña/Pirineus TV",
+      "name": "Pirineus TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Cataluña/RTV Cardedeu",
+      "name": "RTV Cardedeu",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Cataluña/TV Sabadell - Vallès",
+      "name": "TV Sabadell - Vallès",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Cataluña/Piera TV",
+      "name": "Piera TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Cataluña/etv",
+      "name": "etv",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Cataluña/Canal Parlament",
+      "name": "Canal Parlament",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Ceuta/Ceuta TV",
+      "name": "Ceuta TV",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Ceuta/RTVCE",
+      "name": "RTVCE",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. de Madrid/Teleganés",
+      "name": "Teleganés",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. de Madrid/Distrito TV",
+      "name": "Distrito TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. de Madrid/Déjate de Historias TV",
+      "name": "Déjate de Historias TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. de Madrid/EsTuTele",
+      "name": "EsTuTele",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. de Madrid/Canal 33 Madrid",
+      "name": "Canal 33 Madrid",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. de Madrid/iPROtv",
+      "name": "iPROtv",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. de Madrid/LIRA TV",
+      "name": "LIRA TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Foral de Navarra/Navarra TV",
+      "name": "Navarra TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Foral de Navarra/Xaloa Telebista",
+      "name": "Xaloa Telebista",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Foral de Navarra/Parlamento de Navarra",
+      "name": "Parlamento de Navarra",
+      "reason": "no-integratable-source",
+      "detail": "3 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/À Punt",
+      "name": "À Punt",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/8 La Marina TV",
+      "name": "8 La Marina TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/Intercomarcal TV",
+      "name": "Intercomarcal TV",
+      "reason": "no-integratable-source",
+      "detail": "3 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/7 TeleValencia",
+      "name": "7 TeleValencia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/La 8 Mediterráneo",
+      "name": "La 8 Mediterráneo",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/TeleElx",
+      "name": "TeleElx",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/Ribera TV",
+      "name": "Ribera TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/Maestrat TV",
+      "name": "Maestrat TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/Alacantí TV",
+      "name": "Alacantí TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/Elche 7 TV",
+      "name": "Elche 7 TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/tvA",
+      "name": "tvA",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/12TV Alicante",
+      "name": "12TV Alicante",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/Televisió de Castelló",
+      "name": "Televisió de Castelló",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/Burriana TeVe",
+      "name": "Burriana TeVe",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/TV 4 La Vall",
+      "name": "TV 4 La Vall",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/Canal 56",
+      "name": "Canal 56",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/Tele Safor",
+      "name": "Tele Safor",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/Univers TV",
+      "name": "Univers TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/TV Almassora",
+      "name": "TV Almassora",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/Punt 3 Vall Uixó",
+      "name": "Punt 3 Vall Uixó",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/Onda 15 TV",
+      "name": "Onda 15 TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/Canal 3 Biar",
+      "name": "Canal 3 Biar",
+      "reason": "no-integratable-source",
+      "detail": "2 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/Ciudades Del Ocio TV",
+      "name": "Ciudades Del Ocio TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/Onda Valencia",
+      "name": "Onda Valencia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/Une Vinalopó",
+      "name": "Une Vinalopó",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/33TV",
+      "name": "33TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/C. Valenciana/Corts Valencianes",
+      "name": "Corts Valencianes",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Galicia/TV Ferrol",
+      "name": "TV Ferrol",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Galicia/TeleVigo",
+      "name": "TeleVigo",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Galicia/Telemiño",
+      "name": "Telemiño",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Galicia/Anove TV",
+      "name": "Anove TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Galicia/Parlamento de Galicia",
+      "name": "Parlamento de Galicia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Galicia/Xunta de Galicia",
+      "name": "Xunta de Galicia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Illes Balears/TEF",
+      "name": "TEF",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Illes Balears/Fibwi TV",
+      "name": "Fibwi TV",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/La Rioja/TV Rioja",
+      "name": "TV Rioja",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/La Rioja/7 La Rioja",
+      "name": "7 La Rioja",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/La Rioja/Cocina Familiar",
+      "name": "Cocina Familiar",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/La Rioja/Parlamento de La Rioja",
+      "name": "Parlamento de La Rioja",
+      "reason": "no-integratable-source",
+      "detail": "2 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Melilla/Melilla TV",
+      "name": "Melilla TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/Melilla/Popular TV Melilla",
+      "name": "Popular TV Melilla",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/País Vasco/Tele 7",
+      "name": "Tele 7",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/País Vasco/Hamaika TV",
+      "name": "Hamaika TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/País Vasco/GUKA TB",
+      "name": "GUKA TB",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/País Vasco/Goiena Eus",
+      "name": "Goiena Eus",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/País Vasco/Durangaldeko TV",
+      "name": "Durangaldeko TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/País Vasco/Goierri Irrati TV",
+      "name": "Goierri Irrati TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/País Vasco/28 Kanala",
+      "name": "28 Kanala",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/País Vasco/Oizmendi TB",
+      "name": "Oizmendi TB",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/País Vasco/TeleBilbao",
+      "name": "TeleBilbao",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/País Vasco/Urola TB",
+      "name": "Urola TB",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/País Vasco/Eusko Legebiltzarra",
+      "name": "Eusko Legebiltzarra",
+      "reason": "no-integratable-source",
+      "detail": "2 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/País Vasco/Eusko Jaurlaritza",
+      "name": "Eusko Jaurlaritza",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/P. de Asturias/TPA7",
+      "name": "TPA7",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/P. de Asturias/Junta General del Principado de Asturias",
+      "name": "Junta General del Principado de Asturias",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/R. de Murcia/Popular TV Murcia",
+      "name": "Popular TV Murcia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/R. de Murcia/Canal 1 Mar Menor Torre Pacheco",
+      "name": "Canal 1 Mar Menor Torre Pacheco",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/R. de Murcia/Arabí TV",
+      "name": "Arabí TV",
+      "reason": "no-integratable-source",
+      "detail": "2 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "Spain/R. de Murcia/Consejo de Gobierno de la Región de Murcia",
+      "name": "Consejo de Gobierno de la Región de Murcia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/Islas Canarias TV",
+      "name": "Islas Canarias TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/ATV Andorra",
+      "name": "ATV Andorra",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/GBC Gibraltar",
+      "name": "GBC Gibraltar",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/BFM TV Francia",
+      "name": "BFM TV Francia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/TV5Monde Francia",
+      "name": "TV5Monde Francia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/CNEWS Francia",
+      "name": "CNEWS Francia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/Rai News 24 Italia",
+      "name": "Rai News 24 Italia",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/Sportitalia",
+      "name": "Sportitalia",
+      "reason": "no-integratable-source",
+      "detail": "3 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/La7 Italia",
+      "name": "La7 Italia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/DW Alemania",
+      "name": "DW Alemania",
+      "reason": "no-integratable-source",
+      "detail": "2 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/Tagesschau24 Alemania",
+      "name": "Tagesschau24 Alemania",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/ARD Das Erste Alemania",
+      "name": "ARD Das Erste Alemania",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/WDR Westdeutscher Alemania",
+      "name": "WDR Westdeutscher Alemania",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/NDR Niedersachsen Alemania",
+      "name": "NDR Niedersachsen Alemania",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/BR Bayerischer Alemania",
+      "name": "BR Bayerischer Alemania",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/HR Hessenschau Alemania",
+      "name": "HR Hessenschau Alemania",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/SR Saarland Alemania",
+      "name": "SR Saarland Alemania",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/CNN Portugal",
+      "name": "CNN Portugal",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/Porto Canal Portugal",
+      "name": "Porto Canal Portugal",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/Digi24 Rumanía",
+      "name": "Digi24 Rumanía",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/TVP Polonia",
+      "name": "TVP Polonia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/RTÉ News Irlanda",
+      "name": "RTÉ News Irlanda",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/Televixin Malta",
+      "name": "Televixin Malta",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/Televixin Malta Sport",
+      "name": "Televixin Malta Sport",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/TRT World Turquía",
+      "name": "TRT World Turquía",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/TRT Haber Turquía",
+      "name": "TRT Haber Turquía",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/NOW TV Turquía",
+      "name": "NOW TV Turquía",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/STAR TV Turquía",
+      "name": "STAR TV Turquía",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/RTCG SAT Montenegro",
+      "name": "RTCG SAT Montenegro",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/RÚV Islandia",
+      "name": "RÚV Islandia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/San Marino RTV",
+      "name": "San Marino RTV",
+      "reason": "no-integratable-source",
+      "detail": "2 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/N1 Croacia",
+      "name": "N1 Croacia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/VizionPlus Albania",
+      "name": "VizionPlus Albania",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/Channel 24 Ucrania",
+      "name": "Channel 24 Ucrania",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/Kanal Freedom Ucrania",
+      "name": "Kanal Freedom Ucrania",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Europa/Current Time TV",
+      "name": "Current Time TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/LiveNOW from FOX USA",
+      "name": "LiveNOW from FOX USA",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/CBS News USA",
+      "name": "CBS News USA",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Cheddar USA",
+      "name": "Cheddar USA",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Court TV USA",
+      "name": "Court TV USA",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/WeatherNation USA",
+      "name": "WeatherNation USA",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Real America's Voice USA",
+      "name": "Real America's Voice USA",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/BUZZR TV USA",
+      "name": "BUZZR TV USA",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Newsmax2 USA",
+      "name": "Newsmax2 USA",
+      "reason": "no-integratable-source",
+      "detail": "2 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/America TeVe USA",
+      "name": "America TeVe USA",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/TV Florida USA",
+      "name": "TV Florida USA",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Estrella TV USA",
+      "name": "Estrella TV USA",
+      "reason": "no-integratable-source",
+      "detail": "3 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Canal 6 Multimedios México",
+      "name": "Canal 6 Multimedios México",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/El Financiero México",
+      "name": "El Financiero México",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/N+ México",
+      "name": "N+ México",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/N+ Foro México",
+      "name": "N+ Foro México",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/ADN Noticias México",
+      "name": "ADN Noticias México",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Canal Once México",
+      "name": "Canal Once México",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Quiero TV México",
+      "name": "Quiero TV México",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/México Travel Channel",
+      "name": "México Travel Channel",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/TELE 10 Nayarit México",
+      "name": "TELE 10 Nayarit México",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Teleantioquia Colombia",
+      "name": "Teleantioquia Colombia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Señal Colombia",
+      "name": "Señal Colombia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Telepacífico Colombia",
+      "name": "Telepacífico Colombia",
+      "reason": "no-integratable-source",
+      "detail": "2 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Canal Telecaribe Colombia",
+      "name": "Canal Telecaribe Colombia",
+      "reason": "no-integratable-source",
+      "detail": "2 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Canal TRO Colombia",
+      "name": "Canal TRO Colombia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Exitosa Noticias Perú",
+      "name": "Exitosa Noticias Perú",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Panamericana Perú",
+      "name": "Panamericana Perú",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Willax Perú",
+      "name": "Willax Perú",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Canal IPe Perú",
+      "name": "Canal IPe Perú",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Latina Perú",
+      "name": "Latina Perú",
+      "reason": "no-integratable-source",
+      "detail": "3 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Cosmos TV Perú",
+      "name": "Cosmos TV Perú",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/TeleSUR Venezuela",
+      "name": "TeleSUR Venezuela",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Globovisión Venezuela",
+      "name": "Globovisión Venezuela",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/La Tele Tuya Venezuela",
+      "name": "La Tele Tuya Venezuela",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Canal Antigua Guatemala",
+      "name": "Canal Antigua Guatemala",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Ecuador TV",
+      "name": "Ecuador TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Oromar TV Ecuador",
+      "name": "Oromar TV Ecuador",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Red Uno de Bolivia",
+      "name": "Red Uno de Bolivia",
+      "reason": "no-integratable-source",
+      "detail": "3 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Cubavisión TV Cuba",
+      "name": "Cubavisión TV Cuba",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/CDN 37 República Dominicana",
+      "name": "CDN 37 República Dominicana",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Telemicro República Dominicana",
+      "name": "Telemicro República Dominicana",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Color Visión República Dominicana",
+      "name": "Color Visión República Dominicana",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/HCH Honduras",
+      "name": "HCH Honduras",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Canal 6 Honduras",
+      "name": "Canal 6 Honduras",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Canal 11 Honduras",
+      "name": "Canal 11 Honduras",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/ABC TV Paraguay",
+      "name": "ABC TV Paraguay",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/LaTele Paraguay",
+      "name": "LaTele Paraguay",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Telefuturo Paraguay",
+      "name": "Telefuturo Paraguay",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Unicanal Paraguay",
+      "name": "Unicanal Paraguay",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Noticias NPY Paraguay",
+      "name": "Noticias NPY Paraguay",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Nicavisión TV Nicaragua",
+      "name": "Nicavisión TV Nicaragua",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/WTV Nicaragua",
+      "name": "WTV Nicaragua",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/TeleDiario Costa Rica",
+      "name": "TeleDiario Costa Rica",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/Teletica 7 Costa Rica",
+      "name": "Teletica 7 Costa Rica",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/WIPR Puerto Rico",
+      "name": "WIPR Puerto Rico",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/RedeTV! Brasil",
+      "name": "RedeTV! Brasil",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/SBT Interior Brasil",
+      "name": "SBT Interior Brasil",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/TV Cultura Brasil",
+      "name": "TV Cultura Brasil",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. América/TTT Trinidad y Tobago",
+      "name": "TTT Trinidad y Tobago",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Asia/Al Jazeera Catar",
+      "name": "Al Jazeera Catar",
+      "reason": "no-integratable-source",
+      "detail": "2 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Asia/NHK World Japón",
+      "name": "NHK World Japón",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Asia/Nippon News TV Japón",
+      "name": "Nippon News TV Japón",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Asia/Arirang TV Corea del Sur",
+      "name": "Arirang TV Corea del Sur",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Asia/Al Arabiya Emiratos Árabes Unidos",
+      "name": "Al Arabiya Emiratos Árabes Unidos",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Asia/India Today",
+      "name": "India Today",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Asia/Aaj Tak India",
+      "name": "Aaj Tak India",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Asia/New Delhi TV 24x7 India",
+      "name": "New Delhi TV 24x7 India",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Asia/Republic World TV India",
+      "name": "Republic World TV India",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Asia/HispanTV Irán",
+      "name": "HispanTV Irán",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Asia/Channel NewsAsia Singapur",
+      "name": "Channel NewsAsia Singapur",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Asia/TVK Camboya",
+      "name": "TVK Camboya",
+      "reason": "no-integratable-source",
+      "detail": "2 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Asia/Teledifusão de Macau",
+      "name": "Teledifusão de Macau",
+      "reason": "no-integratable-source",
+      "detail": "3 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Asia/Oman TV",
+      "name": "Oman TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. África/Medi1 TV Marruecos",
+      "name": "Medi1 TV Marruecos",
+      "reason": "no-integratable-source",
+      "detail": "3 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. África/TVGE 1 Guinea Ecuatorial",
+      "name": "TVGE 1 Guinea Ecuatorial",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. África/RASD TV",
+      "name": "RASD TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Otros/ABC News Australia",
+      "name": "ABC News Australia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Otros/United Nations TV",
+      "name": "United Nations TV",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Otros/Tastemade",
+      "name": "Tastemade",
+      "reason": "no-integratable-source",
+      "detail": "2 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Otros/Fashion TV",
+      "name": "Fashion TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Otros/Miami TV Fashion",
+      "name": "Miami TV Fashion",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Otros/Miami TV Gold",
+      "name": "Miami TV Gold",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Otros/Miami TV Latino",
+      "name": "Miami TV Latino",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Otros/Miami TV Jenny Live",
+      "name": "Miami TV Jenny Live",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Otros/Agrotendencia",
+      "name": "Agrotendencia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Otros/Classic Arts Showcase",
+      "name": "Classic Arts Showcase",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Otros/AKC TV Dogs",
+      "name": "AKC TV Dogs",
+      "reason": "no-integratable-source",
+      "detail": "2 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Otros/Earth TV",
+      "name": "Earth TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Int. Otros/ServusTV WetterPanorama",
+      "name": "ServusTV WetterPanorama",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Deportivos Int./Olympic Channel",
+      "name": "Olympic Channel",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Deportivos Int./Red Bull TV",
+      "name": "Red Bull TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Deportivos Int./Stadium USA",
+      "name": "Stadium USA",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Deportivos Int./Garage TV Argentina",
+      "name": "Garage TV Argentina",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Deportivos Int./Best Cable Sports Perú",
+      "name": "Best Cable Sports Perú",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Deportivos Int./MoreThanSports TV",
+      "name": "MoreThanSports TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Deportivos Int./Int. Table Soccer Federation",
+      "name": "Int. Table Soccer Federation",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/Sol Música España",
+      "name": "Sol Música España",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/Activa TV España",
+      "name": "Activa TV España",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/Molahits TV España",
+      "name": "Molahits TV España",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/Verbena TV España",
+      "name": "Verbena TV España",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/Cadena Elite España",
+      "name": "Cadena Elite España",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/Spektra TV España",
+      "name": "Spektra TV España",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/EnerGeek Radio Chile",
+      "name": "EnerGeek Radio Chile",
+      "reason": "no-integratable-source",
+      "detail": "2 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/Conexión Berazategui Argentina",
+      "name": "Conexión Berazategui Argentina",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/Radio Italia TV",
+      "name": "Radio Italia TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/RDS Social TV Italia",
+      "name": "RDS Social TV Italia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/m2o Italia",
+      "name": "m2o Italia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/Radio Capital Italia",
+      "name": "Radio Capital Italia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/70-80's Italia",
+      "name": "70-80's Italia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/On TV Portugal",
+      "name": "On TV Portugal",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/Kronehit Austria",
+      "name": "Kronehit Austria",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/QMusic Países Bajos",
+      "name": "QMusic Países Bajos",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/Retro Music TV Chequia",
+      "name": "Retro Music TV Chequia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/4FUN TV Polonia",
+      "name": "4FUN TV Polonia",
+      "reason": "no-integratable-source",
+      "detail": "2 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/Number1 TV Turquía",
+      "name": "Number1 TV Turquía",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/Power TV Turquía",
+      "name": "Power TV Turquía",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/NRG91 Grecia",
+      "name": "NRG91 Grecia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/Rock TV Rumanía",
+      "name": "Rock TV Rumanía",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/CMC Croacia",
+      "name": "CMC Croacia",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/Sky Folk Macedonia del Norte",
+      "name": "Sky Folk Macedonia del Norte",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/1Muz Bielorrusia",
+      "name": "1Muz Bielorrusia",
+      "reason": "no-integratable-source",
+      "detail": "2 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/RU.TV Rusia",
+      "name": "RU.TV Rusia",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/Tropical Moon TV",
+      "name": "Tropical Moon TV",
+      "reason": "no-integratable-source",
+      "detail": "2 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/VM Latino Costa Rica",
+      "name": "VM Latino Costa Rica",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/Venus Media Paraguay",
+      "name": "Venus Media Paraguay",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/Top Latino TV Perú",
+      "name": "Top Latino TV Perú",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/La Mega Mundial USA",
+      "name": "La Mega Mundial USA",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/Retro Plus TV Chile",
+      "name": "Retro Plus TV Chile",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/Portal Foxmix Chile",
+      "name": "Portal Foxmix Chile",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/30A Music USA",
+      "name": "30A Music USA",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/Spirit TV USA",
+      "name": "Spirit TV USA",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/RadioU TV USA",
+      "name": "RadioU TV USA",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/Dance TV Estonia",
+      "name": "Dance TV Estonia",
+      "reason": "no-integratable-source",
+      "detail": "9 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Musicales/V2Beat TV",
+      "name": "V2Beat TV",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Religiosos/Ecclesia COPE España",
+      "name": "Ecclesia COPE España",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Religiosos/Solidaria TV",
+      "name": "Solidaria TV",
+      "reason": "no-integratable-source",
+      "detail": "3 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Religiosos/RTV Vida España",
+      "name": "RTV Vida España",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Religiosos/RTV Diocesana Toledo España",
+      "name": "RTV Diocesana Toledo España",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Religiosos/TBN España",
+      "name": "TBN España",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Religiosos/Cetelmon TV España",
+      "name": "Cetelmon TV España",
+      "reason": "no-integratable-source",
+      "detail": "2 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Religiosos/María Visión España y México",
+      "name": "María Visión España y México",
+      "reason": "no-integratable-source",
+      "detail": "2 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Religiosos/EWTN USA",
+      "name": "EWTN USA",
+      "reason": "no-integratable-source",
+      "detail": "3 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Religiosos/ESNE USA",
+      "name": "ESNE USA",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Religiosos/CBN USA",
+      "name": "CBN USA",
+      "reason": "no-public-source",
+      "detail": "0 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Religiosos/Enlace TV Costa Rica",
+      "name": "Enlace TV Costa Rica",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Religiosos/Emmanuel TV Nigeria",
+      "name": "Emmanuel TV Nigeria",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Religiosos/Redevida Brasil",
+      "name": "Redevida Brasil",
+      "reason": "no-integratable-source",
+      "detail": "1 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    },
+    {
+      "legacyId": "International/Religiosos/3ABN USA",
+      "name": "3ABN USA",
+      "reason": "no-integratable-source",
+      "detail": "2 opción(es) registradas; canal publicado solo cuando la redacción lo decida."
+    }
+  ],
+  "slugCollisions": []
+}

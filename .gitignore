@@ -1,0 +1,14 @@
+node_modules/
+dist/
+coverage/
+*.log
+
+# Local runtime state for Docker volumes is kept outside the repository.
+infra/.data/
+
+# Findings and audits produced by test runs are kept, but raw third-party
+# snapshots are not: they are supplied through an explicit import command.
+audits/tmp/
+
+.env
+.env.local

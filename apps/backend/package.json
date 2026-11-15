@@ -1,0 +1,45 @@
+{
+  "name": "@tdt/backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TDT Platform backend: owned catalogue, playback sources, EPG and API v1.",
+  "type": "module",
+  "main": "./dist/server/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "dev": "node --watch --experimental-strip-types src/server/dev.ts",
+    "start": "node dist/server/main.js",
+    "test": "vitest run",
+    "test:unit": "vitest run --project unit",
+    "test:integration": "vitest run --project integration",
+    "test:independence": "vitest run --project independence",
+    "test:load": "node scripts/load-test.mjs",
+    "migrate": "node dist/migrations/run.js",
+    "seed": "node dist/scripts/seed.js",
+    "openapi:export": "node dist/scripts/export-openapi.js",
+    "audit:bootstrap": "node dist/scripts/bootstrap-audit.js"
+  },
+  "dependencies": {
+    "@tdt/contracts": "*",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "mongodb": "^6.20.0",
+    "pino": "^9.13.1",
+    "pino-http": "^10.5.0",
+    "redis": "^5.8.3",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/compression": "^1.8.1",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.9.1",
+    "@types/supertest": "^6.0.3",
+    "supertest": "^7.1.4",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}
