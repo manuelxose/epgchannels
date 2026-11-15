@@ -34,11 +34,17 @@ export function channelRef(channel: Pick<ChannelDoc, '_id' | 'slug' | 'name'>): 
 }
 
 /** Issues for every source we deliberately do not expose, with its real cause. */
-export function sourceIssues(sources: readonly PlaybackSourceDoc[]): TechIssue[] {
+export function sourceIssues(
+  sources: readonly PlaybackSourceDoc[],
+  channel?: Pick<ChannelDoc, 'editorialStatus'>,
+): TechIssue[] {
   const issues: TechIssue[] = [];
   for (const source of sources) {
     const decision = decidePublication({
-      channelStatus: 'published',
+      // The channel's own state decides first: a withdrawn channel hides every
+      // one of its sources, so reporting each source as "withdrawn" would be
+      // both wrong and noise.
+      channelStatus: channel ? channel.editorialStatus : 'published',
       sourceStatus: source.editorialStatus,
       permission: source.permission as never,
       technicalStatus: source.technicalStatus,
@@ -127,7 +133,7 @@ export function buildDescriptor(
   sources: readonly PlaybackSourceDoc[],
   now: Date = new Date(),
 ): PlaybackDescriptor {
-  const issues = sourceIssues(sources);
+  const issues = sourceIssues(sources, channel);
   const ordered = [...sources].sort(compareSources);
 
   const inApp = ordered.filter((source) => {

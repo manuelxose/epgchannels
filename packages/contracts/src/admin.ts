@@ -169,7 +169,8 @@ const conditionsSchema = z.object({
   requiresForgedHeader: z.boolean(),
   /** True when the emitter only allows its own registered application. */
   emitterAppOnly: z.boolean(),
-  notes: z.string().max(600).nullable(),
+  /** Free editorial note shown as the source label; optional. */
+  notes: z.string().max(600).nullable().default(null),
 });
 
 export type SourceConditionsInput = z.infer<typeof conditionsSchema>;

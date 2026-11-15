@@ -76,8 +76,13 @@ export function searchForms(input: string): string[] {
     .map((token) => EXPANSIONS[token] ?? token)
     .join(' ');
   forms.add(expanded);
-  // Every prefix of the first tokens keeps "la 1" findable from partial input.
+  // Every prefix of the first tokens keeps "la 1" findable from partial input,
+  // and the glued runs make "la1" find "La 1" (the same rule the client search
+  // used, so server-side and client-side search agree).
   tokens.slice(0, 3).forEach((_token, index) => forms.add(tokens.slice(0, index + 1).join(' ')));
+  const derived = tokens.join('');
+  forms.add(derived);
+  tokens.forEach((token) => forms.add(token));
   return [...forms].filter((form) => form.length > 0);
 }
 

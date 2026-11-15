@@ -51,16 +51,20 @@ export interface EgressResult {
 const DEFAULT_MAX_BYTES = 8 * 1024 * 1024;
 const DEFAULT_USER_AGENT = 'TDTPlatform/1.0 (+https://example.invalid/tdt-platform)';
 
-/** True when `host` equals, or is a subdomain of, any blocked entry. */
+/**
+ * True when `host` equals, or is a subdomain of, any blocked entry.
+ *
+ * An entry blocks the domain it names *and everything below it*
+ * (`tdtchannels.com` also blocks `www.tdtchannels.com`); an entry written as
+ * `*.example.com` expresses the same rule.
+ */
 export function isHostBlocked(host: string, blockedHosts: readonly string[]): boolean {
-  const normalized = host.toLowerCase();
+  const normalized = host.toLowerCase().replace(/\.$/, '');
   return blockedHosts.some((blocked) => {
-    const entry = blocked.toLowerCase().trim();
-    if (entry.startsWith('*.')) {
-      const suffix = entry.slice(1); // ".example.com"
-      return normalized.endsWith(suffix) || normalized === entry.slice(2);
-    }
-    return normalized === entry;
+    const entry = blocked.toLowerCase().trim().replace(/\.$/, '');
+    if (entry.length === 0) return false;
+    const domain = entry.startsWith('*.') ? entry.slice(2) : entry;
+    return normalized === domain || normalized.endsWith(`.${domain}`);
   });
 }
 

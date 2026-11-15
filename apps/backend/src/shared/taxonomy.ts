@@ -95,10 +95,13 @@ const REGION_SYNONYMS: Readonly<Record<string, string>> = {
   'c valenciana': 'VC',
   'comunidad valenciana': 'VC',
   valencia: 'VC',
+  'comunidad foral de navarra': 'NC',
   'c foral de navarra': 'NC',
   navarra: 'NC',
+  'principado de asturias': 'AS',
   'p de asturias': 'AS',
   asturias: 'AS',
+  'region de murcia': 'MC',
   'r de murcia': 'MC',
   murcia: 'MC',
   'illes balears': 'IB',
@@ -119,12 +122,17 @@ const REGION_SYNONYMS: Readonly<Record<string, string>> = {
   melilla: 'ML',
 };
 
+/**
+ * Folds a region label to its comparison key: lowercase, no diacritics, and the
+ * administrative abbreviations written both with and without their dot
+ * (C. de Madrid / C de Madrid) become the same key.
+ */
 function normalizeRegionName(value: string): string {
   return value
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[.]/g, '')
+    .replace(/[.]\s*/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -136,9 +144,13 @@ export function resolveRegionCode(label: string | undefined): string | null {
   if (!normalized) return null;
   const direct = REGION_BY_NORMALISED_NAME.get(normalized);
   if (direct) return direct.code;
-  const synonym = REGION_SYNONYMS[normalized];
-  if (synonym) return synonym;
-  return null;
+  // Administrative abbreviations ("C.", "P.", "R.", "C. Foral de") are written
+  // with a dot or a space across sources; after this fold both read the same.
+  const alias = REGION_SYNONYMS[normalized];
+  if (alias) return alias;
+  const collapsed = normalized.replace(/\bc\b/g, 'comunidad').replace(/\bp\b/g, 'principado').replace(/\br\b/g, 'region');
+  const collapsedAlias = REGION_SYNONYMS[collapsed];
+  return collapsedAlias ?? null;
 }
 
 export function regionByCode(code: string): RegionDefinition | undefined {
