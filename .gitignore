@@ -29,3 +29,6 @@ tools/.cache/
 # logs and temporary reports
 *.log
 audits/tmp/
+
+# Angular build cache
+apps/frontend/.angular/
