@@ -173,15 +173,24 @@ export function parseXmltv(xml: string, defaultZone: string): ParseResult {
   return { events, rejected, channels: [...channelIds] };
 }
 
-/** JSON shape published by the reference lists: `{ name, events: [{ hi, hf, t, d, g, c }] }`. */
+/**
+ * JSON guide: `{ name, events: [{ hi, hf, t, d, g, c }] }`, published both as an
+ * object keyed by a numeric index and as an array of the same entries. Both
+ * shapes are accepted; the join key is always the entry's own `name`.
+ */
 export function parseJsonGuide(payload: unknown): ParseResult {
   const events: ParsedEvent[] = [];
   const channelIds = new Set<string>();
   let rejected = 0;
-  if (typeof payload !== 'object' || payload === null || Array.isArray(payload)) {
+  const entries: unknown[] = Array.isArray(payload)
+    ? payload
+    : typeof payload === 'object' && payload !== null
+      ? Object.values(payload as Record<string, unknown>)
+      : [];
+  if (entries.length === 0) {
     return { events, rejected: 1, channels: [] };
   }
-  for (const entry of Object.values(payload as Record<string, unknown>)) {
+  for (const entry of entries) {
     if (typeof entry !== 'object' || entry === null) {
       rejected += 1;
       continue;

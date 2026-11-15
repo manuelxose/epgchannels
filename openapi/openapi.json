@@ -1,0 +1,4775 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "TDT Platform API",
+    "version": "1.0.0",
+    "description": "API propia del catálogo de canales, registro de fuentes de reproducción y guía de programación de TDT Platform. Identifica cada canal por su slug público. Distingue explícitamente entre autorización de integración y disponibilidad técnica; nunca expone fuentes sin permiso registrado.",
+    "license": {
+      "name": "Propietaria — uso autorizado por el titular del servicio"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:4010/api/v1",
+      "description": "Servidor local de desarrollo"
+    },
+    {
+      "url": "https://api.example.invalid/api/v1",
+      "description": "Producción (pendiente de despliegue)"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Salud",
+      "description": "Estado del servicio y de sus dependencias."
+    },
+    {
+      "name": "Catálogo",
+      "description": "Canales, categorías y regiones canónicos."
+    },
+    {
+      "name": "Reproducción",
+      "description": "Descriptores tipados de reproducción."
+    },
+    {
+      "name": "Programación",
+      "description": "Guía propia de programación."
+    },
+    {
+      "name": "Integración",
+      "description": "Contratos para consumidores externos (GuíaTV)."
+    },
+    {
+      "name": "Administración",
+      "description": "Gestión editorial autenticada (bearer token)."
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "Salud"
+        ],
+        "operationId": "getHealth",
+        "summary": "Estado del servicio",
+        "responses": {
+          "200": {
+            "description": "Servicio operativo.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Identificador de la solicitud."
+              },
+              "ratelimit-remaining": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "Solicitudes restantes en la ventana."
+              },
+              "cache-control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Política de caché de esta respuesta."
+              },
+              "etag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Validador de representación (usar con If-None-Match)."
+              }
+            }
+          },
+          "503": {
+            "description": "Base de datos no disponible.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/channels": {
+      "get": {
+        "tags": [
+          "Catálogo"
+        ],
+        "operationId": "listChannels",
+        "summary": "Lista paginada de canales",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 24
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Búsqueda sin acentos sobre nombre y alias."
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Z]{2}$"
+            }
+          },
+          {
+            "name": "region",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Código ISO 3166-2:ES sin prefijo."
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "generalista",
+                "informativos",
+                "deportes",
+                "infantil",
+                "musica",
+                "cultura",
+                "cine-series",
+                "documentales",
+                "entretenimiento",
+                "religion",
+                "local",
+                "autonomica",
+                "internacional",
+                "otros"
+              ]
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "playable",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Solo canales con fuente autorizada reproducible."
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "name",
+                "name-desc",
+                "updated",
+                "relevance"
+              ],
+              "default": "name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Página de canales.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelListResponse"
+                }
+              }
+            },
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Identificador de la solicitud."
+              },
+              "ratelimit-remaining": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "Solicitudes restantes en la ventana."
+              },
+              "cache-control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Política de caché de esta respuesta."
+              },
+              "etag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Validador de representación (usar con If-None-Match)."
+              }
+            }
+          },
+          "400": {
+            "description": "Parámetros no válidos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Límite de peticiones superado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/channels/{slug}": {
+      "get": {
+        "tags": [
+          "Catálogo"
+        ],
+        "operationId": "getChannel",
+        "summary": "Ficha canónica de un canal",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ficha del canal.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelResponse"
+                }
+              }
+            },
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Identificador de la solicitud."
+              },
+              "ratelimit-remaining": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "Solicitudes restantes en la ventana."
+              },
+              "cache-control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Política de caché de esta respuesta."
+              },
+              "etag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Validador de representación (usar con If-None-Match)."
+              }
+            }
+          },
+          "404": {
+            "description": "Canal no encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/channels/{slug}/playback": {
+      "get": {
+        "tags": [
+          "Reproducción"
+        ],
+        "operationId": "getPlayback",
+        "summary": "Descriptor tipado de reproducción",
+        "description": "Devuelve `available` con un descriptor reproducible, `external` con la página oficial del emisor, `degraded`, `eventual` o `unavailable`. Nunca incluye credenciales ni fuentes sin permiso registrado.",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Descriptor de reproducción.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlaybackResponse"
+                }
+              }
+            },
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Identificador de la solicitud."
+              },
+              "ratelimit-remaining": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "Solicitudes restantes en la ventana."
+              },
+              "cache-control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Política de caché de esta respuesta."
+              },
+              "etag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Validador de representación (usar con If-None-Match)."
+              }
+            }
+          },
+          "404": {
+            "description": "Canal no encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/channels/{slug}/schedule": {
+      "get": {
+        "tags": [
+          "Programación"
+        ],
+        "operationId": "getSchedule",
+        "summary": "Programación de un canal",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Instante de referencia (por defecto, ahora)."
+          },
+          {
+            "name": "hours",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 72,
+              "default": 24
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Programación del canal.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScheduleResponse"
+                }
+              }
+            },
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Identificador de la solicitud."
+              },
+              "ratelimit-remaining": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "Solicitudes restantes en la ventana."
+              },
+              "cache-control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Política de caché de esta respuesta."
+              },
+              "etag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Validador de representación (usar con If-None-Match)."
+              }
+            }
+          },
+          "404": {
+            "description": "Canal no encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/epg/now": {
+      "get": {
+        "tags": [
+          "Programación"
+        ],
+        "operationId": "getEpgNow",
+        "summary": "Qué se emite ahora",
+        "parameters": [
+          {
+            "name": "channel",
+            "in": "query",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Programas en emisión.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EpgFeedResponse"
+                }
+              }
+            },
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Identificador de la solicitud."
+              },
+              "ratelimit-remaining": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "Solicitudes restantes en la ventana."
+              },
+              "cache-control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Política de caché de esta respuesta."
+              },
+              "etag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Validador de representación (usar con If-None-Match)."
+              }
+            }
+          }
+        }
+      }
+    },
+    "/epg/next": {
+      "get": {
+        "tags": [
+          "Programación"
+        ],
+        "operationId": "getEpgNext",
+        "summary": "Qué se emite a continuación",
+        "parameters": [
+          {
+            "name": "channel",
+            "in": "query",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Próximos programas.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EpgFeedResponse"
+                }
+              }
+            },
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Identificador de la solicitud."
+              },
+              "ratelimit-remaining": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "Solicitudes restantes en la ventana."
+              },
+              "cache-control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Política de caché de esta respuesta."
+              },
+              "etag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Validador de representación (usar con If-None-Match)."
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categories": {
+      "get": {
+        "tags": [
+          "Catálogo"
+        ],
+        "operationId": "listCategories",
+        "summary": "Taxonomía canónica con recuentos",
+        "responses": {
+          "200": {
+            "description": "Categorías.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryListResponse"
+                }
+              }
+            },
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Identificador de la solicitud."
+              },
+              "ratelimit-remaining": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "Solicitudes restantes en la ventana."
+              },
+              "cache-control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Política de caché de esta respuesta."
+              },
+              "etag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Validador de representación (usar con If-None-Match)."
+              }
+            }
+          }
+        }
+      }
+    },
+    "/regions": {
+      "get": {
+        "tags": [
+          "Catálogo"
+        ],
+        "operationId": "listRegions",
+        "summary": "Comunidades autónomas con recuentos",
+        "responses": {
+          "200": {
+            "description": "Regiones.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegionListResponse"
+                }
+              }
+            },
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Identificador de la solicitud."
+              },
+              "ratelimit-remaining": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "Solicitudes restantes en la ventana."
+              },
+              "cache-control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Política de caché de esta respuesta."
+              },
+              "etag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Validador de representación (usar con If-None-Match)."
+              }
+            }
+          }
+        }
+      }
+    },
+    "/integration/manifest": {
+      "get": {
+        "tags": [
+          "Integración"
+        ],
+        "operationId": "getIntegrationManifest",
+        "summary": "Capacidades del servicio para consumidores externos",
+        "responses": {
+          "200": {
+            "description": "Manifiesto de integración.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            },
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Identificador de la solicitud."
+              },
+              "ratelimit-remaining": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "Solicitudes restantes en la ventana."
+              },
+              "cache-control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Política de caché de esta respuesta."
+              },
+              "etag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Validador de representación (usar con If-None-Match)."
+              }
+            }
+          }
+        }
+      }
+    },
+    "/integration/guiatv/channels": {
+      "get": {
+        "tags": [
+          "Integración"
+        ],
+        "operationId": "listGuiaTvChannels",
+        "summary": "Catálogo adaptado a GuíaTV",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "default": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Canales para GuíaTV.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuiatvChannelListResponse"
+                }
+              }
+            },
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Identificador de la solicitud."
+              },
+              "ratelimit-remaining": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "Solicitudes restantes en la ventana."
+              },
+              "cache-control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Política de caché de esta respuesta."
+              },
+              "etag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Validador de representación (usar con If-None-Match)."
+              }
+            }
+          }
+        }
+      }
+    },
+    "/integration/guiatv/identity-map": {
+      "get": {
+        "tags": [
+          "Integración"
+        ],
+        "operationId": "getGuiaTvIdentityMap",
+        "summary": "Tabla de correspondencia de identificadores",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 200
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Correspondencias.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityMapResponse"
+                }
+              }
+            },
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Identificador de la solicitud."
+              },
+              "ratelimit-remaining": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "Solicitudes restantes en la ventana."
+              },
+              "cache-control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Política de caché de esta respuesta."
+              },
+              "etag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Validador de representación (usar con If-None-Match)."
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/channels": {
+      "get": {
+        "tags": [
+          "Administración"
+        ],
+        "operationId": "adminListChannels",
+        "summary": "Lista administrativa (incluye borradores)",
+        "security": [
+          {
+            "adminSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Canales administrables.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            },
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Identificador de la solicitud."
+              },
+              "ratelimit-remaining": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "Solicitudes restantes en la ventana."
+              },
+              "cache-control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Política de caché de esta respuesta."
+              },
+              "etag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Validador de representación (usar con If-None-Match)."
+              }
+            }
+          },
+          "401": {
+            "description": "Sesión requerida.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Administración"
+        ],
+        "operationId": "adminCreateChannel",
+        "summary": "Alta de canal",
+        "security": [
+          {
+            "adminSession": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateChannelInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Canal creado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos no válidos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sesión requerida.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Slug en uso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/channels/{id}": {
+      "patch": {
+        "tags": [
+          "Administración"
+        ],
+        "operationId": "adminUpdateChannel",
+        "summary": "Edición de metadatos",
+        "security": [
+          {
+            "adminSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateChannelInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Canal actualizado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sesión requerida.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicto de versión.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/sources": {
+      "post": {
+        "tags": [
+          "Administración"
+        ],
+        "operationId": "adminCreateSource",
+        "summary": "Alta de fuente de reproducción",
+        "security": [
+          {
+            "adminSession": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSourceInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Fuente creada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos no válidos o sin permiso de integración.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/sources/{id}": {
+      "patch": {
+        "tags": [
+          "Administración"
+        ],
+        "operationId": "adminUpdateSource",
+        "summary": "Edición de una fuente",
+        "security": [
+          {
+            "adminSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSourceInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Fuente actualizada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicto de versión.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/sources/{id}/verify": {
+      "post": {
+        "tags": [
+          "Administración"
+        ],
+        "operationId": "adminVerifySource",
+        "summary": "Verificación técnica de una fuente",
+        "security": [
+          {
+            "adminSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado de verificación.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "data": {
+                    "$ref": "#/components/schemas/VerifySourceResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/audits": {
+      "get": {
+        "tags": [
+          "Administración"
+        ],
+        "operationId": "adminListAudits",
+        "summary": "Registro de auditoría",
+        "security": [
+          {
+            "adminSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          {
+            "name": "entityType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "entityId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entradas de auditoría.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/providers": {
+      "get": {
+        "tags": [
+          "Administración"
+        ],
+        "operationId": "adminListProviders",
+        "summary": "Proveedores de integración disponibles",
+        "security": [
+          {
+            "adminSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Proveedores.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "enum": [
+                  "bad_request",
+                  "validation_failed",
+                  "not_found",
+                  "unauthorized",
+                  "forbidden",
+                  "conflict",
+                  "rate_limited",
+                  "payload_too_large",
+                  "unavailable",
+                  "internal_error"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "details": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "message"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "code",
+              "message"
+            ]
+          },
+          "requestId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "error",
+          "requestId"
+        ]
+      },
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "degraded",
+              "down"
+            ]
+          },
+          "version": {
+            "type": "string"
+          },
+          "apiVersion": {
+            "type": "string",
+            "const": "v1"
+          },
+          "uptimeSeconds": {
+            "type": "number"
+          },
+          "now": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dependencies": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string",
+                  "enum": [
+                    "up",
+                    "down",
+                    "disabled",
+                    "degraded"
+                  ]
+                },
+                "latencyMs": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "message": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "name",
+                "state",
+                "latencyMs",
+                "message"
+              ]
+            }
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "channels": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "publishedChannels": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "sources": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "programmes": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "channels",
+              "publishedChannels",
+              "sources",
+              "programmes"
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "version",
+          "apiVersion",
+          "uptimeSeconds",
+          "now",
+          "dependencies",
+          "data"
+        ]
+      },
+      "ChannelList": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "slug": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "shortName": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$"
+          },
+          "region": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "code",
+              "name"
+            ]
+          },
+          "language": {
+            "type": "string",
+            "pattern": "^[a-z]{2,3}(?:-[A-Z]{2})?$"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "generalista",
+              "informativos",
+              "deportes",
+              "infantil",
+              "musica",
+              "cultura",
+              "cine-series",
+              "documentales",
+              "entretenimiento",
+              "religion",
+              "local",
+              "autonomica",
+              "internacional",
+              "otros"
+            ]
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "linear",
+              "online",
+              "eventual",
+              "guide-only"
+            ]
+          },
+          "playbackStatus": {
+            "type": "string",
+            "enum": [
+              "available",
+              "degraded",
+              "external",
+              "eventual",
+              "unavailable"
+            ]
+          },
+          "logoSrc": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "hasSchedule": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "shortName",
+          "country",
+          "region",
+          "language",
+          "category",
+          "kind",
+          "playbackStatus",
+          "logoSrc",
+          "hasSchedule"
+        ]
+      },
+      "ChannelListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "slug": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120,
+                  "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "shortName": {
+                  "type": "string"
+                },
+                "country": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                },
+                "region": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 16
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "name"
+                  ]
+                },
+                "language": {
+                  "type": "string",
+                  "pattern": "^[a-z]{2,3}(?:-[A-Z]{2})?$"
+                },
+                "category": {
+                  "type": "string",
+                  "enum": [
+                    "generalista",
+                    "informativos",
+                    "deportes",
+                    "infantil",
+                    "musica",
+                    "cultura",
+                    "cine-series",
+                    "documentales",
+                    "entretenimiento",
+                    "religion",
+                    "local",
+                    "autonomica",
+                    "internacional",
+                    "otros"
+                  ]
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "linear",
+                    "online",
+                    "eventual",
+                    "guide-only"
+                  ]
+                },
+                "playbackStatus": {
+                  "type": "string",
+                  "enum": [
+                    "available",
+                    "degraded",
+                    "external",
+                    "eventual",
+                    "unavailable"
+                  ]
+                },
+                "logoSrc": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uri"
+                },
+                "hasSchedule": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "id",
+                "slug",
+                "name",
+                "shortName",
+                "country",
+                "region",
+                "language",
+                "category",
+                "kind",
+                "playbackStatus",
+                "logoSrc",
+                "hasSchedule"
+              ]
+            }
+          },
+          "pagination": {
+            "type": "object",
+            "properties": {
+              "page": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "pageSize": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "total": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "pageCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "hasNext": {
+                "type": "boolean"
+              },
+              "hasPrevious": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "page",
+              "pageSize",
+              "total",
+              "pageCount",
+              "hasNext",
+              "hasPrevious"
+            ]
+          },
+          "attribution": {
+            "type": "object",
+            "properties": {
+              "notices": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "includesThirdPartyData": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "notices",
+              "includesThirdPartyData"
+            ]
+          }
+        },
+        "required": [
+          "data",
+          "pagination",
+          "attribution"
+        ]
+      },
+      "ChannelResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "slug": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120,
+                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "shortName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 40
+              },
+              "country": {
+                "type": "string",
+                "pattern": "^[A-Z]{2}$"
+              },
+              "region": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 16
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "code",
+                  "name"
+                ]
+              },
+              "locality": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "language": {
+                "type": "string",
+                "pattern": "^[a-z]{2,3}(?:-[A-Z]{2})?$"
+              },
+              "category": {
+                "type": "string",
+                "enum": [
+                  "generalista",
+                  "informativos",
+                  "deportes",
+                  "infantil",
+                  "musica",
+                  "cultura",
+                  "cine-series",
+                  "documentales",
+                  "entretenimiento",
+                  "religion",
+                  "local",
+                  "autonomica",
+                  "internacional",
+                  "otros"
+                ]
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "linear",
+                  "online",
+                  "eventual",
+                  "guide-only"
+                ]
+              },
+              "websiteUrl": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "uri"
+              },
+              "description": {
+                "type": "string",
+                "maxLength": 2000
+              },
+              "branding": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "logoSrc": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "uri"
+                  },
+                  "logoSrcPermission": {
+                    "type": "string",
+                    "enum": [
+                      "emitter",
+                      "open-data",
+                      "explicit-permission",
+                      "none"
+                    ]
+                  }
+                },
+                "required": [
+                  "logoSrc",
+                  "logoSrcPermission"
+                ]
+              },
+              "editorialStatus": {
+                "type": "string",
+                "enum": [
+                  "draft",
+                  "review",
+                  "published",
+                  "withdrawn"
+                ]
+              },
+              "playbackStatus": {
+                "type": "string",
+                "enum": [
+                  "available",
+                  "degraded",
+                  "external",
+                  "eventual",
+                  "unavailable"
+                ]
+              },
+              "sources": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "hls",
+                        "dash",
+                        "youtube",
+                        "official-embed",
+                        "external"
+                      ]
+                    },
+                    "label": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    },
+                    "geoRestricted": {
+                      "type": "boolean"
+                    },
+                    "preferred": {
+                      "type": "boolean"
+                    },
+                    "engine": {
+                      "type": "string",
+                      "enum": [
+                        "hls",
+                        "dash",
+                        "youtube-iframe",
+                        "official-embed",
+                        "external"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "type",
+                    "label",
+                    "geoRestricted",
+                    "preferred",
+                    "engine"
+                  ]
+                }
+              },
+              "provenance": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "source": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    },
+                    "label": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 300
+                    },
+                    "url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "uri"
+                    },
+                    "licence": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "attribution": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "minLength": 1,
+                      "maxLength": 600
+                    },
+                    "digestSha256": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "capturedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "editorial": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "source",
+                    "label",
+                    "url",
+                    "licence",
+                    "attribution",
+                    "digestSha256",
+                    "capturedAt",
+                    "editorial"
+                  ]
+                }
+              },
+              "aliases": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "namespace": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 60
+                    },
+                    "value": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200
+                    }
+                  },
+                  "required": [
+                    "namespace",
+                    "value"
+                  ]
+                }
+              },
+              "hasSchedule": {
+                "type": "boolean"
+              },
+              "reviewedAt": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "updatedAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "id",
+              "slug",
+              "name",
+              "shortName",
+              "country",
+              "region",
+              "locality",
+              "language",
+              "category",
+              "kind",
+              "websiteUrl",
+              "description",
+              "branding",
+              "editorialStatus",
+              "playbackStatus",
+              "sources",
+              "provenance",
+              "aliases",
+              "hasSchedule",
+              "reviewedAt",
+              "updatedAt"
+            ]
+          },
+          "attribution": {
+            "type": "object",
+            "properties": {
+              "notices": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "includesThirdPartyData": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "notices",
+              "includesThirdPartyData"
+            ]
+          }
+        },
+        "required": [
+          "data",
+          "attribution"
+        ]
+      },
+      "PlaybackDescriptor": {
+        "type": "object",
+        "properties": {
+          "channel": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "slug": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120,
+                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "slug",
+              "name"
+            ]
+          },
+          "playback": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "available",
+                  "degraded",
+                  "external",
+                  "eventual",
+                  "unavailable"
+                ]
+              },
+              "engine": {
+                "type": "string",
+                "enum": [
+                  "hls",
+                  "dash",
+                  "youtube-iframe",
+                  "official-embed",
+                  "external",
+                  "none"
+                ]
+              },
+              "type": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "hls",
+                  "dash",
+                  "youtube",
+                  "official-embed",
+                  "external"
+                ]
+              },
+              "sourceId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "uuid"
+              },
+              "url": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "uri"
+              },
+              "externalUrl": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "uri"
+              },
+              "options": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "sourceId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "hls",
+                        "dash",
+                        "youtube",
+                        "official-embed",
+                        "external"
+                      ]
+                    },
+                    "engine": {
+                      "type": "string",
+                      "enum": [
+                        "hls",
+                        "dash",
+                        "youtube-iframe",
+                        "official-embed",
+                        "external",
+                        "none"
+                      ]
+                    },
+                    "url": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "externalUrl": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "uri"
+                    },
+                    "geoRestricted": {
+                      "type": "boolean"
+                    },
+                    "preferred": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "sourceId",
+                    "label",
+                    "type",
+                    "engine",
+                    "url",
+                    "externalUrl",
+                    "geoRestricted",
+                    "preferred"
+                  ]
+                }
+              },
+              "reason": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "status",
+              "engine",
+              "type",
+              "sourceId",
+              "url",
+              "externalUrl",
+              "options",
+              "reason"
+            ]
+          },
+          "checkedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "verification",
+                    "policy"
+                  ]
+                },
+                "code": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "message": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 400
+                },
+                "observedAt": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "kind",
+                "code",
+                "message",
+                "observedAt"
+              ]
+            }
+          }
+        },
+        "required": [
+          "channel",
+          "playback",
+          "checkedAt",
+          "issues"
+        ]
+      },
+      "PlaybackResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "channel": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "slug": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120,
+                    "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "slug",
+                  "name"
+                ]
+              },
+              "playback": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "available",
+                      "degraded",
+                      "external",
+                      "eventual",
+                      "unavailable"
+                    ]
+                  },
+                  "engine": {
+                    "type": "string",
+                    "enum": [
+                      "hls",
+                      "dash",
+                      "youtube-iframe",
+                      "official-embed",
+                      "external",
+                      "none"
+                    ]
+                  },
+                  "type": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "enum": [
+                      "hls",
+                      "dash",
+                      "youtube",
+                      "official-embed",
+                      "external"
+                    ]
+                  },
+                  "sourceId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "uuid"
+                  },
+                  "url": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "uri"
+                  },
+                  "externalUrl": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "uri"
+                  },
+                  "options": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "sourceId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "label": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "hls",
+                            "dash",
+                            "youtube",
+                            "official-embed",
+                            "external"
+                          ]
+                        },
+                        "engine": {
+                          "type": "string",
+                          "enum": [
+                            "hls",
+                            "dash",
+                            "youtube-iframe",
+                            "official-embed",
+                            "external",
+                            "none"
+                          ]
+                        },
+                        "url": {
+                          "type": "string",
+                          "format": "uri"
+                        },
+                        "externalUrl": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "uri"
+                        },
+                        "geoRestricted": {
+                          "type": "boolean"
+                        },
+                        "preferred": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "sourceId",
+                        "label",
+                        "type",
+                        "engine",
+                        "url",
+                        "externalUrl",
+                        "geoRestricted",
+                        "preferred"
+                      ]
+                    }
+                  },
+                  "reason": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "status",
+                  "engine",
+                  "type",
+                  "sourceId",
+                  "url",
+                  "externalUrl",
+                  "options",
+                  "reason"
+                ]
+              },
+              "checkedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "issues": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "verification",
+                        "policy"
+                      ]
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "message": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 400
+                    },
+                    "observedAt": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "date-time"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "code",
+                    "message",
+                    "observedAt"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "channel",
+              "playback",
+              "checkedAt",
+              "issues"
+            ]
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "Programme": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "genre": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 80
+          },
+          "coverUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "description",
+          "genre",
+          "coverUrl",
+          "start",
+          "end"
+        ]
+      },
+      "ScheduleResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "channel": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "slug": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120,
+                    "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "slug",
+                  "name"
+                ]
+              },
+              "timezone": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 64
+              },
+              "availability": {
+                "type": "string",
+                "enum": [
+                  "available",
+                  "empty",
+                  "not-mapped",
+                  "withdrawn"
+                ]
+              },
+              "now": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 300
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 2000
+                  },
+                  "genre": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 80
+                  },
+                  "coverUrl": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "uri"
+                  },
+                  "start": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "end": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                },
+                "required": [
+                  "id",
+                  "title",
+                  "description",
+                  "genre",
+                  "coverUrl",
+                  "start",
+                  "end"
+                ]
+              },
+              "next": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "title": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 300
+                    },
+                    "description": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "genre": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 80
+                    },
+                    "coverUrl": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "uri"
+                    },
+                    "start": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "end": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "title",
+                    "description",
+                    "genre",
+                    "coverUrl",
+                    "start",
+                    "end"
+                  ]
+                }
+              },
+              "programmes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "title": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 300
+                    },
+                    "description": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "genre": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 80
+                    },
+                    "coverUrl": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "uri"
+                    },
+                    "start": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "end": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "title",
+                    "description",
+                    "genre",
+                    "coverUrl",
+                    "start",
+                    "end"
+                  ]
+                }
+              },
+              "asOf": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "provenance": {
+                "type": "object",
+                "properties": {
+                  "sourceId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "uuid"
+                  },
+                  "sourceName": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "licence": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "attribution": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "editedAt": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  }
+                },
+                "required": [
+                  "sourceId",
+                  "sourceName",
+                  "licence",
+                  "attribution",
+                  "editedAt"
+                ]
+              },
+              "updatedAt": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "channel",
+              "timezone",
+              "availability",
+              "now",
+              "next",
+              "programmes",
+              "asOf",
+              "provenance",
+              "updatedAt"
+            ]
+          },
+          "attribution": {
+            "type": "object",
+            "properties": {
+              "notices": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "includesThirdPartyData": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "notices",
+              "includesThirdPartyData"
+            ]
+          }
+        },
+        "required": [
+          "data",
+          "attribution"
+        ]
+      },
+      "EpgFeedEntry": {
+        "type": "object",
+        "properties": {
+          "channel": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "slug": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120,
+                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "slug",
+              "name"
+            ]
+          },
+          "timezone": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 64
+          },
+          "availability": {
+            "type": "string",
+            "enum": [
+              "available",
+              "empty",
+              "not-mapped",
+              "withdrawn"
+            ]
+          },
+          "programme": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 300
+              },
+              "description": {
+                "type": "string",
+                "maxLength": 2000
+              },
+              "genre": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 80
+              },
+              "coverUrl": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "uri"
+              },
+              "start": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "end": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "description",
+              "genre",
+              "coverUrl",
+              "start",
+              "end"
+            ]
+          },
+          "provenance": {
+            "type": "object",
+            "properties": {
+              "sourceId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "uuid"
+              },
+              "sourceName": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "licence": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "attribution": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "editedAt": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "sourceId",
+              "sourceName",
+              "licence",
+              "attribution",
+              "editedAt"
+            ]
+          }
+        },
+        "required": [
+          "channel",
+          "timezone",
+          "availability",
+          "programme",
+          "provenance"
+        ]
+      },
+      "EpgFeedResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "channel": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "slug": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120,
+                      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "slug",
+                    "name"
+                  ]
+                },
+                "timezone": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 64
+                },
+                "availability": {
+                  "type": "string",
+                  "enum": [
+                    "available",
+                    "empty",
+                    "not-mapped",
+                    "withdrawn"
+                  ]
+                },
+                "programme": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "title": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 300
+                    },
+                    "description": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "genre": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 80
+                    },
+                    "coverUrl": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "uri"
+                    },
+                    "start": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "end": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "title",
+                    "description",
+                    "genre",
+                    "coverUrl",
+                    "start",
+                    "end"
+                  ]
+                },
+                "provenance": {
+                  "type": "object",
+                  "properties": {
+                    "sourceId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "uuid"
+                    },
+                    "sourceName": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "licence": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "attribution": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "editedAt": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "date-time"
+                    }
+                  },
+                  "required": [
+                    "sourceId",
+                    "sourceName",
+                    "licence",
+                    "attribution",
+                    "editedAt"
+                  ]
+                }
+              },
+              "required": [
+                "channel",
+                "timezone",
+                "availability",
+                "programme",
+                "provenance"
+              ]
+            }
+          },
+          "asOf": {
+            "type": "string"
+          },
+          "attribution": {
+            "type": "object",
+            "properties": {
+              "notices": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "includesThirdPartyData": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "notices",
+              "includesThirdPartyData"
+            ]
+          }
+        },
+        "required": [
+          "data",
+          "asOf",
+          "attribution"
+        ]
+      },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "generalista",
+              "informativos",
+              "deportes",
+              "infantil",
+              "musica",
+              "cultura",
+              "cine-series",
+              "documentales",
+              "entretenimiento",
+              "religion",
+              "local",
+              "autonomica",
+              "internacional",
+              "otros"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "channelCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "playableCount": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "channelCount",
+          "playableCount"
+        ]
+      },
+      "CategoryListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "enum": [
+                    "generalista",
+                    "informativos",
+                    "deportes",
+                    "infantil",
+                    "musica",
+                    "cultura",
+                    "cine-series",
+                    "documentales",
+                    "entretenimiento",
+                    "religion",
+                    "local",
+                    "autonomica",
+                    "internacional",
+                    "otros"
+                  ]
+                },
+                "name": {
+                  "type": "string"
+                },
+                "channelCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "playableCount": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "channelCount",
+                "playableCount"
+              ]
+            }
+          },
+          "attribution": {
+            "type": "object",
+            "properties": {
+              "notices": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "includesThirdPartyData": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "notices",
+              "includesThirdPartyData"
+            ]
+          }
+        },
+        "required": [
+          "data",
+          "attribution"
+        ]
+      },
+      "RegionEntry": {
+        "type": "object",
+        "properties": {
+          "country": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "channelCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "playableCount": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "country",
+          "code",
+          "name",
+          "channelCount",
+          "playableCount"
+        ]
+      },
+      "RegionListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "country": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                },
+                "code": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "channelCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "playableCount": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "country",
+                "code",
+                "name",
+                "channelCount",
+                "playableCount"
+              ]
+            }
+          },
+          "attribution": {
+            "type": "object",
+            "properties": {
+              "notices": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "includesThirdPartyData": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "notices",
+              "includesThirdPartyData"
+            ]
+          }
+        },
+        "required": [
+          "data",
+          "attribution"
+        ]
+      },
+      "GuiatvChannel": {
+        "type": "object",
+        "properties": {
+          "tdtId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "slug": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "shortName": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$"
+          },
+          "regionCode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "generalista",
+              "informativos",
+              "deportes",
+              "infantil",
+              "musica",
+              "cultura",
+              "cine-series",
+              "documentales",
+              "entretenimiento",
+              "religion",
+              "local",
+              "autonomica",
+              "internacional",
+              "otros"
+            ]
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "linear",
+              "online",
+              "eventual",
+              "guide-only"
+            ]
+          },
+          "playbackStatus": {
+            "type": "string",
+            "enum": [
+              "available",
+              "degraded",
+              "external",
+              "eventual",
+              "unavailable"
+            ]
+          },
+          "aliases": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "namespace": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 60
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                }
+              },
+              "required": [
+                "namespace",
+                "value"
+              ]
+            }
+          },
+          "guiatvSlug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "tdtId",
+          "slug",
+          "name",
+          "shortName",
+          "country",
+          "regionCode",
+          "category",
+          "kind",
+          "playbackStatus",
+          "aliases",
+          "guiatvSlug"
+        ]
+      },
+      "GuiatvChannelListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "tdtId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "slug": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120,
+                  "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "shortName": {
+                  "type": "string"
+                },
+                "country": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                },
+                "regionCode": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "category": {
+                  "type": "string",
+                  "enum": [
+                    "generalista",
+                    "informativos",
+                    "deportes",
+                    "infantil",
+                    "musica",
+                    "cultura",
+                    "cine-series",
+                    "documentales",
+                    "entretenimiento",
+                    "religion",
+                    "local",
+                    "autonomica",
+                    "internacional",
+                    "otros"
+                  ]
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "linear",
+                    "online",
+                    "eventual",
+                    "guide-only"
+                  ]
+                },
+                "playbackStatus": {
+                  "type": "string",
+                  "enum": [
+                    "available",
+                    "degraded",
+                    "external",
+                    "eventual",
+                    "unavailable"
+                  ]
+                },
+                "aliases": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "namespace": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 60
+                      },
+                      "value": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "namespace",
+                      "value"
+                    ]
+                  }
+                },
+                "guiatvSlug": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "tdtId",
+                "slug",
+                "name",
+                "shortName",
+                "country",
+                "regionCode",
+                "category",
+                "kind",
+                "playbackStatus",
+                "aliases",
+                "guiatvSlug"
+              ]
+            }
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "data",
+          "total"
+        ]
+      },
+      "IdentityMapping": {
+        "type": "object",
+        "properties": {
+          "tdtId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "slug": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "guiatvSlug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "match": {
+            "type": "string",
+            "enum": [
+              "seed",
+              "alias",
+              "manual",
+              "unmapped"
+            ]
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "tdtId",
+          "slug",
+          "guiatvSlug",
+          "match",
+          "updatedAt"
+        ]
+      },
+      "IdentityMapResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "tdtId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "slug": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120,
+                  "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                },
+                "guiatvSlug": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "match": {
+                  "type": "string",
+                  "enum": [
+                    "seed",
+                    "alias",
+                    "manual",
+                    "unmapped"
+                  ]
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "tdtId",
+                "slug",
+                "guiatvSlug",
+                "match",
+                "updatedAt"
+              ]
+            }
+          },
+          "pagination": {
+            "type": "object",
+            "properties": {
+              "page": {
+                "type": "integer"
+              },
+              "pageSize": {
+                "type": "integer"
+              },
+              "total": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "page",
+              "pageSize",
+              "total"
+            ]
+          }
+        },
+        "required": [
+          "data",
+          "pagination"
+        ]
+      },
+      "Provider": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "types": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "hls",
+                "dash",
+                "youtube",
+                "official-embed",
+                "external"
+              ]
+            }
+          },
+          "requirements": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "credentialFree": {
+            "type": "boolean"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "types",
+          "requirements",
+          "credentialFree",
+          "enabled",
+          "description"
+        ]
+      },
+      "AuditEntry": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "actor": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "user",
+                  "system",
+                  "anonymous"
+                ]
+              },
+              "id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "type",
+              "id"
+            ]
+          },
+          "action": {
+            "type": "string"
+          },
+          "entityType": {
+            "type": "string"
+          },
+          "entityId": {
+            "type": "string"
+          },
+          "before": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": {}
+          },
+          "after": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": {}
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "actor",
+          "action",
+          "entityType",
+          "entityId",
+          "before",
+          "after",
+          "reason",
+          "requestId",
+          "at"
+        ]
+      },
+      "VerifySourceResult": {
+        "type": "object",
+        "properties": {
+          "sourceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "unreachable",
+              "http-error",
+              "invalid-manifest",
+              "unknown",
+              "blocked"
+            ]
+          },
+          "httpStatus": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "checkedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "message": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "sourceId",
+          "status",
+          "httpStatus",
+          "checkedAt",
+          "message"
+        ]
+      },
+      "CreateChannelInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "shortName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          },
+          "country": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$"
+          },
+          "region": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "code",
+              "name"
+            ]
+          },
+          "locality": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "language": {
+            "type": "string",
+            "pattern": "^[a-z]{2,3}(?:-[A-Z]{2})?$"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "generalista",
+              "informativos",
+              "deportes",
+              "infantil",
+              "musica",
+              "cultura",
+              "cine-series",
+              "documentales",
+              "entretenimiento",
+              "religion",
+              "local",
+              "autonomica",
+              "internacional",
+              "otros"
+            ]
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "linear",
+              "online",
+              "eventual",
+              "guide-only"
+            ]
+          },
+          "websiteUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "timezone": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 64
+          },
+          "branding": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "logoSrc": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "uri"
+              },
+              "logoSrcPermission": {
+                "type": "string",
+                "enum": [
+                  "emitter",
+                  "open-data",
+                  "explicit-permission",
+                  "none"
+                ]
+              }
+            },
+            "required": [
+              "logoSrc",
+              "logoSrcPermission"
+            ]
+          },
+          "aliases": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "namespace": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 60
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                }
+              },
+              "required": [
+                "namespace",
+                "value"
+              ]
+            },
+            "maxItems": 50
+          },
+          "slug": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "editorialStatus": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "review",
+              "published",
+              "withdrawn"
+            ]
+          },
+          "provenance": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "source": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 300
+                },
+                "url": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uri"
+                },
+                "licence": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "attribution": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 600
+                },
+                "editorial": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "source",
+                "label",
+                "url",
+                "licence",
+                "attribution",
+                "editorial"
+              ]
+            },
+            "minItems": 1
+          },
+          "externalRef": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "name",
+          "country",
+          "category",
+          "provenance"
+        ]
+      },
+      "UpdateChannelInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "shortName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          },
+          "country": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$"
+          },
+          "region": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "code",
+              "name"
+            ]
+          },
+          "locality": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "language": {
+            "type": "string",
+            "pattern": "^[a-z]{2,3}(?:-[A-Z]{2})?$"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "generalista",
+              "informativos",
+              "deportes",
+              "infantil",
+              "musica",
+              "cultura",
+              "cine-series",
+              "documentales",
+              "entretenimiento",
+              "religion",
+              "local",
+              "autonomica",
+              "internacional",
+              "otros"
+            ]
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "linear",
+              "online",
+              "eventual",
+              "guide-only"
+            ]
+          },
+          "websiteUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "timezone": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 64
+          },
+          "branding": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "logoSrc": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "uri"
+              },
+              "logoSrcPermission": {
+                "type": "string",
+                "enum": [
+                  "emitter",
+                  "open-data",
+                  "explicit-permission",
+                  "none"
+                ]
+              }
+            },
+            "required": [
+              "logoSrc",
+              "logoSrcPermission"
+            ]
+          },
+          "aliases": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "namespace": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 60
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                }
+              },
+              "required": [
+                "namespace",
+                "value"
+              ]
+            },
+            "maxItems": 50
+          },
+          "slug": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "editorialStatus": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "review",
+              "published",
+              "withdrawn"
+            ]
+          },
+          "expectedUpdatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 400
+          }
+        }
+      },
+      "CreateSourceInput": {
+        "type": "object",
+        "properties": {
+          "channelId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "provider": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "hls",
+              "dash",
+              "youtube",
+              "official-embed",
+              "external"
+            ]
+          },
+          "url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "officialPageUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "permission": {
+            "type": "string",
+            "enum": [
+              "emitter-public-stream",
+              "emitter-embeddable",
+              "official-player-only",
+              "open-data-licence",
+              "explicit-permission",
+              "unlicensed"
+            ]
+          },
+          "authorisationEvidence": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 600
+          },
+          "conditions": {
+            "type": "object",
+            "properties": {
+              "embedAllowed": {
+                "type": "boolean"
+              },
+              "proxyAllowed": {
+                "type": "boolean"
+              },
+              "worldwide": {
+                "type": "boolean"
+              },
+              "restrictedRegions": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                },
+                "maxItems": 250
+              },
+              "browserCompatibility": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "desktop",
+                  "mobile"
+                ]
+              },
+              "requiresForgedHeader": {
+                "type": "boolean"
+              },
+              "emitterAppOnly": {
+                "type": "boolean"
+              },
+              "notes": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 600
+              }
+            },
+            "required": [
+              "embedAllowed",
+              "proxyAllowed",
+              "worldwide",
+              "restrictedRegions",
+              "browserCompatibility",
+              "requiresForgedHeader",
+              "emitterAppOnly",
+              "notes"
+            ]
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "editorialStatus": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "review",
+              "published",
+              "withdrawn"
+            ]
+          }
+        },
+        "required": [
+          "channelId",
+          "provider",
+          "type",
+          "url",
+          "permission",
+          "conditions"
+        ]
+      },
+      "UpdateSourceInput": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "officialPageUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "permission": {
+            "type": "string",
+            "enum": [
+              "emitter-public-stream",
+              "emitter-embeddable",
+              "official-player-only",
+              "open-data-licence",
+              "explicit-permission",
+              "unlicensed"
+            ]
+          },
+          "authorisationEvidence": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 600
+          },
+          "conditions": {
+            "type": "object",
+            "properties": {
+              "embedAllowed": {
+                "type": "boolean"
+              },
+              "proxyAllowed": {
+                "type": "boolean"
+              },
+              "worldwide": {
+                "type": "boolean"
+              },
+              "restrictedRegions": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                },
+                "maxItems": 250
+              },
+              "browserCompatibility": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "desktop",
+                  "mobile"
+                ]
+              },
+              "requiresForgedHeader": {
+                "type": "boolean"
+              },
+              "emitterAppOnly": {
+                "type": "boolean"
+              },
+              "notes": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 600
+              }
+            }
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "editorialStatus": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "review",
+              "published",
+              "withdrawn"
+            ]
+          },
+          "technicalStatus": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "unreachable",
+              "http-error",
+              "invalid-manifest",
+              "unknown",
+              "blocked"
+            ]
+          },
+          "expectedUpdatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 400
+          }
+        }
+      },
+      "ChannelListQuery": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+          },
+          "pageSize": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 24
+          },
+          "q": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "country": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$"
+          },
+          "region": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "generalista",
+              "informativos",
+              "deportes",
+              "infantil",
+              "musica",
+              "cultura",
+              "cine-series",
+              "documentales",
+              "entretenimiento",
+              "religion",
+              "local",
+              "autonomica",
+              "internacional",
+              "otros"
+            ]
+          },
+          "language": {
+            "type": "string",
+            "pattern": "^[a-z]{2,3}(?:-[A-Z]{2})?$"
+          },
+          "playable": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "true",
+                  "false",
+                  "1",
+                  "0"
+                ]
+              }
+            ]
+          },
+          "sort": {
+            "type": "string",
+            "enum": [
+              "name",
+              "name-desc",
+              "updated",
+              "relevance"
+            ],
+            "default": "name"
+          }
+        }
+      },
+      "AuditListQuery": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+          },
+          "pageSize": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 50
+          },
+          "entityType": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "entityId": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "action": {
+            "type": "string",
+            "maxLength": 80
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "adminSession": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token de sesión administrativa emitido por `/auth/login`. Nunca se distribuye en el bundle del cliente público."
+      }
+    },
+    "parameters": {
+      "IfNoneMatch": {
+        "name": "If-None-Match",
+        "in": "header",
+        "schema": {
+          "type": "string"
+        },
+        "description": "Devolver 304 si la representación no ha cambiado."
+      }
+    }
+  }
+}

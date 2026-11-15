@@ -1,14 +1,31 @@
+# git
+*.exe
+*.pdb
+*.ilk
+*.obj
+*.o
+*.so
+*.dylib
+.vs/
+.idea/
+
+# node
 node_modules/
 dist/
 coverage/
-*.log
+*.tsbuildinfo
 
-# Local runtime state for Docker volumes is kept outside the repository.
+# env: never commit a populated file
+.env
+.env.*
+!.env.example
+
+# local infrastructure volumes
 infra/.data/
 
-# Findings and audits produced by test runs are kept, but raw third-party
-# snapshots are not: they are supplied through an explicit import command.
-audits/tmp/
+# local tools downloads
+tools/.cache/
 
-.env
-.env.local
+# logs and temporary reports
+*.log
+audits/tmp/
