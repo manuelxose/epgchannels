@@ -1,0 +1,4134 @@
+{
+  "0": {
+    "name": "Demo1.TV",
+    "events": [
+      {
+        "hi": 1794549600,
+        "hf": 1794551400,
+        "t": "Tarde en directo · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794551400,
+        "hf": 1794555000,
+        "t": "Boletín informativo · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794555000,
+        "hf": 1794560400,
+        "t": "Documental: mar y tierra · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794560400,
+        "hf": 1794567600,
+        "t": "Cine de sobremesa · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794567600,
+        "hf": 1794569400,
+        "t": "Concurso abierto · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794569400,
+        "hf": 1794573000,
+        "t": "Magacín de tarde · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794573000,
+        "hf": 1794578400,
+        "t": "Debate ciudadano · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794578400,
+        "hf": 1794585600,
+        "t": "Reportaje musical · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794585600,
+        "hf": 1794587400,
+        "t": "Tarde en directo · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794587400,
+        "hf": 1794591000,
+        "t": "Boletín informativo · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794591000,
+        "hf": 1794596400,
+        "t": "Documental: mar y tierra · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794596400,
+        "hf": 1794603600,
+        "t": "Cine de sobremesa · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794603600,
+        "hf": 1794605400,
+        "t": "Concurso abierto · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794605400,
+        "hf": 1794609000,
+        "t": "Magacín de tarde · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794609000,
+        "hf": 1794614400,
+        "t": "Debate ciudadano · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794614400,
+        "hf": 1794621600,
+        "t": "Reportaje musical · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794621600,
+        "hf": 1794623400,
+        "t": "Tarde en directo · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794623400,
+        "hf": 1794627000,
+        "t": "Boletín informativo · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794627000,
+        "hf": 1794632400,
+        "t": "Documental: mar y tierra · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794632400,
+        "hf": 1794639600,
+        "t": "Cine de sobremesa · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794639600,
+        "hf": 1794641400,
+        "t": "Concurso abierto · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794641400,
+        "hf": 1794645000,
+        "t": "Magacín de tarde · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794645000,
+        "hf": 1794650400,
+        "t": "Debate ciudadano · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794650400,
+        "hf": 1794657600,
+        "t": "Reportaje musical · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794657600,
+        "hf": 1794659400,
+        "t": "Tarde en directo · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794659400,
+        "hf": 1794663000,
+        "t": "Boletín informativo · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794663000,
+        "hf": 1794668400,
+        "t": "Documental: mar y tierra · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794668400,
+        "hf": 1794675600,
+        "t": "Cine de sobremesa · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794675600,
+        "hf": 1794677400,
+        "t": "Concurso abierto · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794677400,
+        "hf": 1794681000,
+        "t": "Magacín de tarde · Demo Directo HD",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      }
+    ]
+  },
+  "1": {
+    "name": "Demo2.TV",
+    "events": [
+      {
+        "hi": 1794549600,
+        "hf": 1794551400,
+        "t": "Boletín informativo · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794551400,
+        "hf": 1794555000,
+        "t": "Documental: mar y tierra · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794555000,
+        "hf": 1794560400,
+        "t": "Cine de sobremesa · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794560400,
+        "hf": 1794567600,
+        "t": "Concurso abierto · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794567600,
+        "hf": 1794569400,
+        "t": "Magacín de tarde · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794569400,
+        "hf": 1794573000,
+        "t": "Debate ciudadano · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794573000,
+        "hf": 1794578400,
+        "t": "Reportaje musical · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794578400,
+        "hf": 1794585600,
+        "t": "Tarde en directo · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794585600,
+        "hf": 1794587400,
+        "t": "Boletín informativo · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794587400,
+        "hf": 1794591000,
+        "t": "Documental: mar y tierra · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794591000,
+        "hf": 1794596400,
+        "t": "Cine de sobremesa · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794596400,
+        "hf": 1794603600,
+        "t": "Concurso abierto · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794603600,
+        "hf": 1794605400,
+        "t": "Magacín de tarde · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794605400,
+        "hf": 1794609000,
+        "t": "Debate ciudadano · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794609000,
+        "hf": 1794614400,
+        "t": "Reportaje musical · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794614400,
+        "hf": 1794621600,
+        "t": "Tarde en directo · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794621600,
+        "hf": 1794623400,
+        "t": "Boletín informativo · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794623400,
+        "hf": 1794627000,
+        "t": "Documental: mar y tierra · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794627000,
+        "hf": 1794632400,
+        "t": "Cine de sobremesa · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794632400,
+        "hf": 1794639600,
+        "t": "Concurso abierto · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794639600,
+        "hf": 1794641400,
+        "t": "Magacín de tarde · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794641400,
+        "hf": 1794645000,
+        "t": "Debate ciudadano · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794645000,
+        "hf": 1794650400,
+        "t": "Reportaje musical · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794650400,
+        "hf": 1794657600,
+        "t": "Tarde en directo · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794657600,
+        "hf": 1794659400,
+        "t": "Boletín informativo · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794659400,
+        "hf": 1794663000,
+        "t": "Documental: mar y tierra · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794663000,
+        "hf": 1794668400,
+        "t": "Cine de sobremesa · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794668400,
+        "hf": 1794675600,
+        "t": "Concurso abierto · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794675600,
+        "hf": 1794677400,
+        "t": "Magacín de tarde · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794677400,
+        "hf": 1794681000,
+        "t": "Debate ciudadano · Demo Alternativa",
+        "d": "Programa de demostración para Demo Alternativa. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      }
+    ]
+  },
+  "2": {
+    "name": "Demo3.TV",
+    "events": [
+      {
+        "hi": 1794549600,
+        "hf": 1794551400,
+        "t": "Documental: mar y tierra · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794551400,
+        "hf": 1794555000,
+        "t": "Cine de sobremesa · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794555000,
+        "hf": 1794560400,
+        "t": "Concurso abierto · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794560400,
+        "hf": 1794567600,
+        "t": "Magacín de tarde · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794567600,
+        "hf": 1794569400,
+        "t": "Debate ciudadano · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794569400,
+        "hf": 1794573000,
+        "t": "Reportaje musical · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794573000,
+        "hf": 1794578400,
+        "t": "Tarde en directo · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794578400,
+        "hf": 1794585600,
+        "t": "Boletín informativo · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794585600,
+        "hf": 1794587400,
+        "t": "Documental: mar y tierra · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794587400,
+        "hf": 1794591000,
+        "t": "Cine de sobremesa · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794591000,
+        "hf": 1794596400,
+        "t": "Concurso abierto · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794596400,
+        "hf": 1794603600,
+        "t": "Magacín de tarde · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794603600,
+        "hf": 1794605400,
+        "t": "Debate ciudadano · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794605400,
+        "hf": 1794609000,
+        "t": "Reportaje musical · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794609000,
+        "hf": 1794614400,
+        "t": "Tarde en directo · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794614400,
+        "hf": 1794621600,
+        "t": "Boletín informativo · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794621600,
+        "hf": 1794623400,
+        "t": "Documental: mar y tierra · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794623400,
+        "hf": 1794627000,
+        "t": "Cine de sobremesa · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794627000,
+        "hf": 1794632400,
+        "t": "Concurso abierto · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794632400,
+        "hf": 1794639600,
+        "t": "Magacín de tarde · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794639600,
+        "hf": 1794641400,
+        "t": "Debate ciudadano · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794641400,
+        "hf": 1794645000,
+        "t": "Reportaje musical · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794645000,
+        "hf": 1794650400,
+        "t": "Tarde en directo · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794650400,
+        "hf": 1794657600,
+        "t": "Boletín informativo · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794657600,
+        "hf": 1794659400,
+        "t": "Documental: mar y tierra · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794659400,
+        "hf": 1794663000,
+        "t": "Cine de sobremesa · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794663000,
+        "hf": 1794668400,
+        "t": "Concurso abierto · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794668400,
+        "hf": 1794675600,
+        "t": "Magacín de tarde · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794675600,
+        "hf": 1794677400,
+        "t": "Debate ciudadano · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794677400,
+        "hf": 1794681000,
+        "t": "Reportaje musical · Demo Caída",
+        "d": "Programa de demostración para Demo Caída. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      }
+    ]
+  },
+  "3": {
+    "name": "Demo4.TV",
+    "events": [
+      {
+        "hi": 1794549600,
+        "hf": 1794551400,
+        "t": "Cine de sobremesa · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794551400,
+        "hf": 1794555000,
+        "t": "Concurso abierto · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794555000,
+        "hf": 1794560400,
+        "t": "Magacín de tarde · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794560400,
+        "hf": 1794567600,
+        "t": "Debate ciudadano · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794567600,
+        "hf": 1794569400,
+        "t": "Reportaje musical · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794569400,
+        "hf": 1794573000,
+        "t": "Tarde en directo · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794573000,
+        "hf": 1794578400,
+        "t": "Boletín informativo · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794578400,
+        "hf": 1794585600,
+        "t": "Documental: mar y tierra · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794585600,
+        "hf": 1794587400,
+        "t": "Cine de sobremesa · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794587400,
+        "hf": 1794591000,
+        "t": "Concurso abierto · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794591000,
+        "hf": 1794596400,
+        "t": "Magacín de tarde · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794596400,
+        "hf": 1794603600,
+        "t": "Debate ciudadano · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794603600,
+        "hf": 1794605400,
+        "t": "Reportaje musical · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794605400,
+        "hf": 1794609000,
+        "t": "Tarde en directo · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794609000,
+        "hf": 1794614400,
+        "t": "Boletín informativo · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794614400,
+        "hf": 1794621600,
+        "t": "Documental: mar y tierra · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794621600,
+        "hf": 1794623400,
+        "t": "Cine de sobremesa · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794623400,
+        "hf": 1794627000,
+        "t": "Concurso abierto · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794627000,
+        "hf": 1794632400,
+        "t": "Magacín de tarde · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794632400,
+        "hf": 1794639600,
+        "t": "Debate ciudadano · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794639600,
+        "hf": 1794641400,
+        "t": "Reportaje musical · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794641400,
+        "hf": 1794645000,
+        "t": "Tarde en directo · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794645000,
+        "hf": 1794650400,
+        "t": "Boletín informativo · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794650400,
+        "hf": 1794657600,
+        "t": "Documental: mar y tierra · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794657600,
+        "hf": 1794659400,
+        "t": "Cine de sobremesa · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794659400,
+        "hf": 1794663000,
+        "t": "Concurso abierto · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794663000,
+        "hf": 1794668400,
+        "t": "Magacín de tarde · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794668400,
+        "hf": 1794675600,
+        "t": "Debate ciudadano · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794675600,
+        "hf": 1794677400,
+        "t": "Reportaje musical · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794677400,
+        "hf": 1794681000,
+        "t": "Tarde en directo · Demo Externo",
+        "d": "Programa de demostración para Demo Externo. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      }
+    ]
+  },
+  "4": {
+    "name": "Demo5.TV",
+    "events": [
+      {
+        "hi": 1794549600,
+        "hf": 1794551400,
+        "t": "Concurso abierto · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794551400,
+        "hf": 1794555000,
+        "t": "Magacín de tarde · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794555000,
+        "hf": 1794560400,
+        "t": "Debate ciudadano · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794560400,
+        "hf": 1794567600,
+        "t": "Reportaje musical · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794567600,
+        "hf": 1794569400,
+        "t": "Tarde en directo · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794569400,
+        "hf": 1794573000,
+        "t": "Boletín informativo · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794573000,
+        "hf": 1794578400,
+        "t": "Documental: mar y tierra · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794578400,
+        "hf": 1794585600,
+        "t": "Cine de sobremesa · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794585600,
+        "hf": 1794587400,
+        "t": "Concurso abierto · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794587400,
+        "hf": 1794591000,
+        "t": "Magacín de tarde · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794591000,
+        "hf": 1794596400,
+        "t": "Debate ciudadano · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794596400,
+        "hf": 1794603600,
+        "t": "Reportaje musical · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794603600,
+        "hf": 1794605400,
+        "t": "Tarde en directo · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794605400,
+        "hf": 1794609000,
+        "t": "Boletín informativo · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794609000,
+        "hf": 1794614400,
+        "t": "Documental: mar y tierra · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794614400,
+        "hf": 1794621600,
+        "t": "Cine de sobremesa · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794621600,
+        "hf": 1794623400,
+        "t": "Concurso abierto · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794623400,
+        "hf": 1794627000,
+        "t": "Magacín de tarde · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794627000,
+        "hf": 1794632400,
+        "t": "Debate ciudadano · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794632400,
+        "hf": 1794639600,
+        "t": "Reportaje musical · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794639600,
+        "hf": 1794641400,
+        "t": "Tarde en directo · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794641400,
+        "hf": 1794645000,
+        "t": "Boletín informativo · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794645000,
+        "hf": 1794650400,
+        "t": "Documental: mar y tierra · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794650400,
+        "hf": 1794657600,
+        "t": "Cine de sobremesa · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794657600,
+        "hf": 1794659400,
+        "t": "Concurso abierto · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794659400,
+        "hf": 1794663000,
+        "t": "Magacín de tarde · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794663000,
+        "hf": 1794668400,
+        "t": "Debate ciudadano · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794668400,
+        "hf": 1794675600,
+        "t": "Reportaje musical · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794675600,
+        "hf": 1794677400,
+        "t": "Tarde en directo · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794677400,
+        "hf": 1794681000,
+        "t": "Boletín informativo · Demo Sin Emisión",
+        "d": "Programa de demostración para Demo Sin Emisión. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      }
+    ]
+  },
+  "5": {
+    "name": "Demo6.TV",
+    "events": [
+      {
+        "hi": 1794549600,
+        "hf": 1794551400,
+        "t": "Magacín de tarde · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794551400,
+        "hf": 1794555000,
+        "t": "Debate ciudadano · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794555000,
+        "hf": 1794560400,
+        "t": "Reportaje musical · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794560400,
+        "hf": 1794567600,
+        "t": "Tarde en directo · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794567600,
+        "hf": 1794569400,
+        "t": "Boletín informativo · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794569400,
+        "hf": 1794573000,
+        "t": "Documental: mar y tierra · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794573000,
+        "hf": 1794578400,
+        "t": "Cine de sobremesa · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794578400,
+        "hf": 1794585600,
+        "t": "Concurso abierto · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794585600,
+        "hf": 1794587400,
+        "t": "Magacín de tarde · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794587400,
+        "hf": 1794591000,
+        "t": "Debate ciudadano · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794591000,
+        "hf": 1794596400,
+        "t": "Reportaje musical · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794596400,
+        "hf": 1794603600,
+        "t": "Tarde en directo · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794603600,
+        "hf": 1794605400,
+        "t": "Boletín informativo · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794605400,
+        "hf": 1794609000,
+        "t": "Documental: mar y tierra · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794609000,
+        "hf": 1794614400,
+        "t": "Cine de sobremesa · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794614400,
+        "hf": 1794621600,
+        "t": "Concurso abierto · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794621600,
+        "hf": 1794623400,
+        "t": "Magacín de tarde · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794623400,
+        "hf": 1794627000,
+        "t": "Debate ciudadano · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794627000,
+        "hf": 1794632400,
+        "t": "Reportaje musical · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794632400,
+        "hf": 1794639600,
+        "t": "Tarde en directo · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794639600,
+        "hf": 1794641400,
+        "t": "Boletín informativo · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794641400,
+        "hf": 1794645000,
+        "t": "Documental: mar y tierra · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794645000,
+        "hf": 1794650400,
+        "t": "Cine de sobremesa · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794650400,
+        "hf": 1794657600,
+        "t": "Concurso abierto · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794657600,
+        "hf": 1794659400,
+        "t": "Magacín de tarde · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794659400,
+        "hf": 1794663000,
+        "t": "Debate ciudadano · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794663000,
+        "hf": 1794668400,
+        "t": "Reportaje musical · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794668400,
+        "hf": 1794675600,
+        "t": "Tarde en directo · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794675600,
+        "hf": 1794677400,
+        "t": "Boletín informativo · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794677400,
+        "hf": 1794681000,
+        "t": "Documental: mar y tierra · Demo Vídeo Incompatible",
+        "d": "Programa de demostración para Demo Vídeo Incompatible. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      }
+    ]
+  },
+  "6": {
+    "name": "Demo24.TV",
+    "events": [
+      {
+        "hi": 1794549600,
+        "hf": 1794551400,
+        "t": "Debate ciudadano · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794551400,
+        "hf": 1794555000,
+        "t": "Reportaje musical · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794555000,
+        "hf": 1794560400,
+        "t": "Tarde en directo · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794560400,
+        "hf": 1794567600,
+        "t": "Boletín informativo · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794567600,
+        "hf": 1794569400,
+        "t": "Documental: mar y tierra · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794569400,
+        "hf": 1794573000,
+        "t": "Cine de sobremesa · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794573000,
+        "hf": 1794578400,
+        "t": "Concurso abierto · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794578400,
+        "hf": 1794585600,
+        "t": "Magacín de tarde · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794585600,
+        "hf": 1794587400,
+        "t": "Debate ciudadano · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794587400,
+        "hf": 1794591000,
+        "t": "Reportaje musical · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794591000,
+        "hf": 1794596400,
+        "t": "Tarde en directo · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794596400,
+        "hf": 1794603600,
+        "t": "Boletín informativo · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794603600,
+        "hf": 1794605400,
+        "t": "Documental: mar y tierra · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794605400,
+        "hf": 1794609000,
+        "t": "Cine de sobremesa · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794609000,
+        "hf": 1794614400,
+        "t": "Concurso abierto · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794614400,
+        "hf": 1794621600,
+        "t": "Magacín de tarde · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794621600,
+        "hf": 1794623400,
+        "t": "Debate ciudadano · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794623400,
+        "hf": 1794627000,
+        "t": "Reportaje musical · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794627000,
+        "hf": 1794632400,
+        "t": "Tarde en directo · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794632400,
+        "hf": 1794639600,
+        "t": "Boletín informativo · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794639600,
+        "hf": 1794641400,
+        "t": "Documental: mar y tierra · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794641400,
+        "hf": 1794645000,
+        "t": "Cine de sobremesa · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794645000,
+        "hf": 1794650400,
+        "t": "Concurso abierto · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794650400,
+        "hf": 1794657600,
+        "t": "Magacín de tarde · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794657600,
+        "hf": 1794659400,
+        "t": "Debate ciudadano · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794659400,
+        "hf": 1794663000,
+        "t": "Reportaje musical · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794663000,
+        "hf": 1794668400,
+        "t": "Tarde en directo · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794668400,
+        "hf": 1794675600,
+        "t": "Boletín informativo · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794675600,
+        "hf": 1794677400,
+        "t": "Documental: mar y tierra · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794677400,
+        "hf": 1794681000,
+        "t": "Cine de sobremesa · Demo 24 Horas",
+        "d": "Programa de demostración para Demo 24 Horas. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      }
+    ]
+  },
+  "7": {
+    "name": "DemoPrensa.TV",
+    "events": [
+      {
+        "hi": 1794549600,
+        "hf": 1794551400,
+        "t": "Reportaje musical · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794551400,
+        "hf": 1794555000,
+        "t": "Tarde en directo · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794555000,
+        "hf": 1794560400,
+        "t": "Boletín informativo · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794560400,
+        "hf": 1794567600,
+        "t": "Documental: mar y tierra · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794567600,
+        "hf": 1794569400,
+        "t": "Cine de sobremesa · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794569400,
+        "hf": 1794573000,
+        "t": "Concurso abierto · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794573000,
+        "hf": 1794578400,
+        "t": "Magacín de tarde · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794578400,
+        "hf": 1794585600,
+        "t": "Debate ciudadano · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794585600,
+        "hf": 1794587400,
+        "t": "Reportaje musical · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794587400,
+        "hf": 1794591000,
+        "t": "Tarde en directo · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794591000,
+        "hf": 1794596400,
+        "t": "Boletín informativo · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794596400,
+        "hf": 1794603600,
+        "t": "Documental: mar y tierra · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794603600,
+        "hf": 1794605400,
+        "t": "Cine de sobremesa · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794605400,
+        "hf": 1794609000,
+        "t": "Concurso abierto · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794609000,
+        "hf": 1794614400,
+        "t": "Magacín de tarde · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794614400,
+        "hf": 1794621600,
+        "t": "Debate ciudadano · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794621600,
+        "hf": 1794623400,
+        "t": "Reportaje musical · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794623400,
+        "hf": 1794627000,
+        "t": "Tarde en directo · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794627000,
+        "hf": 1794632400,
+        "t": "Boletín informativo · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794632400,
+        "hf": 1794639600,
+        "t": "Documental: mar y tierra · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794639600,
+        "hf": 1794641400,
+        "t": "Cine de sobremesa · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794641400,
+        "hf": 1794645000,
+        "t": "Concurso abierto · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794645000,
+        "hf": 1794650400,
+        "t": "Magacín de tarde · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794650400,
+        "hf": 1794657600,
+        "t": "Debate ciudadano · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794657600,
+        "hf": 1794659400,
+        "t": "Reportaje musical · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794659400,
+        "hf": 1794663000,
+        "t": "Tarde en directo · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794663000,
+        "hf": 1794668400,
+        "t": "Boletín informativo · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794668400,
+        "hf": 1794675600,
+        "t": "Documental: mar y tierra · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794675600,
+        "hf": 1794677400,
+        "t": "Cine de sobremesa · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794677400,
+        "hf": 1794681000,
+        "t": "Concurso abierto · Demo Prensa Local",
+        "d": "Programa de demostración para Demo Prensa Local. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      }
+    ]
+  },
+  "8": {
+    "name": "DemoDeportes.TV",
+    "events": [
+      {
+        "hi": 1794549600,
+        "hf": 1794551400,
+        "t": "Tarde en directo · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794551400,
+        "hf": 1794555000,
+        "t": "Boletín informativo · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794555000,
+        "hf": 1794560400,
+        "t": "Documental: mar y tierra · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794560400,
+        "hf": 1794567600,
+        "t": "Cine de sobremesa · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794567600,
+        "hf": 1794569400,
+        "t": "Concurso abierto · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794569400,
+        "hf": 1794573000,
+        "t": "Magacín de tarde · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794573000,
+        "hf": 1794578400,
+        "t": "Debate ciudadano · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794578400,
+        "hf": 1794585600,
+        "t": "Reportaje musical · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794585600,
+        "hf": 1794587400,
+        "t": "Tarde en directo · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794587400,
+        "hf": 1794591000,
+        "t": "Boletín informativo · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794591000,
+        "hf": 1794596400,
+        "t": "Documental: mar y tierra · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794596400,
+        "hf": 1794603600,
+        "t": "Cine de sobremesa · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794603600,
+        "hf": 1794605400,
+        "t": "Concurso abierto · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794605400,
+        "hf": 1794609000,
+        "t": "Magacín de tarde · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794609000,
+        "hf": 1794614400,
+        "t": "Debate ciudadano · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794614400,
+        "hf": 1794621600,
+        "t": "Reportaje musical · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794621600,
+        "hf": 1794623400,
+        "t": "Tarde en directo · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794623400,
+        "hf": 1794627000,
+        "t": "Boletín informativo · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794627000,
+        "hf": 1794632400,
+        "t": "Documental: mar y tierra · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794632400,
+        "hf": 1794639600,
+        "t": "Cine de sobremesa · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794639600,
+        "hf": 1794641400,
+        "t": "Concurso abierto · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794641400,
+        "hf": 1794645000,
+        "t": "Magacín de tarde · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794645000,
+        "hf": 1794650400,
+        "t": "Debate ciudadano · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794650400,
+        "hf": 1794657600,
+        "t": "Reportaje musical · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794657600,
+        "hf": 1794659400,
+        "t": "Tarde en directo · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794659400,
+        "hf": 1794663000,
+        "t": "Boletín informativo · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794663000,
+        "hf": 1794668400,
+        "t": "Documental: mar y tierra · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794668400,
+        "hf": 1794675600,
+        "t": "Cine de sobremesa · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794675600,
+        "hf": 1794677400,
+        "t": "Concurso abierto · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794677400,
+        "hf": 1794681000,
+        "t": "Magacín de tarde · Demo Deportes",
+        "d": "Programa de demostración para Demo Deportes. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      }
+    ]
+  },
+  "9": {
+    "name": "DemoMotor.TV",
+    "events": [
+      {
+        "hi": 1794549600,
+        "hf": 1794551400,
+        "t": "Boletín informativo · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794551400,
+        "hf": 1794555000,
+        "t": "Documental: mar y tierra · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794555000,
+        "hf": 1794560400,
+        "t": "Cine de sobremesa · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794560400,
+        "hf": 1794567600,
+        "t": "Concurso abierto · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794567600,
+        "hf": 1794569400,
+        "t": "Magacín de tarde · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794569400,
+        "hf": 1794573000,
+        "t": "Debate ciudadano · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794573000,
+        "hf": 1794578400,
+        "t": "Reportaje musical · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794578400,
+        "hf": 1794585600,
+        "t": "Tarde en directo · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794585600,
+        "hf": 1794587400,
+        "t": "Boletín informativo · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794587400,
+        "hf": 1794591000,
+        "t": "Documental: mar y tierra · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794591000,
+        "hf": 1794596400,
+        "t": "Cine de sobremesa · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794596400,
+        "hf": 1794603600,
+        "t": "Concurso abierto · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794603600,
+        "hf": 1794605400,
+        "t": "Magacín de tarde · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794605400,
+        "hf": 1794609000,
+        "t": "Debate ciudadano · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794609000,
+        "hf": 1794614400,
+        "t": "Reportaje musical · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794614400,
+        "hf": 1794621600,
+        "t": "Tarde en directo · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794621600,
+        "hf": 1794623400,
+        "t": "Boletín informativo · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794623400,
+        "hf": 1794627000,
+        "t": "Documental: mar y tierra · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794627000,
+        "hf": 1794632400,
+        "t": "Cine de sobremesa · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794632400,
+        "hf": 1794639600,
+        "t": "Concurso abierto · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794639600,
+        "hf": 1794641400,
+        "t": "Magacín de tarde · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794641400,
+        "hf": 1794645000,
+        "t": "Debate ciudadano · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794645000,
+        "hf": 1794650400,
+        "t": "Reportaje musical · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794650400,
+        "hf": 1794657600,
+        "t": "Tarde en directo · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794657600,
+        "hf": 1794659400,
+        "t": "Boletín informativo · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794659400,
+        "hf": 1794663000,
+        "t": "Documental: mar y tierra · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794663000,
+        "hf": 1794668400,
+        "t": "Cine de sobremesa · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794668400,
+        "hf": 1794675600,
+        "t": "Concurso abierto · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794675600,
+        "hf": 1794677400,
+        "t": "Magacín de tarde · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794677400,
+        "hf": 1794681000,
+        "t": "Debate ciudadano · Demo Motor",
+        "d": "Programa de demostración para Demo Motor. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      }
+    ]
+  },
+  "10": {
+    "name": "DemoInfantil.TV",
+    "events": [
+      {
+        "hi": 1794549600,
+        "hf": 1794551400,
+        "t": "Documental: mar y tierra · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794551400,
+        "hf": 1794555000,
+        "t": "Cine de sobremesa · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794555000,
+        "hf": 1794560400,
+        "t": "Concurso abierto · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794560400,
+        "hf": 1794567600,
+        "t": "Magacín de tarde · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794567600,
+        "hf": 1794569400,
+        "t": "Debate ciudadano · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794569400,
+        "hf": 1794573000,
+        "t": "Reportaje musical · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794573000,
+        "hf": 1794578400,
+        "t": "Tarde en directo · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794578400,
+        "hf": 1794585600,
+        "t": "Boletín informativo · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794585600,
+        "hf": 1794587400,
+        "t": "Documental: mar y tierra · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794587400,
+        "hf": 1794591000,
+        "t": "Cine de sobremesa · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794591000,
+        "hf": 1794596400,
+        "t": "Concurso abierto · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794596400,
+        "hf": 1794603600,
+        "t": "Magacín de tarde · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794603600,
+        "hf": 1794605400,
+        "t": "Debate ciudadano · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794605400,
+        "hf": 1794609000,
+        "t": "Reportaje musical · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794609000,
+        "hf": 1794614400,
+        "t": "Tarde en directo · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794614400,
+        "hf": 1794621600,
+        "t": "Boletín informativo · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794621600,
+        "hf": 1794623400,
+        "t": "Documental: mar y tierra · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794623400,
+        "hf": 1794627000,
+        "t": "Cine de sobremesa · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794627000,
+        "hf": 1794632400,
+        "t": "Concurso abierto · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794632400,
+        "hf": 1794639600,
+        "t": "Magacín de tarde · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794639600,
+        "hf": 1794641400,
+        "t": "Debate ciudadano · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794641400,
+        "hf": 1794645000,
+        "t": "Reportaje musical · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794645000,
+        "hf": 1794650400,
+        "t": "Tarde en directo · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794650400,
+        "hf": 1794657600,
+        "t": "Boletín informativo · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794657600,
+        "hf": 1794659400,
+        "t": "Documental: mar y tierra · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794659400,
+        "hf": 1794663000,
+        "t": "Cine de sobremesa · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794663000,
+        "hf": 1794668400,
+        "t": "Concurso abierto · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794668400,
+        "hf": 1794675600,
+        "t": "Magacín de tarde · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794675600,
+        "hf": 1794677400,
+        "t": "Debate ciudadano · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794677400,
+        "hf": 1794681000,
+        "t": "Reportaje musical · Demo Infantil",
+        "d": "Programa de demostración para Demo Infantil. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      }
+    ]
+  },
+  "11": {
+    "name": "DemoDibujos.TV",
+    "events": [
+      {
+        "hi": 1794549600,
+        "hf": 1794551400,
+        "t": "Cine de sobremesa · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794551400,
+        "hf": 1794555000,
+        "t": "Concurso abierto · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794555000,
+        "hf": 1794560400,
+        "t": "Magacín de tarde · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794560400,
+        "hf": 1794567600,
+        "t": "Debate ciudadano · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794567600,
+        "hf": 1794569400,
+        "t": "Reportaje musical · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794569400,
+        "hf": 1794573000,
+        "t": "Tarde en directo · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794573000,
+        "hf": 1794578400,
+        "t": "Boletín informativo · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794578400,
+        "hf": 1794585600,
+        "t": "Documental: mar y tierra · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794585600,
+        "hf": 1794587400,
+        "t": "Cine de sobremesa · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794587400,
+        "hf": 1794591000,
+        "t": "Concurso abierto · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794591000,
+        "hf": 1794596400,
+        "t": "Magacín de tarde · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794596400,
+        "hf": 1794603600,
+        "t": "Debate ciudadano · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794603600,
+        "hf": 1794605400,
+        "t": "Reportaje musical · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794605400,
+        "hf": 1794609000,
+        "t": "Tarde en directo · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794609000,
+        "hf": 1794614400,
+        "t": "Boletín informativo · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794614400,
+        "hf": 1794621600,
+        "t": "Documental: mar y tierra · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794621600,
+        "hf": 1794623400,
+        "t": "Cine de sobremesa · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794623400,
+        "hf": 1794627000,
+        "t": "Concurso abierto · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794627000,
+        "hf": 1794632400,
+        "t": "Magacín de tarde · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794632400,
+        "hf": 1794639600,
+        "t": "Debate ciudadano · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794639600,
+        "hf": 1794641400,
+        "t": "Reportaje musical · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794641400,
+        "hf": 1794645000,
+        "t": "Tarde en directo · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794645000,
+        "hf": 1794650400,
+        "t": "Boletín informativo · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794650400,
+        "hf": 1794657600,
+        "t": "Documental: mar y tierra · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794657600,
+        "hf": 1794659400,
+        "t": "Cine de sobremesa · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794659400,
+        "hf": 1794663000,
+        "t": "Concurso abierto · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794663000,
+        "hf": 1794668400,
+        "t": "Magacín de tarde · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794668400,
+        "hf": 1794675600,
+        "t": "Debate ciudadano · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794675600,
+        "hf": 1794677400,
+        "t": "Reportaje musical · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794677400,
+        "hf": 1794681000,
+        "t": "Tarde en directo · Demo Dibujos",
+        "d": "Programa de demostración para Demo Dibujos. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      }
+    ]
+  },
+  "12": {
+    "name": "DemoAN1.TV",
+    "events": [
+      {
+        "hi": 1794549600,
+        "hf": 1794551400,
+        "t": "Concurso abierto · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794551400,
+        "hf": 1794555000,
+        "t": "Magacín de tarde · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794555000,
+        "hf": 1794560400,
+        "t": "Debate ciudadano · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794560400,
+        "hf": 1794567600,
+        "t": "Reportaje musical · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794567600,
+        "hf": 1794569400,
+        "t": "Tarde en directo · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794569400,
+        "hf": 1794573000,
+        "t": "Boletín informativo · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794573000,
+        "hf": 1794578400,
+        "t": "Documental: mar y tierra · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794578400,
+        "hf": 1794585600,
+        "t": "Cine de sobremesa · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794585600,
+        "hf": 1794587400,
+        "t": "Concurso abierto · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794587400,
+        "hf": 1794591000,
+        "t": "Magacín de tarde · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794591000,
+        "hf": 1794596400,
+        "t": "Debate ciudadano · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794596400,
+        "hf": 1794603600,
+        "t": "Reportaje musical · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794603600,
+        "hf": 1794605400,
+        "t": "Tarde en directo · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794605400,
+        "hf": 1794609000,
+        "t": "Boletín informativo · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794609000,
+        "hf": 1794614400,
+        "t": "Documental: mar y tierra · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794614400,
+        "hf": 1794621600,
+        "t": "Cine de sobremesa · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794621600,
+        "hf": 1794623400,
+        "t": "Concurso abierto · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794623400,
+        "hf": 1794627000,
+        "t": "Magacín de tarde · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794627000,
+        "hf": 1794632400,
+        "t": "Debate ciudadano · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794632400,
+        "hf": 1794639600,
+        "t": "Reportaje musical · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794639600,
+        "hf": 1794641400,
+        "t": "Tarde en directo · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794641400,
+        "hf": 1794645000,
+        "t": "Boletín informativo · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794645000,
+        "hf": 1794650400,
+        "t": "Documental: mar y tierra · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794650400,
+        "hf": 1794657600,
+        "t": "Cine de sobremesa · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794657600,
+        "hf": 1794659400,
+        "t": "Concurso abierto · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794659400,
+        "hf": 1794663000,
+        "t": "Magacín de tarde · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794663000,
+        "hf": 1794668400,
+        "t": "Debate ciudadano · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794668400,
+        "hf": 1794675600,
+        "t": "Reportaje musical · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794675600,
+        "hf": 1794677400,
+        "t": "Tarde en directo · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794677400,
+        "hf": 1794681000,
+        "t": "Boletín informativo · Demo Andalucía 1",
+        "d": "Programa de demostración para Demo Andalucía 1. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      }
+    ]
+  },
+  "13": {
+    "name": "DemoCAT.TV",
+    "events": [
+      {
+        "hi": 1794549600,
+        "hf": 1794551400,
+        "t": "Magacín de tarde · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794551400,
+        "hf": 1794555000,
+        "t": "Debate ciudadano · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794555000,
+        "hf": 1794560400,
+        "t": "Reportaje musical · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794560400,
+        "hf": 1794567600,
+        "t": "Tarde en directo · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794567600,
+        "hf": 1794569400,
+        "t": "Boletín informativo · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794569400,
+        "hf": 1794573000,
+        "t": "Documental: mar y tierra · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794573000,
+        "hf": 1794578400,
+        "t": "Cine de sobremesa · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794578400,
+        "hf": 1794585600,
+        "t": "Concurso abierto · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794585600,
+        "hf": 1794587400,
+        "t": "Magacín de tarde · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794587400,
+        "hf": 1794591000,
+        "t": "Debate ciudadano · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794591000,
+        "hf": 1794596400,
+        "t": "Reportaje musical · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794596400,
+        "hf": 1794603600,
+        "t": "Tarde en directo · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794603600,
+        "hf": 1794605400,
+        "t": "Boletín informativo · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794605400,
+        "hf": 1794609000,
+        "t": "Documental: mar y tierra · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794609000,
+        "hf": 1794614400,
+        "t": "Cine de sobremesa · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794614400,
+        "hf": 1794621600,
+        "t": "Concurso abierto · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794621600,
+        "hf": 1794623400,
+        "t": "Magacín de tarde · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794623400,
+        "hf": 1794627000,
+        "t": "Debate ciudadano · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794627000,
+        "hf": 1794632400,
+        "t": "Reportaje musical · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794632400,
+        "hf": 1794639600,
+        "t": "Tarde en directo · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794639600,
+        "hf": 1794641400,
+        "t": "Boletín informativo · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794641400,
+        "hf": 1794645000,
+        "t": "Documental: mar y tierra · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794645000,
+        "hf": 1794650400,
+        "t": "Cine de sobremesa · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794650400,
+        "hf": 1794657600,
+        "t": "Concurso abierto · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794657600,
+        "hf": 1794659400,
+        "t": "Magacín de tarde · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794659400,
+        "hf": 1794663000,
+        "t": "Debate ciudadano · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794663000,
+        "hf": 1794668400,
+        "t": "Reportaje musical · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794668400,
+        "hf": 1794675600,
+        "t": "Tarde en directo · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794675600,
+        "hf": 1794677400,
+        "t": "Boletín informativo · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794677400,
+        "hf": 1794681000,
+        "t": "Documental: mar y tierra · Demo Catalunya",
+        "d": "Programa de demostración para Demo Catalunya. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      }
+    ]
+  },
+  "14": {
+    "name": "DemoGAL.TV",
+    "events": [
+      {
+        "hi": 1794549600,
+        "hf": 1794551400,
+        "t": "Debate ciudadano · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794551400,
+        "hf": 1794555000,
+        "t": "Reportaje musical · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794555000,
+        "hf": 1794560400,
+        "t": "Tarde en directo · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794560400,
+        "hf": 1794567600,
+        "t": "Boletín informativo · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794567600,
+        "hf": 1794569400,
+        "t": "Documental: mar y tierra · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794569400,
+        "hf": 1794573000,
+        "t": "Cine de sobremesa · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794573000,
+        "hf": 1794578400,
+        "t": "Concurso abierto · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794578400,
+        "hf": 1794585600,
+        "t": "Magacín de tarde · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794585600,
+        "hf": 1794587400,
+        "t": "Debate ciudadano · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794587400,
+        "hf": 1794591000,
+        "t": "Reportaje musical · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794591000,
+        "hf": 1794596400,
+        "t": "Tarde en directo · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794596400,
+        "hf": 1794603600,
+        "t": "Boletín informativo · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794603600,
+        "hf": 1794605400,
+        "t": "Documental: mar y tierra · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794605400,
+        "hf": 1794609000,
+        "t": "Cine de sobremesa · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794609000,
+        "hf": 1794614400,
+        "t": "Concurso abierto · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794614400,
+        "hf": 1794621600,
+        "t": "Magacín de tarde · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794621600,
+        "hf": 1794623400,
+        "t": "Debate ciudadano · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794623400,
+        "hf": 1794627000,
+        "t": "Reportaje musical · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794627000,
+        "hf": 1794632400,
+        "t": "Tarde en directo · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794632400,
+        "hf": 1794639600,
+        "t": "Boletín informativo · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794639600,
+        "hf": 1794641400,
+        "t": "Documental: mar y tierra · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794641400,
+        "hf": 1794645000,
+        "t": "Cine de sobremesa · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794645000,
+        "hf": 1794650400,
+        "t": "Concurso abierto · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794650400,
+        "hf": 1794657600,
+        "t": "Magacín de tarde · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794657600,
+        "hf": 1794659400,
+        "t": "Debate ciudadano · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794659400,
+        "hf": 1794663000,
+        "t": "Reportaje musical · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794663000,
+        "hf": 1794668400,
+        "t": "Tarde en directo · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794668400,
+        "hf": 1794675600,
+        "t": "Boletín informativo · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794675600,
+        "hf": 1794677400,
+        "t": "Documental: mar y tierra · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794677400,
+        "hf": 1794681000,
+        "t": "Cine de sobremesa · Demo Galicia TV",
+        "d": "Programa de demostración para Demo Galicia TV. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      }
+    ]
+  },
+  "15": {
+    "name": "DemoEUS.TV",
+    "events": [
+      {
+        "hi": 1794549600,
+        "hf": 1794551400,
+        "t": "Reportaje musical · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794551400,
+        "hf": 1794555000,
+        "t": "Tarde en directo · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794555000,
+        "hf": 1794560400,
+        "t": "Boletín informativo · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794560400,
+        "hf": 1794567600,
+        "t": "Documental: mar y tierra · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794567600,
+        "hf": 1794569400,
+        "t": "Cine de sobremesa · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794569400,
+        "hf": 1794573000,
+        "t": "Concurso abierto · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794573000,
+        "hf": 1794578400,
+        "t": "Magacín de tarde · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794578400,
+        "hf": 1794585600,
+        "t": "Debate ciudadano · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794585600,
+        "hf": 1794587400,
+        "t": "Reportaje musical · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794587400,
+        "hf": 1794591000,
+        "t": "Tarde en directo · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794591000,
+        "hf": 1794596400,
+        "t": "Boletín informativo · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794596400,
+        "hf": 1794603600,
+        "t": "Documental: mar y tierra · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794603600,
+        "hf": 1794605400,
+        "t": "Cine de sobremesa · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794605400,
+        "hf": 1794609000,
+        "t": "Concurso abierto · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794609000,
+        "hf": 1794614400,
+        "t": "Magacín de tarde · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794614400,
+        "hf": 1794621600,
+        "t": "Debate ciudadano · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794621600,
+        "hf": 1794623400,
+        "t": "Reportaje musical · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794623400,
+        "hf": 1794627000,
+        "t": "Tarde en directo · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794627000,
+        "hf": 1794632400,
+        "t": "Boletín informativo · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794632400,
+        "hf": 1794639600,
+        "t": "Documental: mar y tierra · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794639600,
+        "hf": 1794641400,
+        "t": "Cine de sobremesa · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794641400,
+        "hf": 1794645000,
+        "t": "Concurso abierto · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794645000,
+        "hf": 1794650400,
+        "t": "Magacín de tarde · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794650400,
+        "hf": 1794657600,
+        "t": "Debate ciudadano · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794657600,
+        "hf": 1794659400,
+        "t": "Reportaje musical · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794659400,
+        "hf": 1794663000,
+        "t": "Tarde en directo · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794663000,
+        "hf": 1794668400,
+        "t": "Boletín informativo · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794668400,
+        "hf": 1794675600,
+        "t": "Documental: mar y tierra · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794675600,
+        "hf": 1794677400,
+        "t": "Cine de sobremesa · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794677400,
+        "hf": 1794681000,
+        "t": "Concurso abierto · Demo Euskadi",
+        "d": "Programa de demostración para Demo Euskadi. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      }
+    ]
+  },
+  "16": {
+    "name": "DemoEUNews.TV",
+    "events": [
+      {
+        "hi": 1794549600,
+        "hf": 1794551400,
+        "t": "Tarde en directo · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794551400,
+        "hf": 1794555000,
+        "t": "Boletín informativo · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794555000,
+        "hf": 1794560400,
+        "t": "Documental: mar y tierra · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794560400,
+        "hf": 1794567600,
+        "t": "Cine de sobremesa · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794567600,
+        "hf": 1794569400,
+        "t": "Concurso abierto · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794569400,
+        "hf": 1794573000,
+        "t": "Magacín de tarde · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794573000,
+        "hf": 1794578400,
+        "t": "Debate ciudadano · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794578400,
+        "hf": 1794585600,
+        "t": "Reportaje musical · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794585600,
+        "hf": 1794587400,
+        "t": "Tarde en directo · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794587400,
+        "hf": 1794591000,
+        "t": "Boletín informativo · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794591000,
+        "hf": 1794596400,
+        "t": "Documental: mar y tierra · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794596400,
+        "hf": 1794603600,
+        "t": "Cine de sobremesa · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794603600,
+        "hf": 1794605400,
+        "t": "Concurso abierto · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794605400,
+        "hf": 1794609000,
+        "t": "Magacín de tarde · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794609000,
+        "hf": 1794614400,
+        "t": "Debate ciudadano · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794614400,
+        "hf": 1794621600,
+        "t": "Reportaje musical · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794621600,
+        "hf": 1794623400,
+        "t": "Tarde en directo · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794623400,
+        "hf": 1794627000,
+        "t": "Boletín informativo · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794627000,
+        "hf": 1794632400,
+        "t": "Documental: mar y tierra · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794632400,
+        "hf": 1794639600,
+        "t": "Cine de sobremesa · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794639600,
+        "hf": 1794641400,
+        "t": "Concurso abierto · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794641400,
+        "hf": 1794645000,
+        "t": "Magacín de tarde · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794645000,
+        "hf": 1794650400,
+        "t": "Debate ciudadano · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794650400,
+        "hf": 1794657600,
+        "t": "Reportaje musical · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794657600,
+        "hf": 1794659400,
+        "t": "Tarde en directo · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794659400,
+        "hf": 1794663000,
+        "t": "Boletín informativo · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794663000,
+        "hf": 1794668400,
+        "t": "Documental: mar y tierra · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794668400,
+        "hf": 1794675600,
+        "t": "Cine de sobremesa · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794675600,
+        "hf": 1794677400,
+        "t": "Concurso abierto · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794677400,
+        "hf": 1794681000,
+        "t": "Magacín de tarde · Demo Europe News",
+        "d": "Programa de demostración para Demo Europe News. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      }
+    ]
+  },
+  "17": {
+    "name": "DemoAMNews.TV",
+    "events": [
+      {
+        "hi": 1794549600,
+        "hf": 1794551400,
+        "t": "Boletín informativo · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794551400,
+        "hf": 1794555000,
+        "t": "Documental: mar y tierra · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794555000,
+        "hf": 1794560400,
+        "t": "Cine de sobremesa · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794560400,
+        "hf": 1794567600,
+        "t": "Concurso abierto · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794567600,
+        "hf": 1794569400,
+        "t": "Magacín de tarde · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794569400,
+        "hf": 1794573000,
+        "t": "Debate ciudadano · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794573000,
+        "hf": 1794578400,
+        "t": "Reportaje musical · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794578400,
+        "hf": 1794585600,
+        "t": "Tarde en directo · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794585600,
+        "hf": 1794587400,
+        "t": "Boletín informativo · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794587400,
+        "hf": 1794591000,
+        "t": "Documental: mar y tierra · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794591000,
+        "hf": 1794596400,
+        "t": "Cine de sobremesa · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794596400,
+        "hf": 1794603600,
+        "t": "Concurso abierto · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794603600,
+        "hf": 1794605400,
+        "t": "Magacín de tarde · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794605400,
+        "hf": 1794609000,
+        "t": "Debate ciudadano · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794609000,
+        "hf": 1794614400,
+        "t": "Reportaje musical · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794614400,
+        "hf": 1794621600,
+        "t": "Tarde en directo · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794621600,
+        "hf": 1794623400,
+        "t": "Boletín informativo · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794623400,
+        "hf": 1794627000,
+        "t": "Documental: mar y tierra · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794627000,
+        "hf": 1794632400,
+        "t": "Cine de sobremesa · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794632400,
+        "hf": 1794639600,
+        "t": "Concurso abierto · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794639600,
+        "hf": 1794641400,
+        "t": "Magacín de tarde · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794641400,
+        "hf": 1794645000,
+        "t": "Debate ciudadano · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794645000,
+        "hf": 1794650400,
+        "t": "Reportaje musical · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794650400,
+        "hf": 1794657600,
+        "t": "Tarde en directo · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794657600,
+        "hf": 1794659400,
+        "t": "Boletín informativo · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794659400,
+        "hf": 1794663000,
+        "t": "Documental: mar y tierra · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794663000,
+        "hf": 1794668400,
+        "t": "Cine de sobremesa · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794668400,
+        "hf": 1794675600,
+        "t": "Concurso abierto · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794675600,
+        "hf": 1794677400,
+        "t": "Magacín de tarde · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794677400,
+        "hf": 1794681000,
+        "t": "Debate ciudadano · Demo América Noticias",
+        "d": "Programa de demostración para Demo América Noticias. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      }
+    ]
+  },
+  "18": {
+    "name": "DemoMusic.TV",
+    "events": [
+      {
+        "hi": 1794549600,
+        "hf": 1794551400,
+        "t": "Documental: mar y tierra · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794551400,
+        "hf": 1794555000,
+        "t": "Cine de sobremesa · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794555000,
+        "hf": 1794560400,
+        "t": "Concurso abierto · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794560400,
+        "hf": 1794567600,
+        "t": "Magacín de tarde · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794567600,
+        "hf": 1794569400,
+        "t": "Debate ciudadano · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794569400,
+        "hf": 1794573000,
+        "t": "Reportaje musical · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794573000,
+        "hf": 1794578400,
+        "t": "Tarde en directo · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794578400,
+        "hf": 1794585600,
+        "t": "Boletín informativo · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794585600,
+        "hf": 1794587400,
+        "t": "Documental: mar y tierra · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794587400,
+        "hf": 1794591000,
+        "t": "Cine de sobremesa · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794591000,
+        "hf": 1794596400,
+        "t": "Concurso abierto · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794596400,
+        "hf": 1794603600,
+        "t": "Magacín de tarde · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794603600,
+        "hf": 1794605400,
+        "t": "Debate ciudadano · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794605400,
+        "hf": 1794609000,
+        "t": "Reportaje musical · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794609000,
+        "hf": 1794614400,
+        "t": "Tarde en directo · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794614400,
+        "hf": 1794621600,
+        "t": "Boletín informativo · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794621600,
+        "hf": 1794623400,
+        "t": "Documental: mar y tierra · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794623400,
+        "hf": 1794627000,
+        "t": "Cine de sobremesa · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794627000,
+        "hf": 1794632400,
+        "t": "Concurso abierto · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794632400,
+        "hf": 1794639600,
+        "t": "Magacín de tarde · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794639600,
+        "hf": 1794641400,
+        "t": "Debate ciudadano · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794641400,
+        "hf": 1794645000,
+        "t": "Reportaje musical · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794645000,
+        "hf": 1794650400,
+        "t": "Tarde en directo · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794650400,
+        "hf": 1794657600,
+        "t": "Boletín informativo · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      },
+      {
+        "hi": 1794657600,
+        "hf": 1794659400,
+        "t": "Documental: mar y tierra · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794659400,
+        "hf": 1794663000,
+        "t": "Cine de sobremesa · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794663000,
+        "hf": 1794668400,
+        "t": "Concurso abierto · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794668400,
+        "hf": 1794675600,
+        "t": "Magacín de tarde · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794675600,
+        "hf": 1794677400,
+        "t": "Debate ciudadano · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794677400,
+        "hf": 1794681000,
+        "t": "Reportaje musical · Demo Music Hits",
+        "d": "Programa de demostración para Demo Music Hits. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      }
+    ]
+  },
+  "19": {
+    "name": "DemoSenal.TV",
+    "events": [
+      {
+        "hi": 1794549600,
+        "hf": 1794551400,
+        "t": "Tarde en directo · Demo Señal Caída",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "NEWS"
+      },
+      {
+        "hi": 1794551400,
+        "hf": 1794555000,
+        "t": "Boletín informativo · Demo Señal Caída",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "CULTURE"
+      },
+      {
+        "hi": 1794555000,
+        "hf": 1794560400,
+        "t": "Documental: mar y tierra · Demo Señal Caída",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "FILM"
+      },
+      {
+        "hi": 1794560400,
+        "hf": 1794567600,
+        "t": "Cine de sobremesa · Demo Señal Caída",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "ENTERTAINMENT"
+      },
+      {
+        "hi": 1794567600,
+        "hf": 1794569400,
+        "t": "Concurso abierto · Demo Señal Caída",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "SPORTS"
+      },
+      {
+        "hi": 1794569400,
+        "hf": 1794573000,
+        "t": "Magacín de tarde · Demo Señal Caída",
+        "d": "Programa de demostración para Demo Directo HD. Contenido sintético generado para las pruebas del reproductor.",
+        "g": "MUSIC"
+      }
+    ]
+  }
+}

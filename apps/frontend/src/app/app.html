@@ -1,0 +1,66 @@
+<a class="skip-link" href="#main-content">Saltar al contenido</a>
+
+<header class="app-header">
+  <div class="app-header__inner">
+    <a class="brand" routerLink="/television" (click)="closeMenu()" aria-label="TDT Player, ir al catálogo">
+      <span class="brand__mark" aria-hidden="true">
+        <app-icon name="signal-off" [size]="18" />
+      </span>
+      <span class="brand__name">TDT<span class="brand__accent">Player</span></span>
+    </a>
+
+    <nav class="main-nav" aria-label="Secciones">
+      <a
+        routerLink="/television"
+        routerLinkActive="is-active"
+        ariaCurrentWhenActive="page"
+        (click)="closeMenu()"
+        >Televisión</a
+      >
+      <a routerLink="/schedule" routerLinkActive="is-active" ariaCurrentWhenActive="page" (click)="closeMenu()"
+        >Parrilla</a
+      >
+    </nav>
+
+    <p class="app-header__note">Guía y reproductor para señales que sus emisores publican en abierto.</p>
+
+    <div class="app-header__actions">
+      <button
+        type="button"
+        class="btn btn--ghost btn--icon"
+        [attr.aria-label]="themeLabel()"
+        [title]="themeLabel()"
+        (click)="toggleTheme()"
+      >
+        <app-icon [name]="themeIcon()" />
+      </button>
+      <button
+        type="button"
+        class="btn btn--ghost btn--icon menu-button"
+        [attr.aria-expanded]="mobileMenuOpen()"
+        aria-controls="mobile-menu"
+        aria-label="Abrir menú"
+        (click)="toggleMenu()"
+      >
+        <app-icon name="menu" />
+      </button>
+    </div>
+  </div>
+
+  <div class="mobile-menu" id="mobile-menu" [class.is-open]="mobileMenuOpen()" [attr.hidden]="!mobileMenuOpen()">
+    <a routerLink="/television" routerLinkActive="is-active" ariaCurrentWhenActive="page" (click)="closeMenu()"
+      >Televisión</a
+    >
+    <a routerLink="/schedule" routerLinkActive="is-active" ariaCurrentWhenActive="page" (click)="closeMenu()"
+      >Parrilla</a
+    >
+    <button type="button" class="mobile-menu__theme" (click)="toggleTheme(); closeMenu()">
+      <app-icon [name]="themeIcon()" [size]="18" />
+      {{ isDark() ? 'Modo claro' : 'Modo oscuro' }}
+    </button>
+  </div>
+</header>
+
+<main id="main-content" class="app-main">
+  <router-outlet />
+</main>

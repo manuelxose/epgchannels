@@ -1,0 +1,26 @@
+{
+  "generatedAt": "2026-11-13T12:46:38.049Z",
+  "license": "Self-generated with ffmpeg testsrc2 + sine; no third-party content.",
+  "variants": [
+    {
+      "name": "high",
+      "width": 1280,
+      "height": 720,
+      "bitrate": "1600k",
+      "label": "Alta",
+      "color": "#7c5cff"
+    },
+    {
+      "name": "low",
+      "width": 640,
+      "height": 360,
+      "bitrate": "500k",
+      "label": "Baja",
+      "color": "#fbbf24"
+    }
+  ],
+  "counts": {
+    "high": 7,
+    "low": 7
+  }
+}

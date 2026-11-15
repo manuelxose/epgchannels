@@ -1,0 +1,316 @@
+<section
+  #shell
+  class="shell"
+  [class.shell--fs]="false"
+  aria-label="Reproductor de vídeo"
+  (dblclick)="toggleFullscreen()"
+>
+  <video
+    #video
+    class="stage__video"
+    playsinline
+    preload="metadata"
+    crossorigin="anonymous"
+    [muted]="muted()"
+    [hidden]="isYoutube()"
+    [attr.aria-label]="'Emisión de ' + channel().name"
+  ></video>
+
+  <!--
+    The official YouTube player mounts its own frame inside this host. It is
+    deliberately left unstyled and unobstructed: YouTube's mandatory marks and
+    controls live inside that frame, and no overlay of ours may cover them.
+    Our controls are not rendered over it (`!isYoutube()`), so the browser's own
+    fullscreen control is unavailable rather than broken.
+  -->
+  <div
+    #ytHost
+    class="stage__youtube"
+    data-testid="yt-engine-shell"
+    [attr.data-yt-state]="status()"
+    [attr.data-yt-video]="youtubeTarget()?.videoId ?? null"
+    [hidden]="!isYoutube()"
+  ></div>
+
+  <!--
+    The official target this player addresses, and the way out to it. The watch
+    page's own link is not rendered for an embedded live (an addressable YouTube
+    page IS played here), so the player must keep the emitter's page reachable —
+    including when YouTube refuses to embed it.
+  -->
+  @if (youtubePageUrl(); as page) {
+    <p class="yt-meta" data-testid="yt-official-link">
+      <span>
+        Reproductor oficial de YouTube (dominio sin cookies).
+        @if (youtubeStateUnobservable()) {
+          El estado de emisión de este canal lo muestra YouTube dentro del reproductor.
+        }
+      </span>
+      <a [href]="page" target="_blank" rel="noopener noreferrer">Ver en YouTube</a>
+    </p>
+  }
+
+  <!-- Now-playing overlay (media engines only: never over YouTube's own chrome) -->
+  @if (nowNext().now && showOwnOverlays()) {
+    @let now = nowNext().now!;
+    <div class="now" [hidden]="showControls() === false">
+      <p class="now__eyebrow">
+        <span class="live-dot" aria-hidden="true"></span>
+        Estás viendo
+        @if (now.genre) {
+          <span class="now__genre">{{ now.genre }}</span>
+        }
+      </p>
+      <p class="now__time tabular">{{ formatRange(now.start, now.end) }}</p>
+      <p class="now__title">{{ now.title }}</p>
+      <div class="now__bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="progressPercent()" aria-label="Progreso del programa">
+        <span [style.width.%]="progressPercent()"></span>
+      </div>
+    </div>
+  }
+
+  <!-- Loading / buffering (media engines; YouTube shows its own loading chrome) -->
+  @if (playbackState() === 'loading' && showOwnOverlays()) {
+    <div class="overlay overlay--center" role="status" aria-live="polite">
+      <span class="spinner" aria-hidden="true"></span>
+      <p>{{ status() === 'buffering' ? 'Almacenando en búfer…' : 'Cargando emisión…' }}</p>
+      @if (snapshot().notice; as notice) {
+        <p class="overlay__meta">{{ notice }}</p>
+      }
+    </div>
+  }
+
+  <!--
+    Paused: a deliberate, large play affordance for OUR engines (also covers a
+    blocked autoplay). A YouTube source is started by the official player and by
+    the click that mounted it, so no overlay is placed over its frame.
+  -->
+  @if (status() === 'paused' && showOwnOverlays()) {
+    <button type="button" class="pulse" aria-label="Reproducir emisión" (click)="togglePlay()">
+      <span class="pulse__circle"><app-icon name="play" [size]="26" /></span>
+      <span class="pulse__label">{{ autoplayBlocked() ? 'Pulsa para empezar' : 'Reproducir' }}</span>
+    </button>
+  }
+
+  <!--
+    Terminal states get distinct messages because the user's next action differs:
+    retry in place, pick another source, or use the emitter's own player.
+  -->
+  @if (playbackState() !== 'loading' && playbackState() !== 'playing' && playbackState() !== 'paused') {
+    <div class="overlay overlay--panel" role="alert" data-testid="player-alert" [attr.data-playback-state]="playbackState()">
+      <app-icon name="alert" [size]="26" />
+      <h3 class="overlay__title">
+        @switch (playbackState()) {
+          @case ('recoverable-failure') {
+            No se ha podido reproducir la emisión
+          }
+          @case ('source-unavailable') {
+            Ninguna fuente de este canal está disponible
+          }
+          @case ('eventual-emission') {
+            Este canal no ofrece vídeo en línea
+          }
+          @case ('external-official') {
+            Esta emisión se ve en el reproductor oficial
+          }
+          @case ('unauthorised') {
+            Esta emisión no se puede reproducir aquí
+          }
+          @case ('unsupported') {
+            Tu navegador no puede reproducir esta emisión
+          }
+          @default {
+            Sin reproducir
+          }
+        }
+      </h3>
+      <p class="overlay__message">
+        @switch (playbackState()) {
+          @case ('source-unavailable') {
+            <!--
+              The engine's own explanation wins whenever there is an error: it is
+              the specific reason (a key we lack, a channel that is genuinely
+              offline, a stream that ended). Only a cascade with no error of its
+              own falls back to the last recorded failure.
+            -->
+            {{ snapshot().error?.message ?? latestFailureMessage() }}
+          }
+          @case ('eventual-emission') {
+            El emisor no publica ninguna señal continua por Internet; aquí puedes consultar su programación.
+          }
+          @case ('external-official') {
+            {{ snapshot().error?.message ?? latestFailureMessage() ?? 'La señal solo se sirve desde el reproductor del emisor, así que no la incrustamos. Abre su página para verla.' }}
+          }
+          @case ('unauthorised') {
+            {{ snapshot().error?.message ?? 'La emisión está restringida por el emisor (bloqueo regional, llaves o permisos).' }}
+          }
+          @case ('unsupported') {
+            {{ snapshot().error?.message ?? 'Este navegador no admite el formato de la emisión.' }}
+          }
+          @default {
+            {{ snapshot().error?.message ?? 'Comprueba la conexión e inténtalo de nuevo.' }}
+          }
+        }
+      </p>
+      @if (snapshot().notice; as notice) {
+        <p class="overlay__meta">{{ notice }}</p>
+      }
+      @if (snapshot().source; as source) {
+        <p class="overlay__meta">Fuente: {{ source.label }} · {{ source.format.toUpperCase() }}</p>
+      }
+      <div class="overlay__actions">
+        @if (playbackState() === 'recoverable-failure' || playbackState() === 'source-unavailable') {
+          <button type="button" class="btn btn--primary" (click)="retry()">Reintentar</button>
+        }
+        @if (snapshot().failedSources.length > 1) {
+          <button type="button" class="btn" (click)="restartFromFirstSource()">Empezar por la primera fuente</button>
+        }
+        @if (officialUrl(); as web) {
+          <a class="btn" [href]="web" target="_blank" rel="noopener noreferrer">
+            Ir al reproductor oficial
+            <app-icon name="external" [size]="15" />
+          </a>
+        }
+      </div>
+    </div>
+  }
+
+  <!--
+    Controls. For a YouTube source the official player renders its own mandatory
+    controls inside its frame, so ours are not shown: two sets of controls would
+    both compete for the same clicks and ours could not drive YouTube's quality
+    menu. Ours stay for the media engines, unchanged.
+  -->
+  @if (showControls() && !isYoutube()) {
+    <div class="controls" [class.controls--compact]="status() === 'paused'">
+      <button
+        type="button"
+        class="ctl ctl--play"
+        [attr.aria-label]="isPlaying() ? 'Pausar' : 'Reproducir'"
+        [title]="isPlaying() ? 'Pausar' : 'Reproducir'"
+        (click)="togglePlay()"
+      >
+        <app-icon [name]="isPlaying() ? 'pause' : 'play'" [size]="20" />
+      </button>
+
+      <div class="volume">
+        <button
+          type="button"
+          class="ctl"
+          [attr.aria-label]="muted() ? 'Activar sonido' : 'Silenciar'"
+          [title]="muted() ? 'Activar sonido' : 'Silenciar'"
+          [attr.aria-pressed]="muted()"
+          (click)="toggleMute()"
+        >
+          <app-icon [name]="muted() || volume() === 0 ? 'volume-muted' : 'volume'" [size]="19" />
+        </button>
+        <input
+          type="range"
+          class="volume__range"
+          min="0"
+          max="100"
+          step="1"
+          aria-label="Volumen"
+          [value]="Math.round((muted() ? 0 : volume()) * 100)"
+          (input)="onVolume($event)"
+        />
+      </div>
+
+      <button type="button" class="ctl ctl--live" (click)="goLive()" title="Ir al directo">
+        <span class="live-dot" aria-hidden="true"></span>
+        Directo
+      </button>
+
+      <span class="ctl-spacer"></span>
+
+      @if (snapshot().qualities.length > 1) {
+        <label class="quality">
+          <span class="visually-hidden">Calidad</span>
+          <select aria-label="Calidad" (change)="onQuality($event)">
+            <option value="-1">Auto</option>
+            @for (quality of snapshot().qualities; track quality.index) {
+              <option [value]="quality.index" [selected]="snapshot().currentQuality === quality.index">
+                {{ quality.label }}
+              </option>
+            }
+          </select>
+        </label>
+      }
+
+      @if (snapshot().audioTracks.length > 1) {
+        <label class="quality">
+          <span class="visually-hidden">Audio</span>
+          <select aria-label="Audio" (change)="onAudio($event)">
+            @for (track of snapshot().audioTracks; track track.id) {
+              <option [value]="track.id">{{ track.label }}</option>
+            }
+          </select>
+        </label>
+      }
+
+      @if (canPictureInPicture) {
+        <button type="button" class="ctl" aria-label="Picture in Picture" title="Picture in Picture" (click)="togglePictureInPicture()">
+          <app-icon name="pip" [size]="19" />
+        </button>
+      }
+
+      <!--
+        Enviar a un dispositivo: abre el selector que ofrece el NAVEGADOR (su red
+        real de dispositivos). Si el navegador no expone ninguno, el botón no
+        aparece, en lugar de mostrar una lista inventada.
+      -->
+      @if (canSendToDevice()) {
+        <button
+          type="button"
+          class="ctl"
+          aria-label="Enviar a un dispositivo"
+          title="Enviar a un dispositivo"
+          data-testid="cast-button"
+          (click)="sendToDevice()"
+        >
+          <app-icon name="cast" [size]="19" />
+        </button>
+      }
+
+      <button type="button" class="ctl" aria-label="Pantalla completa" title="Pantalla completa" (click)="toggleFullscreen()">
+        <app-icon name="fullscreen" [size]="19" />
+      </button>
+    </div>
+  }
+
+  <p class="visually-hidden" role="status" aria-live="polite">{{ statusLabel() }} · {{ currentProgramLabel() }}</p>
+  <span
+    class="state-probe"
+    data-testid="player-state"
+    [attr.data-engine]="snapshot().engine"
+    [attr.data-playback-state]="playbackState()"
+    hidden
+    >{{ status() }}</span
+  >
+</section>
+
+<!--
+  Below the stage on purpose. The stage is a fixed 16:9 box with `overflow: hidden`
+  whose <video> fills it, so anything drawn inside sits behind the video (or is
+  clipped away) and cannot be clicked. Here it is real page content: clickable,
+  focusable and readable, and it never covers the picture.
+-->
+@if (sendToDeviceNotice(); as notice) {
+  <p class="yt-meta" role="status" data-testid="cast-notice">{{ notice }}</p>
+}
+
+@if (sessionLink()) {
+  <p class="yt-meta" data-testid="share-row">
+    <span>Ver este canal en otra pantalla de tu red:</span>
+    <button
+      type="button"
+      class="ctl"
+      aria-label="Enviar este canal a otra pantalla"
+      title="Enviar este canal a otra pantalla"
+      data-testid="share-button"
+      (click)="sendToAnotherScreen()"
+    >
+      <app-icon name="external" [size]="18" />
+    </button>
+  </p>
+}

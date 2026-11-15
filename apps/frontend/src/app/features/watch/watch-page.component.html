@@ -1,0 +1,248 @@
+@if (channel(); as current) {
+  <div class="watch">
+    <app-channel-header
+      [channel]="current"
+      [sources]="sources()"
+      [selectedSourceIndex]="sourceIndex()"
+      [stateKind]="verified()?.kind ?? 'unavailable'"
+      (favoriteToggle)="onFavourite($event)"
+      (sourceChange)="onSourceChange($event)"
+    />
+
+    @if (verified(); as state) {
+      <p class="verified" [attr.data-verified-state]="state.kind" data-testid="verified-state">
+        <span class="verified__chip">{{ state.label }}</span>
+        <span class="verified__reason">{{ state.reason }}</span>
+      </p>
+    }
+
+    @switch (verified()?.kind) {
+      @case ('live') {
+        <app-player [channel]="current" [source]="selectedSource()" [nowNext]="nowNext()" [locale]="locale" />
+      }
+      @case ('official-embed') {
+        @if (playsYoutubeInApp() && embedSource(); as youtube) {
+          <!--
+            Played INSIDE our player by the official YouTube engine: our own
+            shell, navigation, guide and URL stay; only the video surface is
+            YouTube's official player. Nothing is opened in a separate tab.
+          -->
+          <app-player
+            [channel]="current"
+            [source]="youtube"
+            [nowNext]="nowNext()"
+            [locale]="locale"
+          />
+          <div class="actions">
+            <a class="btn" [href]="youtube.url" target="_blank" rel="noopener noreferrer">
+              Abrir en YouTube
+              <app-icon name="external" [size]="15" />
+            </a>
+          </div>
+        } @else if (showEmbed() && embedSource(); as youtube) {
+          <section class="notice notice--muted" aria-labelledby="official-title" data-testid="state-official-embed">
+            <p class="notice__eyebrow">Emisión en YouTube</p>
+            <h2 id="official-title" class="notice__title">{{ current.name }} se emite en YouTube</h2>
+            <p class="notice__text">
+              @if (embedBlockedReason(); as reason) {
+                {{ reason }} Abre su página de YouTube para verla.
+              } @else {
+                El emisor publica esta señal en YouTube. Abre su página oficial para verla.
+              }
+            </p>
+            <a class="btn btn--primary" [href]="youtube.url" target="_blank" rel="noopener noreferrer">
+              Abrir en YouTube
+              <app-icon name="external" [size]="15" />
+            </a>
+          </section>
+        } @else {
+          <section class="notice" aria-labelledby="official-title" data-testid="state-official-embed">
+            <p class="notice__eyebrow">Emisión en YouTube</p>
+            <h2 id="official-title" class="notice__title">{{ current.name }} se ve en el reproductor de YouTube</h2>
+            <p class="notice__text">
+              @if (embedBlockedReason(); as reason) {
+                {{ reason }} Abre su página de YouTube para verla.
+              } @else {
+                El emisor publica esta señal en YouTube. Abre su página oficial para verla.
+              }
+            </p>
+            @if (officialLink() ?? verified()?.action?.url; as link) {
+              <a class="btn btn--primary" [href]="link" target="_blank" rel="noopener noreferrer">
+                Abrir en YouTube
+                <app-icon name="external" [size]="15" />
+              </a>
+            }
+          </section>
+        }
+      }
+      @case ('official-site') {
+        <section class="notice" aria-labelledby="external-title" data-testid="state-official-site">
+          <p class="notice__eyebrow">Señal alojada fuera</p>
+          <h2 id="external-title" class="notice__title">{{ current.name }} no emite su vídeo aquí</h2>
+          <p class="notice__text">
+            El emisor solo sirve esta señal desde su propio reproductor, así que no la incrustamos. Abre su página para
+            verla; la guía de programación sigue disponible más abajo mientras tanto.
+          </p>
+          @if (verified()?.action?.url; as web) {
+            <a class="btn btn--primary" [href]="web" target="_blank" rel="noopener noreferrer">
+              Abrir la página del emisor
+              <app-icon name="external" [size]="15" />
+            </a>
+          }
+          <p class="notice__fine">Si el emisor deja de ofrecerla, esta página no podrá mostrarla.</p>
+        </section>
+      }
+      @case ('eventual') {
+        <section class="notice notice--muted" aria-labelledby="noem-title" data-testid="state-eventual">
+          <p class="notice__eyebrow">Sin señal continua en línea</p>
+          <h2 id="noem-title" class="notice__title">De {{ current.name }} solo tenemos la guía</h2>
+          <p class="notice__text">
+            Este canal aparece en el catálogo porque publica su programación, pero no ofrece un vídeo continuo por
+            Internet. Aquí puedes consultar qué emite y cuándo.
+          </p>
+          @if (verified()?.action?.url; as web) {
+            <a class="btn btn--ghost" [href]="web" target="_blank" rel="noopener noreferrer">
+              Web del emisor
+              <app-icon name="external" [size]="15" />
+            </a>
+          }
+        </section>
+      }
+      @case ('requires-official') {
+        <section class="notice notice--muted" aria-labelledby="official-access-title" data-testid="state-requires-official">
+          <p class="notice__eyebrow">Acceso del emisor</p>
+          <h2 id="official-access-title" class="notice__title">Esta emisión requiere el acceso oficial</h2>
+          <p class="notice__text">
+            {{ verified()?.reason }} Si el emisor publica una página abierta, la enlazamos; en ningún caso se falsifican
+            los datos de cliente para saltarla.
+          </p>
+          @if (verified()?.action?.url; as web) {
+            <a class="btn" [href]="web" target="_blank" rel="noopener noreferrer">
+              Ir a la web del emisor
+              <app-icon name="external" [size]="15" />
+            </a>
+          }
+        </section>
+      }
+      @default {
+        <section class="notice notice--muted" aria-labelledby="unav-title" data-testid="state-unavailable">
+          <p class="notice__eyebrow">No disponible</p>
+          <h2 id="unav-title" class="notice__title">No hay ninguna fuente de emisión utilizable para este canal</h2>
+          <p class="notice__text">{{ verified()?.reason }}</p>
+          @if (verified()?.action?.url; as web) {
+            <a class="btn" [href]="web" target="_blank" rel="noopener noreferrer">
+              Web del emisor
+              <app-icon name="external" [size]="15" />
+            </a>
+          }
+        </section>
+      }
+    }
+
+    @if (verified()?.blockedSources?.length) {
+      <details class="sources" data-testid="blocked-sources">
+        <summary>Fuentes publicadas que no se intentan aquí ({{ verified()?.blockedSources?.length }})</summary>
+        <ul>
+          @for (entry of verified()?.blockedSources; track entry.source.id) {
+            <li>
+              <span class="sources__label">{{ entry.source.label }}</span>
+              <span class="sources__format">{{ entry.source.format.toUpperCase() }}</span>
+              <span class="sources__reason">{{ blockedReasonLabel(entry.reason) }}</span>
+            </li>
+          }
+        </ul>
+      </details>
+    }
+
+    <app-programme-panel
+      [now]="nowNext().now"
+      [next]="nowNext().next"
+      [after]="nowNext().after"
+      [progress]="nowNext().progress"
+      [loading]="catalog.epgStatus() === 'loading'"
+      [locale]="locale"
+      (openSchedule)="openSchedule()"
+    />
+
+    @if (upcomingPrograms().length > 0) {
+      <section class="upnext-list" aria-labelledby="upnext-list-title">
+        <h2 id="upnext-list-title" class="section-title">A continuación</h2>
+        <ul>
+          @for (program of upcomingPrograms(); track program.id) {
+            <li [class.is-now]="isNow(program)">
+              <span class="upnext-list__time tabular">{{ timeLabel(program) }}</span>
+              <span class="upnext-list__title">{{ program.title }}</span>
+              @if (isNow(program)) {
+                <span class="info-badge">Ahora</span>
+              }
+            </li>
+          }
+        </ul>
+      </section>
+    }
+  </div>
+
+  @if (scheduleOpen()) {
+    <div class="drawer-backdrop" (click)="closeSchedule()" aria-hidden="true"></div>
+    <section
+      #drawer
+      class="drawer"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="drawer-title"
+      tabindex="-1"
+      (keydown)="onDrawerKeydown($event)"
+    >
+      <header class="drawer__head">
+        <div>
+          <p class="drawer__eyebrow">Programación de</p>
+          <h2 id="drawer-title">{{ current.name }}</h2>
+        </div>
+        <button #drawerClose type="button" class="btn btn--ghost btn--icon" aria-label="Cerrar" (click)="closeSchedule()">
+          <app-icon name="close" [size]="18" />
+        </button>
+      </header>
+      <!--
+        The scroll container is a named group so the guide can be scrolled by
+        keyboard while the dialog stays modal; the keydown handler below keeps
+        Tab cycling inside the dialog either way.
+      -->
+      <div class="drawer__body" tabindex="0" role="group" aria-label="Programación del día">
+        @if (dayPrograms().length > 0) {
+          <ol class="drawer__list">
+            @for (program of dayPrograms(); track program.id) {
+              <li [class.is-now]="isNow(program)">
+                <p class="drawer__time tabular">{{ timeLabel(program) }}</p>
+                <div>
+                  <p class="drawer__title">{{ program.title }}</p>
+                  @if (program.description) {
+                    <p class="drawer__desc">{{ program.description }}</p>
+                  }
+                </div>
+              </li>
+            }
+          </ol>
+        } @else {
+          <app-empty-state
+            icon="clock"
+            title="Programación no disponible para este canal."
+            message="El emisor no publica guía de programación en línea para esta señal."
+          />
+        }
+      </div>
+    </section>
+  }
+} @else if (loadingCatalogue()) {
+  <div class="placeholder">
+    <span class="skeleton placeholder__block"></span>
+  </div>
+} @else {
+  <app-empty-state
+    icon="tv"
+    title="Canal no encontrado"
+    [message]="'No existe ningún canal con el identificador «' + (channelId() ?? '') + '».'"
+    data-testid="channel-not-found"
+  >
+    <a class="btn btn--primary" routerLink="/television">Volver al catálogo</a>
+  </app-empty-state>
+}

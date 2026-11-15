@@ -1,0 +1,121 @@
+/* ==========================================================================
+   TDT Player — design tokens
+   Direction: "Midnight Broadcast" (see docs/UI-DESIGN-SYSTEM.md).
+   Dark is the primary experience; light is a supported alternative.
+   ========================================================================== */
+
+:root {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --bg: #0a0e17;
+  --bg-elevated: #0e1421;
+  --surface-1: #111726;
+  --surface-2: #161e30;
+  --surface-3: #1e2840;
+  --border: #243049;
+  --border-strong: #33415f;
+
+  /* Text */
+  --text: #f2f5fa;
+  --text-muted: #9aa7be;
+  --text-subtle: #7c89a3;
+
+  /* Identity */
+  --accent: #fbbf24;
+  --accent-strong: #f59e0b;
+  --on-accent: #1a1200;
+  --signal: #7c5cff;
+  --signal-soft: rgba(124, 92, 255, 0.16);
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --danger: #f87171;
+  --danger-soft: rgba(248, 113, 113, 0.14);
+  --live: #f43f5e;
+
+  /* Player-specific (always dark, independent of theme) */
+  --player-bg: #05070c;
+  --player-text: #f8fafc;
+  --player-surface: rgba(12, 16, 25, 0.82);
+  --player-border: rgba(255, 255, 255, 0.14);
+
+  /* Spacing */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-7: 32px;
+  --s-8: 40px;
+  --s-9: 56px;
+
+  /* Radius */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+  --r-pill: 999px;
+
+  /* Type */
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono', Menlo, Consolas, monospace;
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.8125rem;
+  --fs-base: 0.9375rem;
+  --fs-md: 1rem;
+  --fs-lg: 1.125rem;
+  --fs-xl: 1.375rem;
+  --fs-2xl: 1.75rem;
+  --fs-3xl: 2.25rem;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 120ms;
+  --dur-med: 200ms;
+  --dur-slow: 320ms;
+
+  /* Layout */
+  --header-h: 64px;
+  --rail-w: clamp(280px, 24vw, 360px);
+  --info-w: clamp(240px, 20vw, 320px);
+  --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--signal);
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --bg: #eef1f7;
+  --bg-elevated: #f6f8fc;
+  --surface-1: #ffffff;
+  --surface-2: #f1f4f9;
+  --surface-3: #e4e9f2;
+  --border: #d6dce8;
+  --border-strong: #b9c3d6;
+
+  --text: #0b1020;
+  --text-muted: #4a5568;
+  --text-subtle: #5f6b80;
+
+  --accent: #b45309;
+  --accent-strong: #92400e;
+  --on-accent: #ffffff;
+  --signal: #5b3fe0;
+  --signal-soft: rgba(91, 63, 224, 0.12);
+  --ok: #047857;
+  --warn: #b45309;
+  --danger: #b91c1c;
+  --danger-soft: rgba(185, 28, 28, 0.1);
+  --live: #e11d48;
+
+  --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--signal);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-med: 0ms;
+    --dur-slow: 0ms;
+  }
+}

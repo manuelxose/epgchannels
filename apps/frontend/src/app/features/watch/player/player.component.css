@@ -1,0 +1,410 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.shell {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: var(--player-bg);
+  color: var(--player-text);
+  isolation: isolate;
+  border: 1px solid var(--border);
+}
+
+.shell:fullscreen {
+  border-radius: 0;
+  border: 0;
+}
+
+.stage__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: var(--player-bg);
+}
+
+/* ---------- Now playing overlay ---------- */
+
+.now {
+  position: absolute;
+  top: var(--s-3);
+  left: var(--s-3);
+  max-width: min(360px, 62%);
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-md);
+  background: var(--player-surface);
+  border: 1px solid var(--player-border);
+  backdrop-filter: blur(10px);
+  pointer-events: none;
+  animation: rise var(--dur-med) var(--ease-out);
+}
+
+.now__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #e2e8f0;
+}
+
+.now__genre {
+  padding: 1px 6px;
+  border-radius: var(--r-sm);
+  background: rgba(251, 191, 36, 0.18);
+  color: var(--accent);
+  font-size: 0.6875rem;
+}
+
+.now__time {
+  margin-top: 2px;
+  font-size: var(--fs-xs);
+  color: #a9b4c8;
+}
+
+.now__title {
+  margin-top: var(--s-1);
+  font-size: var(--fs-md);
+  font-weight: 650;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.now__bar {
+  margin-top: var(--s-2);
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.16);
+  overflow: hidden;
+}
+
+.now__bar span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width var(--dur-slow) linear;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- Overlays ---------- */
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  z-index: 2;
+}
+
+.overlay--center {
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: var(--s-3);
+  background: rgba(5, 7, 12, 0.55);
+  color: #e2e8f0;
+  font-size: var(--fs-sm);
+}
+
+.overlay--panel {
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: var(--s-2);
+  padding: var(--s-6);
+  text-align: center;
+  background: rgba(5, 7, 12, 0.88);
+  color: var(--player-text);
+}
+
+.overlay__title {
+  font-size: var(--fs-lg);
+}
+
+.overlay__message {
+  max-width: 52ch;
+  color: #b6c0d2;
+  font-size: var(--fs-sm);
+}
+
+.overlay__meta {
+  color: #8794ab;
+  font-size: var(--fs-xs);
+}
+
+.overlay__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  justify-content: center;
+  margin-top: var(--s-2);
+}
+
+.overlay__actions .btn {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #f8fafc;
+}
+
+.overlay__actions .btn--primary {
+  background: var(--accent);
+  border-color: transparent;
+  color: var(--on-accent);
+}
+
+.spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: var(--accent);
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Paused affordance ---------- */
+
+.pulse {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-3);
+  border: 0;
+  background: linear-gradient(180deg, rgba(5, 7, 12, 0.15), rgba(5, 7, 12, 0.55));
+  color: var(--player-text);
+  cursor: pointer;
+}
+
+.pulse__circle {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  padding-left: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--on-accent);
+  box-shadow: 0 0 0 10px rgba(251, 191, 36, 0.16);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.pulse:hover .pulse__circle {
+  transform: scale(1.06);
+}
+
+.pulse__label {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ---------- Controls ---------- */
+
+.controls {
+  position: absolute;
+  left: var(--s-3);
+  right: var(--s-3);
+  bottom: var(--s-3);
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2);
+  border-radius: var(--r-md);
+  background: var(--player-surface);
+  border: 1px solid var(--player-border);
+  backdrop-filter: blur(10px);
+  z-index: 3;
+}
+
+.ctl {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  min-width: 38px;
+  height: 38px;
+  padding: 0 var(--s-2);
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: #e9eef7;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out);
+}
+
+.ctl:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.ctl--play {
+  background: var(--accent);
+  color: var(--on-accent);
+  min-width: 44px;
+}
+
+.ctl--play:hover {
+  background: var(--accent-strong);
+}
+
+.ctl--live {
+  border-color: var(--player-border);
+  padding: 0 var(--s-3);
+}
+
+.ctl-spacer {
+  flex: 1;
+}
+
+.volume {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+}
+
+.volume__range {
+  width: 92px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.quality select {
+  height: 34px;
+  padding: 0 var(--s-2);
+  border-radius: var(--r-sm);
+  border: 1px solid var(--player-border);
+  background: rgba(255, 255, 255, 0.08);
+  color: #e9eef7;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.quality select option {
+  color: #0b1020;
+}
+
+.state-probe {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+@media (width <= 720px) {
+  .now {
+    max-width: 78%;
+    padding: var(--s-2) var(--s-3);
+  }
+
+  .now__title {
+    font-size: var(--fs-sm);
+  }
+
+  .volume__range {
+    display: none;
+  }
+
+  .controls {
+    gap: var(--s-1);
+    padding: var(--s-1);
+  }
+
+  .ctl {
+    min-width: 42px;
+    height: 42px;
+  }
+}
+
+/*
+ * Official YouTube player mount point. It fills the 16:9 stage exactly like the
+ * <video> element and applies NO styling of its own to the injected frame:
+ * YouTube's marks, title bar and controls must stay visible and unobstructed.
+ * Nothing of ours is rendered above it (the component never places an overlay
+ * or a control bar over a YouTube source).
+ */
+.stage__youtube {
+  position: absolute;
+  inset: 0;
+  background: var(--player-bg);
+}
+
+.stage__youtube[hidden] {
+  display: none;
+}
+
+.stage__youtube iframe {
+  display: block;
+  /*
+   * `!important` is deliberate: the official API writes its own inline
+   * `width`/`height` attributes on the frame it injects, and a plain rule loses
+   * to author inline styles. Without this the frame kept its intrinsic 304×154
+   * on a phone while the 16:9 stage was 388×218, surrounding the player with
+   * black margins on the device where screen space matters most.
+   */
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100%;
+  border: 0;
+}
+
+/* The media element is hidden (not removed) while YouTube owns the stage. */
+.stage__video[hidden] {
+  display: none;
+}
+
+/*
+ * Official-page link for an embedded YouTube stream. It sits UNDER the stage
+ * (never above the frame): YouTube's marks and controls are inside the iframe and
+ * must stay visible.
+ */
+.yt-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-1) var(--s-3);
+  color: var(--text-subtle);
+  font-size: var(--fs-xs);
+}
+
+.yt-meta a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

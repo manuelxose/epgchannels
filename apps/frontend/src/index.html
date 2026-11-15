@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <title>TDT Player · Televisión en directo</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a0e17" />
+    <!--
+      Content Security Policy (see docs/INTEGRATIONS.md): the only permitted
+      third-party frame is the official YouTube IFrame player, on the
+      privacy-enhanced domain. It is NOT applied from a meta tag: the Angular
+      builder injects an inline bootstrap script, and `script-src` without
+      `unsafe-inline`/`unsafe-eval` would block the whole application. Deploy it
+      as an HTTP response header from `deploy/csp.conf` (copy-paste per server),
+      where the boot script hash is computed from the built index.html.
+    -->
+
+    <meta
+      name="description"
+      content="Reproductor de televisión en directo en abierto: catálogo de canales, guía de programación y reproductor HLS propio."
+    />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  </head>
+  <body>
+    <app-root></app-root>
+  </body>
+</html>
