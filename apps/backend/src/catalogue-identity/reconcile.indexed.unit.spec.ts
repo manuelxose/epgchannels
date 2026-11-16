@@ -64,7 +64,7 @@ function makeCandidate(i: number, totalViews: number): ReconcileCandidate {
     return {
       name: viewName(j),
       country,
-      url: `https://c${i}.example/stream.m3u8`,
+      url: `https://h${i % 50}.example/stream.m3u8`,
       provider: null,
       groupTitle: null,
       language: 'es',
@@ -76,7 +76,7 @@ function makeCandidate(i: number, totalViews: number): ReconcileCandidate {
     return {
       name: viewName(j),
       country,
-      url: `https://c${i}.example/stream.m3u8`,
+      url: `https://h${i % 50}.example/stream.m3u8`,
       provider: null,
       groupTitle: null,
       language: 'es',
@@ -88,7 +88,7 @@ function makeCandidate(i: number, totalViews: number): ReconcileCandidate {
     return {
       name: `${viewName(j)} (Ciudad)`,
       country,
-      url: `https://c${i}.example/stream.m3u8`,
+      url: `https://h${i % 50}.example/stream.m3u8`,
       provider: null,
       groupTitle: null,
       language: 'es',
@@ -100,7 +100,7 @@ function makeCandidate(i: number, totalViews: number): ReconcileCandidate {
     return {
       name: viewName(j),
       country: null,
-      url: `https://c${i}.example/stream.m3u8`,
+      url: `https://h${i % 50}.example/stream.m3u8`,
       provider: null,
       groupTitle: null,
       language: 'es',
@@ -112,7 +112,7 @@ function makeCandidate(i: number, totalViews: number): ReconcileCandidate {
     return {
       name: `Zorblax ${10000 + i}`,
       country,
-      url: `https://c${i}.example/stream.m3u8`,
+      url: `https://h${i % 50}.example/stream.m3u8`,
       provider: null,
       groupTitle: null,
       language: 'es',
@@ -167,6 +167,52 @@ describe('reconcileIndexed — equivalence with the full scan', () => {
     expect(review).toBeGreaterThan(0);
     expect(different).toBeGreaterThan(0);
   }, 60_000);
+
+  it('shared host + country + generic-only name still reaches review exactly like the naive scan', () => {
+    // 600 views share the hot `tv` token (bucket over the cutoff); one extra
+    // view shares ONLY the generic token in the name but matches country+host.
+    const views: ChannelIdentityView[] = [];
+    for (let i = 0; i < 600; i += 1) {
+      views.push({
+        channelId: `ch-${String(i).padStart(6, '0')}`,
+        key: `us:hot-${i}`,
+        name: `Hot Channel ${i} TV`,
+        country: 'US',
+        variantKey: null,
+        tvgIds: [`Hot${i}.us`],
+        urlHosts: [`h${i}.example`],
+      });
+    }
+    views.push({
+      channelId: 'ch-000009001',
+      key: 'us:tv-beta',
+      name: 'TV Beta',
+      country: 'US',
+      variantKey: null,
+      tvgIds: ['TVBeta.us'],
+      urlHosts: ['target-host.example'],
+    });
+
+    const index = buildIdentityIndex(views);
+    expect(index.byToken.get('tv')?.length ?? 0).toBeGreaterThan(GENERIC_TOKEN_CUTOFF);
+
+    const candidate: ReconcileCandidate = {
+      name: 'Alpha TV',
+      country: 'US',
+      url: 'https://target-host.example/live.m3u8',
+      provider: null,
+      groupTitle: null,
+      language: 'en',
+      attributes: {},
+    };
+
+    const indexed = reconcileIndexed(candidate, index);
+    const naive = reconcileNaive(candidate, views);
+    expect(indexed).toEqual(naive);
+    expect(indexed.kind).toBe('review');
+    expect(indexed.score).toBeCloseTo(0.575, 3);
+    expect(indexed.channelId).toBe('ch-000009001');
+  });
 
   it('the public reconcile wrapper agrees with both paths', () => {
     const views = Array.from({ length: 200 }, (_, i) => makeView(i));
@@ -283,7 +329,7 @@ describe('reconcileIndexed — before/after per-call cost', () => {
         candidates.push({
           name: `UniqueNet${i}`,
           country: cc,
-          url: `https://c${i}.example/stream.m3u8`,
+          url: `https://h${i % 50}.example/stream.m3u8`,
           provider: null,
           groupTitle: null,
           language: 'es',
@@ -293,7 +339,7 @@ describe('reconcileIndexed — before/after per-call cost', () => {
         candidates.push({
           name: `UniqueNet${i} Extra`,
           country: cc,
-          url: `https://c${i}.example/stream.m3u8`,
+          url: `https://h${i % 50}.example/stream.m3u8`,
           provider: null,
           groupTitle: null,
           language: 'es',
@@ -303,7 +349,7 @@ describe('reconcileIndexed — before/after per-call cost', () => {
         candidates.push({
           name: `UniqueNet${i}`,
           country: null,
-          url: `https://c${i}.example/stream.m3u8`,
+          url: `https://h${i % 50}.example/stream.m3u8`,
           provider: null,
           groupTitle: null,
           language: 'es',

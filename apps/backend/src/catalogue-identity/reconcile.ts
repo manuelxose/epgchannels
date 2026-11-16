@@ -36,11 +36,18 @@ export const SAME_THRESHOLD = 0.85;
 /**
  * A name token whose inverted bucket exceeds this size is a generic stop-word
  * (`tv`, 3,792 entries in the real corpus): its full bucket is NOT unioned into
- * the candidate set. Only the single-token views of such a token are collected,
- * because those are the only generic-only views that can reach `review` via a
- * whole-word containment match (e.g. view "TV" contained in "Pluto TV").
- * A candidate whose tokens are all generic falls back to the full buckets so
- * exact/containment matches are never lost.
+ * the candidate set.
+ *
+ * Why skipping the multi-token part of a generic bucket is safe: a multi-token
+ * view sharing only a generic name token has name similarity <= Dice 0.5, so its
+ * score is at most 0.45*0.5 + 0.25 = 0.475 (name + country alone), below the
+ * 0.55 review threshold. It can only reach `review` through a signal that is
+ * collected independently of the token cutoff: a matching URL host
+ * (0.45*0.5 + 0.25 + 0.10 = 0.575, via the host index), a matching tvg-id base
+ * (via the tvg index), an exact identity key (via the key index), or
+ * single-token whole-word containment (via `bySingleToken`). Only the
+ * single-token views of a generic token are collected; a candidate whose tokens
+ * are all generic falls back to the full buckets.
  */
 export const GENERIC_TOKEN_CUTOFF = 512;
 
@@ -336,11 +343,12 @@ function computeCandidateFacts(candidate: ReconcileCandidate): CandidateFacts {
  * name-token buckets that are small enough to be selective.
  *
  * A generic token (bucket size > `GENERIC_TOKEN_CUTOFF`) does not expand the
- * candidate set: only its single-token views are collected, because those are
- * the only generic-only views that can reach `review` (whole-word containment,
- * e.g. view "TV" inside "Pluto TV"). A candidate whose tokens are ALL generic
- * falls back to the full token buckets so exact/containment matches are never
- * lost.
+ * candidate set: only its single-token views are collected. A multi-token view
+ * sharing only a generic token scores at most 0.475 on name + country, so it
+ * cannot reach `review` on the name signal alone; any view that DOES reach
+ * `review` does so via a matching host, tvg-id base, exact key or single-token
+ * containment, all of which are collected here. A candidate whose tokens are
+ * ALL generic falls back to the full token buckets.
  */
 function collectPrepared(facts: CandidateFacts, index: IdentityIndex): Map<string, PreparedChannel> {
   const collected = new Map<string, PreparedChannel>();
