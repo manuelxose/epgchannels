@@ -35,12 +35,15 @@ compatibilidad/migración, memoria persistente y reglas de ejecución. **Sin imp
 
 | ID | Rama | Propietario | Estado |
 |---|---|---|---|
-| `tdt02a-arch` | `feat/tdt02a-arch` | architect | informes entregados |
-| `tdt02a-rea` | `feat/tdt02a-rea` | rea-research | en curso |
-| `tdt02a-cat` | `feat/tdt02a-cat` | catalogue | informes entregados |
-| `tdt02a-sec` | `feat/tdt02a-sec` | legal | informe entregado |
-| `tdt02a-base` | `feat/tdt02a-base` | captain | línea base + memoria persistente |
-| `tdt02a-docs` | `feat/tdt02a-docs` | captain | reservado |
+| `tdt02a-arch` | `feat/tdt02a-arch` | architect | entregado (`AUDITORIA-ARQUITECTURA.md`) |
+| `tdt02a-rea` | `feat/tdt02a-rea` | rea-research | entregado (informe + evidencia) |
+| `tdt02a-cat` | `feat/tdt02a-cat` | catalogue | entregado (informe + plan) |
+| `tdt02a-sec` | `feat/tdt02a-sec` | legal | entregado (`INFORME-SEGURIDAD-DERECHOS.md`) |
+| `tdt02a-base` | `feat/tdt02a-base` | captain | línea base + memoria persistente (integrado) |
+| `tdt02a-docs` | `feat/tdt02a-docs` | captain | no usado (sin escrituras) |
+| `tdt02a-review` | (sin rama; árbol de solo lectura) | captain | usado para revisión; sin commits |
+
+Todos los worktrees partieron de `febbec4` y **ninguno modificó código de producto**.
 
 ---
 
@@ -49,12 +52,17 @@ compatibilidad/migración, memoria persistente y reglas de ejecución. **Sin imp
 | ID | Tarea | Propietario | Ruta (clase) | Estado |
 |---|---|---|---|---|
 | t1 | Auditoría arquitectura/backend | architect | v4-pro (L3) | **completed** |
-| t2 | Investigación REA de reproducción | rea-research | flash (L2) | en curso |
+| t2 | Investigación REA de reproducción | rea-research | flash (L2) | **completed** |
 | t3 | Catálogo/M3U/plan de migración | catalogue | v4-pro (L3) | **completed** |
 | t4 | Seguridad/derechos/licencias | legal | v4-pro (L4) | **completed** |
-| t5 | Auditoría independiente | auditor | v4-pro (L3) | en curso |
-| t6 | Revisión independiente del paquete | architect | v4-pro (L2) | pendiente (t5) |
-| t7 | Integración/PR/merge | captain | flash (L2) | pendiente (t6) |
+| t5 | Auditoría/verificación (8 intentos de miembro fallidos) | captain | v4-pro (L3) | **completed** (verificación del capitán) |
+| t6 | Revisión del paquete (2 intentos de miembro fallidos) | captain | v4-pro (L2) | **completed** (revisión del capitán) |
+| t7 | Integración/PR/merge | captain | flash (L2) | **completed** |
+
+**Revisión independiente obtenida fuera de AgentTeams:** tras los fallos de los miembros, un
+revisor subagente **independiente y separado del capitán** revisó el PR #1 y emitió **PASS** con
+todas las afirmaciones confirmadas y 3 observaciones no bloqueantes. Esa revisión **sí** es
+independiente por autoría (modelo y sesión distintos), aunque no proceda de un miembro del equipo.
 
 ---
 
@@ -100,12 +108,15 @@ Ningún hallazgo `blocker` impide la auditoría. **Sí** impiden publicación.
 3. La licencia del proyecto sigue sin declarar (LIC-01): no se puede publicar ni distribuir.
 4. La licencia de iptv-org (Unlicense vs badge CC0) requiere conciliación antes de ingerir.
 
-- **Revisión independiente: NO completada por un agente distinto.** Se intentó 6 veces con 3
-  miembros (`auditor` ×2, `architect` ×2, `catalogue` ×1) más una toma de control del capitán; **todos
-  los intentos de miembro terminaron sin entregable** tras turnos de duración anómala. El capitán
-  completó la verificación (`AUDITORIA-INDEPENDIENTE.md`) y la revisión del paquete
-  (`REVISION-INDEPENDIENTE.md`), **declarándolo como verificación del capitán, no como auditoría
-  independiente de terceros**. Este criterio de aceptación queda **PARCIAL**, no PASS.
+- **Revisión independiente dentro de AgentTeams: NO completada.** Los intentos de miembro fueron
+  **3 en t5** (`auditor` ×2, `architect` ×1) y **2 en t6** (`architect` ×1, `catalogue` ×1):
+  **5 intentos en total**, todos sin entregable tras turnos de duración anómala. El capitán completó
+  la verificación (`AUDITORIA-INDEPENDIENTE.md`) y la revisión del paquete (`REVISION-INDEPENDIENTE.md`),
+  **declarándolas como verificación del capitán**.
+- **Revisión independiente fuera de AgentTeams: SÍ obtenida.** Un subagente independiente (modelo y
+  sesión distintos, sin acceso a la deliberación del capitán) revisó el PR #1 contra `6f0163e`:
+  **PASS**, todas las afirmaciones confirmadas con `ruta:línea`, 0 secretos, 0 bloqueantes y
+  3 observaciones no bloqueantes (ya corregidas las dos factuales).
 - Los entregables de los 5 especialistas sí se produjeron y están integrados con evidencia citable.
 
 ## Criterios de aceptación del milestone
@@ -122,6 +133,7 @@ verde, contratos de migración verificables, memoria persistente completa, revis
 | Línea base reproducible en verde | **PASS** (comandos reales, exit 0; sin sello content-bound, ver limitación ENGINE-04) |
 | Contratos de migración verificables | **PASS** (`PLAN-COMPATIBILIDAD-MIGRACION.md`) |
 | Memoria persistente completa | **PASS** (6 documentos obligatorios + 4 de apoyo) |
-| Revisión **independiente** | **PARCIAL** (verificación del capitán; ver arriba) |
+| Revisión **independiente** | **PASS fuera de AgentTeams** / **PARCIAL dentro** (5 intentos de miembro fallidos; subagente independiente emitió PASS sobre PR #1) |
 | Gate ENGINE-04 content-bound | **BLOCKED** (limitación del entorno, ver `MODEL_ROUTING_AND_USAGE.md §4.1`) |
+| PR fusionado y SHA verificado | **PASS** (`origin/main` = `dbb3d5e`, verificado tras el merge) |
 | PR fusionado y SHA verificado | pendiente al cierre |

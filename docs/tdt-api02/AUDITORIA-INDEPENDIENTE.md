@@ -5,10 +5,12 @@
 > Este documento **NO** es una auditoría independiente realizada por otro agente. Es la
 > **re-verificación hecha por el capitán** sobre hallazgos ya redactados por los especialistas.
 >
-> La tarea t5 estaba asignada a un miembro independiente. Se hicieron **tres intentos**
-> (2 con `auditor`, 1 con `architect`), todos con turnos de duración anómala y **sin entregable**.
-> Según `EXECUTION_CONTRACT` y ENGINE-04 §8.8 (tope de 2 reparaciones), se cambió de estrategia en
-> lugar de repetirla, y el capitán completó la verificación con alcance acotado.
+> La tarea t5 estaba asignada a un miembro independiente. Se hicieron **tres intentos** con
+> miembros (`auditor` ×2, `architect` ×1), todos con turnos de duración anómala y **sin entregable**.
+> El registro completo de intentos —incluida la tarea de revisión t6 y la toma de control del
+> capitán— está en `MILESTONE_STATUS.md`. Según `EXECUTION_CONTRACT` y ENGINE-04 §8.8 (tope de 2
+> reparaciones), se cambió de estrategia en lugar de repetirla, y el capitán completó la verificación
+> con alcance acotado.
 >
 > **Consecuencia honesta sobre el criterio de aceptación "revisión independiente": la revisión
 > independiente de esta tarea NO se ha producido por un agente distinto.** Se mitiga con evidencia
