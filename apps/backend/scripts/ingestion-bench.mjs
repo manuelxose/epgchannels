@@ -21,7 +21,7 @@ import {
   defaultMongoUri,
   discoverSnapshots,
   dropDisposable,
-  ingestSnapshot,
+  ingestSnapshotViaPipeline,
   loadBackend,
   loadSnapshot,
   openDisposable,
@@ -117,19 +117,22 @@ async function main(argv) {
       const perSnapshot = [];
       for (const snapshot of verified) {
         const ingestStart = performance.now();
-        const ingest = await ingestSnapshot(backend, database, snapshot.doc, snapshot.playlists, { attempt });
+        // The production path: what a deployment runs, in bulk writes.
+        const ingest = await ingestSnapshotViaPipeline(backend, database, snapshot.doc, snapshot.playlists, {
+          idNamespace: 'bench',
+        });
         perSnapshot.push({
           upstream: snapshot.doc.upstream,
           entries: snapshot.entries,
-          candidates: ingest.counts.candidates,
+          candidates: ingest.counts.importedEntries,
           createdChannels: ingest.createdChannelIds.length,
-          createdCandidates: ingest.createdCandidateIds.length,
-          rejected: ingest.counts.rejected,
-          duplicates: ingest.counts.duplicates,
-          reconciled: ingest.counts.reconciled,
-          manualReview: ingest.counts.review,
+          createdCandidates: ingest.counts.importedEntries,
+          rejected: ingest.counts.rejectedEntries,
+          duplicates: ingest.counts.duplicateCandidates,
+          reconciled: ingest.counts.canonicalChannels,
+          manualReview: ingest.counts.manualReview,
           ingestMs: round(performance.now() - ingestStart, 1),
-          stages: ingest.stages,
+          stages: { pipelineTotalMs: ingest.wallMs },
         });
       }
       const wallMs = round(performance.now() - passStart, 1);
@@ -162,12 +165,7 @@ async function main(argv) {
         verifyAndParse: verifyMs,
         coldIngest: cold.wallMs,
         byStage: {
-          buildCandidates: round(sum(cold.snapshots.map((snapshot) => snapshot.stages.buildMs)), 1),
-          snapshotWrite: round(sum(cold.snapshots.map((snapshot) => snapshot.stages.snapshotWriteMs)), 1),
-          candidates: round(sum(cold.snapshots.map((snapshot) => snapshot.stages.candidatesMs)), 1),
-          reconcile: round(sum(cold.snapshots.map((snapshot) => snapshot.stages.reconcileMs)), 1),
-          channels: round(sum(cold.snapshots.map((snapshot) => snapshot.stages.channelsMs)), 1),
-          finish: round(sum(cold.snapshots.map((snapshot) => snapshot.stages.finishMs)), 1),
+          pipelineTotal: round(sum(cold.snapshots.map((snapshot) => snapshot.stages.pipelineTotalMs)), 1),
         },
       },
       throughput: {
