@@ -33,6 +33,7 @@ const REQUIRED_DIST_MODULES = [
   'catalogue/store.js',
   'infrastructure/mongo.js',
   'migrations/runner.js',
+  'ingestion/pipeline.js',
 ];
 
 const DISPOSABLE_NAME = /^tdt_(bench|metrics|scenario)_[0-9a-f]{12}$/u;
@@ -111,6 +112,7 @@ export async function loadBackend(root = repositoryRoot()) {
     store: await load('catalogue/store.js'),
     mongo: await load('infrastructure/mongo.js'),
     runner: await load('migrations/runner.js'),
+    pipeline: await load('ingestion/pipeline.js'),
   };
 }
 
@@ -354,6 +356,33 @@ async function knownIdentities(backend, database, store) {
     tvgIds: tvg.get(view.channelId) ?? [],
     urlHosts: hosts.get(view.channelId) ?? [],
   }));
+}
+
+/**
+ * Ingests one verified snapshot through the PRODUCTION pipeline
+ * (`ingestion/pipeline.ts` -> `runIngestion`): plan in memory, then flush in
+ * bulk writes.
+ *
+ * The bench measures this path, not the per-entry reference driver above,
+ * because this is the code a deployment actually runs. The reference driver
+ * stays for the scenarios that need per-entry control (decision overrides,
+ * forced collisions); it performs one round-trip per entry per collection and is
+ * an order of magnitude slower on a large snapshot, so using it for a
+ * throughput figure would misrepresent the product.
+ */
+export async function ingestSnapshotViaPipeline(backend, database, doc, playlists, options = {}) {
+  const started = performance.now();
+  const result = await backend.pipeline.runIngestion(database, doc, playlists, {
+    idNamespace: options.idNamespace ?? 'bench',
+    runId: options.runId,
+  });
+  const wallMs = round(performance.now() - started, 1);
+  return {
+    runId: result.runId,
+    counts: result.metrics,
+    createdChannelIds: result.createdChannelIds,
+    wallMs,
+  };
 }
 
 /**
