@@ -25,6 +25,15 @@ import type {
   SourceCandidateDoc,
 } from './schema.js';
 
+/** Lower-cased hostname of a normalised URL, or null when it is not a URL. */
+function normalizedHost(url: string): string | null {
+  try {
+    return new URL(url).hostname.toLowerCase();
+  } catch {
+    return null;
+  }
+}
+
 export class ChannelStore {
   private readonly channels: Collection<ChannelDoc>;
   private readonly candidates: Collection<SourceCandidateDoc>;
@@ -62,6 +71,39 @@ export class ChannelStore {
       .sort({ 'identity.key': 1 })
       .limit(limit)
       .toArray();
+    if (docs.length === 0) return [];
+
+    const ids = docs.map((doc) => doc._id);
+    // One batched query per facet, not a per-channel N+1 storm.
+    const [aliasRows, candidateRows] = await Promise.all([
+      this.aliases
+        .find(
+          { channelId: { $in: ids }, namespace: 'tvg-id' },
+          { projection: { channelId: 1, value: 1 } },
+        )
+        .toArray(),
+      this.candidates
+        .find({ channelId: { $in: ids } }, { projection: { channelId: 1, normalizedUrl: 1 } })
+        .toArray(),
+    ]);
+
+    const tvgByChannel = new Map<string, string[]>();
+    for (const row of aliasRows) {
+      const list = tvgByChannel.get(row.channelId) ?? [];
+      list.push(row.value);
+      tvgByChannel.set(row.channelId, list);
+    }
+
+    const hostsByChannel = new Map<string, string[]>();
+    for (const row of candidateRows) {
+      if (row.channelId === null) continue;
+      const host = normalizedHost(row.normalizedUrl);
+      if (host === null) continue;
+      const list = hostsByChannel.get(row.channelId) ?? [];
+      if (!list.includes(host)) list.push(host);
+      hostsByChannel.set(row.channelId, list);
+    }
+
     return docs.map((doc) => ({
       channelId: doc._id,
       key: doc.identity.key,
@@ -69,6 +111,8 @@ export class ChannelStore {
       country: doc.identity.country,
       language: doc.identity.language,
       variantKey: doc.identity.variantKey,
+      tvgIds: tvgByChannel.get(doc._id) ?? [],
+      urlHosts: hostsByChannel.get(doc._id) ?? [],
     }));
   }
 
@@ -92,9 +136,18 @@ export class ChannelStore {
     return this.channels.findOne({ _id: alias.channelId });
   }
 
+  /**
+   * Idempotent and contention-tolerant: keyed by `{namespace, value, channelId}`,
+   * so the same alias is a no-op on repeat while a shared tvg-id may belong to
+   * several channels without a unique-index conflict.
+   */
   async addAlias(doc: ChannelAliasDoc): Promise<void> {
-    const { _id, ...rest } = doc;
-    await this.aliases.updateOne({ _id }, { $setOnInsert: rest }, { upsert: true });
+    const { _id, namespace, value, channelId, ...rest } = doc;
+    await this.aliases.updateOne(
+      { namespace, value, channelId },
+      { $setOnInsert: { _id, namespace, value, channelId, ...rest } },
+      { upsert: true },
+    );
   }
 
   async addVariant(doc: ChannelVariantDoc): Promise<void> {

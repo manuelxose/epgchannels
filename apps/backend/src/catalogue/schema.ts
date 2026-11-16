@@ -239,8 +239,13 @@ export interface ChannelIdentityView {
   key: string;
   name: string;
   country: string | null;
-  language: string;
+  /** BCP-47 primary, projected by the store but not consumed for identity. */
+  language?: string | null;
   variantKey: string | null;
+  /** Raw `tvg-id` aliases known for this channel. */
+  tvgIds?: string[];
+  /** Normalized URL hosts of known sources for this channel. */
+  urlHosts?: string[];
 }
 
 /* ------------------------------------------------------------------------- *
@@ -290,7 +295,12 @@ export const CANDIDATE_INDEXES: readonly CatalogueIndex[] = [
 /** Identity-support and dedup indexes (migration 006). */
 export const DEDUP_INDEXES: Readonly<Record<string, readonly CatalogueIndex[]>> = {
   channel_aliases: [
-    { key: { namespace: 1, value: 1 }, name: 'alias_namespace_value_unique', unique: true },
+    {
+      key: { namespace: 1, value: 1, channelId: 1 },
+      name: 'alias_namespace_value_channel_unique',
+      unique: true,
+    },
+    { key: { namespace: 1, value: 1 }, name: 'alias_namespace_value' },
     { key: { channelId: 1 }, name: 'alias_channel' },
   ],
   channel_variants: [
@@ -320,6 +330,13 @@ export const DEDUP_INDEXES: Readonly<Record<string, readonly CatalogueIndex[]>> 
     { key: { status: 1, startedAt: -1 }, name: 'run_status_started' },
   ],
 };
+
+/**
+ * Pre-fix `channel_aliases` unique index (`{namespace, value}`). A tvg-id may
+ * legitimately belong to more than one channel, so migration 006 replaces this
+ * with `alias_namespace_value_channel_unique`.
+ */
+export const LEGACY_ALIAS_UNIQUE_INDEX = 'alias_namespace_value_unique';
 
 /** Creates a set of indexes idempotently. Never drops anything. */
 export async function createCatalogueIndexes(
