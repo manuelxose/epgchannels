@@ -41,3 +41,8 @@ apps/frontend/test-results/
 # PID file written by npm run dev
 .dev-pids.json
 
+
+# scratch output from local test runs
+*-out.txt
+*-err.txt
+
