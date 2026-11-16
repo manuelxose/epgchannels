@@ -66,6 +66,48 @@ const FORMAT_ALIASES: Readonly<Record<string, string>> = {
   stream: 'hls',
 };
 
+/**
+ * Which playback type a source really is.
+ *
+ * The declared format cannot be trusted on its own: the reference catalogue
+ * labels a Twitch player URL as `m3u8`, and playing a `/embed` page through our
+ * HLS engine fails because the page is HTML, not a playlist (audited: 26 sources).
+ *
+ * So the ADDRESS decides, and only addresses that really are an HLS playlist
+ * stay `hls`. Everything else that is a third-party player page becomes
+ * `official-embed`: it is still the emitter's public player, presented as such.
+ */
+export function effectiveSourceType(declaredFormat: string, url: string): string {
+  const type = FORMAT_ALIASES[declaredFormat] ?? declaredFormat;
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return type;
+  }
+  const path = parsed.pathname.toLowerCase();
+
+  // An explicit manifest extension is the strongest signal.
+  if (path.endsWith('.m3u8')) return 'hls';
+  if (path.endsWith('.mpd')) return 'dash';
+
+  /*
+   * YouTube has its own type and its own engine, and its channel pages are
+   * resolved to a live video. It must never be folded into the generic embed:
+   * `youtube` carries permissions and playback rules that `official-embed` does not.
+   */
+  const hostname = parsed.hostname.toLowerCase();
+  const isYoutube = /(?:^|\.)youtube(?:-nocookie)?\.com$/.test(hostname) || hostname === 'youtu.be';
+  if (isYoutube) return 'youtube';
+
+  // Any other third-party player page (`player.twitch.tv/?channel=…`, `/embed/…`)
+  // is an embed, whatever format the source declared it as.
+  const isPlayerHost = /(?:^|\.)(?:twitch\.tv|dailymotion\.com|vimeo\.com)$/.test(hostname);
+  if (isPlayerHost) return 'official-embed';
+
+  return type;
+}
+
 /** Ambit → our canonical category. Editorial decision, applied once. */
 export function categoryForAmbit(countryLabel: string, ambit: string, regionCode: string | null): string {
   const normalized = ambit
@@ -256,7 +298,7 @@ export function planSources(record: ReferenceChannelRecord): ImportedSourcePlan[
     const publishable = withheld === null;
     plans.push({
       provider: isPlatform ? `platform:${emitter.host}` : `emitter:${emitter.host}`,
-      type: option.format,
+      type: effectiveSourceType(option.format, option.url),
       url: option.url,
       officialPageUrl: isPlatform || option.format === 'official-embed' ? (record.webUrl ?? option.url) : record.webUrl,
       permission: publishable

@@ -20,7 +20,7 @@ import type {
 } from '@tdt/contracts';
 import type { DatabaseHandle } from '../../infrastructure/mongo.js';
 import { COLLECTIONS } from '../../infrastructure/mongo.js';
-import type { ChannelDoc, PlaybackSourceDoc } from '../../infrastructure/schema.js';
+import type { ChannelDoc, PlaybackSourceDoc, YoutubeChannelDoc } from '../../infrastructure/schema.js';
 import { compareSources, decidePublication, engineFor, isSourceHealthy } from './publication-policy.js';
 import { channelIdFromUrl } from './youtube-channel-cache.js';
 import { providerRegistry } from '../providers/providers.registry.js';
@@ -153,6 +153,14 @@ export function buildDescriptor(
   now: Date = new Date(),
   /** Resolved live video per YouTube channel id, read from our own cache. */
   resolvedVideos: ReadonlyMap<string, string> = new Map(),
+  /**
+   * YouTube channel ids we have checked and found NOT broadcasting.
+   *
+   * The distinction matters to the user: "we cannot see this channel" and "this
+   * channel is not on air right now" are different facts, and claiming live
+   * playback for the second one is exactly the bug this parameter prevents.
+   */
+  offlineChannels: ReadonlySet<string> = new Set(),
 ): PlaybackDescriptor {
   const issues = sourceIssues(sources, channel);
   const ordered = [...sources].sort(compareSources);
@@ -172,6 +180,36 @@ export function buildDescriptor(
     const options = inApp.map((source, index) => optionOf(source, index === 0, null, resolvedVideos));
     const primary = options[0];
     if (!primary) throw new Error('unreachable: inApp is not empty');
+
+    /*
+     * A channel whose only in-app source is a YouTube channel we resolved as
+     * offline is not offering live playback. Reporting `available` there made
+     * the app say "Ver en directo" and mount an empty player.
+     */
+    const onlyOfflineYoutube = options.every((option) => {
+      if (option.type !== 'youtube') return false;
+      const channelId = channelIdFromUrl(option.url);
+      return channelId !== null && offlineChannels.has(channelId) && !resolvedVideos.has(channelId);
+    });
+    if (onlyOfflineYoutube) {
+      const externalUrl = options.find((option) => option.externalUrl)?.externalUrl ?? channel.websiteUrl ?? null;
+      return {
+        channel: channelRef(channel),
+        playback: {
+          status: 'eventual',
+          engine: 'none',
+          type: null,
+          sourceId: null,
+          url: null,
+          externalUrl,
+          options: [],
+          reason: 'El canal emite por YouTube pero ahora mismo no tiene ninguna emisión en directo.',
+        },
+        checkedAt: now.toISOString(),
+        issues,
+      };
+    }
+
     return {
       channel: channelRef(channel),
       playback: {
@@ -250,34 +288,48 @@ export class PlaybackService {
     const channel = await this.findChannel(slug);
     if (!channel) return null;
     const sources = await this.sourcesFor(channel._id);
-    return buildDescriptor(channel, sources, new Date(), await this.resolvedVideosFor(sources));
+    const { videos, offline } = await this.youtubeStateFor(sources);
+    return buildDescriptor(channel, sources, new Date(), videos, offline);
   }
 
   /**
-   * The live video ids our resolution job has already stored, for the YouTube
-   * sources among these.
+   * What our resolution job knows about the YouTube channels behind these
+   * sources: the live video id when there is one, and which channels were
+   * checked and found not to be broadcasting.
    *
    * This is a database read, never a request to YouTube: the API must answer at
    * the speed of our own data no matter how many users ask.
    */
-  async resolvedVideosFor(sources: readonly PlaybackSourceDoc[]): Promise<Map<string, string>> {
+  async youtubeStateFor(
+    sources: readonly PlaybackSourceDoc[],
+  ): Promise<{ videos: Map<string, string>; offline: Set<string> }> {
     const channelIds = new Set<string>();
     for (const source of sources) {
       if (source.type !== 'youtube') continue;
       const channelId = channelIdFromUrl(source.url);
       if (channelId) channelIds.add(channelId);
     }
-    if (channelIds.size === 0) return new Map();
+    const videos = new Map<string, string>();
+    const offline = new Set<string>();
+    if (channelIds.size === 0) return { videos, offline };
     const rows = await this.database
-      .collection<import('../../infrastructure/schema.js').YoutubeChannelDoc>(COLLECTIONS.youtubeChannels)
-      .find({ _id: { $in: [...channelIds] }, state: 'live', videoId: { $ne: null } })
-      .project({ _id: 1, videoId: 1 })
+      .collection<YoutubeChannelDoc>(COLLECTIONS.youtubeChannels)
+      .find({ _id: { $in: [...channelIds] } })
+      .project({ _id: 1, videoId: 1, state: 1 })
       .toArray();
-    const resolved = new Map<string, string>();
     for (const row of rows) {
-      if (row.videoId) resolved.set(row._id, row.videoId);
+      if (row.state === 'live' && row.videoId) {
+        videos.set(row._id, row.videoId);
+      } else if (row.state === 'offline') {
+        offline.add(row._id);
+      }
     }
-    return resolved;
+    return { videos, offline };
+  }
+
+  /** @deprecated use `youtubeStateFor`; kept so older callers keep working. */
+  async resolvedVideosFor(sources: readonly PlaybackSourceDoc[]): Promise<Map<string, string>> {
+    return (await this.youtubeStateFor(sources)).videos;
   }
 
   /**

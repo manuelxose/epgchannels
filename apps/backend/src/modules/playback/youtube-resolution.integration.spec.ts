@@ -100,6 +100,26 @@ describe('descriptor with a resolved video', () => {
     expect(descriptor.playback.options[0]?.url).toBe(`https://www.youtube.com/channel/${CHANNEL_ID}/live`);
   });
 
+  it('never claims live playback for a channel we know is not broadcasting', () => {
+    const descriptor = buildDescriptor(
+      channelDoc(),
+      [youtubeSource('chan-1', `https://www.youtube.com/channel/${CHANNEL_ID}/live`)],
+      new Date(),
+      new Map(),
+      new Set([CHANNEL_ID]),
+    );
+    expect(descriptor.playback.status).not.toBe('available');
+    expect(descriptor.playback.url).toBeNull();
+    expect(descriptor.playback.reason).toContain('no tiene ninguna emisión en directo');
+  });
+
+  it('keeps a channel available while it is unresolved (we cannot tell yet)', () => {
+    const descriptor = buildDescriptor(
+      channelDoc(),
+      [youtubeSource('chan-1', `https://www.youtube.com/channel/${CHANNEL_ID}/live`)],
+    );
+    expect(descriptor.playback.status).toBe('available');
+  });
   it('leaves a video source untouched even when a channel resolves', () => {
     const descriptor = buildDescriptor(
       channelDoc(),
