@@ -248,7 +248,17 @@ export async function runIngestion(
   const knownChannels = new Map<string, string>(
     identities.map((view) => [view.key, view.channelId] as const),
   );
-  const takenSlugs = new Set(identities.map((view) => view.key));
+  /*
+   * Slugs must be unique across the WHOLE catalogue, so the seed has to be the
+   * slugs that already exist, not the identity keys (a key is `cc:name` and
+   * never matches a slug). Getting this wrong let two different channels both
+   * claim `cctv-3` and aborted the write with E11000 on slug_unique.
+   */
+  const existingChannels = await database
+    .collection<ChannelDoc>(COLLECTIONS.channels)
+    .find({}, { projection: { slug: 1 } })
+    .toArray();
+  const takenSlugs = new Set(existingChannels.map((doc) => doc.slug));
 
   const createdChannelIds: string[] = [];
   /* Only candidates this run actually INSERTED belong to it: a re-run upserts
@@ -333,6 +343,11 @@ export async function runIngestion(
       if (known !== null) {
         channelId = known;
       } else {
+        /*
+         * `identity.key` is unique per canonical channel (partial unique index,
+         * merged records excluded), so the key alone identifies the channel and
+         * deriving the id from it is deterministic across re-runs.
+         */
         channelId = stableId(idNamespace, key);
         const slug = uniqueSlugFrom(slugify(normalizedName !== '' ? normalizedName : candidate.name), takenSlugs);
         newChannels.push(newChannelDoc(candidate, channelId, slug, key, country, resolveLanguage(candidate), now));
