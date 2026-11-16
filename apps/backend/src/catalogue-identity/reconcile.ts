@@ -8,9 +8,17 @@
  * silently merged. `kind === 'same'` requires an exact normalized-name match
  * AND country AND `tvg-id` corroboration, and a differing regional/local
  * qualifier forces `review` even when everything else agrees.
+ *
+ * Performance: `reconcile(candidate, existing)` is a thin wrapper that builds
+ * an index and delegates to `reconcileIndexed`. The hot path is
+ * `buildIdentityIndex(views)` once, then `reconcileIndexed(candidate, index)`
+ * per candidate — the index scores only the plausible buckets (key, name
+ * tokens, tvg-id, host, country) instead of the whole catalogue, so per-call
+ * cost is sub-linear in the global catalogue size.
  */
 import {
   foldText,
+  identityKey,
   normalizeChannelName,
   normalizeCountry,
   stripProviderHint,
@@ -158,39 +166,215 @@ function nameSimilarity(a: string, b: string): number {
   return Math.min(dice, 0.7);
 }
 
-interface ScoredMatch {
+/** A channel view with every per-call normalisation precomputed once. */
+interface PreparedChannel {
   view: ChannelIdentityView;
+  normalizedName: string;
+  country: string | null;
+  variantRegion: string | null;
+  tvg: ReadonlyArray<{ base: string; country: string | null }>;
+  hosts: string[];
+}
+
+/**
+ * Immutable lookup index over known channels, bucketed by key, name token,
+ * tvg-id base, URL host and country. Build it once; reuse it for every
+ * candidate in the run.
+ */
+export interface IdentityIndex {
+  readonly byKey: ReadonlyMap<string, readonly PreparedChannel[]>;
+  readonly byToken: ReadonlyMap<string, readonly PreparedChannel[]>;
+  readonly byTvgBase: ReadonlyMap<string, readonly PreparedChannel[]>;
+  readonly byHost: ReadonlyMap<string, readonly PreparedChannel[]>;
+  readonly byCountry: ReadonlyMap<string, readonly PreparedChannel[]>;
+  readonly nullCountry: readonly PreparedChannel[];
+  readonly total: number;
+}
+
+function prepareChannel(view: ChannelIdentityView): PreparedChannel {
+  const normalizedName = normalizeChannelName(view.name);
+  const tvg: Array<{ base: string; country: string | null }> = [];
+  for (const raw of view.tvgIds ?? []) {
+    const parsed = parseTvgId(raw);
+    if (parsed.base !== null) {
+      tvg.push({ base: parsed.base, country: parsed.country });
+    }
+  }
+  const hosts: string[] = [];
+  for (const host of view.urlHosts ?? []) {
+    if (host !== '') {
+      hosts.push(host);
+    }
+  }
+  return {
+    view,
+    normalizedName,
+    country: normalizeCountry(view.country),
+    variantRegion: view.variantKey ? foldText(view.variantKey) : null,
+    tvg,
+    hosts,
+  };
+}
+
+function addBucket<K>(
+  map: Map<K, PreparedChannel[]>,
+  key: K,
+  value: PreparedChannel,
+): void {
+  const bucket = map.get(key);
+  if (bucket === undefined) {
+    map.set(key, [value]);
+  } else {
+    bucket.push(value);
+  }
+}
+
+/**
+ * Builds the reconciliation index over the known channel identities.
+ *
+ * Deterministic and independent of input array order (channels are deduplicated
+ * by `channelId`; bucket contents are only ever read as unordered sets).
+ */
+export function buildIdentityIndex(views: readonly ChannelIdentityView[]): IdentityIndex {
+  const byKey = new Map<string, PreparedChannel[]>();
+  const byToken = new Map<string, PreparedChannel[]>();
+  const byTvgBase = new Map<string, PreparedChannel[]>();
+  const byHost = new Map<string, PreparedChannel[]>();
+  const byCountry = new Map<string, PreparedChannel[]>();
+  const nullCountry: PreparedChannel[] = [];
+  const seen = new Set<string>();
+
+  for (const view of views) {
+    if (seen.has(view.channelId)) {
+      continue;
+    }
+    seen.add(view.channelId);
+    const prepared = prepareChannel(view);
+    addBucket(byKey, view.key, prepared);
+    for (const token of tokens(prepared.normalizedName)) {
+      addBucket(byToken, token, prepared);
+    }
+    for (const t of prepared.tvg) {
+      addBucket(byTvgBase, t.base, prepared);
+    }
+    for (const host of prepared.hosts) {
+      addBucket(byHost, host, prepared);
+    }
+    if (prepared.country === null) {
+      nullCountry.push(prepared);
+    } else {
+      addBucket(byCountry, prepared.country, prepared);
+    }
+  }
+
+  return { byKey, byToken, byTvgBase, byHost, byCountry, nullCountry, total: seen.size };
+}
+
+interface CandidateFacts {
+  candName: string;
+  candKey: string;
+  candTokens: string[];
+  candCountry: string | null;
+  candTvgBase: string | null;
+  candTvgCountry: string | null;
+  candHost: string | null;
+  candRegion: string | null;
+}
+
+function computeCandidateFacts(candidate: ReconcileCandidate): CandidateFacts {
+  const candName = normalizeChannelName(candidate.name);
+  const tvgRaw = candidate.attributes['tvg-id'] ?? candidate.attributes['tvg_id'] ?? null;
+  const candCountry = normalizeCountry(
+    candidate.country ?? candidate.attributes['tvg-country'] ?? null,
+  );
+  const candTvg = parseTvgId(tvgRaw);
+  return {
+    candName,
+    candKey: identityKey(candCountry, candName),
+    candTokens: tokens(candName),
+    candCountry,
+    candTvgBase: candTvg.base,
+    candTvgCountry: candTvg.country,
+    candHost: urlHostOf(candidate.url),
+    candRegion: regionQualifier(candidate.name),
+  };
+}
+
+/**
+ * Collects the plausible channels for a candidate: the exact-key bucket, every
+ * token bucket, the tvg-id base bucket, the host bucket, and (for a known
+ * country) the exact-country and null-country buckets.
+ *
+ * This set is a superset of every channel whose score can reach the review
+ * threshold, and of every channel with a non-zero score, so scoring only these
+ * views yields exactly the same decision as a full scan.
+ */
+function collectPrepared(facts: CandidateFacts, index: IdentityIndex): Map<string, PreparedChannel> {
+  const collected = new Map<string, PreparedChannel>();
+  const push = (bucket: readonly PreparedChannel[] | undefined): void => {
+    if (bucket === undefined) {
+      return;
+    }
+    for (const prepared of bucket) {
+      if (!collected.has(prepared.view.channelId)) {
+        collected.set(prepared.view.channelId, prepared);
+      }
+    }
+  };
+
+  push(index.byKey.get(facts.candKey));
+  for (const token of facts.candTokens) {
+    push(index.byToken.get(token));
+  }
+  if (facts.candTvgBase !== null) {
+    push(index.byTvgBase.get(facts.candTvgBase));
+  }
+  if (facts.candHost !== null) {
+    push(index.byHost.get(facts.candHost));
+  }
+  if (facts.candCountry !== null) {
+    push(index.byCountry.get(facts.candCountry));
+    push(index.nullCountry);
+  }
+  return collected;
+}
+
+/**
+ * Returns the plausible channels a candidate will be scored against. Exposed
+ * for diagnostics and to prove that the lookup is bucketed (sub-linear in the
+ * global catalogue size) rather than a full scan.
+ */
+export function collectCandidateViews(
+  candidate: ReconcileCandidate,
+  index: IdentityIndex,
+): ChannelIdentityView[] {
+  const collected = collectPrepared(computeCandidateFacts(candidate), index);
+  return [...collected.values()].map((prepared) => prepared.view);
+}
+
+interface ScoredMatch {
+  prepared: PreparedChannel;
   signals: MatchSignals;
   score: number;
 }
 
-function scoreAgainst(
-  candidate: ReconcileCandidate,
-  candName: string,
-  candCountry: string | null,
-  candTvg: ParsedTvgId,
-  candHost: string | null,
-  view: ChannelIdentityView,
-): ScoredMatch {
-  const viewName = normalizeChannelName(view.name);
-  const name = nameSimilarity(candName, viewName);
+function scorePrepared(facts: CandidateFacts, prepared: PreparedChannel): ScoredMatch {
+  const name = nameSimilarity(facts.candName, prepared.normalizedName);
 
-  const viewCountry = normalizeCountry(view.country);
   let country: number;
-  if (candCountry !== null && viewCountry !== null) {
-    country = candCountry === viewCountry ? 1 : 0;
-  } else if (candCountry === null && viewCountry === null) {
+  if (facts.candCountry !== null && prepared.country !== null) {
+    country = facts.candCountry === prepared.country ? 1 : 0;
+  } else if (facts.candCountry === null && prepared.country === null) {
     country = 0.5;
   } else {
     country = 0.5;
   }
 
   let tvgId = 0;
-  if (candTvg.base !== null) {
-    for (const raw of view.tvgIds) {
-      const vt = parseTvgId(raw);
-      if (vt.base !== null && vt.base === candTvg.base) {
-        if (vt.country === null || candTvg.country === null || vt.country === candTvg.country) {
+  if (facts.candTvgBase !== null) {
+    for (const t of prepared.tvg) {
+      if (t.base === facts.candTvgBase) {
+        if (t.country === null || facts.candTvgCountry === null || t.country === facts.candTvgCountry) {
           tvgId = 1;
           break;
         }
@@ -199,9 +383,9 @@ function scoreAgainst(
   }
 
   let urlHost = 0;
-  if (candHost !== null) {
-    for (const host of view.urlHosts) {
-      if (host === candHost) {
+  if (facts.candHost !== null) {
+    for (const host of prepared.hosts) {
+      if (host === facts.candHost) {
         urlHost = 1;
         break;
       }
@@ -210,7 +394,7 @@ function scoreAgainst(
 
   const score =
     W_NAME * name + W_COUNTRY * country + W_TVG_ID * tvgId + W_URL_HOST * urlHost;
-  return { view, signals: { name, country, tvgId, urlHost }, score };
+  return { prepared, signals: { name, country, tvgId, urlHost }, score };
 }
 
 function describeReview(name: number, country: number, tvgId: number): string {
@@ -230,54 +414,8 @@ function describeReview(name: number, country: number, tvgId: number): string {
   return `manual review: ${parts.join('; ')}`;
 }
 
-/**
- * Reconciles one candidate against the known channel identities.
- *
- * Returns `same` only when the normalized name matches exactly AND both the
- * country and the `tvg-id` corroborate — and never when a regional/local
- * qualifier differs. Anything uncertain returns `review`; weak matches return
- * `different` with `channelId: null`.
- */
-export function reconcile(
-  candidate: ReconcileCandidate,
-  existing: ChannelIdentityView[],
-): MatchDecision {
-  const candName = normalizeChannelName(candidate.name);
-  const tvgRaw = candidate.attributes['tvg-id'] ?? candidate.attributes['tvg_id'] ?? null;
-  const candCountry = normalizeCountry(
-    candidate.country ?? candidate.attributes['tvg-country'] ?? null,
-  );
-  const candTvg = parseTvgId(tvgRaw);
-  const candHost = urlHostOf(candidate.url);
-  const candRegion = regionQualifier(candidate.name);
-
-  if (existing.length === 0) {
-    return {
-      kind: 'different',
-      score: 0,
-      signals: { name: 0, country: 0, tvgId: 0, urlHost: 0 },
-      channelId: null,
-      reason: 'no existing canonical channels',
-    };
-  }
-
-  // Sort by channelId so the winner is deterministic and independent of input
-  // array order (ties keep the lowest channelId).
-  const sorted = [...existing].sort((x, y) => {
-    if (x.channelId < y.channelId) return -1;
-    if (x.channelId > y.channelId) return 1;
-    return 0;
-  });
-
-  let best: ScoredMatch | null = null;
-  for (const view of sorted) {
-    const scored = scoreAgainst(candidate, candName, candCountry, candTvg, candHost, view);
-    if (best === null || scored.score > best.score) {
-      best = scored;
-    }
-  }
-
-  const winner = best as ScoredMatch;
+/** Determines the decision from the winning match, exactly as the naive scan. */
+function decide(facts: CandidateFacts, winner: ScoredMatch): MatchDecision {
   const { name, country, tvgId, urlHost } = winner.signals;
   const signals: MatchSignals = { name, country, tvgId, urlHost };
 
@@ -291,17 +429,19 @@ export function reconcile(
     };
   }
 
-  const existingRegion = winner.view.variantKey
-    ? foldText(winner.view.variantKey)
-    : null;
-  const regionConflict = (candRegion ?? null) !== (existingRegion ?? null);
-
+  const regionConflict = (facts.candRegion ?? null) !== (winner.prepared.variantRegion ?? null);
   if (regionConflict) {
     const reason =
-      candRegion !== null && existingRegion !== null
-        ? `regional/local qualifier differs (${candRegion} vs ${existingRegion})`
-        : `regional/local variant detected (${candRegion ?? existingRegion ?? 'unknown'})`;
-    return { kind: 'review', score: winner.score, signals, channelId: winner.view.channelId, reason };
+      facts.candRegion !== null && winner.prepared.variantRegion !== null
+        ? `regional/local qualifier differs (${facts.candRegion} vs ${winner.prepared.variantRegion})`
+        : `regional/local variant detected (${facts.candRegion ?? winner.prepared.variantRegion ?? 'unknown'})`;
+    return {
+      kind: 'review',
+      score: winner.score,
+      signals,
+      channelId: winner.prepared.view.channelId,
+      reason,
+    };
   }
 
   if (name === 1 && country === 1 && tvgId === 1 && winner.score >= SAME_THRESHOLD) {
@@ -309,7 +449,7 @@ export function reconcile(
       kind: 'same',
       score: winner.score,
       signals,
-      channelId: winner.view.channelId,
+      channelId: winner.prepared.view.channelId,
       reason: 'name, country and tvg-id agree',
     };
   }
@@ -318,7 +458,113 @@ export function reconcile(
     kind: 'review',
     score: winner.score,
     signals,
-    channelId: winner.view.channelId,
+    channelId: winner.prepared.view.channelId,
     reason: describeReview(name, country, tvgId),
   };
+}
+
+/**
+ * Reconciles one candidate against a pre-built `IdentityIndex`.
+ *
+ * Deterministic and independent of the index build order; ties are broken by
+ * the lowest `channelId`, exactly as the naive scan.
+ */
+export function reconcileIndexed(
+  candidate: ReconcileCandidate,
+  index: IdentityIndex,
+): MatchDecision {
+  const facts = computeCandidateFacts(candidate);
+
+  if (index.total === 0) {
+    return {
+      kind: 'different',
+      score: 0,
+      signals: { name: 0, country: 0, tvgId: 0, urlHost: 0 },
+      channelId: null,
+      reason: 'no existing canonical channels',
+    };
+  }
+
+  const collected = collectPrepared(facts, index);
+
+  let best: ScoredMatch | null = null;
+  for (const prepared of collected.values()) {
+    const scored = scorePrepared(facts, prepared);
+    if (
+      best === null ||
+      scored.score > best.score ||
+      (scored.score === best.score && prepared.view.channelId < best.prepared.view.channelId)
+    ) {
+      best = scored;
+    }
+  }
+
+  if (best === null) {
+    // No plausible view: every channel has a zero non-country signal, so the
+    // whole catalogue scores either 0 (known candidate country) or 0.125
+    // (unknown candidate country, which makes every country signal neutral).
+    const country = facts.candCountry === null ? 0.5 : 0;
+    const score = facts.candCountry === null ? 0.125 : 0;
+    return {
+      kind: 'different',
+      score,
+      signals: { name: 0, country, tvgId: 0, urlHost: 0 },
+      channelId: null,
+      reason: `no sufficient match (score ${score.toFixed(3)} below ${REVIEW_THRESHOLD})`,
+    };
+  }
+
+  return decide(facts, best);
+}
+
+/**
+ * Reference full-scan implementation (`O(n)` per call). It is kept as the
+ * correctness oracle for `reconcileIndexed` and for one-off calls; the
+ * ingestion hot path should use `buildIdentityIndex` + `reconcileIndexed`.
+ */
+export function reconcileNaive(
+  candidate: ReconcileCandidate,
+  existing: readonly ChannelIdentityView[],
+): MatchDecision {
+  const facts = computeCandidateFacts(candidate);
+
+  if (existing.length === 0) {
+    return {
+      kind: 'different',
+      score: 0,
+      signals: { name: 0, country: 0, tvgId: 0, urlHost: 0 },
+      channelId: null,
+      reason: 'no existing canonical channels',
+    };
+  }
+
+  const sorted = [...existing].sort((x, y) => {
+    if (x.channelId < y.channelId) return -1;
+    if (x.channelId > y.channelId) return 1;
+    return 0;
+  });
+
+  let best: ScoredMatch | null = null;
+  for (const view of sorted) {
+    const scored = scorePrepared(facts, prepareChannel(view));
+    if (best === null || scored.score > best.score) {
+      best = scored;
+    }
+  }
+
+  return decide(facts, best as ScoredMatch);
+}
+
+/**
+ * Reconciles one candidate against a fresh list of known channels.
+ *
+ * This builds an index and delegates to `reconcileIndexed`; for many candidates
+ * against the same catalogue, build the index once and call `reconcileIndexed`
+ * directly.
+ */
+export function reconcile(
+  candidate: ReconcileCandidate,
+  existing: ChannelIdentityView[],
+): MatchDecision {
+  return reconcileIndexed(candidate, buildIdentityIndex(existing));
 }
