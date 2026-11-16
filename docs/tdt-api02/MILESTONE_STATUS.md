@@ -1,8 +1,54 @@
-# MILESTONE_STATUS — TDT-API-02A
+# MILESTONE_STATUS — TDT-API-02
+
+> Este documento describe ahora el milestone **activo: 02B**. El estado de cierre de 02A se conserva
+> íntegro en la sección histórica al final del fichero.
+
+---
+
+# TDT-API-02B — Global Channel Catalogue & Independent Ingestion
 
 **Estado global: IN_PROGRESS** (se actualizará a `PASS`/`PARTIAL`/`BLOCKED`/`FAIL` al cierre).
 
 Última actualización: 2026-11-16.
+
+## Identidad y Git
+
+| Dato | Valor |
+|---|---|
+| Repositorio | `tdt-api01` (`origin` = `github.com/manuelxose/epgchannels.git`) |
+| SHA base verificado | `671a42fa226e0ea8995badfee3544b9de0655008` (`main` == `origin/main`, 02A fusionado) |
+| Rama del milestone | `feat/tdt-api02-b-global-catalogue` |
+| CI/CD existente | **No** (sin `.github/`) → el merge no dispara ningún despliegue |
+| Snapshots upstream | `data/snapshots/` **no versionado** (D-014) |
+
+## Alcance
+
+Ingesta original de listados M3U/M3U8 desde snapshots acotados y versionados, con identidad de canal
+canónica, reconciliación determinista con revisión manual, catálogo privado de staging, modelos
+MongoDB con migraciones reversibles y cobertura de pruebas con cifras reales.
+
+## No-objetivos
+
+- No se corrigen SEC-01/SEC-02/R2 (pertenecen a su propio trabajo; siguen abiertos).
+- No se publica ningún dato de Free-TV (sin licencia, D-012).
+- No se exponen `identity` ni las nuevas colecciones en la API pública (decisión de 02C).
+- No se añade CI/CD (R3).
+
+## Defecto de planificación registrado (corregido)
+
+`t6` (revisión independiente) se creó **sin dependencias**, por lo que el scheduler la despachó antes
+de que existiera código. El revisor devolvió correctamente `reject` con dos bloqueantes
+(`TDT02B-REV-001/002`: el entregable no existía). **La revisión no era inválida; el grafo sí.** Se
+sustituye por `t7`, con dependencia explícita de `t5`. Lección para 02C: *toda tarea de revisión nace
+con `dependencies: [<tarea integradora>]`; aprobar un plan no valida su grafo.*
+
+---
+
+## Estado histórico — TDT-API-02A
+
+**Estado final: PASS** (revisión independiente fuera de AgentTeams; limitación ENGINE-04 documentada).
+
+# MILESTONE_STATUS — TDT-API-02A (histórico)
 
 ---
 
