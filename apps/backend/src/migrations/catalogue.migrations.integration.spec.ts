@@ -203,7 +203,13 @@ describe('catalogue migrations on a real database', () => {
       [COLLECTIONS.channels]: ['identity_key_unique', 'identity_country_language'],
       [COLLECTIONS.sourceSnapshots]: ['snapshot_upstream_retrieved', 'snapshot_identity_unique'],
       [COLLECTIONS.sourceCandidates]: [
-        'candidate_snapshot_url_line_unique',
+        /*
+         * The natural key now includes provenance.upstreamPath. A line number is
+         * only unique inside one upstream file, and omitting the path let two
+         * files of the same snapshot collide on the same URL and line (E11000),
+         * aborting a real ingest. Migration 007 replaces the previous index.
+         */
+        'candidate_line_in_file_unique',
         'candidate_url',
         'candidate_channel_state',
         'candidate_state_upstream',
