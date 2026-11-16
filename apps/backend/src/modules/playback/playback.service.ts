@@ -22,6 +22,7 @@ import type { DatabaseHandle } from '../../infrastructure/mongo.js';
 import { COLLECTIONS } from '../../infrastructure/mongo.js';
 import type { ChannelDoc, PlaybackSourceDoc } from '../../infrastructure/schema.js';
 import { compareSources, decidePublication, engineFor, isSourceHealthy } from './publication-policy.js';
+import { channelIdFromUrl } from './youtube-channel-cache.js';
 import { providerRegistry } from '../providers/providers.registry.js';
 
 export interface PlaybackLookup {
@@ -71,11 +72,29 @@ export function sourceIssues(
   return issues;
 }
 
-function optionOf(source: PlaybackSourceDoc, preferred: boolean, externalFallback: string | null): PlaybackOption {
-  const url = source.url ?? externalFallback;
-  if (!url) {
+function optionOf(
+  source: PlaybackSourceDoc,
+  preferred: boolean,
+  externalFallback: string | null,
+  resolvedVideos: ReadonlyMap<string, string> = new Map(),
+): PlaybackOption {
+  const base = source.url ?? externalFallback;
+  if (!base) {
     throw new Error(`Source ${source._id} has no addressable URL.`);
   }
+  /*
+   * A YouTube source that points at a CHANNEL page (`/channel/<id>/live`) is not
+   * addressable by the official player: it refuses a channel id (measured:
+   * "Invalid video id"). When our resolution cache knows the video the channel is
+   * broadcasting, the descriptor hands the client that video, so playback is
+   * observable instead of an opaque frame that can only report "paused".
+   *
+   * When the channel has not been resolved yet, the channel page is kept as the
+   * address and the client falls back to the official page rather than guessing.
+   */
+  const channelId = source.type === 'youtube' ? channelIdFromUrl(base) : null;
+  const resolvedVideoId = channelId ? resolvedVideos.get(channelId) : undefined;
+  const url = resolvedVideoId ? `https://www.youtube.com/watch?v=${resolvedVideoId}` : base;
   return {
     sourceId: source._id,
     label: labelFor(source),
@@ -83,7 +102,7 @@ function optionOf(source: PlaybackSourceDoc, preferred: boolean, externalFallbac
     engine: engineFor(source),
     url,
     externalUrl: source.type === 'youtube' || source.type === 'official-embed' || source.type === 'external'
-      ? (source.officialPageUrl ?? (source.type === 'youtube' ? source.url : null))
+      ? (source.officialPageUrl ?? (source.type === 'youtube' ? base : null))
       : (source.officialPageUrl ?? null),
     geoRestricted: !source.conditions.worldwide,
     preferred,
@@ -132,6 +151,8 @@ export function buildDescriptor(
   channel: ChannelDoc,
   sources: readonly PlaybackSourceDoc[],
   now: Date = new Date(),
+  /** Resolved live video per YouTube channel id, read from our own cache. */
+  resolvedVideos: ReadonlyMap<string, string> = new Map(),
 ): PlaybackDescriptor {
   const issues = sourceIssues(sources, channel);
   const ordered = [...sources].sort(compareSources);
@@ -148,7 +169,7 @@ export function buildDescriptor(
   });
 
   if (inApp.length > 0) {
-    const options = inApp.map((source, index) => optionOf(source, index === 0, null));
+    const options = inApp.map((source, index) => optionOf(source, index === 0, null, resolvedVideos));
     const primary = options[0];
     if (!primary) throw new Error('unreachable: inApp is not empty');
     return {
@@ -229,7 +250,34 @@ export class PlaybackService {
     const channel = await this.findChannel(slug);
     if (!channel) return null;
     const sources = await this.sourcesFor(channel._id);
-    return buildDescriptor(channel, sources);
+    return buildDescriptor(channel, sources, new Date(), await this.resolvedVideosFor(sources));
+  }
+
+  /**
+   * The live video ids our resolution job has already stored, for the YouTube
+   * sources among these.
+   *
+   * This is a database read, never a request to YouTube: the API must answer at
+   * the speed of our own data no matter how many users ask.
+   */
+  async resolvedVideosFor(sources: readonly PlaybackSourceDoc[]): Promise<Map<string, string>> {
+    const channelIds = new Set<string>();
+    for (const source of sources) {
+      if (source.type !== 'youtube') continue;
+      const channelId = channelIdFromUrl(source.url);
+      if (channelId) channelIds.add(channelId);
+    }
+    if (channelIds.size === 0) return new Map();
+    const rows = await this.database
+      .collection<import('../../infrastructure/schema.js').YoutubeChannelDoc>(COLLECTIONS.youtubeChannels)
+      .find({ _id: { $in: [...channelIds] }, state: 'live', videoId: { $ne: null } })
+      .project({ _id: 1, videoId: 1 })
+      .toArray();
+    const resolved = new Map<string, string>();
+    for (const row of rows) {
+      if (row.videoId) resolved.set(row._id, row.videoId);
+    }
+    return resolved;
   }
 
   /**

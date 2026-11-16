@@ -106,6 +106,14 @@ export const configSchema = z.object({
 
   /** Optional YouTube Data API key for resolving /channel/<id>/live. */
   YOUTUBE_API_KEY: z.string().min(10).optional(),
+  /*
+   * YouTube channel resolution. The scheduled job is what keeps playback
+   * observable for the ~200 catalogue channels that publish a channel page
+   * instead of a video; the API itself never contacts YouTube.
+   */
+  YOUTUBE_RESOLVE_INTERVAL_MINUTES: z.coerce.number().int().min(1).max(1440).default(5),
+  /** Channels resolved per run: the only knob that sets the external request rate. */
+  YOUTUBE_RESOLVE_BATCH: z.coerce.number().int().min(1).max(500).default(40),
 });
 export type Config = z.infer<typeof configSchema>;
 

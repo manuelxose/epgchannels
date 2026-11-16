@@ -178,6 +178,32 @@ export interface JobRunDoc {
   details: Record<string, unknown>;
 }
 
+/**
+ * One row per YouTube CHANNEL we resolve, not per source or per visitor.
+ *
+ * This is what makes the feature scale: a channel is read from YouTube once and
+ * then served from our database to every visitor. The row is keyed by the
+ * YouTube channel id, so two channels sharing an emitter share one row.
+ */
+export interface YoutubeChannelDoc {
+  /** The YouTube channel id (`UC…`), which is the natural key. */
+  _id: string;
+  /** The live video id last observed, or null when the channel was not live. */
+  videoId: string | null;
+  /** How the last attempt ended. */
+  state: 'live' | 'offline' | 'unavailable';
+  /** When the resolution last succeeded (a live video or a definite offline). */
+  resolvedAt: Date | null;
+  /** When the next attempt is due; the job and the API both read this. */
+  nextCheckAt: Date;
+  /** Consecutive failures, used for back-off so a broken channel does not hog the budget. */
+  failures: number;
+  /** Last failure reason, for the operations view. */
+  lastError: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface IntegrityRefusalDoc {
   _id: string;
   runId: string;
@@ -248,4 +274,8 @@ export async function ensureIndexes(db: Db): Promise<void> {
   await db
     .collection<IntegrityRefusalDoc>(COLLECTIONS.integrityRefusals)
     .createIndexes([{ key: { runId: 1 }, name: 'run' }]);
+
+  await db
+    .collection<YoutubeChannelDoc>(COLLECTIONS.youtubeChannels)
+    .createIndexes([{ key: { nextCheckAt: 1, failures: 1 }, name: 'resolution_queue' }]);
 }

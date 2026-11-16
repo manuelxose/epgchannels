@@ -20,6 +20,7 @@ export const COLLECTIONS = {
   jobRuns: 'job_runs',
   integrityRefusals: 'integrity_refusals',
   migrationLedger: 'migration_ledger',
+  youtubeChannels: 'youtube_channels',
 } as const;
 
 export type CollectionName = (typeof COLLECTIONS)[keyof typeof COLLECTIONS];
