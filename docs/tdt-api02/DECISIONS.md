@@ -91,7 +91,22 @@ Formato: `D-0NN` · fecha · estado (`ADOPTADA`, `SUSTITUIDA`, `PENDIENTE`).
 
 ## D-010 — `country: 'INT'` es una incompatibilidad de contrato a resolver en 02B
 
-- **Estado:** PENDIENTE (decisión de 02B)
+- **Estado:** ADOPTADA en 02B (2026-11-16) — opción (b), sin cambiar el contrato público
+- **Decisión 02B:** el campo público `country` **no cambia**. Un catálogo global necesita países
+  reales, así que la identidad canónica vive en `identity.country` (ISO 3166-1 alpha-2 **o `null`
+  cuando el país es genuinamente desconocido**), y `identity.scope` expresa
+  `national | regional | local | international`. El `country` de primer nivel se queda como
+  agregado de compatibilidad (`'ES'` para España, `'INT'` para el resto), que **no** es una
+  afirmación de nacionalidad. Nada se inventa: si el upstream no declara país, `identity.country`
+  es `null` y el registro entra en revisión manual.
+- **Por qué (b):** (a) habría metido un pseudopaís `INT`/`INTL` en un campo que los clientes usan
+  como país, y `INTL` ni siquiera casa con `countryCodeSchema`; romper el contrato en 02B exigiría
+  regenerar SDK y OpenAPI por una necesidad que se resuelve con un campo nuevo.
+- **Consecuencia:** `identity` es aditivo y opcional para registros antiguos; `countryCodeSchema`
+  y la forma de `/api/v1` no se tocan en 02B. La decisión de exponer `identity` en la API pública
+  es de 02C.
+
+## D-010-bis — Contexto original (conservado)
 - **Contexto:** el importador escribe `country: 'ES' | 'INT'` (`catalogue-import.ts:226`,
   `migration-executor.ts:172`), pero `countryCodeSchema` exige `^[A-Z]{2}$`
   (`packages/contracts/src/common.ts:29-31`). `INT` cumple el patrón (3 letras), `INTL` **no**.
@@ -105,3 +120,51 @@ Formato: `D-0NN` · fecha · estado (`ADOPTADA`, `SUSTITUIDA`, `PENDIENTE`).
 - **Estado:** ADOPTADA
 - **Decisión:** los tests de seguridad (SSRF, API key) usan canarios ficticios y servidores locales
   desechables. Ningún secreto real se envía fuera del host ni aparece en evidencias.
+
+## D-012 — Licencia de iptv-org conciliada: dominio público; Free-TV sigue bloqueado
+
+- **Estado:** ADOPTADA (2026-11-16, 02B)
+- **Evidencia medida (no inferida):**
+  - `https://api.github.com/repos/iptv-org/iptv` → `license.spdx_id: "Unlicense"`.
+  - `LICENSE` en `master` descargado y leído: texto literal de *Unlicense* («This is free and
+    unencumbered software released into the public domain»), 1 235 bytes.
+  - El README muestra un badge CC0. **Ambas declaraciones son renuncias a derechos**, no exigen
+    atribución y permiten copiar, modificar y redistribuir. La contradicción aparente no cambia el
+    derecho de reutilización; se registra la discrepancia en la procedencia de la fuente.
+  - `https://api.github.com/repos/Free-TV/IPTV` → `license: null`; `LICENSE` en `master` → **HTTP
+    404**. Sigue sin licencia declarada.
+- **Decisión:** iptv-org se ingiere en la **catalogación privada (staging)** con procedencia
+  completa y queda **elegible para publicación** solo tras autorización del emisor
+  (`SourceAuthorization` + `publication-policy`). Free-TV se ingiere **exclusivamente en staging**
+  y es **nunca publicable** (`reuse: unlicensed`).
+- **Consecuencia:** D-004 queda resuelta para iptv-org y **reforzada** para Free-TV. La licencia del
+  repositorio sigue sin autorizar la redifusión del stream (D-003); esta decisión solo cubre el
+  *listado*.
+
+## D-013 — Política de reconciliación: incertidumbre va a revisión, nunca a fusión
+
+- **Estado:** ADOPTADA (2026-11-16, 02B)
+- **Decisión:** la asignación de un *source candidate* a un canal canónico es determinista y
+  puntuada. Tres bandas: `different` (< `REVIEW_THRESHOLD`), `review` (entre umbrales), `same`
+  (≥ `SAME_THRESHOLD`). Solo `same` crea vínculo automático; `review` encola
+  `ReconciliationReview` para una persona. **Un calificador regional o local distinto fuerza
+  `review` y jamás `same`**, aunque el nombre coincida al 100 %.
+- **Por qué:** el fallo más caro del producto sería fundir una emisora autonómica o local con otra
+  (información falsa al usuario, pérdida de identidad irrecuperable en el histórico). Un falso
+  duplicado en revisión cuesta trabajo manual; una fusión incorrecta cuesta credibilidad.
+- **Consecuencia:** la puntuación y sus señales se publican en el informe
+  (`INFORME-INGESTA-02B.md`) y cada decisión guarda sus señales para auditoría posterior.
+
+## D-014 — Los snapshots upstream viven fuera de Git y son la única entrada de ingesta
+
+- **Estado:** ADOPTADA (2026-11-16, 02B)
+- **Contexto:** el producto no puede depender de GitHub en runtime, y el volumen de los listados
+  upstream (≈4 MB y creciendo) haría insostenible el repositorio además de repartir datos ajenos sin
+  necesidad.
+- **Decisión:** `data/fetch-snapshots.mjs` (herramienta de mantenimiento, único punto con red)
+  captura directorios inmutables `data/snapshots/<upstream>-<fecha>/` con `manifest.json`
+  (commit SHA, `retrievedAt`, licencia, SHA-256 por fichero). `data/` **no se versiona**. La ingesta
+  consume exclusivamente un snapshot verificado; un digest que no casa rechaza el snapshot completo.
+- **Consecuencia:** reproducir las cifras del milestone exige recapturar (o pedir el snapshot); el
+  `manifest.json` del snapshot usado se adjunta en la evidencia del milestone con su digest.
+
