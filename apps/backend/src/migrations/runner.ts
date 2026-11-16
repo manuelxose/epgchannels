@@ -17,6 +17,7 @@ import { EPG_SOURCE_SEED } from '../scripts/seed-data.js';
 import { buildCatalogueIdentityMigration } from './004-catalogue-identity.js';
 import { buildSourceSnapshotProvenanceMigration } from './005-source-snapshot-provenance.js';
 import { buildIncrementalDedupMigration } from './006-incremental-dedup.js';
+import { buildCandidateNaturalKeyMigration } from './007-candidate-natural-key.js';
 
 interface LedgerEntry {
   _id: string;
@@ -78,6 +79,7 @@ export function buildMigrations(database: DatabaseHandle): Migration[] {
     buildCatalogueIdentityMigration(database),
     buildSourceSnapshotProvenanceMigration(database),
     buildIncrementalDedupMigration(database),
+    buildCandidateNaturalKeyMigration(database),
   ];
 }
 

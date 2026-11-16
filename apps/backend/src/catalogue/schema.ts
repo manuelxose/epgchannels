@@ -282,10 +282,20 @@ export const SNAPSHOT_INDEXES: readonly CatalogueIndex[] = [
 
 export const CANDIDATE_INDEXES: readonly CatalogueIndex[] = [
   {
-    key: { snapshotId: 1, urlSha256: 1, 'provenance.line': 1 },
-    name: 'candidate_snapshot_url_line_unique',
+    /*
+     * The natural key of a candidate is the LINE IT WAS FOUND ON, and a line
+     * number is only unique within one upstream file. Without
+     * `provenance.upstreamPath` two different files of the same snapshot that
+     * carry the same URL on the same line number collide (E11000), which aborts
+     * a real ingest — the captured iptv-org snapshot reproduces it. The name is
+     * new because MongoDB cannot alter an existing index's key in place:
+     * migration 007 drops the old `candidate_snapshot_url_line_unique` first.
+     */
+    key: { snapshotId: 1, 'provenance.upstreamPath': 1, urlSha256: 1, 'provenance.line': 1 },
+    name: 'candidate_line_in_file_unique',
     unique: true,
   },
+  { key: { 'provenance.upstreamPath': 1 }, name: 'candidate_upstream_path' },
   { key: { urlSha256: 1 }, name: 'candidate_url' },
   { key: { channelId: 1, state: 1 }, name: 'candidate_channel_state' },
   { key: { state: 1, upstream: 1 }, name: 'candidate_state_upstream' },
