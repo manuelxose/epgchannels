@@ -41,8 +41,16 @@ export interface AdapterDescriptor {
   readonly providerKinds: readonly ProviderKind[];
   /** The authorization modality required before serving. */
   readonly requiresAuthorization: AuthorisationRequirement;
-  /** The single class an eligible source of this adapter resolves to. */
-  readonly grants: Extract<EligibilityClass, 'permitted-direct-playback' | 'permitted-official-embed'>;
+  /**
+   * The single class an eligible source of this adapter resolves to. `restricted`
+   * and `unresolved` are absence-of-right states, so no adapter can ever grant
+   * them; `external-link-only` is included because a link is a real, corroborated
+   * integration rather than an in-app playback.
+   */
+  readonly grants: Extract<
+    EligibilityClass,
+    'permitted-direct-playback' | 'permitted-official-embed' | 'external-link-only'
+  >;
   /** The authorised method this adapter implements. */
   readonly method: AuthorisedMethod;
   /** Territory scope the adapter is willing to serve; `null` means any recorded. */
@@ -73,8 +81,23 @@ function satisfies(adapter: ProviderAdapter, record: AuthorizationRecord): Adapt
   const d = adapter.descriptor;
   if (!d.enabled) return { satisfied: false, reason: 'adapter-disabled' };
   if (record.verdict !== d.grants) return { satisfied: false, reason: 'class-not-granted-by-adapter' };
-  if (!permitsPublicPlayback(record.verdict)) return { satisfied: false, reason: 'class-does-not-permit-playback' };
-  if (record.basis !== d.requiresAuthorization) {
+  /*
+   * A link is an admissible outcome, so an adapter that grants
+   * `external-link-only` is corroborated by that class; every other adapter still
+   * requires a real playback-permitting class.
+   */
+  if (!permitsPublicPlayback(record.verdict) && d.grants !== 'external-link-only') {
+    return { satisfied: false, reason: 'class-does-not-permit-playback' };
+  }
+  /*
+   * A written licence is strictly stronger than published terms: if an adapter
+   * only needs the emitter's published terms, an executed licence we hold also
+   * satisfies it. The reverse is never true.
+   */
+  const basisSatisfied =
+    record.basis === d.requiresAuthorization ||
+    (d.requiresAuthorization === 'published-terms' && record.basis === 'written-licence');
+  if (!basisSatisfied) {
     return { satisfied: false, reason: `requires-${d.requiresAuthorization}` };
   }
   if (record.method !== d.method) return { satisfied: false, reason: 'method-mismatch' };
@@ -164,6 +187,38 @@ export function officialEmbedAdapter(): ProviderAdapter {
   return adapter;
 }
 
+/**
+ * Emitter-player-only integrations: we may only offer a LINK to the emitter's own
+ * page, never an in-app playback.
+ *
+ * This is a real adapter rather than a special case in the gate, so a link-only
+ * right is corroborated by the same machinery as every other class: class,
+ * modality, origin kind and method are all checked here. Removing it would let an
+ * `external-link-only` record short-circuit past class and modality checks.
+ */
+export function externalLinkAdapter(): ProviderAdapter {
+  const adapter: ProviderAdapter = {
+    descriptor: {
+      id: 'external-link',
+      name: 'Acceso externo (enlace al emisor)',
+      types: ['external'],
+      providerKinds: ['broadcaster', 'broadcaster_cdn', 'fast_platform', 'platform'],
+      requiresAuthorization: 'published-terms',
+      grants: 'external-link-only',
+      method: 'external-link',
+      territoryScope: null,
+      attribution: { required: true, notice: 'Se abre en la web del emisor.' },
+      platform: null,
+      description:
+        'Solo enlace a la página oficial del emisor. No es reproducción dentro de la aplicación y no se proxifica ni se incrusta la señal.',
+      enabled: true,
+    },
+    accepts: (type) => type === 'external',
+    verify: (record) => satisfies(adapter, record),
+  };
+  return adapter;
+}
+
 export class DuplicateAdapterError extends Error {
   constructor(id: string) {
     super(`Provider adapter "${id}" is already registered.`);
@@ -220,7 +275,12 @@ export class ProviderAdapterRegistry {
 
 /** The default registry: every built-in adapter, registered explicitly. */
 export function createDefaultAdapterRegistry(): ProviderAdapterRegistry {
-  return new ProviderAdapterRegistry([broadcasterDirectAdapter(), youtubeEmbedAdapter(), officialEmbedAdapter()]);
+  return new ProviderAdapterRegistry([
+    broadcasterDirectAdapter(),
+    youtubeEmbedAdapter(),
+    officialEmbedAdapter(),
+    externalLinkAdapter(),
+  ]);
 }
 
 export const providerAdapterRegistry = createDefaultAdapterRegistry();

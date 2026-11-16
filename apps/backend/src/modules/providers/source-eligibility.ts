@@ -54,6 +54,8 @@ export type SourceEligibility =
  */
 export function decideSourceEligibility(input: SourceEligibilityInput): SourceEligibility {
   const registry = input.registry ?? providerAdapterRegistry;
+  /** An `external` source is a link to the emitter's own player, never in-app playback. */
+  const isExternal = input.type === 'external';
 
   // Existing policy first: an unauthorised-by-policy source stays refused, and we
   // still evaluate eligibility so the report can say *both* reasons.
@@ -61,7 +63,13 @@ export function decideSourceEligibility(input: SourceEligibilityInput): SourceEl
   const eligibility = decideEligibility({
     record: input.authorization,
     now: input.now,
-    forInAppPlayback: true,
+    /*
+     * `external-link-only` is a link the caller may offer, not an in-app
+     * playback: asking for one while demanding in-app playback would refuse
+     * every emitter-player-only channel, which is exactly the case that class
+     * exists for. Any other type must be in-app.
+     */
+    forInAppPlayback: !isExternal,
     requestedTerritory: input.requestedTerritory ?? null,
   });
 
@@ -95,7 +103,9 @@ export function decideSourceEligibility(input: SourceEligibilityInput): SourceEl
 
   // The adapter must corroborate the class: a record cannot grant a method its
   // integration does not implement (e.g. YouTube terms cannot authorise HLS).
-  // `eligible: true` always carries a record; assert it so the invariant is local.
+  // `external-link-only` is corroborated by the `external-link` adapter like any
+  // other class, so a link-only right never short-circuits past class or
+  // modality checks. `eligible: true` always carries a record; assert it locally.
   if (eligibility.record === null) {
     return {
       playable: false,

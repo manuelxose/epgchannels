@@ -285,7 +285,7 @@ describe('source registry', () => {
       .expect(400);
   });
 
-  it('publishing a channel with a healthy source makes it public', async () => {
+  it('publishing a channel with a healthy, evidenced source makes it public', async () => {
     const channel = await createChannelApi('Publicable');
     await request(harness.app)
       .post('/api/v1/admin/sources')
@@ -296,6 +296,13 @@ describe('source registry', () => {
         type: 'hls',
         url: 'https://example.org/live/master.m3u8',
         permission: 'emitter-public-stream',
+        /*
+         * 02C: the operator decision may be recorded automatically, but the
+         * evidence behind it must be real. Registering without pointing at a
+         * licensing document now yields `unresolved` and does not play.
+         */
+        authorisationEvidence: 'https://example.org/licencia-firmada',
+        officialPageUrl: 'https://example.org/directo',
         conditions: {
           embedAllowed: true,
           proxyAllowed: false,
@@ -332,6 +339,9 @@ describe('source registry', () => {
         type: 'hls',
         url: 'https://example.org/live/master.m3u8',
         permission: 'emitter-public-stream',
+        /* 02C: real evidence, so the source is playable before withdrawal. */
+        authorisationEvidence: 'https://example.org/licencia-firmada',
+        officialPageUrl: 'https://example.org/directo',
         conditions: {
           embedAllowed: true,
           proxyAllowed: false,
@@ -362,6 +372,43 @@ describe('source registry', () => {
       .findOne({ _id: created.body.data.id });
     expect(stored).not.toBeNull();
     expect(stored?.editorialStatus).toBe('withdrawn');
+  });
+
+  it('refuses to play a source registered with no licensing evidence', async () => {
+    /*
+     * The negative half of the 02C write path, through the public API rather
+     * than the descriptor builder: an operator may register a source, but a
+     * registration that points at no licensing evidence must not become
+     * playable just because the manifest answers.
+     */
+    const channel = await createChannelApi('Sin Evidencia', { editorialStatus: 'published' });
+    await request(harness.app)
+      .post('/api/v1/admin/sources')
+      .set(authHeader())
+      .send({
+        channelId: channel.id,
+        provider: 'emitter:example.org',
+        type: 'hls',
+        url: 'https://example.org/live/master.m3u8',
+        permission: 'emitter-public-stream',
+        conditions: {
+          embedAllowed: true,
+          proxyAllowed: false,
+          worldwide: true,
+          restrictedRegions: [],
+          browserCompatibility: 'all',
+          requiresForgedHeader: false,
+          emitterAppOnly: false,
+        },
+      })
+      .expect(201);
+    await harness.context.database
+      .collection<PlaybackSourceDoc>(COLLECTIONS.sources)
+      .updateMany({ channelId: channel.id }, { $set: { technicalStatus: 'ok' } });
+
+    const descriptor = await request(harness.app).get(`/api/v1/channels/${channel.slug}/playback`).expect(200);
+    expect(descriptor.body.data.playback.status).toBe('unavailable');
+    expect(descriptor.body.data.playback.url).toBeNull();
   });
 
   it('records source verification results and their cause', async () => {

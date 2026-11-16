@@ -43,7 +43,19 @@ async function adminChannelPayload(context: AppContext, channel: ChannelDoc) {
     .find({ channelId: channel._id })
     .sort({ priority: 1 })
     .toArray();
-  const descriptor = buildDescriptor(channel, sources);
+  /*
+   * The admin payload reports the same playback status the public API does, so
+   * it must consult the same authorization decisions; otherwise an operator
+   * would see a source as playable that the public sees refused, or the reverse.
+   */
+  const descriptor = buildDescriptor(
+    channel,
+    sources,
+    new Date(),
+    new Map(),
+    new Set(),
+    await context.playback.authorizationsFor(sources),
+  );
   const publicChannel = toChannel(channel, sources, descriptor.playback.status);
   return {
     ...publicChannel,

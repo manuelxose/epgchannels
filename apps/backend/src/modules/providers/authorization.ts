@@ -220,16 +220,39 @@ export function unresolvedRecord(
 }
 
 /**
+ * Whether a citation is a real, re-checkable pointer.
+ *
+ * Non-nullness was not enough: any sentinel string ('n/a', a scheme-less label)
+ * satisfied the old check, which is how a minted registration could briefly claim
+ * a right with no evidence. A citation must now parse as an absolute `http(s)`
+ * URL, so only something a person can actually open counts as evidence.
+ */
+export function isRealCitation(citation: string | null): boolean {
+  if (citation === null || citation.trim().length === 0) return false;
+  try {
+    const url = new URL(citation.trim());
+    return url.protocol === 'https:' || url.protocol === 'http:';
+  } catch {
+    return false;
+  }
+}
+
+/**
  * A permitted verdict is only credible with a citable right behind it: either a
- * quoted clause (published terms) or an executed written licence. A green field
- * with no evidence is exactly what this milestone exists to reject.
+ * quoted clause plus a real citation (published terms) or an executed written
+ * licence with a real citation. A green field with no evidence is exactly what
+ * this milestone exists to reject.
  */
 export function hasCitableRight(record: AuthorizationRecord): boolean {
   if (record.basis === 'published-terms') {
-    return record.quotedClause !== null && record.quotedClause.trim().length > 0 && record.clauseUrl !== null;
+    return (
+      record.quotedClause !== null &&
+      record.quotedClause.trim().length > 0 &&
+      isRealCitation(record.clauseUrl)
+    );
   }
   if (record.basis === 'written-licence') {
-    return record.clauseUrl !== null;
+    return isRealCitation(record.clauseUrl);
   }
   return false;
 }

@@ -66,6 +66,21 @@ export class AuthorizationRepository {
   }
 
   /**
+   * The decision owned by one source, matched on the source id embedded in `_id`
+   * (`editorial:<id>`, `fixture:<id>`). Prefers an editorial decision over a
+   * fixture one when both exist, because the operator's own record is the
+   * authoritative decision.
+   */
+  async forSourceId(sourceId: string): Promise<AuthorizationRecord | null> {
+    const suffix = `:${sourceId}`;
+    const rows = await this.collection()
+      .find({ _id: { $in: [`editorial${suffix}`, `fixture${suffix}`] } })
+      .toArray();
+    const editorial = rows.find((row) => row._id.startsWith('editorial:'));
+    return editorial ?? rows[0] ?? null;
+  }
+
+  /**
    * Decisions that apply to the given sources, keyed by source id, for the
    * playback gate.
    *
@@ -102,17 +117,36 @@ export class AuthorizationRepository {
       .toArray();
     if (candidates.length === 0) return result;
 
-    const byUrl = new Map(
-      candidates.filter((row) => !row._id.startsWith('operator:')).map((row) => [row.sourceUrl, row]),
-    );
+    /*
+     * Non-operator decisions belong to ONE source. Match them by the source id
+     * embedded in their `_id` (`editorial:<sourceId>` / `fixture:<sourceId>`)
+     * rather than by URL: two different sources can legitimately share a URL,
+     * and matching by URL then let one source inherit another's class. The URL is
+     * only a fallback for legacy rows that carry no source id.
+     */
+    const bySourceId = new Map<string, AuthorizationRecord>();
+    const byUrl = new Map<string, AuthorizationRecord[]>();
+    for (const row of candidates) {
+      if (row._id.startsWith('operator:')) continue;
+      const separator = row._id.indexOf(':');
+      if (separator > 0) bySourceId.set(row._id.slice(separator + 1), row);
+      const list = byUrl.get(row.sourceUrl) ?? [];
+      list.push(row);
+      byUrl.set(row.sourceUrl, list);
+    }
     const byOperatorId = new Map(
       candidates.filter((row) => row._id.startsWith('operator:')).map((row) => [row._id.slice('operator:'.length), row]),
     );
 
     for (const source of sources) {
-      const exact = source.url === null ? undefined : byUrl.get(source.url);
-      if (exact !== undefined) {
-        result.set(source._id, exact);
+      const own = bySourceId.get(source._id);
+      if (own !== undefined) {
+        result.set(source._id, own);
+        continue;
+      }
+      const sameUrl = source.url === null ? undefined : byUrl.get(source.url);
+      if (sameUrl !== undefined && sameUrl.length === 1) {
+        result.set(source._id, sameUrl[0]!);
         continue;
       }
       const host = source.url === null ? null : hostOfUrl(source.url);

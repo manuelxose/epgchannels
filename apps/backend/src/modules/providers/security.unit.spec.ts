@@ -21,9 +21,13 @@ import { describe, expect, it } from 'vitest';
 import { fetchWithPolicy, EgressBlockedError } from '../../infrastructure/egress.js';
 import { decidePublication } from '../playback/publication-policy.js';
 import { unresolvedRecord } from './authorization.js';
+import { hasCitableRight, isRealCitation } from './authorization.js';
+import type { AuthorizationRecord } from './authorization.js';
+import { decideEligibility } from './eligibility.js';
 import { OPERATOR_SEEDS, YOUTUBE_PLATFORM_SEED } from './operator-seeds.js';
 import { decideSourceEligibility } from './source-eligibility.js';
 import { classifyHost, hostOf } from './provider-kinds.js';
+import { providerAdapterRegistry } from './adapter.registry.js';
 
 /*
  * Anchor on this file's own location, never on `process.cwd()`: the suite runs
@@ -409,5 +413,153 @@ describe('raw REA captures can never be committed', () => {
     expect(gitignore).not.toMatch(/^evidence\/rea02c\/captures-summary\.json$/m);
     expect(gitignore).not.toMatch(/^evidence\/rea02c\/records\/index\.json$/m);
     expect(gitignore).not.toMatch(/^evidence\/rea02c\/records\/\*\.json$/m);
+  });
+});
+
+/**
+ * External-link-only is a CLASS, not a bypass.
+ *
+ * An emitter-player-only source may only ever be offered as a link to the
+ * emitter's own page. These cases pin that the link-only class is corroborated
+ * by a real adapter (so it cannot short-circuit past class and modality checks)
+ * and that an external source still fails closed when its right is missing,
+ * unresolved or restricted.
+ */
+describe('external-link-only never becomes an in-app bypass', () => {
+  const base = {
+    channelStatus: 'published',
+    sourceStatus: 'published',
+    permission: 'official-player-only' as const,
+    technicalStatus: 'ok' as const,
+    conditions: { requiresForgedHeader: false, emitterAppOnly: false },
+  };
+
+  function linkRecord(verdict: 'external-link-only' | 'unresolved' | 'restricted'): AuthorizationRecord {
+    return {
+      _id: 'operator:link',
+      operatorId: 'link',
+      sourceUrl: 'https://example.org/directo',
+      providerKind: 'broadcaster',
+      verdict,
+      basis: verdict === 'external-link-only' ? 'published-terms' : 'published-terms',
+      quotedClause: verdict === 'external-link-only' ? 'Enlace permitido.' : 'No se permite.',
+      clauseUrl: 'https://example.org/legal',
+      method: verdict === 'external-link-only' ? 'external-link' : 'none',
+      publicationScope: verdict === 'external-link-only' ? 'external-only' : 'none',
+      territory: { allowed: [], restricted: [], worldwide: true, geoBlocked: false },
+      restrictions: [],
+      attribution: 'Emisor',
+      discovery: {
+        upstream: null,
+        snapshotId: null,
+        path: null,
+        line: null,
+        sourceUrl: 'https://example.org/directo',
+        documentUrl: 'https://example.org/legal',
+        retrievedAt: null,
+      },
+      lifecycle: 'active',
+      expiresAt: null,
+      validationTimestamp: null,
+      authorizationTimestamp: new Date('2026-11-16T12:00:00.000Z'),
+      reviewStatus: 'reviewed',
+      notes: null,
+    };
+  }
+
+  it('a link-only right on an external source is playable as a link', () => {
+    const decision = decideSourceEligibility({
+      publication: base,
+      authorization: linkRecord('external-link-only'),
+      type: 'external',
+    });
+    expect(decision.playable).toBe(true);
+  });
+
+  it('a link-only right on an HLS source is NOT playable (class cannot grant in-app)', () => {
+    const decision = decideSourceEligibility({
+      publication: base,
+      authorization: linkRecord('external-link-only'),
+      type: 'hls',
+    });
+    expect(decision.playable).toBe(false);
+  });
+
+  it('an external source with NO right is not playable', () => {
+    const decision = decideSourceEligibility({ publication: base, authorization: null, type: 'external' });
+    expect(decision.playable).toBe(false);
+  });
+
+  it('an external source with an unresolved right is not playable', () => {
+    const decision = decideSourceEligibility({
+      publication: base,
+      authorization: linkRecord('unresolved'),
+      type: 'external',
+    });
+    expect(decision.playable).toBe(false);
+  });
+
+  it('an external source with a restricted right is not playable', () => {
+    const decision = decideSourceEligibility({
+      publication: base,
+      authorization: linkRecord('restricted'),
+      type: 'external',
+    });
+    expect(decision.playable).toBe(false);
+  });
+
+  it('the link-only class is corroborated by the external-link adapter', () => {
+    const adapter = providerAdapterRegistry.get('external-link');
+    expect(adapter).toBeDefined();
+    expect(adapter?.descriptor.grants).toBe('external-link-only');
+    expect(adapter?.descriptor.method).toBe('external-link');
+  });
+});
+
+/**
+ * A citation must be a real pointer, not merely a non-null string.
+ *
+ * Non-nullness alone accepted any sentinel ('n/a', 'editorial:registration'),
+ * which is how a registration with no evidence could briefly claim a right.
+ * Only an absolute http(s) URL now counts as a citable right.
+ */
+describe('citable rights require a real citation', () => {
+  it('rejects sentinel, empty and scheme-less citations', () => {
+    expect(isRealCitation(null)).toBe(false);
+    expect(isRealCitation('')).toBe(false);
+    expect(isRealCitation('   ')).toBe(false);
+    expect(isRealCitation('editorial:registration')).toBe(false);
+    expect(isRealCitation('fixture:written-licence')).toBe(false);
+    expect(isRealCitation('n/a')).toBe(false);
+    expect(isRealCitation('/relative/path')).toBe(false);
+  });
+
+  it('accepts absolute http(s) citations', () => {
+    expect(isRealCitation('https://example.org/licencia.pdf')).toBe(true);
+    expect(isRealCitation('http://example.org/legal')).toBe(true);
+    expect(isRealCitation('  https://example.org/legal  ')).toBe(true);
+  });
+
+  it('a written-licence record with a sentinel citation is not a citable right', () => {
+    const record = unresolvedRecord('op', 'https://example.org/x.m3u8', 'broadcaster', {
+      upstream: null,
+      snapshotId: null,
+      path: null,
+      line: null,
+      sourceUrl: null,
+      documentUrl: null,
+      retrievedAt: null,
+    });
+    const sentinel = {
+      ...record,
+      verdict: 'permitted-direct-playback' as const,
+      basis: 'written-licence' as const,
+      method: 'direct-playback' as const,
+      publicationScope: 'in-app' as const,
+      clauseUrl: 'editorial:registration',
+    };
+    expect(hasCitableRight(sentinel)).toBe(false);
+    expect(decideEligibility({ record: sentinel }).eligible).toBe(false);
+    expect(hasCitableRight({ ...sentinel, clauseUrl: 'https://example.org/licencia.pdf' })).toBe(true);
   });
 });
