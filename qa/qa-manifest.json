@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "engine-04-manifest/1",
+  "id": "tdt-platform",
+  "description": "Verification stages for the TDT Platform monorepo (contracts + api-client + backend + Angular client). Every stage is an argv array; nothing is interpolated. Integration and independence suites need the compose services (MongoDB replica set on 127.0.0.1:27117, Redis on 127.0.0.1:27118): run `npm run infra:up` first, and `node scripts/preflight.mjs` reports readiness. Stage order matters: `build` must run before `typecheck`, because @tdt/api-client and @tdt/backend resolve the emitted declarations of @tdt/contracts; a cold `typecheck` on a tree without dist/ fails even though the source is valid.",
+  "stack": "node",
+  "stages": [
+    {
+      "id": "build",
+      "argv": ["npm", "run", "build"],
+      "required": true,
+      "kind": "build",
+      "timeoutMs": 300000
+    },
+    {
+      "id": "typecheck",
+      "argv": ["npm", "run", "typecheck"],
+      "required": true,
+      "kind": "typecheck",
+      "timeoutMs": 300000
+    },
+    {
+      "id": "unit",
+      "argv": ["npm", "run", "test:unit"],
+      "required": true,
+      "kind": "unit",
+      "timeoutMs": 300000
+    },
+    {
+      "id": "integration",
+      "argv": ["npm", "run", "test:integration"],
+      "required": true,
+      "kind": "integration",
+      "timeoutMs": 600000
+    },
+    {
+      "id": "independence",
+      "argv": ["npm", "run", "test:independence"],
+      "required": true,
+      "kind": "regression",
+      "timeoutMs": 300000
+    },
+    {
+      "id": "client",
+      "argv": ["npm", "run", "test", "-w", "@tdt/api-client"],
+      "required": true,
+      "kind": "contract",
+      "timeoutMs": 300000
+    }
+  ]
+}

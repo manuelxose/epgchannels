@@ -1,0 +1,1318 @@
+{
+ "schema_version": "rea-capture-summary/1",
+ "generated_at": "2026-11-16T14:24:43.691Z",
+ "source_bundle": {
+  "path": "evidence/rea/sesion-rea-bundle.json",
+  "bytes": 24086659,
+  "sha256": "155bea1fde2cbba1725579e0a97f6bfc49fcb2a88c39224cbf9106fad404e79e",
+  "records": 26,
+  "filter": "registros creados por rea-research (t2); se excluyen los demas registros de la sesion MCP compartida"
+ },
+ "captures": [
+  {
+   "evidence_id": "ev_054bcf28f9968f3b9a98c9505f751771faa5d4658051322d9eca711ed86067fb",
+   "label": "analyze_web_bundle",
+   "operation": "analyze_web_bundle",
+   "confidence": "observed",
+   "authority": "external-service",
+   "limitations": [
+    "Artifact identity is unavailable for this observation.",
+    "Static bundle findings are observations or bounded inferences; REA does not execute captured JavaScript.",
+    "Bare string arguments of unbound HTTP-method-named calls are low-confidence endpoint candidates; form, translation, storage and other APIs can use the same syntax. URL-shaped findings still do not prove network execution.",
+    "Endpoint candidates are deduplicated by script, value and detector; basis retains only the first matching source coordinate. They are not a complete call-site inventory or a runtime occurrence count. completeness.status=\"complete\" describes examination of captured source, not a call-site census.",
+    "String-built routes and endpoints, encrypted configuration, and server-side behavior may remain unknown.",
+    "Page-declared WebMCP metadata is untrusted and is never registered or invoked as an REA tool."
+   ],
+   "analysis": {
+    "route_inventory": null,
+    "observations": {}
+   }
+  },
+  {
+   "evidence_id": "ev_51dfba1e9c7831db89b762a0cf4482e783b56e747eefbbc965f046b2527ac6ce",
+   "label": "La1 reproduccion",
+   "operation": "capture_browser_scenario",
+   "confidence": "observed",
+   "authority": "controlled-replay",
+   "limitations": [
+    "Artifact identity is unavailable for this observation.",
+    "Event sequence records provider receipt order; simultaneous browser causality is not inferred.",
+    "Network content is retained only when selected; Playwright response-body bytes are API results and are not guaranteed to match wire bytes.",
+    "Request bytes are limited to what Playwright exposes; not_exposed does not establish body absence or multipart file coverage.",
+    "Network content reads settle within 5 seconds each and the observer does not request bodies from unfinished responses.",
+    "Captured response-body bytes are the result of Playwright's Response.body() API. Playwright may satisfy that API with a credentialed follow-up load of the request URL when CDP has no body, so transaction and event links do not verify that retained bytes came from the original network transaction.",
+    "Playwright scenario events do not expose request initiator stacks; receipt order does not prove causality.",
+    "Storage values are hashed only after declared-secret redaction.",
+    "Some selected network content was unavailable; per-transaction content states retain the reason.",
+    "Browser host platform and architecture were not observed."
+   ],
+   "start_origin": "https://player.tdtchannels.com",
+   "duration_ms": 18913,
+   "browser": "Chromium",
+   "completeness": {
+    "equality_eligible": false,
+    "missing_sections": [
+     "events"
+    ],
+    "status": "incomplete",
+    "truncated_sections": []
+   },
+   "transactions": {
+    "observed": 127,
+    "resource_types": {
+     "document": 1,
+     "font": 3,
+     "stylesheet": 3,
+     "image": 38,
+     "script": 16,
+     "xhr": 15,
+     "fetch": 50,
+     "other": 1
+    },
+    "statuses": {
+     "200": 106,
+     "204": 5,
+     "302": 15,
+     "404": 1
+    },
+    "hosts": {
+     "player.tdtchannels.com": 67,
+     "graph.facebook.com": 15,
+     "pbs.twimg.com": 6,
+     "www.movistarplus.es": 1,
+     "scontent.flcg2-1.fna.fbcdn.net": 15,
+     "pagead2.googlesyndication.com": 2,
+     "fundingchoicesmessages.google.com": 8,
+     "rtvelivestream.rtve.es": 10,
+     "fonts.googleapis.com": 1,
+     "fonts.gstatic.com": 2
+    }
+   },
+   "media_requests": [
+    {
+     "url": "https://rtvelivestream.rtve.es/rtvesec/la1/la1_main_dvr.m3u8",
+     "resource_type": "xhr",
+     "status": 200,
+     "resp": {
+      "content-type": "application/vnd.apple.mpegurl",
+      "cache-control": "max-age=3",
+      "access-control-allow-origin": "*",
+      "content-encoding": "gzip"
+     },
+     "req": {
+      "origin": "https://player.tdtchannels.com",
+      "referer": "https://player.tdtchannels.com/"
+     }
+    },
+    {
+     "url": "https://rtvelivestream.rtve.es/rtvesec/la1/la1_main_dvr_720.m3u8",
+     "resource_type": "xhr",
+     "status": 200,
+     "resp": {
+      "content-type": "application/vnd.apple.mpegurl",
+      "content-length": "7904",
+      "cache-control": "max-age=3",
+      "access-control-allow-origin": "*",
+      "content-encoding": "gzip"
+     },
+     "req": {
+      "origin": "https://player.tdtchannels.com",
+      "referer": "https://player.tdtchannels.com/"
+     }
+    },
+    {
+     "url": "https://rtvelivestream.rtve.es/rtvesec/la1/GL7/2_v_3_2026_11_16_15_17_02_6983.ts",
+     "resource_type": "xhr",
+     "status": 200,
+     "resp": {
+      "content-type": "video/mp2t",
+      "content-length": "2540820",
+      "cache-control": "max-age=18000",
+      "access-control-allow-origin": "*"
+     },
+     "req": {
+      "origin": "https://player.tdtchannels.com",
+      "referer": "https://player.tdtchannels.com/"
+     }
+    },
+    {
+     "url": "https://rtvelivestream.rtve.es/rtvesec/la1/GL7/2_v_3_2026_11_16_15_17_07_6984.ts",
+     "resource_type": "xhr",
+     "status": 200,
+     "resp": {
+      "content-type": "video/mp2t",
+      "content-length": "2659824",
+      "cache-control": "max-age=18000",
+      "access-control-allow-origin": "*"
+     },
+     "req": {
+      "origin": "https://player.tdtchannels.com",
+      "referer": "https://player.tdtchannels.com/"
+     }
+    },
+    {
+     "url": "https://rtvelivestream.rtve.es/rtvesec/la1/GL7/2_v_3_2026_11_16_15_17_12_6985.ts",
+     "resource_type": "xhr",
+     "status": 200,
+     "resp": {
+      "content-type": "video/mp2t",
+      "content-length": "1699332",
+      "cache-control": "max-age=18000",
+      "access-control-allow-origin": "*"
+     },
+     "req": {
+      "origin": "https://player.tdtchannels.com",
+      "referer": "https://player.tdtchannels.com/"
+     }
+    },
+    {
+     "url": "https://rtvelivestream.rtve.es/rtvesec/la1/la1_main_dvr_720.m3u8",
+     "resource_type": "xhr",
+     "status": 200,
+     "resp": {
+      "cache-control": "max-age=3",
+      "access-control-allow-origin": "*"
+     },
+     "req": {
+      "origin": "https://player.tdtchannels.com",
+      "referer": "https://player.tdtchannels.com/"
+     }
+    },
+    {
+     "url": "https://rtvelivestream.rtve.es/rtvesec/la1/la1_main_dvr_720.m3u8",
+     "resource_type": "xhr",
+     "status": 200,
+     "resp": {
+      "content-type": "application/vnd.apple.mpegurl",
+      "content-length": "7904",
+      "cache-control": "max-age=3",
+      "access-control-allow-origin": "*",
+      "content-encoding": "gzip"
+     },
+     "req": {
+      "origin": "https://player.tdtchannels.com",
+      "referer": "https://player.tdtchannels.com/"
+     }
+    },
+    {
+     "url": "https://rtvelivestream.rtve.es/rtvesec/la1/GL7/2_v_3_2026_11_16_15_17_17_6986.ts",
+     "resource_type": "xhr",
+     "status": 200,
+     "resp": {
+      "content-type": "video/mp2t",
+      "content-length": "1075360",
+      "cache-control": "max-age=18000",
+      "access-control-allow-origin": "*"
+     },
+     "req": {
+      "origin": "https://player.tdtchannels.com",
+      "referer": "https://player.tdtchannels.com/"
+     }
+    },
+    {
+     "url": "https://rtvelivestream.rtve.es/rtvesec/la1/la1_main_dvr_720.m3u8",
+     "resource_type": "xhr",
+     "status": 200,
+     "resp": {
+      "content-type": "application/vnd.apple.mpegurl",
+      "content-length": "7906",
+      "cache-control": "max-age=3",
+      "access-control-allow-origin": "*",
+      "content-encoding": "gzip"
+     },
+     "req": {
+      "origin": "https://player.tdtchannels.com",
+      "referer": "https://player.tdtchannels.com/"
+     }
+    },
+    {
+     "url": "https://rtvelivestream.rtve.es/rtvesec/la1/GL7/2_v_3_2026_11_16_15_17_22_6987.ts",
+     "resource_type": "xhr",
+     "status": 200,
+     "resp": {
+      "content-type": "video/mp2t",
+      "content-length": "1277272",
+      "cache-control": "max-age=18000",
+      "access-control-allow-origin": "*"
+     },
+     "req": {
+      "origin": "https://player.tdtchannels.com",
+      "referer": "https://player.tdtchannels.com/"
+     }
+    }
+   ],
+   "playlists": [
+    {
+     "url": "https://rtvelivestream.rtve.es/rtvesec/la1/la1_main_dvr.m3u8",
+     "bytes": 2118,
+     "sha256": "80baa2199186456c4ce5d20f825ede5529365abca800cf035d69789b32192568",
+     "first_lines": [
+      "#EXTM3U",
+      "## Created with Golumi Video Platform",
+      "",
+      "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"audios\",NAME=\"Castellano\",LANGUAGE=\"spa\",CHANNELS=\"2\",DEFAULT=YES,AUTOSELECT=YES",
+      "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"audios\",NAME=\"Original\",LANGUAGE=\"qaa\",CHANNELS=\"2\",DEFAULT=NO,URI=\"https://rtvelivestream.rtve.es/rtvesec/la1/la1_main_dvr_a_39.m3u8\"",
+      "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"audios\",NAME=\"Audio Descripcion\",LANGUAGE=\"ads\",CHANNELS=\"2\",DEFAULT=NO,AUTOSELECT=YES,CHARACTERISTICS=\"public.accessibility.describes-video\",URI=\"https://rtvelivestream.rtve.es/rtvesec/la1/la1_main_dvr_a_195.m3u8\"",
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID=\"subtitulos\",NAME=\"Español\",LANGUAGE=\"es\",DEFAULT=NO,FORCED=NO,URI=\"https://rtvelivestream.rtve.es/rtvesec/la1/la1_main_dvr_es.m3u8\"",
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID=\"subtitulos\",NAME=\"Inglés\",LANGUAGE=\"en\",DEFAULT=NO,FORCED=NO,URI=\"https://rtvelivestream.rtve.es/rtvesec/la1/la1_main_dvr_en.m3u8\"",
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID=\"subtitulos\",NAME=\"Gallego\",LANGUAGE=\"gl\",DEFAULT=NO,FORCED=NO,URI=\"https://rtvelivestream.rtve.es/rtvesec/la1/la1_main_dvr_gl.m3u8\"",
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID=\"subtitulos\",NAME=\"Catalán\",LANGUAGE=\"ca\",DEFAULT=NO,FORCED=NO,URI=\"https://rtvelivestream.rtve.es/rtvesec/la1/la1_main_dvr_ca.m3u8\"",
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID=\"subtitulos\",NAME=\"Euskera\",LANGUAGE=\"eu\",DEFAULT=NO,FORCED=NO,URI=\"https://rtvelivestream.rtve.es/rtvesec/la1/la1_main_dvr_eu.m3u8\"",
+      "#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=3012608,AVERAGE-BANDWIDTH=3012608,RESOLUTION=1280x720,CODECS=\"avc1.640029,mp4a.40.2\",AUDIO=\"audios\",SUBTITLES=\"subtitulos\""
+     ],
+     "target_duration": null,
+     "media_sequence": null,
+     "segments": 0,
+     "endlist": false,
+     "key": false,
+     "map": false,
+     "first_segment": "https://rtvelivestream.rtve.es/rtvesec/la1/la1_main_dvr_720.m3u8"
+    },
+    {
+     "url": "https://rtvelivestream.rtve.es/rtvesec/la1/la1_main_dvr_720.m3u8",
+     "bytes": 135498,
+     "sha256": "741aee1806faa5d1a15663f21b5897776127fa6f22dab5ea31a92bfa4f506efe",
+     "first_lines": [
+      "#EXTM3U",
+      "## Created with Golumi Video Platform",
+      "",
+      "#EXT-X-VERSION:3",
+      "#EXT-X-TARGETDURATION:5",
+      "#EXT-X-MEDIA-SEQUENCE:5548",
+      "#EXT-X-ALLOW-CACHE:YES",
+      "#EXTINF:5.0,",
+      "https://rtvelivestream.rtve.es/rtvesec/la1/GL7/2_v_3_2026_11_16_13_17_27_5548.ts",
+      "#EXTINF:5.0,",
+      "https://rtvelivestream.rtve.es/rtvesec/la1/GL7/2_v_3_2026_11_16_13_17_32_5549.ts",
+      "#EXTINF:5.0,"
+     ],
+     "target_duration": "5",
+     "media_sequence": "5548",
+     "segments": 1440,
+     "endlist": false,
+     "key": false,
+     "map": false,
+     "first_segment": "https://rtvelivestream.rtve.es/rtvesec/la1/GL7/2_v_3_2026_11_16_13_17_27_5548.ts"
+    }
+   ],
+   "console": {
+    "total": 2,
+    "levels": {
+     "error": 2
+    },
+    "errors": [
+     {
+      "level": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+     },
+     {
+      "level": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+     }
+    ]
+   },
+   "screenshot_sha256": "9e3d9a1df2224b854d073411ebf431989c6b18ff31c0dbd5b7511dbc06fbd8fc",
+   "omissions": {
+    "by_kind": [],
+    "network_transaction_range": null,
+    "network_transactions": []
+   }
+  },
+  {
+   "evidence_id": "ev_55f7d155fb1b4348003666b64d63483f2edf57e36f7c208ae036b7bc22e56e88",
+   "label": "La1 llegada",
+   "operation": "capture_browser_scenario",
+   "confidence": "observed",
+   "authority": "controlled-replay",
+   "limitations": [
+    "Artifact identity is unavailable for this observation.",
+    "Event sequence records provider receipt order; simultaneous browser causality is not inferred.",
+    "Network content is retained only when selected; Playwright response-body bytes are API results and are not guaranteed to match wire bytes.",
+    "Request bytes are limited to what Playwright exposes; not_exposed does not establish body absence or multipart file coverage.",
+    "Network content reads settle within 5 seconds each and the observer does not request bodies from unfinished responses.",
+    "Captured response-body bytes are the result of Playwright's Response.body() API. Playwright may satisfy that API with a credentialed follow-up load of the request URL when CDP has no body, so transaction and event links do not verify that retained bytes came from the original network transaction.",
+    "Playwright scenario events do not expose request initiator stacks; receipt order does not prove causality.",
+    "Storage values are hashed only after declared-secret redaction.",
+    "Some selected network content was unavailable; per-transaction content states retain the reason.",
+    "Network response metadata was omitted for request-184 because max-total-event-allocation-bytes was reached; network coverage is incomplete.",
+    "Network request-finished metadata was omitted for request-184 because max-total-event-allocation-bytes was reached; network coverage is incomplete.",
+    "Network request metadata was omitted for request-185 because max-total-event-allocation-bytes was reached; network coverage is incomplete.",
+    "Network response metadata was omitted for request-185 because max-total-event-allocation-bytes was reached; network coverage is incomplete.",
+    "Network request-finished metadata was omitted for request-185 because max-total-event-allocation-bytes was reached; network coverage is incomplete.",
+    "Network request metadata was omitted for request-186 because max-total-event-allocation-bytes was reached; network coverage is incomplete.",
+    "Network response metadata was omitted for request-186 because max-total-event-allocation-bytes was reached; network coverage is incomplete.",
+    "Network request-finished metadata was omitted for request-186 because max-total-event-allocation-bytes was reached; network coverage is incomplete.",
+    "Network request metadata was omitted for request-187 because max-total-event-allocation-bytes was reached; network coverage is incomplete.",
+    "Network response metadata was omitted for request-187 because max-total-event-allocation-bytes was reached; network coverage is incomplete.",
+    "Network request-finished metadata was omitted for request-187 because max-total-event-allocation-bytes was reached; network coverage is incomplete.",
+    "Network request-unfinished metadata was omitted for request-147 because max-total-event-allocation-bytes was reached; network coverage is incomplete.",
+    "Browser event collection reached a selected resource budget; per-kind omissions and affected network transaction IDs are listed in events.omissions, and event coverage is incomplete.",
+    "Browser host platform and architecture were not observed."
+   ],
+   "start_origin": "https://player.tdtchannels.com",
+   "duration_ms": 16750,
+   "browser": "Chromium",
+   "completeness": {
+    "equality_eligible": false,
+    "missing_sections": [
+     "events"
+    ],
+    "status": "incomplete",
+    "truncated_sections": []
+   },
+   "transactions": {
+    "observed": 184,
+    "resource_types": {
+     "document": 8,
+     "font": 10,
+     "image": 48,
+     "stylesheet": 11,
+     "script": 33,
+     "fetch": 65,
+     "xhr": 8,
+     "other": 1
+    },
+    "statuses": {
+     "200": 149,
+     "204": 17,
+     "302": 15,
+     "307": 1,
+     "404": 1
+    },
+    "hosts": {
+     "player.tdtchannels.com": 67,
+     "graph.facebook.com": 15,
+     "pbs.twimg.com": 6,
+     "scontent.flcg2-1.fna.fbcdn.net": 15,
+     "pagead2.googlesyndication.com": 36,
+     "fundingchoicesmessages.google.com": 11,
+     "fonts.googleapis.com": 9,
+     "fonts.gstatic.com": 9,
+     "www.gstatic.com": 2,
+     "encrypted-tbn1.gstatic.com": 4,
+     "encrypted-tbn3.gstatic.com": 2,
+     "encrypted-tbn0.gstatic.com": 3,
+     "encrypted-tbn2.gstatic.com": 1,
+     "ep1.adtrafficquality.google": 1,
+     "ep2.adtrafficquality.google": 3
+    }
+   },
+   "media_requests": [],
+   "playlists": [],
+   "console": {
+    "total": 2,
+    "levels": {
+     "error": 2
+    },
+    "errors": [
+     {
+      "level": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+     },
+     {
+      "level": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+     }
+    ]
+   },
+   "screenshot_sha256": "133c1755a4fe0850b830330d1006f839289514f32ee6260a72f69f3b1973ef0d",
+   "omissions": {
+    "by_kind": [
+     {
+      "count": 75,
+      "kind": "network-content",
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ]
+     },
+     {
+      "count": 3,
+      "kind": "request",
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ]
+     },
+     {
+      "count": 4,
+      "kind": "request-finished",
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ]
+     },
+     {
+      "count": 1,
+      "kind": "request-unfinished",
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ]
+     },
+     {
+      "count": 4,
+      "kind": "response",
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ]
+     }
+    ],
+    "network_transaction_range": null,
+    "network_transactions": [
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-126"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-134"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-136"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-137"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-138"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-141"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-142"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-143"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-144"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-145"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-146"
+     },
+     {
+      "omitted_kinds": [
+       "request-unfinished"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-147"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-148"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-149"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-150"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-151"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-152"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-153"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-154"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-155"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-156"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-157"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-158"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-159"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-160"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-161"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-162"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-163"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-164"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-165"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-166"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-167"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-168"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-169"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-170"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-171"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-172"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-173"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-174"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-175"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-176"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-177"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-178"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-179"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-180"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-181"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-182"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-183"
+     },
+     {
+      "omitted_kinds": [
+       "network-content",
+       "request-finished",
+       "response"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-184"
+     },
+     {
+      "omitted_kinds": [
+       "request",
+       "request-finished",
+       "response"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-185"
+     },
+     {
+      "omitted_kinds": [
+       "request",
+       "request-finished",
+       "response"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-186"
+     },
+     {
+      "omitted_kinds": [
+       "request",
+       "request-finished",
+       "response"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-187"
+     },
+     {
+      "omitted_kinds": [
+       "network-content"
+      ],
+      "reasons": [
+       "max-total-event-allocation-bytes"
+      ],
+      "transaction_id": "request-95"
+     }
+    ]
+   }
+  },
+  {
+   "evidence_id": "ev_6e31189b97f8c6350ac0f36a82a353a020b17670e6be7a2ed60a8ea88cc70111",
+   "label": "Shaka uncompiled",
+   "operation": "capture_browser_scenario",
+   "confidence": "observed",
+   "authority": "controlled-replay",
+   "limitations": [
+    "Artifact identity is unavailable for this observation.",
+    "Event sequence records provider receipt order; simultaneous browser causality is not inferred.",
+    "Network content is retained only when selected; Playwright response-body bytes are API results and are not guaranteed to match wire bytes.",
+    "Request bytes are limited to what Playwright exposes; not_exposed does not establish body absence or multipart file coverage.",
+    "Network content reads settle within 5 seconds each and the observer does not request bodies from unfinished responses.",
+    "Captured response-body bytes are the result of Playwright's Response.body() API. Playwright may satisfy that API with a credentialed follow-up load of the request URL when CDP has no body, so transaction and event links do not verify that retained bytes came from the original network transaction.",
+    "Playwright scenario events do not expose request initiator stacks; receipt order does not prove causality.",
+    "Storage values are hashed only after declared-secret redaction.",
+    "Some selected network content was unavailable; per-transaction content states retain the reason.",
+    "Network collection reached its 150-transaction resource budget; omitted transaction IDs are listed in events.omissions.network_transaction_range.",
+    "Browser event collection reached a selected resource budget; per-kind omissions and affected network transaction IDs are listed in events.omissions, and event coverage is incomplete.",
+    "Browser host platform and architecture were not observed."
+   ],
+   "start_origin": "https://shaka-player-demo.appspot.com",
+   "duration_ms": 17784,
+   "browser": "Chromium",
+   "completeness": {
+    "equality_eligible": false,
+    "missing_sections": [
+     "events"
+    ],
+    "status": "incomplete",
+    "truncated_sections": []
+   },
+   "transactions": {
+    "observed": 150,
+    "resource_types": {
+     "document": 2,
+     "stylesheet": 3,
+     "image": 2,
+     "font": 2,
+     "script": 139,
+     "manifest": 1,
+     "fetch": 1
+    },
+    "statuses": {
+     "200": 149,
+     "404": 1
+    },
+    "hosts": {
+     "shaka-player-demo.appspot.com": 1,
+     "fonts.googleapis.com": 1,
+     "shaka-project.github.io": 144,
+     "fonts.gstatic.com": 2,
+     "imasdk.googleapis.com": 2
+    }
+   },
+   "media_requests": [],
+   "playlists": [],
+   "console": {
+    "total": 9,
+    "levels": {
+     "error": 3,
+     "info": 6
+    },
+    "errors": [
+     {
+      "level": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+     },
+     {
+      "level": "error",
+      "text": "Failed to load resource: the server responded with a status of 503 ()"
+     },
+     {
+      "level": "error",
+      "text": "Error setting up Shaka Player TypeError: shaka.util.CmsdManager is not a constructor\n    at shaka.Player.createCmsd_ (https://shaka-project.github.io/shaka-player-release/lib/player.js:4907:12)\n    at new shaka.Player (https://shaka-project.github.io/shaka-player-release/lib/player.js:1057:30)\n    a"
+     }
+    ]
+   },
+   "screenshot_sha256": "08672b627ba1fe235dee3f67ac738124bd499c924271c0fb5a32ed5064c74f4c",
+   "omissions": {
+    "by_kind": [
+     {
+      "count": 686,
+      "kind": "network-content",
+      "reasons": [
+       "max-network-transactions"
+      ]
+     },
+     {
+      "count": 343,
+      "kind": "request",
+      "reasons": [
+       "max-network-transactions"
+      ]
+     },
+     {
+      "count": 1,
+      "kind": "request-failed",
+      "reasons": [
+       "max-network-transactions"
+      ]
+     },
+     {
+      "count": 342,
+      "kind": "request-finished",
+      "reasons": [
+       "max-network-transactions"
+      ]
+     },
+     {
+      "count": 343,
+      "kind": "response",
+      "reasons": [
+       "max-network-transactions"
+      ]
+     }
+    ],
+    "network_transaction_range": {
+     "count": 343,
+     "first_transaction_id": "request-151",
+     "last_transaction_id": "request-493",
+     "reason": "max-network-transactions"
+    },
+    "network_transactions": []
+   }
+  },
+  {
+   "evidence_id": "ev_807df5e08085ddb0360d8e271a31648d3af5cbe279242c7d270a34e7fea23937",
+   "label": "Bitmovin DASH",
+   "operation": "capture_browser_scenario",
+   "confidence": "observed",
+   "authority": "controlled-replay",
+   "limitations": [
+    "Artifact identity is unavailable for this observation.",
+    "Event sequence records provider receipt order; simultaneous browser causality is not inferred.",
+    "Network content is retained only when selected; Playwright response-body bytes are API results and are not guaranteed to match wire bytes.",
+    "Request bytes are limited to what Playwright exposes; not_exposed does not establish body absence or multipart file coverage.",
+    "Network content reads settle within 5 seconds each and the observer does not request bodies from unfinished responses.",
+    "Captured response-body bytes are the result of Playwright's Response.body() API. Playwright may satisfy that API with a credentialed follow-up load of the request URL when CDP has no body, so transaction and event links do not verify that retained bytes came from the original network transaction.",
+    "Playwright scenario events do not expose request initiator stacks; receipt order does not prove causality.",
+    "Storage values are hashed only after declared-secret redaction.",
+    "Some selected network content was unavailable; per-transaction content states retain the reason.",
+    "Some network requests had not completed when capture ended; later activity is unknown.",
+    "Browser host platform and architecture were not observed."
+   ],
+   "start_origin": "https://bitmovin.com",
+   "duration_ms": 23366,
+   "browser": "Chromium",
+   "completeness": {
+    "equality_eligible": false,
+    "missing_sections": [
+     "events"
+    ],
+    "status": "incomplete",
+    "truncated_sections": []
+   },
+   "transactions": {
+    "observed": 31,
+    "resource_types": {
+     "document": 5,
+     "script": 15,
+     "xhr": 6,
+     "fetch": 4,
+     "image": 1
+    },
+    "statuses": {
+     "200": 20,
+     "307": 1,
+     "401": 2,
+     "403": 2
+    },
+    "hosts": {
+     "bitmovin.com": 8,
+     "": 11,
+     "challenges.cloudflare.com": 10,
+     "brunhild.challenges.cloudflare.com": 2
+    }
+   },
+   "media_requests": [],
+   "playlists": [],
+   "console": {
+    "total": 154,
+    "levels": {
+     "error": 17,
+     "startGroupCollapsed": 2,
+     "debug": 50,
+     "log": 20,
+     "count": 8,
+     "dir": 8,
+     "dirxml": 8,
+     "info": 8,
+     "table": 8,
+     "trace": 8,
+     "warning": 15,
+     "endGroup": 2
+    },
+    "errors": [
+     {
+      "level": "error",
+      "text": "Failed to load resource: the server responded with a status of 403 ()"
+     },
+     {
+      "level": "error",
+      "text": "Connecting to 'data:,' violates the following Content Security Policy directive: \"connect-src 'self' https://hagen.challenges.cloudflare.com https://brunhild.challenges.cloudflare.com https://*.alg13.dnstest.challenges.cloudflare.com https://*.mldsa44.dnstest.challenges.cloudflare.com https://dnstes"
+     },
+     {
+      "level": "error",
+      "text": "Connecting to 'data:,' violates the following Content Security Policy directive: \"connect-src 'self' https://hagen.challenges.cloudflare.com https://brunhild.challenges.cloudflare.com https://*.alg13.dnstest.challenges.cloudflare.com https://*.mldsa44.dnstest.challenges.cloudflare.com https://dnstes"
+     },
+     {
+      "level": "error",
+      "text": "Fetch API cannot load data:,. Refused to connect because it violates the document's Content Security Policy."
+     },
+     {
+      "level": "error",
+      "text": "%c%d font-size:0;color:transparent NaN"
+     },
+     {
+      "level": "error",
+      "text": "%c%d font-size:0;color:transparent NaN"
+     },
+     {
+      "level": "error",
+      "text": "%c%o font-size:0;color:transparent {}"
+     },
+     {
+      "level": "error",
+      "text": "%c%o font-size:0;color:transparent {}"
+     }
+    ]
+   },
+   "screenshot_sha256": "e362c209cffb03ef54d5dadd699f275dae840f7ba7b363f2941d6c93509c196c",
+   "omissions": {
+    "by_kind": [],
+    "network_transaction_range": null,
+    "network_transactions": []
+   }
+  },
+  {
+   "evidence_id": "ev_c93a4fe1a7b70732ce90d5c675a9dd20eaab40e2a9ca2d1594a5befc4e6966c6",
+   "label": "Shaka compiled",
+   "operation": "capture_browser_scenario",
+   "confidence": "observed",
+   "authority": "controlled-replay",
+   "limitations": [
+    "Artifact identity is unavailable for this observation.",
+    "Event sequence records provider receipt order; simultaneous browser causality is not inferred.",
+    "Network content is retained only when selected; Playwright response-body bytes are API results and are not guaranteed to match wire bytes.",
+    "Request bytes are limited to what Playwright exposes; not_exposed does not establish body absence or multipart file coverage.",
+    "Network content reads settle within 5 seconds each and the observer does not request bodies from unfinished responses.",
+    "Captured response-body bytes are the result of Playwright's Response.body() API. Playwright may satisfy that API with a credentialed follow-up load of the request URL when CDP has no body, so transaction and event links do not verify that retained bytes came from the original network transaction.",
+    "Playwright scenario events do not expose request initiator stacks; receipt order does not prove causality.",
+    "Storage values are hashed only after declared-secret redaction.",
+    "Some selected network content was unavailable; per-transaction content states retain the reason.",
+    "Browser host platform and architecture were not observed."
+   ],
+   "start_origin": "https://shaka-project.github.io",
+   "duration_ms": 17824,
+   "browser": "Chromium",
+   "completeness": {
+    "equality_eligible": false,
+    "missing_sections": [
+     "events"
+    ],
+    "status": "incomplete",
+    "truncated_sections": []
+   },
+   "transactions": {
+    "observed": 32,
+    "resource_types": {
+     "document": 1,
+     "stylesheet": 2,
+     "script": 14,
+     "image": 7,
+     "manifest": 1,
+     "font": 1,
+     "fetch": 4,
+     "xhr": 1,
+     "other": 1
+    },
+    "statuses": {
+     "200": 30,
+     "503": 2
+    },
+    "hosts": {
+     "shaka-project.github.io": 22,
+     "imasdk.googleapis.com": 2,
+     "fonts.gstatic.com": 1,
+     "www.gstatic.com": 2,
+     "storage.googleapis.com": 5
+    }
+   },
+   "media_requests": [],
+   "playlists": [],
+   "console": {
+    "total": 26,
+    "levels": {
+     "warning": 23,
+     "debug": 1,
+     "error": 2
+    },
+    "errors": [
+     {
+      "level": "warning",
+      "text": "It is recommended that a robustness level be specified. Not specifying the robustness level could result in unexpected behavior."
+     },
+     {
+      "level": "warning",
+      "text": "It is recommended that a robustness level be specified. Not specifying the robustness level could result in unexpected behavior."
+     },
+     {
+      "level": "warning",
+      "text": "It is recommended that a robustness level be specified. Not specifying the robustness level could result in unexpected behavior."
+     },
+     {
+      "level": "warning",
+      "text": "It is recommended that a robustness level be specified. Not specifying the robustness level could result in unexpected behavior."
+     },
+     {
+      "level": "warning",
+      "text": "It is recommended that a robustness level be specified. Not specifying the robustness level could result in unexpected behavior."
+     },
+     {
+      "level": "warning",
+      "text": "It is recommended that a robustness level be specified. Not specifying the robustness level could result in unexpected behavior."
+     },
+     {
+      "level": "warning",
+      "text": "It is recommended that a robustness level be specified. Not specifying the robustness level could result in unexpected behavior."
+     },
+     {
+      "level": "warning",
+      "text": "It is recommended that a robustness level be specified. Not specifying the robustness level could result in unexpected behavior."
+     }
+    ]
+   },
+   "screenshot_sha256": "5aeb9f2c6c6e5affa8a1ce8b193ed2bd1c3f4bd2ff893ad37fc34078f3be0d57",
+   "omissions": {
+    "by_kind": [],
+    "network_transaction_range": null,
+    "network_transactions": []
+   }
+  },
+  {
+   "evidence_id": "ev_db7e35d6807a1f43d62cf6834762485baeafd8c09f003d0cea52b7cf33c76a3a",
+   "label": "list_browser_targets",
+   "operation": "list_browser_targets",
+   "confidence": "observed",
+   "authority": "external-service",
+   "limitations": [
+    "Artifact identity is unavailable for this observation.",
+    "All page targets with supported HTTP(S) URLs are listed.",
+    "CDP discovery omitted attachment state for one or more targets; attached is reported as unknown.",
+    "Browser host platform and architecture were not observed."
+   ],
+   "targets": [
+    {
+     "attached": null,
+     "origin": "https://player.tdtchannels.com",
+     "target_id": "E29060DF9E4F5C669F4DD4A31C472B42",
+     "title": "La 1 | TDTChannels",
+     "type": "page",
+     "url": "https://player.tdtchannels.com/television/La1"
+    }
+   ],
+   "excluded": {
+    "disallowed_origin": 0,
+    "non_page": 5,
+    "unsupported_url": 0
+   }
+  }
+ ]
+}

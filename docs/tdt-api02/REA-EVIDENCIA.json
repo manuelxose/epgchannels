@@ -1,0 +1,311 @@
+{
+ "schema_version": "rea-evidence-index/1",
+ "generado_por": "rea-research (t2)",
+ "fecha": "2026-11-16T14:30:00Z",
+ "tarea": {
+  "id": "t2",
+  "intento": 1,
+  "attempt_id": "39340a2d-b8e5-4e83-9d0f-b0d09f84c492",
+  "milestone": "TDT-API-02A"
+ },
+ "worktree": "C:/Users/Admin/Documents/workspace/streaming/wt/tdt02a-rea",
+ "rea_instalacion": {
+  "paquete": "rea-agents",
+  "version": "6.8.0",
+  "ruta": "C:/Users/Admin/AppData/Local/blg/toolchain/node-v24.22.2-win-x64/node_modules/rea-agents",
+  "servidor_mcp": "rea 6.8.0",
+  "sdk": "2.3.1",
+  "protocolo": "2026-07-28",
+  "herramientas_mcp": 229,
+  "comandos_cli": 175,
+  "catalogo_sha256": "fe938a7c6eba3763b22ae2022de76dc4a7812d35d86f1d4efd36b9962b04da0b",
+  "skill": {
+   "nombre": "reverse-engineer-anything",
+   "version": "49",
+   "ruta": "C:/Users/Admin/.agents/skills/reverse-engineer-anything/SKILL.md"
+  },
+  "docs_instaladas": [
+   "README.md",
+   "DISCLAIMER.md",
+   "THIRD_PARTY_NOTICES.md",
+   "skills/"
+  ],
+  "docs_no_incluidas": [
+   "docs/ (enlazada en README, no publicada en el paquete)"
+  ]
+ },
+ "capacidades": {
+  "disponibles": [
+   "capture_browser_scenario (launch/connect)",
+   "list_browser_targets",
+   "inspect_web_page",
+   "capture_web_screenshot",
+   "analyze_web_bundle",
+   "analyze_javascript_application",
+   "export_web_scripts",
+   "inspect_analysis_view",
+   "export/import_evidence_bundle",
+   "compare_web_captures",
+   "trace_javascript_semantics",
+   "reconcile_javascript_runtime"
+  ],
+  "no_disponibles": [
+   {
+    "capacidad": "Ghidra",
+    "motivo": "GHIDRA_INSTALL_DIR sin configurar"
+   },
+   {
+    "capacidad": "Hopper/IDA/JEB/Kuna",
+    "motivo": "proveedor no configurado"
+   },
+   {
+    "capacidad": "adb/apktool/JADX",
+    "motivo": "binarios no instalados"
+   },
+   {
+    "capacidad": "herramientas macOS y UI nativa",
+    "motivo": "host Windows"
+   },
+   {
+    "capacidad": "pcap/firmware/pwntools/sigrok/WABT/Wakaru",
+    "motivo": "perfil Linux o binarios externos no configurados"
+   },
+   {
+    "capacidad": "captura de procesos",
+    "motivo": "host no soportado"
+   }
+  ]
+ },
+ "carpeta_rea_local": {
+  "existe": false,
+  "busqueda": "Get-ChildItem -Recurse -Directory -Filter rea (excluyendo node_modules) bajo el workspace streaming",
+  "resultados": 0,
+  "referencias_contextuales": [
+   "reference/player-doc/television.html",
+   "reference/player-bundles/ (11 chunks + manifest.json)",
+   "reference/data/tv.json",
+   "reference/data/TV.epg.json",
+   "reference/data/hls-probe.json"
+  ]
+ },
+ "evidencias": [
+  {
+   "id": "ev_51dfba1e9c7831db89b762a0cf4482e783b56e747eefbbc965f046b2527ac6ce",
+   "etiqueta": "La1 reproduccion",
+   "operacion": "capture_browser_scenario",
+   "url": "https://player.tdtchannels.com/television/La1",
+   "hechos": [
+    "HLS en claro sobre MPEG-TS: manifiesto maestro 2118 B + variante 135498 B (1440 segmentos de 5 s, DVR ~2 h)",
+    "5 segmentos .ts (video/mp2t) de 1.075.360-2.659.824 B, HTTP 200",
+    "Sin EXT-X-KEY ni EXT-X-MAP; sin cookies/tokens; CORS *",
+    "3 pistas de audio y 6 de subtitulos en EXT-X-MEDIA; variante 1280x720 avc1.640029/mp4a.40.2"
+   ],
+   "limitaciones": [
+    "Captura incompleta por presupuesto de 200 transacciones",
+    "Sin eventos de UI de play/pause/seek",
+    "No se probo DRM, geobloqueo ni autenticacion"
+   ]
+  },
+  {
+   "id": "ev_55f7d155fb1b4348003666b64d63483f2edf57e36f7c208ae036b7bc22e56e88",
+   "etiqueta": "La1 llegada",
+   "operacion": "capture_browser_scenario",
+   "url": "https://player.tdtchannels.com/",
+   "hechos": [
+    "Redireccion a /television",
+    "Parrilla de 768 canales, 21 por pagina",
+    "Sin peticiones de media en la llegada"
+   ],
+   "limitaciones": [
+    "184 transacciones observadas; 2 errores 404 de terceros"
+   ]
+  },
+  {
+   "id": "ev_807df5e08085ddb0360d8e271a31648d3af5cbe279242c7d270a34e7fea23937",
+   "etiqueta": "Bitmovin DASH",
+   "operacion": "capture_browser_scenario",
+   "url": "https://bitmovin.com/demos/dash",
+   "hechos": [
+    "Reto Cloudflare Turnstile; respuestas 403/503",
+    "Sin manifiesto .mpd ni reproduccion",
+    "No se intento evadir el reto"
+   ],
+   "limitaciones": [
+    "Intento negativo; no aporta evidencia DASH"
+   ]
+  },
+  {
+   "id": "ev_6e31189b97f8c6350ac0f36a82a353a020b17670e6be7a2ed60a8ea88cc70111",
+   "etiqueta": "Shaka uncompiled",
+   "operacion": "capture_browser_scenario",
+   "url": "https://shaka-player-demo.appspot.com/demo/",
+   "hechos": [
+    "Redirige a shaka-project.github.io/.../#build=uncompiled",
+    "Error: shaka.util.CmsdManager is not a constructor",
+    "Sin manifiesto de media"
+   ],
+   "limitaciones": [
+    "Intento negativo"
+   ]
+  },
+  {
+   "id": "ev_c93a4fe1a7b70732ce90d5c675a9dd20eaab40e2a9ca2d1594a5befc4e6966c6",
+   "etiqueta": "Shaka compiled",
+   "operacion": "capture_browser_scenario",
+   "url": "https://shaka-project.github.io/shaka-player-release/demo/#build=compiled",
+   "hechos": [
+    "La UI arranca y pide app_manifest.json (lista de assets)",
+    "Respuestas 503; ningun .mpd solicitado",
+    "Boot MSE nativo/MediaCapabilities registrado en consola"
+   ],
+   "limitaciones": [
+    "Intento negativo; DASH no observado"
+   ]
+  },
+  {
+   "id": "ev_054bcf28f9968f3b9a98c9505f751771faa5d4658051322d9eca711ed86067fb",
+   "etiqueta": "analyze_web_bundle",
+   "operacion": "analyze_web_bundle",
+   "url": "https://player.tdtchannels.com/television/La1",
+   "hechos": [
+    "Next.js confirmado (2 huellas de alta confianza)",
+    "21 scripts observados; 3 parseados; 17 no iniciados; 157.496 nodos AST; 0 fallos de parseo",
+    "Chunk de 512.196 B analizado completo (SHA-256 d94e039e...3073)",
+    "0 rutas estaticas, 0 endpoints observados, 10 candidatos de baja confianza",
+    "Analisis parcial: cancelado por plazo del cliente MCP"
+   ],
+   "limitaciones": [
+    "18 de 21 scripts sin analizar",
+    "Sin source maps",
+    "No se enumero el conjunto de rutas"
+   ]
+  },
+  {
+   "id": "ev_db7e35d6807a1f43d62cf6834762485baeafd8c09f003d0cea52b7cf33c76a3a",
+   "etiqueta": "list_browser_targets",
+   "operacion": "list_browser_targets",
+   "url": "http://127.0.0.1:9333",
+   "hechos": [
+    "1 pagina: La 1 | TDTChannels (https://player.tdtchannels.com/television/La1)"
+   ],
+   "limitaciones": []
+  }
+ ],
+ "archivos": [
+  {
+   "ruta": "INFORME-REA-REPRODUCCION.md",
+   "bytes": 22235,
+   "sha256": "cd4c499b686c9872d9de354ee28215890408e017988b74511118a219c554092e"
+  },
+  {
+   "ruta": "evidence/rea/sesion-rea-records.json",
+   "bytes": 4170684,
+   "sha256": "4370ae11ceb5ca51559339d514fa1aa5bdc28a7efc7356075da0ebed07f519ce"
+  },
+  {
+   "ruta": "evidence/rea/capturas-resumen.json",
+   "bytes": 41645,
+   "sha256": "cb648d39b4b38a6d85b11f23c28ce0889c48736db1dc69dcdf3f5a74affd768f"
+  }
+ ],
+ "bundle_filtrado": {
+  "ruta": "evidence/rea/sesion-rea-records.json",
+  "nota": "Copia filtrada de los registros completos creados por rea-research. El bundle completo de la sesion MCP (24.086.659 B, SHA-256 155bea1f..., 26 registros) contenia registros de otros miembros y no se archiva. La captura de llegada ev_55f7... se conserva resumida en capturas-resumen.json.",
+  "registros_incluidos": [
+   "ev_51dfba1e9c7831db89b762a0cf4482e783b56e747eefbbc965f046b2527ac6ce",
+   "ev_807df5e08085ddb0360d8e271a31648d3af5cbe279242c7d270a34e7fea23937",
+   "ev_054bcf28f9968f3b9a98c9505f751771faa5d4658051322d9eca711ed86067fb",
+   "ev_db7e35d6807a1f43d62cf6834762485baeafd8c09f003d0cea52b7cf33c76a3a"
+  ]
+ },
+ "hallazgos": [
+  {
+   "id": "H1",
+   "confianza": "observado",
+   "texto": "El reproductor publico de TDTChannels reproduce HLS en claro sobre MPEG-TS mediante MSE y libreria JS en Chromium 157; pide manifiestos .m3u8 y segmentos .ts por XHR.",
+   "evidencia": [
+    "ev_51dfba1e9c78"
+   ],
+   "implicacion": "El proxy de 02A debe preservar content-type, CORS y URIs de manifiesto."
+  },
+  {
+   "id": "H2",
+   "confianza": "observado",
+   "texto": "El manifiesto de La 1 declara 3 pistas de audio (incluida accesibilidad) y 6 de subtitulos, una variante 720p y DVR de ~2 h con segmentos de 5 s; no hay cifrado en el manifiesto.",
+   "evidencia": [
+    "ev_51dfba1e9c78"
+   ],
+   "implicacion": "No perder EXT-X-MEDIA ni asumir una sola pista."
+  },
+  {
+   "id": "H3",
+   "confianza": "observado",
+   "texto": "El manifiesto de variante pesa 135 KB sin comprimir (~7,9 KB gzip) y se revalida cada ~3 s; los segmentos admiten Range y cache de 5 h.",
+   "evidencia": [
+    "ev_51dfba1e9c78"
+   ],
+   "implicacion": "Presupuesto de ancho de banda y caching distintos para manifiesto y segmentos."
+  },
+  {
+   "id": "H4",
+   "confianza": "observado",
+   "texto": "La app del reproductor es Next.js/Turbopack; el analisis estatico quedo parcial y no enumero rutas ni el conjunto completo de modulos del reproductor.",
+   "evidencia": [
+    "ev_054bcf28f996",
+    "ev_55f7d155fb1b"
+   ],
+   "implicacion": "Repetir analyze_web_bundle con mas plazo si se requiere arquitectura detallada."
+  },
+  {
+   "id": "H5",
+   "confianza": "no_observado",
+   "texto": "No se obtuvo ningun manifiesto .mpd: Bitmovin quedo tras Cloudflare Turnstile y las demos de Shaka fallaron (CmsdManager / 503); DASH no esta verificado.",
+   "evidencia": [
+    "ev_807df5e08085",
+    "ev_6e31189b97f8",
+    "ev_c93a4fe1a7b7"
+   ],
+   "implicacion": "No prometer DASH en 02A; tratarlo como linea futura."
+  },
+  {
+   "id": "H6",
+   "confianza": "inferido",
+   "texto": "Safari/iOS dependen de HLS nativo y no de MSE para HLS; una auth por cabecera en la URL de media romperia esa ruta.",
+   "evidencia": [
+    "ev_51dfba1e9c78"
+   ],
+   "implicacion": "Preferir cookies de mismo origen o query tokens para rutas nativas."
+  }
+ ],
+ "incertidumbres": [
+  "DASH real no observado",
+  "DRM no probado",
+  "Geobloqueo no probado (captura desde Espana)",
+  "Autenticacion no probada",
+  "Safari/iOS/Android no medidos",
+  "18 de 21 scripts del reproductor sin analizar",
+  "Sin eventos de UI (play/pause/seek)",
+  "Solo se muestreo el canal La 1",
+  "Impacto de publicidad de terceros no medido"
+ ],
+ "cumplimiento": {
+  "drm": false,
+  "geobloqueo": false,
+  "autenticacion": false,
+  "credenciales": false,
+  "reto_cloudflare": "no evadido",
+  "perfil_navegador": "temporal, headless",
+  "peticiones": "una carga por pagina; sin pruebas de carga"
+ },
+ "reproduccion": {
+  "herramientas": [
+   "rea__binary_session",
+   "rea__capture_browser_scenario",
+   "rea__list_browser_targets",
+   "rea__analyze_web_bundle",
+   "rea__export_evidence_bundle",
+   "rea__get_evidence_bundle"
+  ],
+  "nota": "Las URLs de RTVE llevan marca temporal y secuencia; una repeticion obtiene manifiestos y segmentos distintos."
+ }
+}
