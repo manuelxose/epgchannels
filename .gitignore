@@ -49,3 +49,14 @@ apps/frontend/test-results/
 
 # upstream snapshots captured by data/fetch-snapshots.mjs (never committed: bounded, versioned, licence-bounded)
 data/
+
+# REA raw captures are NEVER versioned. A browser capture of a third party's site
+# also captures that site's own client keys (a real one was found in a capture:
+# a third party's Firebase key in a Remote Config URL), plus full page and network
+# dumps. Only the credential-free summary, the record index, the offline reference
+# vectors and the helper scripts are committed. Reproduce raw captures with the
+# documented REA invocation and check them against the SHA-256s in the evidence
+# index. Applies to any future capture, not just the named ones.
+evidence/rea02c/rea-session-bundle-*.json
+evidence/rea02c/records/capture_*.json
+

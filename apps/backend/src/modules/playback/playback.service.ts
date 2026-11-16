@@ -24,10 +24,55 @@ import type { ChannelDoc, PlaybackSourceDoc, YoutubeChannelDoc } from '../../inf
 import { compareSources, decidePublication, engineFor, isSourceHealthy } from './publication-policy.js';
 import { channelIdFromUrl } from './youtube-channel-cache.js';
 import { providerRegistry } from '../providers/providers.registry.js';
+import { decideSourceEligibility } from '../providers/source-eligibility.js';
+import type { AuthorizationRecord } from '../providers/authorization.js';
+import { AuthorizationRepository } from '../providers/authorization.repository.js';
 
 export interface PlaybackLookup {
   readonly channel: ChannelDoc;
   readonly sources: readonly PlaybackSourceDoc[];
+}
+
+/**
+ * Authorization decisions for the sources being assembled, keyed by source id.
+ *
+ * 02C rule (fail-closed): a source is playable only when a recorded right says
+ * so. A source absent from this map has no recorded right and is therefore NOT
+ * playable — the absence of a key is a denial, never a bypass. Callers that have
+ * persisted decisions pass them in; callers that do not get no playback rather
+ * than unauthorised playback.
+ */
+export type AuthorizationMap = ReadonlyMap<string, AuthorizationRecord>;
+
+/**
+ * Whether a stored source may take part in playback at all.
+ *
+ * Both gates must agree: the existing publication policy (admission, provenance,
+ * forged-header/app-only vetoes) AND the 02C authorization gate. Availability is
+ * never consulted here — `isSourceHealthy` is applied separately by callers that
+ * need it, and a healthy stream cannot rescue a missing right.
+ */
+function isEligibleSource(
+  channel: Pick<ChannelDoc, 'editorialStatus'>,
+  source: PlaybackSourceDoc,
+  authorizations: AuthorizationMap | undefined,
+  now: Date,
+  territory: string | null,
+): boolean {
+  const decision = decideSourceEligibility({
+    publication: {
+      channelStatus: channel.editorialStatus,
+      sourceStatus: source.editorialStatus,
+      permission: source.permission as never,
+      technicalStatus: source.technicalStatus,
+      conditions: source.conditions,
+    },
+    authorization: authorizations?.get(source._id) ?? null,
+    type: source.type as never,
+    now,
+    requestedTerritory: territory,
+  });
+  return decision.playable;
 }
 
 export function channelRef(channel: Pick<ChannelDoc, '_id' | 'slug' | 'name'>): ChannelRef {
@@ -123,17 +168,13 @@ function labelFor(source: PlaybackSourceDoc): string {
 }
 
 /** The status a channel shows when no in-app source can be offered. */
-export function statusWithoutInApp(channel: ChannelDoc, sources: readonly PlaybackSourceDoc[]): PlaybackStatus {
-  const publicSources = sources.filter(
-    (source) =>
-      decidePublication({
-        channelStatus: channel.editorialStatus,
-        sourceStatus: source.editorialStatus,
-        permission: source.permission as never,
-        technicalStatus: source.technicalStatus,
-        conditions: source.conditions,
-      }).public,
-  );
+export function statusWithoutInApp(
+  channel: ChannelDoc,
+  sources: readonly PlaybackSourceDoc[],
+  authorizations?: AuthorizationMap,
+  now: Date = new Date(),
+): PlaybackStatus {
+  const publicSources = sources.filter((source) => isEligibleSource(channel, source, authorizations, now, null));
   if (publicSources.some((source) => source.type === 'external')) {
     return 'external';
   }
@@ -161,20 +202,23 @@ export function buildDescriptor(
    * playback for the second one is exactly the bug this parameter prevents.
    */
   offlineChannels: ReadonlySet<string> = new Set(),
+  /**
+   * Persisted authorization decisions, keyed by source id. A source with no
+   * entry is NOT playable: the 02C gate fails closed, so omitting this map
+   * yields no in-app playback rather than unauthorised playback.
+   */
+  authorizations: AuthorizationMap | undefined = undefined,
 ): PlaybackDescriptor {
   const issues = sourceIssues(sources, channel);
   const ordered = [...sources].sort(compareSources);
 
-  const inApp = ordered.filter((source) => {
-    const decision = decidePublication({
-      channelStatus: channel.editorialStatus,
-      sourceStatus: source.editorialStatus,
-      permission: source.permission as never,
-      technicalStatus: source.technicalStatus,
-      conditions: source.conditions,
-    });
-    return decision.public && isSourceHealthy(source) && source.type !== 'external' && source.url !== null;
-  });
+  const inApp = ordered.filter(
+    (source) =>
+      isEligibleSource(channel, source, authorizations, now, null) &&
+      isSourceHealthy(source) &&
+      source.type !== 'external' &&
+      source.url !== null,
+  );
 
   if (inApp.length > 0) {
     const options = inApp.map((source, index) => optionOf(source, index === 0, null, resolvedVideos));
@@ -227,17 +271,11 @@ export function buildDescriptor(
     };
   }
 
-  const status = statusWithoutInApp(channel, sources);
+  const status = statusWithoutInApp(channel, sources, authorizations, now);
   const external = ordered.find(
     (source) =>
       source.type === 'external' &&
-      decidePublication({
-        channelStatus: channel.editorialStatus,
-        sourceStatus: source.editorialStatus,
-        permission: source.permission as never,
-        technicalStatus: source.technicalStatus,
-        conditions: source.conditions,
-      }).public,
+      isEligibleSource(channel, source, authorizations, now, null),
   );
   const externalUrl = external?.officialPageUrl ?? external?.url ?? channel.websiteUrl ?? null;
 
@@ -289,7 +327,23 @@ export class PlaybackService {
     if (!channel) return null;
     const sources = await this.sourcesFor(channel._id);
     const { videos, offline } = await this.youtubeStateFor(sources);
-    return buildDescriptor(channel, sources, new Date(), videos, offline);
+    const authorizations = await this.authorizationsFor(sources);
+    return buildDescriptor(channel, sources, new Date(), videos, offline, authorizations);
+  }
+
+  /**
+   * The recorded authorization decision for each source, keyed by source id.
+   *
+   * A source missing from the returned map has no recorded right, so the gate
+   * refuses it. A database failure must not be mistaken for permission, so it is
+   * surfaced rather than swallowed: returning an empty map is the fail-closed
+   * outcome, and the caller simply gets no playback.
+   */
+  async authorizationsFor(
+    sources: readonly PlaybackSourceDoc[],
+  ): Promise<ReadonlyMap<string, AuthorizationRecord>> {
+    const repository = new AuthorizationRepository(this.database);
+    return repository.decisionsForSources(sources);
   }
 
   /**
@@ -350,6 +404,13 @@ export class PlaybackService {
       byChannel.set(source.channelId, list);
     }
     const statuses = new Map<string, PlaybackStatus>();
+    /*
+     * One authorization lookup for the whole page: a channel whose sources have
+     * no recorded right must not be advertised as 'available' just because its
+     * manifest answers.
+     */
+    const authorizations = await this.authorizationsFor(sources);
+    const now = new Date();
     for (const channel of channels) {
       const list = byChannel.get(channel._id) ?? [];
       const inApp = list.filter(
@@ -357,15 +418,9 @@ export class PlaybackService {
           source.type !== 'external' &&
           source.url !== null &&
           isSourceHealthy(source) &&
-          decidePublication({
-            channelStatus: channel.editorialStatus,
-            sourceStatus: source.editorialStatus,
-            permission: source.permission as never,
-            technicalStatus: source.technicalStatus,
-            conditions: source.conditions,
-          }).public,
+          isEligibleSource(channel, source, authorizations, now, null),
       );
-      statuses.set(channel._id, inApp.length > 0 ? 'available' : statusWithoutInApp(channel, list));
+      statuses.set(channel._id, inApp.length > 0 ? 'available' : statusWithoutInApp(channel, list, authorizations, now));
     }
     return statuses;
   }

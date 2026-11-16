@@ -1,0 +1,32 @@
+[
+ {
+  "file": "capture_browser_scenario-20277ee474b5.json",
+  "evidence_id": "ev_20277ee474b5d43b36f78c976cd8a14a1ee85c4d2ee37c8a4f3e626ff527c90b",
+  "operation": "capture_browser_scenario"
+ },
+ {
+  "file": "capture_browser_scenario-4c7e88904134.json",
+  "evidence_id": "ev_4c7e88904134f8206f161832a9d051777c2a4bacd17025d3a3e377000563bca4",
+  "operation": "capture_browser_scenario"
+ },
+ {
+  "file": "capture_browser_scenario-565ceb45a05b.json",
+  "evidence_id": "ev_565ceb45a05b4eb5b020808c610dc50eb131b2eb678f552d4d2195ff30d22404",
+  "operation": "capture_browser_scenario"
+ },
+ {
+  "file": "capture_browser_scenario-6350c85c1ba0.json",
+  "evidence_id": "ev_6350c85c1ba096e65da783453438a339e98de74419fbebfb7a4ceab2db428287",
+  "operation": "capture_browser_scenario"
+ },
+ {
+  "file": "capture_browser_scenario-6a09946cb4fe.json",
+  "evidence_id": "ev_6a09946cb4fe99813ec834322273dd85121f0a920671ea3b0f66dc966796328b",
+  "operation": "capture_browser_scenario"
+ },
+ {
+  "file": "capture_browser_scenario-d3256802b9b1.json",
+  "evidence_id": "ev_d3256802b9b121de53bcd1573296f190464432a0fad9ce03e7097b7cb768e68d",
+  "operation": "capture_browser_scenario"
+ }
+]

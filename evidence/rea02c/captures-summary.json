@@ -1,0 +1,1099 @@
+[
+ {
+  "source_file": "capture_browser_scenario-20277ee474b5.json",
+  "evidence_id": "ev_20277ee474b5d43b36f78c976cd8a14a1ee85c4d2ee37c8a4f3e626ff527c90b",
+  "operation": "capture_browser_scenario",
+  "confidence": "observed",
+  "authority": "controlled-replay",
+  "parameters": {
+   "actions": [
+    {
+     "action": "wait_for_timeout",
+     "duration_ms": 6000,
+     "step_id": "a1"
+    }
+   ],
+   "browser": {
+    "executable_path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "headless": true,
+    "mode": "launch"
+   },
+   "capture": {
+    "after_each_step": [],
+    "at_end": [
+     "url",
+     "dom"
+    ],
+    "events": [
+     "page-errors",
+     "network",
+     "frames"
+    ],
+    "limits": {
+     "max_event_allocation_bytes": 4194304,
+     "max_events": 4000,
+     "max_network_body_allocation_bytes": 1048576,
+     "max_network_body_bytes": 65536,
+     "max_network_header_allocation_bytes": 1048576,
+     "max_network_metadata_allocation_bytes": 1048576,
+     "max_network_transactions": 800,
+     "max_total_event_allocation_bytes": 16777216
+    },
+    "network": {
+     "header_values": false,
+     "request_body": false,
+     "response_body": false
+    }
+   },
+   "command_timeout_ms": 120000,
+   "environment": {
+    "color_scheme": "light",
+    "locale": "es-ES",
+    "reduced_motion": "reduce",
+    "service_workers": "allow",
+    "timezone": "Europe/Madrid",
+    "viewport": {
+     "device_scale_factor": 1,
+     "height": 720,
+     "width": 1280
+    }
+   },
+   "scenario_sha256": "e7f93031f4c75ccb456cb50cccb5992685842340703a67420b449613cd60a9f2",
+   "secrets": [],
+   "start_url": {
+    "query": [],
+    "url": "https://www.atresplayer.com/directos/antena3/"
+   },
+   "storage": {
+    "cookies": [],
+    "local_storage": [],
+    "session_storage": []
+   }
+  },
+  "browser": {
+   "cleanup": "terminated-owned-process",
+   "mode": "launch",
+   "process_ownership": "provider-owned",
+   "product": "Chromium",
+   "version": "157.0.8103.78"
+  },
+  "start_origin": "https://www.atresplayer.com",
+  "duration_ms": 10321,
+  "steps": [
+   {
+    "step_id": "scenario_start",
+    "action": "goto_start",
+    "status": "completed",
+    "elapsed_ms": 3521,
+    "after_url": "https://www.atresplayer.com/directos/antena3/"
+   },
+   {
+    "step_id": "a1",
+    "action": "wait_for_timeout",
+    "status": "completed",
+    "elapsed_ms": 6023,
+    "after_url": "https://www.atresplayer.com/directos/antena3/"
+   }
+  ],
+  "event_counts": {
+   "retained": 482,
+   "dropped": 0
+  },
+  "resource_type_counts": {
+   "document": 3,
+   "script": 27,
+   "stylesheet": 4,
+   "font": 8,
+   "manifest": 1,
+   "fetch": 91,
+   "xhr": 3,
+   "image": 17,
+   "other": 2
+  },
+  "media_requests": [],
+  "console_lines": [],
+  "page_errors": [],
+  "failures": [
+   {
+    "url": "https://ups.analytics.yahoo.com/ups/58782/cms?[partner_id,_hosted_id,gdpr,gdpr_consent]",
+    "failure": "net::ERR_BLOCKED_BY_ORB"
+   },
+   {
+    "url": "https://sync.search.spotxchange.com/audience_sync/13?[redir,gdpr,gdpr_consent]",
+    "failure": "net::ERR_NAME_NOT_RESOLVED"
+   }
+  ],
+  "non_2xx": [
+   {
+    "url": "https://account.atresplayer.com/user/v1/me",
+    "status": 401
+   },
+   {
+    "url": "https://assets.adobedtm.com/f3257b54648f/36bf156d8ceb/launch-ba2180a736bd.min.js0",
+    "status": 404
+   },
+   {
+    "url": "https://account.atresplayer.com/user/v1/profiles",
+    "status": 401
+   },
+   {
+    "url": "https://api.atresplayer.com/atpuser/v1/following",
+    "status": 401
+   },
+   {
+    "url": "https://api.atresplayer.com/purchases/v1/packages/acquired",
+    "status": 401
+   },
+   {
+    "url": "https://api.atresplayer.com/purchases/v1/subscriptions",
+    "status": 401
+   },
+   {
+    "url": "https://api.atresplayer.com/atpuser/v1/notification/current",
+    "status": 401
+   },
+   {
+    "url": "https://api.atresplayer.com/atpuser/v1/notice",
+    "status": 401
+   }
+  ],
+  "dom_measurements": {
+   "dom_bytes": 25222,
+   "video_elements": [],
+   "source_children": [],
+   "iframes": [],
+   "player_libs": [],
+   "geo_script": [],
+   "drm_hints": [
+    "eme"
+   ]
+  },
+  "limitations": [
+   "Artifact identity is unavailable for this observation.",
+   "Event sequence records provider receipt order; simultaneous browser causality is not inferred.",
+   "Network content is retained only when selected; Playwright response-body bytes are API results and are not guaranteed to match wire bytes.",
+   "Request bytes are limited to what Playwright exposes; not_exposed does not establish body absence or multipart file coverage.",
+   "Network content reads settle within 5 seconds each and the observer does not request bodies from unfinished responses.",
+   "Playwright scenario events do not expose request initiator stacks; receipt order does not prove causality.",
+   "Storage values are hashed only after declared-secret redaction.",
+   "Browser host platform and architecture were not observed."
+  ]
+ },
+ {
+  "source_file": "capture_browser_scenario-4c7e88904134.json",
+  "evidence_id": "ev_4c7e88904134f8206f161832a9d051777c2a4bacd17025d3a3e377000563bca4",
+  "operation": "capture_browser_scenario",
+  "confidence": "observed",
+  "authority": "controlled-replay",
+  "parameters": {
+   "actions": [
+    {
+     "action": "wait_for_timeout",
+     "duration_ms": 4000,
+     "step_id": "a1"
+    }
+   ],
+   "browser": {
+    "executable_path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "headless": true,
+    "mode": "launch"
+   },
+   "capture": {
+    "after_each_step": [],
+    "at_end": [
+     "url"
+    ],
+    "events": [
+     "console",
+     "page-errors"
+    ],
+    "limits": {
+     "max_event_allocation_bytes": 4194304,
+     "max_events": 2000,
+     "max_network_body_allocation_bytes": 1048576,
+     "max_network_body_bytes": 65536,
+     "max_network_header_allocation_bytes": 1048576,
+     "max_network_metadata_allocation_bytes": 1048576,
+     "max_network_transactions": 1024,
+     "max_total_event_allocation_bytes": 16777216
+    },
+    "network": {
+     "header_values": false,
+     "request_body": false,
+     "response_body": false
+    }
+   },
+   "command_timeout_ms": 45000,
+   "environment": {
+    "color_scheme": "light",
+    "locale": "es-ES",
+    "reduced_motion": "reduce",
+    "service_workers": "block",
+    "timezone": "Europe/Madrid",
+    "viewport": {
+     "device_scale_factor": 1,
+     "height": 720,
+     "width": 1280
+    }
+   },
+   "scenario_sha256": "71f5310581a53a05c2e68aa605cd8d0a4c36a515a170506a0e8cea8aa2118481",
+   "secrets": [],
+   "start_url": {
+    "query": [],
+    "url": "https://www.3cat.cat/3cat/directes/tv3/"
+   },
+   "storage": {
+    "cookies": [],
+    "local_storage": [],
+    "session_storage": []
+   }
+  },
+  "browser": {
+   "cleanup": "terminated-owned-process",
+   "mode": "launch",
+   "process_ownership": "provider-owned",
+   "product": "Chromium",
+   "version": "157.0.8103.78"
+  },
+  "start_origin": "https://www.3cat.cat",
+  "duration_ms": 11676,
+  "steps": [
+   {
+    "step_id": "scenario_start",
+    "action": "goto_start",
+    "status": "completed",
+    "elapsed_ms": 6439,
+    "after_url": "https://www.3cat.cat/3cat/directes/tv3/"
+   },
+   {
+    "step_id": "a1",
+    "action": "wait_for_timeout",
+    "status": "completed",
+    "elapsed_ms": 4012,
+    "after_url": "https://www.3cat.cat/3cat/directes/tv3/"
+   }
+  ],
+  "event_counts": {
+   "retained": 2,
+   "dropped": 0
+  },
+  "resource_type_counts": {},
+  "media_requests": [],
+  "console_lines": [
+   {
+    "level": "warning",
+    "text": "An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing."
+   },
+   {
+    "level": "warning",
+    "text": "An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing."
+   }
+  ],
+  "page_errors": [],
+  "failures": [],
+  "non_2xx": [],
+  "dom_measurements": {
+   "dom_bytes": null,
+   "video_elements": [],
+   "source_children": [],
+   "iframes": [],
+   "player_libs": [],
+   "geo_script": [],
+   "drm_hints": []
+  },
+  "limitations": [
+   "Artifact identity is unavailable for this observation.",
+   "Event sequence records provider receipt order; simultaneous browser causality is not inferred.",
+   "Network content is retained only when selected; Playwright response-body bytes are API results and are not guaranteed to match wire bytes.",
+   "Request bytes are limited to what Playwright exposes; not_exposed does not establish body absence or multipart file coverage.",
+   "Network content reads settle within 5 seconds each and the observer does not request bodies from unfinished responses.",
+   "Playwright scenario events do not expose request initiator stacks; receipt order does not prove causality.",
+   "Storage values are hashed only after declared-secret redaction.",
+   "Browser host platform and architecture were not observed."
+  ]
+ },
+ {
+  "source_file": "capture_browser_scenario-565ceb45a05b.json",
+  "evidence_id": "ev_565ceb45a05b4eb5b020808c610dc50eb131b2eb678f552d4d2195ff30d22404",
+  "operation": "capture_browser_scenario",
+  "confidence": "observed",
+  "authority": "controlled-replay",
+  "parameters": {
+   "actions": [
+    {
+     "action": "wait_for_timeout",
+     "duration_ms": 6000,
+     "step_id": "a1"
+    }
+   ],
+   "browser": {
+    "executable_path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "headless": true,
+    "mode": "launch"
+   },
+   "capture": {
+    "after_each_step": [],
+    "at_end": [
+     "url",
+     "dom"
+    ],
+    "events": [
+     "page-errors",
+     "network",
+     "frames"
+    ],
+    "limits": {
+     "max_event_allocation_bytes": 4194304,
+     "max_events": 6000,
+     "max_network_body_allocation_bytes": 1048576,
+     "max_network_body_bytes": 65536,
+     "max_network_header_allocation_bytes": 1048576,
+     "max_network_metadata_allocation_bytes": 1048576,
+     "max_network_transactions": 900,
+     "max_total_event_allocation_bytes": 16777216
+    },
+    "network": {
+     "header_values": false,
+     "request_body": false,
+     "response_body": false
+    }
+   },
+   "command_timeout_ms": 120000,
+   "environment": {
+    "color_scheme": "light",
+    "locale": "es-ES",
+    "reduced_motion": "reduce",
+    "service_workers": "allow",
+    "timezone": "Europe/Madrid",
+    "viewport": {
+     "device_scale_factor": 1,
+     "height": 720,
+     "width": 1280
+    }
+   },
+   "scenario_sha256": "3602178fd77b61c535152891c688f6d692309844a0a3ad5cc9f487abd3df97a5",
+   "secrets": [],
+   "start_url": {
+    "query": [],
+    "url": "https://www.mitele.es/directo/telecinco"
+   },
+   "storage": {
+    "cookies": [],
+    "local_storage": [],
+    "session_storage": []
+   }
+  },
+  "browser": {
+   "cleanup": "terminated-owned-process",
+   "mode": "launch",
+   "process_ownership": "provider-owned",
+   "product": "Chromium",
+   "version": "157.0.8103.78"
+  },
+  "start_origin": "https://www.mitele.es",
+  "duration_ms": 8647,
+  "steps": [
+   {
+    "step_id": "scenario_start",
+    "action": "goto_start",
+    "status": "completed",
+    "elapsed_ms": 1781,
+    "after_url": "https://www.mediasetinfinity.es/directo/telecinco/"
+   },
+   {
+    "step_id": "a1",
+    "action": "wait_for_timeout",
+    "status": "completed",
+    "elapsed_ms": 6083,
+    "after_url": "https://www.mediasetinfinity.es/directo/telecinco/"
+   }
+  ],
+  "event_counts": {
+   "retained": 211,
+   "dropped": 0
+  },
+  "resource_type_counts": {
+   "document": 2,
+   "font": 4,
+   "stylesheet": 3,
+   "script": 40,
+   "image": 16,
+   "fetch": 2,
+   "xhr": 1,
+   "other": 1
+  },
+  "media_requests": [],
+  "console_lines": [],
+  "page_errors": [],
+  "failures": [],
+  "non_2xx": [],
+  "dom_measurements": {
+   "dom_bytes": 509738,
+   "video_elements": [],
+   "source_children": [],
+   "iframes": [],
+   "player_libs": [],
+   "geo_script": [],
+   "drm_hints": [
+    "eme"
+   ]
+  },
+  "limitations": [
+   "Artifact identity is unavailable for this observation.",
+   "Event sequence records provider receipt order; simultaneous browser causality is not inferred.",
+   "Network content is retained only when selected; Playwright response-body bytes are API results and are not guaranteed to match wire bytes.",
+   "Request bytes are limited to what Playwright exposes; not_exposed does not establish body absence or multipart file coverage.",
+   "Network content reads settle within 5 seconds each and the observer does not request bodies from unfinished responses.",
+   "Playwright scenario events do not expose request initiator stacks; receipt order does not prove causality.",
+   "Storage values are hashed only after declared-secret redaction.",
+   "Browser host platform and architecture were not observed."
+  ]
+ },
+ {
+  "source_file": "capture_browser_scenario-6350c85c1ba0.json",
+  "evidence_id": "ev_6350c85c1ba096e65da783453438a339e98de74419fbebfb7a4ceab2db428287",
+  "operation": "capture_browser_scenario",
+  "confidence": "observed",
+  "authority": "controlled-replay",
+  "parameters": {
+   "actions": [
+    {
+     "action": "wait_for_timeout",
+     "duration_ms": 4000,
+     "step_id": "a1"
+    }
+   ],
+   "browser": {
+    "executable_path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "headless": true,
+    "mode": "launch"
+   },
+   "capture": {
+    "after_each_step": [],
+    "at_end": [
+     "url"
+    ],
+    "events": [
+     "console",
+     "page-errors"
+    ],
+    "limits": {
+     "max_event_allocation_bytes": 4194304,
+     "max_events": 2000,
+     "max_network_body_allocation_bytes": 1048576,
+     "max_network_body_bytes": 65536,
+     "max_network_header_allocation_bytes": 1048576,
+     "max_network_metadata_allocation_bytes": 1048576,
+     "max_network_transactions": 1024,
+     "max_total_event_allocation_bytes": 16777216
+    },
+    "network": {
+     "header_values": false,
+     "request_body": false,
+     "response_body": false
+    }
+   },
+   "command_timeout_ms": 45000,
+   "environment": {
+    "color_scheme": "light",
+    "locale": "es-ES",
+    "reduced_motion": "reduce",
+    "service_workers": "block",
+    "timezone": "Europe/Madrid",
+    "viewport": {
+     "device_scale_factor": 1,
+     "height": 720,
+     "width": 1280
+    }
+   },
+   "scenario_sha256": "540ebd8e424ae46cd7f32ff94bfaf19d764f6d4f058db61ea037319cd902d761",
+   "secrets": [],
+   "start_url": {
+    "query": [],
+    "url": "https://www.rtve.es/play/videos/directo/la-1/"
+   },
+   "storage": {
+    "cookies": [],
+    "local_storage": [],
+    "session_storage": []
+   }
+  },
+  "browser": {
+   "cleanup": "terminated-owned-process",
+   "mode": "launch",
+   "process_ownership": "provider-owned",
+   "product": "Chromium",
+   "version": "157.0.8103.78"
+  },
+  "start_origin": "https://www.rtve.es",
+  "duration_ms": 28470,
+  "steps": [
+   {
+    "step_id": "scenario_start",
+    "action": "goto_start",
+    "status": "completed",
+    "elapsed_ms": 22896,
+    "after_url": "https://www.rtve.es/play/videos/directo/la-1/"
+   },
+   {
+    "step_id": "a1",
+    "action": "wait_for_timeout",
+    "status": "completed",
+    "elapsed_ms": 4003,
+    "after_url": "https://www.rtve.es/play/videos/directo/la-1/"
+   }
+  ],
+  "event_counts": {
+   "retained": 14,
+   "dropped": 0
+  },
+  "resource_type_counts": {},
+  "media_requests": [],
+  "console_lines": [
+   {
+    "level": "log",
+    "text": "Gigya script loaded"
+   },
+   {
+    "level": "log",
+    "text": "Loading mark-collector 2.6.3... init 1.7.0"
+   },
+   {
+    "level": "log",
+    "text": "Cargando onetrust"
+   },
+   {
+    "level": "log",
+    "text": "Cargado onetrust"
+   },
+   {
+    "level": "log",
+    "text": "Loading Detectizr from ConvivaTracker init ..."
+   },
+   {
+    "level": "log",
+    "text": "CDP Load API Client Library - URL script loaded: https://rtve-cdp-api.cinfo.es/jsclient/v1/rtve-cdp-api-client.js"
+   },
+   {
+    "level": "log",
+    "text": "Loading Detectizr from MarkCollector init ..."
+   },
+   {
+    "level": "log",
+    "text": "Loading conviva tracker ..."
+   },
+   {
+    "level": "log",
+    "text": "undefined"
+   },
+   {
+    "level": "log",
+    "text": "Loading user tracker ..."
+   },
+   {
+    "level": "log",
+    "text": "MarkCollector Init - Cookie ---UID--- not found for rtve.es"
+   },
+   {
+    "level": "log",
+    "text": "MarkCollector Init - Cookie ---UID--- not found for rtve.es"
+   },
+   {
+    "level": "log",
+    "text": "scripts loaded"
+   },
+   {
+    "level": "log",
+    "text": "Notificaciones no inicializadas. Usuario no identificado."
+   }
+  ],
+  "page_errors": [],
+  "failures": [],
+  "non_2xx": [],
+  "dom_measurements": {
+   "dom_bytes": null,
+   "video_elements": [],
+   "source_children": [],
+   "iframes": [],
+   "player_libs": [],
+   "geo_script": [],
+   "drm_hints": []
+  },
+  "limitations": [
+   "Artifact identity is unavailable for this observation.",
+   "Event sequence records provider receipt order; simultaneous browser causality is not inferred.",
+   "Network content is retained only when selected; Playwright response-body bytes are API results and are not guaranteed to match wire bytes.",
+   "Request bytes are limited to what Playwright exposes; not_exposed does not establish body absence or multipart file coverage.",
+   "Network content reads settle within 5 seconds each and the observer does not request bodies from unfinished responses.",
+   "Playwright scenario events do not expose request initiator stacks; receipt order does not prove causality.",
+   "Storage values are hashed only after declared-secret redaction.",
+   "Browser host platform and architecture were not observed."
+  ]
+ },
+ {
+  "source_file": "capture_browser_scenario-6a09946cb4fe.json",
+  "evidence_id": "ev_6a09946cb4fe99813ec834322273dd85121f0a920671ea3b0f66dc966796328b",
+  "operation": "capture_browser_scenario",
+  "confidence": "observed",
+  "authority": "controlled-replay",
+  "parameters": {
+   "actions": [
+    {
+     "action": "wait_for_timeout",
+     "duration_ms": 3000,
+     "step_id": "a1"
+    }
+   ],
+   "browser": {
+    "executable_path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "headless": true,
+    "mode": "launch"
+   },
+   "capture": {
+    "after_each_step": [],
+    "at_end": [
+     "dom"
+    ],
+    "events": [],
+    "limits": {
+     "max_event_allocation_bytes": 4194304,
+     "max_events": 200,
+     "max_network_body_allocation_bytes": 1048576,
+     "max_network_body_bytes": 65536,
+     "max_network_header_allocation_bytes": 1048576,
+     "max_network_metadata_allocation_bytes": 1048576,
+     "max_network_transactions": 1024,
+     "max_total_event_allocation_bytes": 16777216
+    },
+    "network": {
+     "header_values": false,
+     "request_body": false,
+     "response_body": false
+    }
+   },
+   "command_timeout_ms": 60000,
+   "environment": {
+    "color_scheme": "light",
+    "locale": "es-ES",
+    "reduced_motion": "reduce",
+    "service_workers": "allow",
+    "timezone": "Europe/Madrid",
+    "viewport": {
+     "device_scale_factor": 1,
+     "height": 720,
+     "width": 1280
+    }
+   },
+   "scenario_sha256": "95915afad1523abc3bcf1404cba2665051575734f4a4ff2c5822ecb76fb23180",
+   "secrets": [],
+   "start_url": {
+    "query": [],
+    "url": "https://www.canalsur.es/television/directo-television/"
+   },
+   "storage": {
+    "cookies": [],
+    "local_storage": [],
+    "session_storage": []
+   }
+  },
+  "browser": {
+   "cleanup": "terminated-owned-process",
+   "mode": "launch",
+   "process_ownership": "provider-owned",
+   "product": "Chromium",
+   "version": "157.0.8103.78"
+  },
+  "start_origin": "https://www.canalsur.es",
+  "duration_ms": 9567,
+  "steps": [
+   {
+    "step_id": "scenario_start",
+    "action": "goto_start",
+    "status": "completed",
+    "elapsed_ms": 5815,
+    "after_url": "https://www.canalsur.es/television/directo-television/"
+   },
+   {
+    "step_id": "a1",
+    "action": "wait_for_timeout",
+    "status": "completed",
+    "elapsed_ms": 3030,
+    "after_url": "https://www.canalsur.es/television/directo-television/"
+   }
+  ],
+  "event_counts": {
+   "retained": 0,
+   "dropped": 0
+  },
+  "resource_type_counts": {},
+  "media_requests": [],
+  "console_lines": [],
+  "page_errors": [],
+  "failures": [],
+  "non_2xx": [],
+  "dom_measurements": {
+   "dom_bytes": 131751,
+   "video_elements": [],
+   "source_children": [
+    "<source type=\"image/webp\" srcset=\"https://static.canalsur.es/clip/7c801111-511f-4227-a782-346fdf204d86_16-9-aspect-ratio_410w_0.webp\" media=\"(max-width: 400px)\">",
+    "<source type=\"image/webp\" srcset=\"https://static.canalsur.es/clip/7c801111-511f-4227-a782-346fdf204d86_16-9-aspect-ratio_850w_0.webp\" media=\"(min-width: 401px)\">",
+    "<source type=\"image/jpg\" srcset=\"https://static.canalsur.es/clip/7c801111-511f-4227-a782-346fdf204d86_16-9-aspect-ratio_410w_0.jpg\" media=\"(max-width: 400px)\">",
+    "<source type=\"image/jpg\" srcset=\"https://static.canalsur.es/clip/7c801111-511f-4227-a782-346fdf204d86_16-9-aspect-ratio_850w_0.jpg\" media=\"(min-width: 401px)\">",
+    "<source type=\"image/webp\" srcset=\"https://static.canalsur.es/clip/494d767a-32e0-4cca-a92b-e350d94ecf1f_16-9-aspect-ratio_410w_0.webp\" media=\"(max-width: 400px)\">"
+   ],
+   "iframes": [],
+   "player_libs": [
+    "jwplayer"
+   ],
+   "geo_script": [],
+   "drm_hints": [
+    "eme"
+   ]
+  },
+  "limitations": [
+   "Artifact identity is unavailable for this observation.",
+   "Event sequence records provider receipt order; simultaneous browser causality is not inferred.",
+   "Network content is retained only when selected; Playwright response-body bytes are API results and are not guaranteed to match wire bytes.",
+   "Request bytes are limited to what Playwright exposes; not_exposed does not establish body absence or multipart file coverage.",
+   "Network content reads settle within 5 seconds each and the observer does not request bodies from unfinished responses.",
+   "Playwright scenario events do not expose request initiator stacks; receipt order does not prove causality.",
+   "Storage values are hashed only after declared-secret redaction.",
+   "Browser host platform and architecture were not observed."
+  ]
+ },
+ {
+  "source_file": "capture_browser_scenario-d3256802b9b1.json",
+  "evidence_id": "ev_d3256802b9b121de53bcd1573296f190464432a0fad9ce03e7097b7cb768e68d",
+  "operation": "capture_browser_scenario",
+  "confidence": "observed",
+  "authority": "controlled-replay",
+  "parameters": {
+   "actions": [
+    {
+     "action": "wait_for_timeout",
+     "duration_ms": 6000,
+     "step_id": "a1"
+    }
+   ],
+   "browser": {
+    "executable_path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "headless": true,
+    "mode": "launch"
+   },
+   "capture": {
+    "after_each_step": [],
+    "at_end": [
+     "url",
+     "dom"
+    ],
+    "events": [
+     "console",
+     "page-errors",
+     "network",
+     "frames"
+    ],
+    "limits": {
+     "max_event_allocation_bytes": 4194304,
+     "max_events": 6000,
+     "max_network_body_allocation_bytes": 1048576,
+     "max_network_body_bytes": 65536,
+     "max_network_header_allocation_bytes": 1048576,
+     "max_network_metadata_allocation_bytes": 1048576,
+     "max_network_transactions": 1024,
+     "max_total_event_allocation_bytes": 16777216
+    },
+    "network": {
+     "header_values": false,
+     "request_body": false,
+     "response_body": false
+    }
+   },
+   "command_timeout_ms": 120000,
+   "environment": {
+    "color_scheme": "light",
+    "locale": "es-ES",
+    "reduced_motion": "reduce",
+    "service_workers": "allow",
+    "timezone": "Europe/Madrid",
+    "viewport": {
+     "device_scale_factor": 1,
+     "height": 720,
+     "width": 1280
+    }
+   },
+   "scenario_sha256": "d51cf98937089787cef70b8a32ca71060fad14a02a9287e2f4f2e5c1dfc19a8c",
+   "secrets": [],
+   "start_url": {
+    "query": [],
+    "url": "https://www.3cat.cat/3cat/directes/tv3/"
+   },
+   "storage": {
+    "cookies": [],
+    "local_storage": [],
+    "session_storage": []
+   }
+  },
+  "browser": {
+   "cleanup": "terminated-owned-process",
+   "mode": "launch",
+   "process_ownership": "provider-owned",
+   "product": "Chromium",
+   "version": "157.0.8103.78"
+  },
+  "start_origin": "https://www.3cat.cat",
+  "duration_ms": 15084,
+  "steps": [
+   {
+    "step_id": "scenario_start",
+    "action": "goto_start",
+    "status": "completed",
+    "elapsed_ms": 7230,
+    "after_url": "https://www.3cat.cat/3cat/directes/tv3/"
+   },
+   {
+    "step_id": "a1",
+    "action": "wait_for_timeout",
+    "status": "completed",
+    "elapsed_ms": 6058,
+    "after_url": "https://www.3cat.cat/3cat/directes/tv3/"
+   }
+  ],
+  "event_counts": {
+   "retained": 815,
+   "dropped": 0
+  },
+  "resource_type_counts": {
+   "document": 23,
+   "font": 6,
+   "script": 110,
+   "stylesheet": 14,
+   "image": 52,
+   "xhr": 26,
+   "fetch": 7,
+   "other": 11,
+   "ping": 7
+  },
+  "media_requests": [
+   {
+    "method": "GET",
+    "url": "https://directes3-tv-es.3catdirectes.cat/live-content/tvc-hls/master.m3u8",
+    "resource_type": "xhr",
+    "status": 200,
+    "failure": null,
+    "request_header_names": [
+     "accept-language",
+     "referer",
+     "sec-ch-ua",
+     "sec-ch-ua-mobile",
+     "sec-ch-ua-platform",
+     "user-agent"
+    ],
+    "response_header_names": [
+     "accept-ranges",
+     "access-control-allow-headers",
+     "access-control-allow-methods",
+     "access-control-allow-origin",
+     "access-control-expose-headers",
+     "age",
+     "cache-control",
+     "content-encoding",
+     "content-length",
+     "content-type",
+     "date",
+     "etag",
+     "expires",
+     "last-modified",
+     "server",
+     "vary",
+     "via",
+     "x-cache",
+     "x-cache-hits",
+     "x-served-by",
+     "x-timer"
+    ],
+    "is_segment": false
+   },
+   {
+    "method": "GET",
+    "url": "https://directes3-tv-es.3catdirectes.cat/live-content/tvc-hls/bitrate_3.m3u8",
+    "resource_type": "xhr",
+    "status": 200,
+    "failure": null,
+    "request_header_names": [
+     "accept-language",
+     "referer",
+     "sec-ch-ua",
+     "sec-ch-ua-mobile",
+     "sec-ch-ua-platform",
+     "user-agent"
+    ],
+    "response_header_names": [
+     "accept-ranges",
+     "access-control-allow-headers",
+     "access-control-allow-methods",
+     "access-control-allow-origin",
+     "access-control-expose-headers",
+     "age",
+     "cache-control",
+     "content-encoding",
+     "content-length",
+     "content-type",
+     "date",
+     "etag",
+     "expires",
+     "last-modified",
+     "server",
+     "vary",
+     "via",
+     "x-cache",
+     "x-cache-hits",
+     "x-served-by",
+     "x-timer"
+    ],
+    "is_segment": false
+   },
+   {
+    "method": "GET",
+    "url": "https://directes3-tv-es.3catdirectes.cat/live-content/tvc-hls/bitrate_7.m3u8",
+    "resource_type": "xhr",
+    "status": 200,
+    "failure": null,
+    "request_header_names": [
+     "accept-language",
+     "referer",
+     "sec-ch-ua",
+     "sec-ch-ua-mobile",
+     "sec-ch-ua-platform",
+     "user-agent"
+    ],
+    "response_header_names": [
+     "accept-ranges",
+     "access-control-allow-headers",
+     "access-control-allow-methods",
+     "access-control-allow-origin",
+     "access-control-expose-headers",
+     "age",
+     "cache-control",
+     "content-encoding",
+     "content-length",
+     "content-type",
+     "date",
+     "etag",
+     "expires",
+     "last-modified",
+     "server",
+     "vary",
+     "via",
+     "x-cache",
+     "x-cache-hits",
+     "x-served-by",
+     "x-timer"
+    ],
+    "is_segment": false
+   },
+   {
+    "method": "GET",
+    "url": "https://directes3-tv-es.3catdirectes.cat/live-content/tvc-hls/br3/99715/geo-br3_299145815.ts",
+    "resource_type": "xhr",
+    "status": 200,
+    "failure": null,
+    "request_header_names": [
+     "accept-language",
+     "referer",
+     "sec-ch-ua",
+     "sec-ch-ua-mobile",
+     "sec-ch-ua-platform",
+     "user-agent"
+    ],
+    "response_header_names": [
+     "accept-ranges",
+     "access-control-allow-headers",
+     "access-control-allow-methods",
+     "access-control-allow-origin",
+     "access-control-expose-headers",
+     "age",
+     "cache-control",
+     "content-length",
+     "content-type",
+     "date",
+     "etag",
+     "expires",
+     "geo",
+     "last-modified",
+     "server",
+     "via",
+     "x-cache",
+     "x-cache-hits",
+     "x-served-by",
+     "x-timer"
+    ],
+    "is_segment": true
+   }
+  ],
+  "console_lines": [
+   {
+    "level": "warning",
+    "text": "An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing."
+   },
+   {
+    "level": "warning",
+    "text": "An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing."
+   }
+  ],
+  "page_errors": [],
+  "failures": [
+   {
+    "url": "https://ping.chartbeat.net/ping?[h,p,u,d,g,g0,g1,n,f,c,x,m,y,o,w,j,R,W,I,E,e,r,PA,b,t,V,i,tz,sn,sv,sr,sd,im,_]",
+    "failure": "net::ERR_BLOCKED_BY_ORB"
+   }
+  ],
+  "non_2xx": [],
+  "dom_measurements": {
+   "dom_bytes": 227581,
+   "video_elements": [
+    "<video id=\"bitmovinplayer-video-view1\" src=\"blob:https://www.3cat.cat/516dc2a9-bfff-4f7f-95fa-83c143e77d15\" webkit-playsinline=\"\" playsinline=\"\">"
+   ],
+   "source_children": [
+    "data-src=\"/_resources/icones/blanc/menu.svg?v=3.2611.4\"",
+    "data-src=\"/_resources/icones/blanc/cercador.svg?v=3.2611.4\"",
+    "data-src=\"/_resources/icones/blanc/usuari.svg?v=3.2611.4\"",
+    "data-src=\"/_resources/icones/blanc/directes.svg?v=3.2611.4\"",
+    "data-src=\"/_resources/icones/blanc/fletxa_simple_avall.svg?v=3.2611.4\""
+   ],
+   "iframes": [
+    "<iframe src=\"https://15510036.fls.doubleclick.net/activityi;src=15510036;type=invmedia;cat=3cat-0;dc_lat=;dc_rdid=;tag_for_child_directed_treatment=;tfua=;npa=;gdpr=${GDPR};gdpr_consent=${GDPR_CONSENT_755};ord=' + a + '?\" width=\"1\" height=\"1\" frameborder=\"0\" style=\"display:none\">",
+    "<iframe src=\"https://15510036.fls.doubleclick.net/activityi;src=15510036;type=invmedia;cat=3cat-0;dc_lat=;dc_rdid=;tag_for_child_directed_treatment=;tfua=;npa=;gdpr=${GDPR};gdpr_consent=${GDPR_CONSENT_755};ord=1719072393704.6094?\" width=\"1\" height=\"1\" frameborder=\"0\" style=\"display:none\">"
+   ],
+   "player_libs": [
+    "bitmovinplayer-ui.min.css",
+    "bitmovin.min.js",
+    "bitmovin.umd.min.js",
+    "youbora.com",
+    "bitmovin8",
+    "bitmovinplayer-poster",
+    "bitmovinplayer-container",
+    "bitmovinplayer-container.aspect-16x9",
+    "bitmovinplayer-container.aspect-16x10",
+    "bitmovinplayer-container.aspect-4x3",
+    "bitmovinplayer-container.aspect-3x2",
+    "bitmovinplayer-ad-container"
+   ],
+   "geo_script": [
+    "geoZoneHandler.min.js?v=3.2611.4"
+   ],
+   "drm_hints": [
+    "eme"
+   ]
+  },
+  "limitations": [
+   "Artifact identity is unavailable for this observation.",
+   "Event sequence records provider receipt order; simultaneous browser causality is not inferred.",
+   "Network content is retained only when selected; Playwright response-body bytes are API results and are not guaranteed to match wire bytes.",
+   "Request bytes are limited to what Playwright exposes; not_exposed does not establish body absence or multipart file coverage.",
+   "Network content reads settle within 5 seconds each and the observer does not request bodies from unfinished responses.",
+   "Playwright scenario events do not expose request initiator stacks; receipt order does not prove causality.",
+   "Storage values are hashed only after declared-secret redaction.",
+   "Browser host platform and architecture were not observed."
+  ]
+ }
+]
