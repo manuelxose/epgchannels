@@ -168,3 +168,58 @@ node apps/backend/dist/scripts/ingest-catalogue.js --rollback <runId>
 node apps/backend/scripts/ingestion-scenario.mjs      # escenarios (t4)
 node apps/backend/scripts/ingestion-bench.mjs         # rendimiento (t4)
 ```
+
+---
+
+## 10. Medición completa del bench (ambos upstreams, ejecutado)
+
+`node apps/backend/scripts/ingestion-bench.mjs` → **exit 0**
+
+| Métrica | Valor |
+|---|---|
+| Entradas medidas | **23 162** (18 756 iptv-org + 4 406 Free-TV) |
+| Ingesta en frío | 24 526 ms |
+| **Throughput** | **944,4 entradas/s** |
+| Migraciones | 1 779 ms |
+| Verificación + parseo | 720 ms |
+| Pico de RSS | 355,63 MiB |
+| Total del proceso | 27 463 ms |
+| Canales canónicos | **15 242** |
+| Staging / aprobados | 15 242 / **0** |
+| Candidatos (reconciled/duplicate/rejected) | 15 242 / 7 880 / 40 |
+| Fuentes por canal (media/máx) | 1,52 / 44 |
+| Países distintos | 140 (14 360 conocidos, 882 desconocidos) |
+| Idiomas distintos | 30 (9 781 conocidos, 5 461 `und`) |
+| Revisión manual | 2 060 |
+| Alias | 13 968 |
+| Base de datos eliminada | `true` (verificado listando bases después) |
+
+## 11. Aislamiento staging→público y puerta de autorización (ejecutado)
+
+**Aislamiento probado con el filtro real del listado público** (`editorialStatus: 'published'`,
+`mergedInto: null`):
+
+| Comprobación | Resultado |
+|---|---|
+| Canales tras ingerir 18 756 entradas | 13 703 |
+| `editorialStatus: 'published'` | **0** |
+| `editorialStatus: 'draft'` | 13 703 |
+| `catalogueState: 'staging'` | 13 703 |
+| Servidos por el listado público | **0** |
+
+**Puerta de autorización probada de extremo a extremo** (`promoteChannel`):
+
+| Intento | Resultado | Motivo |
+|---|---|---|
+| Sin autorización | rechazado | `authorisation-missing` |
+| Autorización `pending` | rechazado | `authorisation-not-approved` |
+| `approved` pero requiere cabecera falsificada | rechazado | `conditions-prohibited` |
+| `approved` y limpia | **promovido** | — |
+
+Tras la promoción: `catalogueState: 'approved'`, `editorialStatus: 'published'`, `reviewedAt`
+presente, 1 canal publicado y 1 fila de auditoría. **La ingesta no puede publicar**: crea `draft` +
+`staging`, y solo una decisión de autorización registrada y validada promueve un registro.
+
+**Nota de honestidad:** el modelo `SourceAuthorization` existía desde t3 pero **nadie lo consumía**.
+La promoción estaba bloqueada solo porque la ingesta escribe `draft`. Eso es bloqueo, no
+autorización. `catalogue/authorisation.ts` cierra esa brecha y se prueba arriba.
