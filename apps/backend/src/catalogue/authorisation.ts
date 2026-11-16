@@ -1,19 +1,22 @@
 /**
  * Staging -> public authorisation gate.
  *
- * The catalogue starts private (D-012, MODULE-CONTRACT-02B hard rule 4). This
- * module is the ONLY thing that moves a channel out of staging, and it refuses
- * unless there is a recorded, approved authorisation for a source candidate of
- * that channel and the source's licence permits publication.
+ * The catalogue starts private (MODULE-CONTRACT-02B hard rule 4). This module is
+ * the ONLY thing that moves a channel out of staging, and it refuses unless there
+ * is a recorded, approved authorisation for a source candidate of that channel.
  *
  * Why it is a separate module and not an `if` inside the pipeline: the ingest
  * path must not be able to publish. Ingestion writes `staging` + `draft`; only
  * an explicit operator decision, validated here, can promote a record.
  *
- * What this does NOT do: it never publishes a signal the platform would have to
- * proxy, transcode or forge headers for, it never decides whether a stream is
- * legal — it records and enforces a human decision — and it never promotes a
- * channel whose only sources are `unlicensed`.
+ * DEMO MODE (product-owner decision, 2026-11-16): the licence status of a source
+ * is recorded as PROVENANCE but is not a gate. Every ingested source, including
+ * one that declares no licence, can be promoted once a person approves it. The
+ * snapshot's licence stays available for display and attribution; it is never
+ * used to block a catalogue entry.
+ *
+ * What this still does NOT do: it never publishes a signal the platform would
+ * have to proxy, transcode or forge headers for.
  */
 import type { DatabaseHandle } from '../infrastructure/mongo.js';
 import { COLLECTIONS } from '../infrastructure/mongo.js';
@@ -24,9 +27,6 @@ import type {
   SourceSnapshotDoc,
 } from '../catalogue/schema.js';
 import type { AuditDoc } from '../infrastructure/schema.js';
-
-/** Licences whose listing may be published once an authorisation exists. */
-const PUBLISHABLE_REUSE = new Set(['public-domain', 'permitted-with-attribution']);
 
 export interface PromotionRequest {
   channelId: string;
@@ -47,7 +47,6 @@ export type PromotionRejection =
   | 'candidate-rejected'
   | 'authorisation-missing'
   | 'authorisation-not-approved'
-  | 'licence-not-publishable'
   | 'snapshot-missing'
   | 'conditions-prohibited';
 
@@ -84,11 +83,15 @@ export async function promoteChannel(database: DatabaseHandle, request: Promotio
     return { promoted: false, reason: 'conditions-prohibited', detail: 'forged header or app-only emitter' };
   }
 
+  /*
+   * The snapshot must exist so the record keeps its provenance, but its licence
+   * does NOT gate promotion in demo mode: a source that declares no licence is
+   * promotable exactly like any other. The licence value is carried into the
+   * audit row below, so what was published, and under which declared terms,
+   * stays answerable.
+   */
   const snapshot = await snapshots.findOne({ _id: candidate.snapshotId });
   if (snapshot === null) return { promoted: false, reason: 'snapshot-missing', detail: candidate.snapshotId };
-  if (!PUBLISHABLE_REUSE.has(snapshot.licence.reuse)) {
-    return { promoted: false, reason: 'licence-not-publishable', detail: snapshot.licence.reuse };
-  }
 
   const now = new Date();
   await channels.updateOne(
@@ -112,7 +115,16 @@ export async function promoteChannel(database: DatabaseHandle, request: Promotio
       entityType: 'channel',
       entityId: request.channelId,
       before: { catalogueState: channel.catalogueState, editorialStatus: channel.editorialStatus },
-      after: { catalogueState: 'approved', editorialStatus: 'published', candidateId: request.candidateId },
+      after: {
+        catalogueState: 'approved',
+        editorialStatus: 'published',
+        candidateId: request.candidateId,
+        /* Provenance of the published source, recorded but never gated on. */
+        upstream: snapshot.upstream,
+        snapshotId: snapshot._id,
+        licenceReuse: snapshot.licence.reuse,
+        licenceSpdx: snapshot.licence.spdx,
+      },
       reason: request.notes ?? null,
       requestId: `promote-${request.channelId}`,
       at: now,
@@ -123,7 +135,7 @@ export async function promoteChannel(database: DatabaseHandle, request: Promotio
 
 /**
  * Records an authorisation decision. Kept here so a decision and its enforcement
- * live together, and so an approval always carries its licence posture.
+ * live together; the licence posture travels with the decision as provenance.
  */
 export async function recordAuthorization(
   database: DatabaseHandle,

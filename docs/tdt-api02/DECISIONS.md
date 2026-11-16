@@ -133,13 +133,35 @@ Formato: `D-0NN` · fecha · estado (`ADOPTADA`, `SUSTITUIDA`, `PENDIENTE`).
     derecho de reutilización; se registra la discrepancia en la procedencia de la fuente.
   - `https://api.github.com/repos/Free-TV/IPTV` → `license: null`; `LICENSE` en `master` → **HTTP
     404**. Sigue sin licencia declarada.
-- **Decisión:** iptv-org se ingiere en la **catalogación privada (staging)** con procedencia
+- **Decisión original:** iptv-org se ingiere en la **catalogación privada (staging)** con procedencia
   completa y queda **elegible para publicación** solo tras autorización del emisor
   (`SourceAuthorization` + `publication-policy`). Free-TV se ingiere **exclusivamente en staging**
-  y es **nunca publicable** (`reuse: unlicensed`).
-- **Consecuencia:** D-004 queda resuelta para iptv-org y **reforzada** para Free-TV. La licencia del
-  repositorio sigue sin autorizar la redifusión del stream (D-003); esta decisión solo cubre el
-  *listado*.
+  y era **nunca publicable** (`reuse: unlicensed`).
+- **Estado:** **SUSTITUIDA PARCIALMENTE por D-016** (modo demo, 2026-11-16). La parte de Free-TV queda
+  revocada: en modo demo sí se publica. La evidencia de licencias se conserva porque sigue siendo dato
+  de procedencia.
+- **Consecuencia:** D-004 queda resuelta para iptv-org; para Free-TV, D-016 la reemplaza.
+
+## D-016 — MODO DEMO: las licencias no son una norma y no bloquean la publicación
+
+- **Estado:** ADOPTADA (2026-11-16) — decisión explícita del propietario del producto.
+- **Contexto:** el producto está en modo demostración, no destinado a producción ni a distribución al
+  público. Tratar la licencia de terceros como bloqueo impedía demostrar el catálogo global completo.
+- **Decisión:**
+  1. **Todas las fuentes se incluyen y se pueden publicar**, incluidas las que no declaran licencia
+     (Free-TV). Se elimina el veto `licence-not-publishable` de `catalogue/authorisation.ts`.
+  2. La licencia **sigue registrándose** (snapshot, candidato, fila de auditoría de la promoción) como
+     **procedencia y atribución**, nunca como condición de admisión.
+  3. Se mantiene el único veto **técnico** (no legal): no se publica una fuente que exija cabecera
+     falsificada o que solo funcione en la app del emisor, porque nuestro reproductor no puede
+     servirla sin fingir ser otro cliente.
+  4. La ingesta sigue creando **staging** por defecto; publicar sigue exigiendo una decisión
+     explícita de operador.
+- **Por qué no se borra D-012:** una decisión no se borra, se sustituye con una entrada nueva. D-012
+  permanece como historia del razonamiento y como registro de la evidencia de licencias.
+- **Consecuencia e implicación declarada:** en modo demo el proyecto puede contener y servir listados
+  de fuentes sin licencia declarada. **Eso no sería aceptable en producción ni en distribución
+  pública**; si el producto sale de modo demo, D-012 debe reactivarse antes de publicar nada.
 
 ## D-013 — Política de reconciliación: incertidumbre va a revisión, nunca a fusión
 

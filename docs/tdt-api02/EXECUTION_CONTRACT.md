@@ -162,18 +162,35 @@ Derivados de la auditoría 02A (`INFORME-SEGURIDAD-DERECHOS.md`) y verificados p
 
 ## 8. Decisiones de fuente y legalidad
 
-- **Licencia del repositorio ≠ permiso para redistribuir el stream.** La primera permite copiar y
-  transformar el *listado*; la segunda exige permiso del emisor. El producto **nunca** proxya
+> **MODO DEMO — decisión explícita del propietario del producto (2026-11-16).** El proyecto está en
+> modo demostración: **las licencias no son una norma** y no bloquean nada. Este producto **no es
+> para producción ni para distribución al público**; es una demo funcional. Las secciones siguientes
+> describen el modelo **pre-demo**, conservadas como historia; lo vigente en modo demo es lo que dice
+> este bloque y `DECISIONS.md` D-016.
+
+- **En modo demo todas las fuentes se incluyen y se pueden publicar**, incluidas las que no declaran
+  licencia (Free-TV, `reuse: unlicensed`). La licencia se sigue **registrando como procedencia**
+  (atribución y trazabilidad), pero **nunca se usa para bloquear** una entrada del catálogo.
+- El comportamiento por defecto no cambia: toda ingesta crea registros en **staging** y la publicación
+  requiere una decisión explícita de operador (`promoteChannel`). Lo que ya no existe es el veto por
+  licencia.
+- Se mantiene **la única restricción de integridad técnica** (no de licencia): no se publica una
+  fuente que exija **cabecera falsificada** (`requiresForgedHeader`) o que solo funcione en la app del
+  emisor (`emitterAppOnly`). Eso no es una norma legal, es que nuestro reproductor no puede servirla
+  sin fingir ser otro cliente.
+- El producto **nunca** proxya, graba ni transcodifica señales.
+- Prohibido importar: cabeceras falsificadas, URLs tokenizadas (se redactan, D-015),
+  proxy/transcodificación.
+
+### 8-bis. Modelo histórico (pre-demo, conservado)
+
+- **Licencia del repositorio ≠ permiso para redistribuir el stream.** El producto **nunca** proxya
   señales.
 - Fuentes upstream: TDTChannels (**Apache-2.0**, atribución obligatoria, sin dependencia de runtime),
-  iptv-org (**Unlicense/dominio público** según la API de GitHub; badge CC0 del README a conciliar
-  antes de ingerir), Free-TV (**sin licencia declarada** → **bloqueado** hasta que declare una).
-- **Nada se publica** desde una fuente `unlicensed`, `requiresForgedHeader` o `emitterAppOnly`.
-- Toda ingesta nueva registra licencia + atribución por fuente y la emite en las respuestas.
-- El proyecto **no declara licencia** (`README.md:66-69`): decidirla es **precondición de
-  publicación** (LIC-01), no de la auditoría.
-- Prohibido importar: cabeceras falsificadas, URLs tokenizadas, catálogos sin licencia, logos sin
-  permiso, blocklists de terceros, prosa de terceros, proxy/transcodificación.
+  iptv-org (**Unlicense/dominio público**), Free-TV (**sin licencia declarada**).
+- ~~**Nada se publica** desde una fuente `unlicensed`~~ — **reemplazado en modo demo por el bloque
+  superior**.
+- El proyecto **no declara licencia** (`README.md:66-69`): LIC-01 deja de ser precondición en demo.
 
 ---
 

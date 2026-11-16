@@ -88,15 +88,34 @@ Muestra real de canales con fuentes de ambas fuentes (identificados por nombre):
 | Radio Italia Trend | free-tv + iptv-org | `Radio Italia Trend` |
 | R9 | free-tv + iptv-org | `R9`, `R9 [Not 24/7]` |
 
-## 5. Free-TV: ingerido, nunca publicable (D-012)
+## 5. Free-TV: ingerido y **publicable en modo demo** (D-016, sustituye a D-012)
 
 | Dato | Valor |
 |---|---|
-| Licencia registrada | `reuse: unlicensed` |
+| Licencia registrada | `reuse: unlicensed` (**procedencia, no bloqueo**) |
 | Entradas | 4 406 |
 | Canales nuevos creados | 1 539 |
-| Estado de todos esos canales | `staging` |
-| Canales publicados | **0** |
+| Estado tras la ingesta | `staging` (igual que todas las fuentes) |
+| Canales publicados sin decisión de operador | **0** |
+| Publicación tras autorización explícita | **permitida** (probado) |
+
+**Cambio respecto a 02B original:** D-012 bloqueaba Free-TV por no declarar licencia. El propietario
+del producto estableció **modo demo** (D-016): las licencias se registran como procedencia y **no
+bloquean** la publicación. Free-TV ya no está excluida.
+
+Prueba ejecutada (`prove-demo-licence`, snapshot `free-tv-20261116T145604Z`):
+
+| Comprobación | Resultado |
+|---|---|
+| Licencia del snapshot | `unlicensed` |
+| Publicados antes de la promoción | 0 |
+| `promoteChannel` con autorización aprobada | **`promoted: true`** (`stories-rakuten-tv`) |
+| Estado final | `catalogueState: approved`, `editorialStatus: published` |
+| Licencia en la fila de auditoría | `unlicensed` (registrada como procedencia) |
+
+Sigue habiendo **dos puertas** antes de publicar, ninguna de ellas basada en licencia: (1) la ingesta
+crea `staging`/`draft`; (2) `promoteChannel` exige una autorización aprobada y rechaza fuentes que
+necesiten cabecera falsificada o solo funcionen en la app del emisor.
 
 ## 6. Cobertura
 

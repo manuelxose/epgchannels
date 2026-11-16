@@ -1,5 +1,9 @@
 # Informe de seguridad, derechos y licencias — TDT Platform (tdt-api01)
 
+> **AVISO (2026-11-16): las conclusiones normativas de este informe sobre licencias estan
+> REEMPLAZADAS por el modo demo (D-016).** Las licencias se registran como procedencia y no bloquean
+> nada; Free-TV se incluye y se puede publicar. Ver `VIGENCIA-LICENCIAS-MODO-DEMO.md`.
+
 - **Tarea:** t4 [sec] — revisión de seguridad, derechos y licencias
 - **Autor:** `legal` (equipo `tdt-api02a`)
 - **Clase de ruta:** L4 (security-critical / release-sensitive) — requiere revisión independiente posterior
