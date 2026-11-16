@@ -21,6 +21,15 @@ export const COLLECTIONS = {
   integrityRefusals: 'integrity_refusals',
   migrationLedger: 'migration_ledger',
   youtubeChannels: 'youtube_channels',
+  sourceSnapshots: 'source_snapshots',
+  sourceCandidates: 'source_candidates',
+  channelAliases: 'channel_aliases',
+  channelVariants: 'channel_variants',
+  sourceAuthorization: 'source_authorization',
+  sourceHealth: 'source_health',
+  epgMappings: 'epg_mappings',
+  reconciliationReview: 'reconciliation_review',
+  ingestionRuns: 'ingestion_runs',
 } as const;
 
 export type CollectionName = (typeof COLLECTIONS)[keyof typeof COLLECTIONS];
