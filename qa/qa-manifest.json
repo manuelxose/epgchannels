@@ -1,7 +1,7 @@
 {
   "schemaVersion": "engine-04-manifest/1",
   "id": "tdt-platform",
-  "description": "Verification stages for the TDT Platform monorepo (contracts + api-client + backend + Angular client). Every stage is an argv array; nothing is interpolated. Integration and independence suites need the compose services (MongoDB replica set on 127.0.0.1:27117, Redis on 127.0.0.1:27118): run `npm run infra:up` first, and `node scripts/preflight.mjs` reports readiness. Stage order matters: `build` must run before `typecheck`, because @tdt/api-client and @tdt/backend resolve the emitted declarations of @tdt/contracts; a cold `typecheck` on a tree without dist/ fails even though the source is valid.",
+  "description": "Verification stages for the TDT Platform monorepo (contracts + api-client + backend + Angular client). Every stage is an argv array; nothing is interpolated. Integration and independence suites need the compose services (MongoDB replica set on 127.0.0.1:27117, Redis on 127.0.0.1:27118): run `npm run infra:up` first, and `node scripts/preflight.mjs` reports readiness. Stage order matters: `build` must run before `typecheck`, because @tdt/api-client and @tdt/backend resolve the emitted declarations of @tdt/contracts; a cold `typecheck` on a tree without dist/ fails even though the source is valid. The `ingestion` stage runs the TDT-API-02B ingestion scenarios (malformed M3U, duplicates, collisions, country normalisation, provider variants, incremental import, idempotent re-runs, run rollback, migration rollback) in a disposable database it drops, and it needs `build` because it loads apps/backend/dist.",
   "stack": "node",
   "stages": [
     {
@@ -31,6 +31,13 @@
       "required": true,
       "kind": "integration",
       "timeoutMs": 600000
+    },
+    {
+      "id": "ingestion",
+      "argv": ["node", "apps/backend/scripts/ingestion-scenario.mjs"],
+      "required": true,
+      "kind": "integration",
+      "timeoutMs": 300000
     },
     {
       "id": "independence",
