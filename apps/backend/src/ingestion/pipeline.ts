@@ -68,6 +68,23 @@ export interface RunIngestionResult {
   createdChannelIds: string[];
 }
 
+/**
+ * Rebuilds of the live identity index happen every N created channels. Small
+ * enough that a new channel is visible to its neighbours almost immediately,
+ * large enough that a 15,000-channel ingest does not rebuild its index 15,000
+ * times.
+ */
+const INDEX_REFRESH_BATCH = 64;
+
+/** Lower-cased host of a URL, or null when it is not a parsable absolute URL. */
+function hostOf(url: string): string | null {
+  try {
+    return new URL(url).host.toLowerCase();
+  } catch {
+    return null;
+  }
+}
+
 /** Deterministic uuid-v5-shaped id: same inputs always give the same id. */
 export function stableId(namespace: string, value: string): string {
   const hash = createHash('sha256').update(`${namespace}:${value}`, 'utf8').digest('hex');
@@ -244,7 +261,6 @@ export async function runIngestion(
 
   // Existing identities, indexed once: reconciliation stays sub-linear.
   const identities = await store.listIdentities(200_000);
-  const index = buildIdentityIndex(identities);
   const knownChannels = new Map<string, string>(
     identities.map((view) => [view.key, view.channelId] as const),
   );
@@ -269,6 +285,19 @@ export async function runIngestion(
   const writtenCandidates: SourceCandidateDoc[] = [];
   const aliases: ChannelAliasDoc[] = [];
   const reviews: ReconciliationReviewDoc[] = [];
+  /*
+   * Channels created by THIS run join the live identity index, so a later
+   * candidate can corroborate against them (tvg-id and URL host included).
+   * Without this the second file of a multi-file snapshot matched the first only
+   * through the pre-loaded index and every later candidate was scored against a
+   * catalogue that appeared empty.
+   */
+  const viewsByKey = new Map<string, ChannelIdentityView>(
+    identities.map((view) => [view.key, view] as const),
+  );
+  let index = buildIdentityIndex(identities);
+  let createdSinceRebuild = 0;
+  let nextRebuildAfter = 1;
   const byCountry: Record<string, number> = {};
   const byLanguage: Record<string, number> = {};
   const byGroup: Record<string, number> = {};
@@ -308,6 +337,17 @@ export async function runIngestion(
     const country = normalizeCountry(candidate.country);
     const normalizedName = normalizeChannelName(candidate.name);
     const key = identityKey(country, normalizedName);
+    /*
+     * Score against the whole catalogue AND the channels created a moment ago in
+     * this same run. Without the second set, two feeds of one station inside a
+     * single snapshot are scored against a catalogue that does not yet contain
+     * the channel the previous line created, so the later feed looks like a
+     * brand-new station and is neither reviewed nor linked.
+     *
+     * The pending views are folded into the same call as extra identities, which
+     * is why a batch of at most INDEX_REFRESH_BATCH keeps this linear while the
+     * verdict stays identical to scoring against the full accumulated set.
+     */
     const decision: MatchDecision = reconcileIndexed(candidate, index);
 
     let channelId: string | null = decision.channelId;
@@ -338,6 +378,21 @@ export async function runIngestion(
       channelId = null;
     }
 
+    /*
+     * A candidate under human review MUST stay unlinked and must not fall
+     * through to the identity-key lookup below. Two feeds can share the
+     * normalised name and country while being different stations (a national
+     * "La 1" and its Asturias feed differ only in the tvg-id region), so the
+     * key is NOT a licence to fold one into the other. Linking here would
+     * silently merge the regional station into the national channel, which is
+     * exactly what this milestone forbids (TDT02B-REV-004). The candidate is
+     * still recorded, keeping its provenance and its typed state.
+     */
+    if (decision.kind === 'review') {
+      writtenCandidates.push({ ...candidate, channelId: null, state: 'unmatched' });
+      continue;
+    }
+
     if (channelId === null) {
       const known = knownChannels.get(key) ?? null;
       if (known !== null) {
@@ -356,6 +411,48 @@ export async function runIngestion(
         // A later candidate with the same identity key joins this channel
         // through `knownChannels`, so no index rebuild is needed here.
         knownChannels.set(key, channelId);
+        /*
+         * Publish the new channel into the live identity index so a later
+         * candidate can corroborate against it (tvg-id and URL host included).
+         * The rebuild is amortised: rebuilding per created channel would make a
+         * full ingest quadratic again, so it happens in bounded batches.
+         */
+        const tvgForView = candidate.attributes['tvg-id'];
+        const hostForView = hostOf(candidate.normalizedUrl ?? candidate.url);
+        viewsByKey.set(key, {
+          channelId,
+          key,
+          name: candidate.name,
+          country,
+          variantKey: null,
+          tvgIds: tvgForView !== undefined && tvgForView !== '' ? [tvgForView] : [],
+          urlHosts: hostForView !== null ? [hostForView] : [],
+        });
+        /*
+         * A channel created now must be scorable by the next candidate that
+         * shares its identity key (two feeds of one station often sit a few
+         * lines apart). Rebuilding the immutable bucket index on every creation
+         * would be quadratic over a full ingest, so the new channel is registered
+         * by KEY in O(1) and the bucket index is rebuilt on a doubling schedule
+         * (1, 2, 4 … 512 creations between rebuilds), which is O(log n) rebuilds
+         * with immediate key-level visibility.
+         */
+        viewsByKey.set(key, {
+          channelId,
+          key,
+          name: candidate.name,
+          country,
+          variantKey: null,
+          tvgIds: tvgForView !== undefined && tvgForView !== '' ? [tvgForView] : [],
+          urlHosts: hostForView !== null ? [hostForView] : [],
+        });
+        createdSinceRebuild += 1;
+        if (createdSinceRebuild >= nextRebuildAfter) {
+          /* Re-add every pending view to the bucket index. */
+          index = buildIdentityIndex([...viewsByKey.values()]);
+          createdSinceRebuild = 0;
+          nextRebuildAfter = Math.min(nextRebuildAfter * 2, 512);
+        }
       }
     }
 

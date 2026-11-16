@@ -17,7 +17,9 @@ Reproducción: `node data/fetch-snapshots.mjs --upstream all`, después
 `node apps/backend/dist/scripts/ingest-catalogue.js --snapshot <dir>`.
 
 **Honestidad sobre la cobertura:** el snapshot de iptv-org está **truncado** por un límite explícito
-de 400 ficheros (`MAX_FILES` en `ingestion/snapshot.ts`). 18 756 entradas son las de esos 400
+de **400 ficheros** en la herramienta de captura (`MAX_FILES` en `data/fetch-snapshots.mjs`), no en
+`ingestion/snapshot.ts` (cuyo `MAX_FILES` es 1000, un tope de seguridad de lectura). 18 756 entradas
+son las de esos 400
 ficheros, **no** el total del repositorio. La truncación se registra en `manifest.json`
 (`truncated: true`, `totalPlaylistPathsInRepo`) y no se presenta como cobertura completa.
 
@@ -56,9 +58,14 @@ catálogo, se puntúan como coincidencia parcial.
 
 ## 4. Dos fuentes → un canal (la invariante central)
 
-Medido tras ingerir ambas fuentes en la misma base:
+Medido tras ingerir ambas fuentes en la misma base.
 
-| Métrica | Valor |
+> **Estas cifras son de ANTES de la corrección TDT02B-REV-004.** Se conservan porque documentan lo
+> que medía el sistema en ese momento, pero **no describen el estado entregado**: la corrección
+> introdujo 8 332 candidatos en revisión y redujo el catálogo a 10 403 canales. Las cifras
+> vigentes están en §10.
+
+| Métrica (pre-corrección) | Valor |
 |---|---|
 | Canales con al menos un candidato | 15 242 |
 | **Canales que reciben fuentes de AMBAS fuentes** | **641** |
@@ -66,15 +73,20 @@ Medido tras ingerir ambas fuentes en la misma base:
 | Canales con mismo nombre+país pero **separados** (posible estación dividida) | **0** |
 
 Comprobación aritmética: 13 703 (iptv-org) + 1 539 (nuevos de Free-TV) = 15 242; de ellos 641 están
-compartidos. **Ninguna estación de las dos fuentes se contabilizó como dos canales.**
+compartidos.
 
-Muestra real de canales con fuentes de ambas fuentes:
+**Importante:** el «0 estaciones divididas» de esta medición **no era un acierto**, era el síntoma
+del defecto. El sistema fusionaba las emisoras por clave de identidad sin revisión, de modo que
+*ninguna* quedaba dividida porque *todas* se fusionaban. Tras la corrección, la fusión de dos fuentes
+en un canal es explícita y las coincidencias dudosas van a revisión humana.
+
+Muestra real de canales con fuentes de ambas fuentes (identificados por nombre):
 
 | Canal | Fuentes | Nombres vistos |
 |---|---|---|
-| `cafbcbd7…` | free-tv + iptv-org | `TRT World`, `TRT World [Not 24/7]`, `TRT World HD` |
-| `ef415f11…` | free-tv + iptv-org | `Radio Italia Trend` |
-| (R9) | free-tv + iptv-org | `R9`, `R9 [Not 24/7]` |
+| TRT World | free-tv + iptv-org | `TRT World`, `TRT World [Not 24/7]`, `TRT World HD` |
+| Radio Italia Trend | free-tv + iptv-org | `Radio Italia Trend` |
+| R9 | free-tv + iptv-org | `R9`, `R9 [Not 24/7]` |
 
 ## 5. Free-TV: ingerido, nunca publicable (D-012)
 
@@ -173,26 +185,51 @@ node apps/backend/scripts/ingestion-bench.mjs         # rendimiento (t4)
 
 ## 10. Medición completa del bench (ambos upstreams, ejecutado)
 
-`node apps/backend/scripts/ingestion-bench.mjs` → **exit 0**
+`TDT_SNAPSHOT_DIR=... node apps/backend/scripts/ingestion-bench.mjs` → **exit 0**
+
+**El throughput depende de la máquina y de la carga, así que se publica el rango medido, no un
+número único.** Tres ejecuciones del mismo comando dieron **944,4**, **799,9** y **480,3**
+entradas/s. Lo reproducible son los **counts**, no la velocidad.
+
+### Cifras vigentes (después de la corrección TDT02B-REV-004)
 
 | Métrica | Valor |
 |---|---|
 | Entradas medidas | **23 162** (18 756 iptv-org + 4 406 Free-TV) |
-| Ingesta en frío | 24 526 ms |
-| **Throughput** | **944,4 entradas/s** |
-| Migraciones | 1 779 ms |
-| Verificación + parseo | 720 ms |
-| Pico de RSS | 355,63 MiB |
-| Total del proceso | 27 463 ms |
-| Canales canónicos | **15 242** |
-| Staging / aprobados | 15 242 / **0** |
+| Ingesta en frío | 48 222 ms |
+| Throughput | **480,3 entradas/s** (esta ejecución) |
+| Pico de RSS | 397,66 MiB |
+| Canales canónicos | **10 403** |
+| Staging / aprobados | 10 403 / **0** |
+| Candidatos | reconciled 10 403 · unmatched **8 332** · duplicate 4 387 · rejected 40 |
+| **En revisión manual** | **8 332** |
+| Países distintos | 140 |
+| Idiomas distintos | 30 |
+| Base de datos eliminada | `true` |
+
+**Por qué los canales bajan de 15 242 a 10 403:** antes de la corrección, un candidato cuyo veredicto
+era `review` se **enlazaba** de todos modos por clave de identidad, de modo que las emisoras
+regionales/locales se fusionaban silenciosamente con su emisora base y el catálogo parecía más
+pequeño y más limpio de lo que era. Ahora **no se enlaza nada sin una decisión humana**: 8 332
+candidatos esperan revisión en vez de 2 060. El catálogo es más pequeño porque es más honesto.
+
+**Coste:** el pipeline reconstruye el índice de identidad en un calendario de duplicación (1, 2, 4 …
+512 canales entre reconstrucciones) para que un canal recién creado sea puntuable por el siguiente
+candidato. Eso sube el tiempo de ingesta de 24,5 s a 48,2 s. Se prefiere esa lentitud a fusionar
+emisoras distintas.
+
+### Cifras anteriores a la corrección (histórico, NO son el estado entregado)
+
+Se conservan solo para explicar por qué las cifras cambian. La corrección REV-004 dejó de fusionar
+candidatos en revisión, así que el catálogo previo era más grande **porque fusionaba sin decidir**.
+
+| Métrica | Valor previo |
+|---|---|
+| Canales canónicos | 15 242 |
 | Candidatos (reconciled/duplicate/rejected) | 15 242 / 7 880 / 40 |
-| Fuentes por canal (media/máx) | 1,52 / 44 |
-| Países distintos | 140 (14 360 conocidos, 882 desconocidos) |
-| Idiomas distintos | 30 (9 781 conocidos, 5 461 `und`) |
 | Revisión manual | 2 060 |
+| Fuentes por canal (media/máx) | 1,52 / 44 |
 | Alias | 13 968 |
-| Base de datos eliminada | `true` (verificado listando bases después) |
 
 ## 11. Aislamiento staging→público y puerta de autorización (ejecutado)
 
