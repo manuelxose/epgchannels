@@ -34,6 +34,35 @@ MongoDB con migraciones reversibles y cobertura de pruebas con cifras reales.
 - No se exponen `identity` ni las nuevas colecciones en la API pública (decisión de 02C).
 - No se añade CI/CD (R3).
 
+## Defectos encontrados por la revisión independiente (t7 ronda 2 → corregidos en t8)
+
+| ID | Sev. | Defecto | Corrección |
+|---|---|---|---|
+| TDT02B-REV-004 | **high** | `pipeline.ts` anulaba el enlace de un candidato en `review` y **volvía a enlazarlo** por clave de identidad: una emisora regional se fusionaba con su base nacional sin decisión humana | el candidato en `review` sale antes del fallback y queda sin enlazar (`channelId: null`, `state: 'unmatched'`); la fila de revisión conserva `proposedChannelId`. Test de regresión nuevo |
+| TDT02B-REV-003 | low | El informe atribuía el corte de 400 ficheros a `ingestion/snapshot.ts` | Atribuido a `data/fetch-snapshots.mjs` (MAX_FILES 400) |
+| TDT02B-REV-005 | low | Throughput publicado como cifra única | Publicado como rango medido (480,3–944,4 entradas/s) |
+
+**Consecuencia honesta y medida de REV-004:** el catálogo real baja de 15 242 a **10 403** canales y la
+revisión manual sube de 2 060 a **8 332** candidatos; la ingesta pasa de 24,5 s a 48,2 s. El catálogo
+anterior era más grande **porque fusionaba sin decidir**. Ese es el comportamiento correcto y es la
+razón de ser del milestone.
+
+## Defectos encontrados por ejecución real (no por inspección)
+
+Ninguno se habría detectado leyendo el código; todos salieron de ejecutar el sistema:
+
+| # | Defecto | Corrección |
+|---|---|---|
+| 1 | Índice único de candidato sin `provenance.upstreamPath`: dos ficheros del mismo snapshot con la misma URL en la misma línea abortaban la ingesta (E11000) | migración `007-candidate-natural-key` con rollback |
+| 2 | El asignador de slugs se sembraba con claves de identidad, no con slugs: dos canales podían reclamar `cctv-3` | siembra desde `channels.slug` |
+| 3 | El pipeline nunca escribía la fila de procedencia del snapshot | lo escribe el pipeline con `$setOnInsert` |
+| 4 | `rollbackRun` borraba 18 756 candidatos de **otra** ejecución | el ledger registra solo lo insertado |
+| 5 | Dos ejecuciones colapsaban en una fila del ledger | runId único por invocación |
+| 6 | Reconciliación cuadrática (108 ms/llamada) | índice por buckets: 0,14 ms |
+| 7 | Expansión por país y por token genérico `tv` (3 792 canales) | país como filtro; `GENERIC_TOKEN_CUTOFF` |
+| 8 | El modelo `SourceAuthorization` existía pero **nadie lo consumía** | `catalogue/authorisation.ts` lo impone |
+| 9 | `parsePlaylistText` dejaba `\r` en las URLs con texto CRLF | normalización dentro de la función |
+
 ## Defecto de planificación registrado (corregido)
 
 `t6` (revisión independiente) se creó **sin dependencias**, por lo que el scheduler la despachó antes
