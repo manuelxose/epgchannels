@@ -32,3 +32,8 @@ audits/tmp/
 
 # Angular build cache
 apps/frontend/.angular/
+
+# Playwright artifacts
+apps/frontend/playwright-report/
+apps/frontend/test-results/
+
