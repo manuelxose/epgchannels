@@ -7,9 +7,9 @@
 
 # TDT-API-02B — Global Channel Catalogue & Independent Ingestion
 
-**Estado global: IN_PROGRESS** (se actualizará a `PASS`/`PARTIAL`/`BLOCKED`/`FAIL` al cierre).
+**Estado global: PASS**
 
-Última actualización: 2026-11-16.
+Última actualización: 2026-11-16 (cierre de 02B).
 
 ## Identidad y Git
 
@@ -17,9 +17,35 @@
 |---|---|
 | Repositorio | `tdt-api01` (`origin` = `github.com/manuelxose/epgchannels.git`) |
 | SHA base verificado | `671a42fa226e0ea8995badfee3544b9de0655008` (`main` == `origin/main`, 02A fusionado) |
-| Rama del milestone | `feat/tdt-api02-b-global-catalogue` |
-| CI/CD existente | **No** (sin `.github/`) → el merge no dispara ningún despliegue |
+| Rama del milestone | `feat/tdt-api02-b-global-catalogue` (fusionada; registro local eliminado) |
+| PR | **#2** — fusionado |
+| Merge commit en `origin/main` | **`259ad716f5cc6dcddebf4b18c4c26bd848142de5`** (`259ad71`) |
+| CI/CD existente | **No** (sin `.github/`) → el merge no disparó ningún despliegue |
 | Snapshots upstream | `data/snapshots/` **no versionado** (D-014) |
+
+## Verificación final (ejecutada sobre `main` ya fusionado)
+
+| Etapa | Exit | Resultado |
+|---|---|---|
+| `build` | 0 | OK |
+| `typecheck` | 0 | OK |
+| `unit` | 0 | **217 tests** |
+| `integration` | 0 | **123 tests** |
+| `independence` | 0 | **15 tests** |
+| `client` | 0 | **14 tests** |
+| `ingestion` (escenarios) | 0 | **9/9** |
+| preflight | 0 | READY (MongoDB `rs0` + Redis) |
+
+**Estado por criterio:** ingesta original sin dependencia de runtime · snapshots versionados con
+procedencia y licencia · 8 conceptos separados · reconciliación determinista sin fusiones silenciosas
+(tras REV-004) · catálogo privado con autorización obligatoria · UUIDs estables y migraciones que
+preservan identidades · tests, base de datos, migraciones y rendimiento ejecutados · revisión
+independiente `pass` · PR fusionado con SHA verificado · worktrees limpiados · **ningún despliegue no
+autorizado**. Todo **PASS**.
+
+**Limitación declarada:** los *lifecycle records* del toolkit quedan como `record-without-worktree`
+porque su `remove` no pudo borrar directorios que contenían `node_modules`; no queda ningún worktree
+ni dato de git. Se documenta en lugar de ocultarse.
 
 ## Alcance
 
