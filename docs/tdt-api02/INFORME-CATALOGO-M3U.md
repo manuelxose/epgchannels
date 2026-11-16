@@ -1,5 +1,9 @@
 # Informe de análisis de catálogo, M3U y repositorios
 
+> **AVISO (2026-11-16): las conclusiones normativas de este informe sobre licencias estan
+> REEMPLAZADAS por el modo demo (D-016).** Las licencias se registran como procedencia y no bloquean
+> nada; Free-TV se incluye y se puede publicar. Ver `VIGENCIA-LICENCIAS-MODO-DEMO.md`.
+
 **Milestone:** TDT-API-02A · **Tarea:** t3 (catálogo/M3U/repositorios)
 **Autor:** catalogue · **Worktree:** `wt/tdt02a-cat` (branch `feat/tdt02a-cat`, base `febbec4`)
 **Alcance:** análisis de compatibilidad entre el modelo propio (tdt-api01) y tres fuentes de

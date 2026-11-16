@@ -56,7 +56,8 @@ MongoDB con migraciones reversibles y cobertura de pruebas con cifras reales.
 ## No-objetivos
 
 - No se corrigen SEC-01/SEC-02/R2 (pertenecen a su propio trabajo; siguen abiertos).
-- No se publica ningún dato de Free-TV (sin licencia, D-012).
+- **MODO DEMO (D-016):** todas las fuentes se incluyen y se pueden publicar; las licencias se
+  registran como procedencia y **no bloquean**. Free-TV ya no está excluida.
 - No se exponen `identity` ni las nuevas colecciones en la API pública (decisión de 02C).
 - No se añade CI/CD (R3).
 

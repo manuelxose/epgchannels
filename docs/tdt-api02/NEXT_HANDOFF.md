@@ -14,7 +14,8 @@ estado real del repositorio, gana el repositorio: actualiza este fichero y dilo.
    al ejecutar.
 3. `MODULE-CONTRACT-02B.md` — el contrato de módulos que gobierna toda la ingesta.
 4. `EVIDENCIA-INGESTA-02B.md` — las cifras medidas, con su comando de reproducción.
-5. `DECISIONS.md` — D-010 (país), D-012 (licencias), D-013 (reconciliación), D-014 (snapshots), D-015
+5. `DECISIONS.md` — D-010 (país), **D-016 (modo demo: las licencias son procedencia, no norma)**,
+   D-012 (sustituida por D-016), D-013 (reconciliación), D-014 (snapshots), D-015
    (redacción de credenciales).
 6. `ARCHITECTURE.md`, `AUDITORIA-ARQUITECTURA.md`, `INFORME-SEGURIDAD-DERECHOS.md` — el producto
    previo.
@@ -37,8 +38,9 @@ estado real del repositorio, gana el repositorio: actualiza este fichero y dilo.
 - **No se publicó nada.** Todo el catálogo está en `staging`; `approved` es 0.
 - No se expusieron `identity` ni las nuevas colecciones en `/api/v1` (es trabajo de 02C).
 - No se añadió CI/CD (R3).
-- No se declara la licencia del proyecto (LIC-01, decisión de producto): sin ella no hay publicación.
-- Free-TV queda ingerido en staging y **nunca publicable** (sin licencia, D-012).
+- **MODO DEMO (D-016):** las licencias se registran como procedencia y **no bloquean** la
+  publicación. Free-TV es ingerible y publicable como cualquier otra fuente. Si el producto sale de
+  modo demo, D-012 debe reactivarse antes de publicar nada.
 
 ---
 
