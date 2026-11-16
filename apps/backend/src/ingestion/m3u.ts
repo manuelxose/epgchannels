@@ -293,10 +293,15 @@ export function parseM3u(bytes: Uint8Array): M3uPlaylist {
 
 /**
  * Text variant of {@link parseM3u}; same guarantees, no byte decoding.
- * It does not normalise encodings (call {@link decodePlaylistBytes} first).
+ *
+ * Line endings are normalised here (`CRLF` and lone `CR` → `LF`), so the result
+ * is identical however the text was obtained: a raw CRLF string must never
+ * leave a trailing `\r` on a URL, which would change its hash or fake a
+ * `not-http`. It does not normalise encodings (call {@link decodePlaylistBytes}
+ * first).
  */
 export function parsePlaylistText(text: string): M3uPlaylist {
-  const lines = text.split('\n');
+  const lines = text.replace(/\r\n?/g, '\n').split('\n');
   const entries: M3uEntry[] = [];
   const rejected: M3uRejectedLine[] = [];
   const diagnostics: M3uDiagnosticLine[] = [];

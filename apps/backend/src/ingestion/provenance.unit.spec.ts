@@ -7,7 +7,7 @@
  * credential-bearing URL).
  */
 import { describe, expect, it } from 'vitest';
-import { parseM3u } from './m3u.js';
+import { parseM3u, parsePlaylistText } from './m3u.js';
 import { M3U_EXCERPT } from './m3u.fixture.js';
 import { FREE_TV_ENTRIES_PLAYLIST } from './free-tv.fixture.js';
 import {
@@ -214,6 +214,29 @@ describe('buildCandidates — provenance and shape', () => {
     });
     expect(first?.urlSha256).toMatch(/^[a-f0-9]{64}$/);
     expect(first?.createdAt).toEqual(RETRIEVED_AT);
+  });
+
+  it('gives byte-identical candidates for a CRLF playlist parsed as text or as bytes', () => {
+    // Regression: parsePlaylistText used to leave a trailing '\r' on URLs when
+    // handed raw CRLF text, changing urlSha256/_id and risking `not-http`.
+    const fromBytes = buildCandidates(snapshot(), [loaded(M3U_EXCERPT)]);
+    const crlfText = M3U_EXCERPT.replace(/\n/g, '\r\n');
+    const fromText = buildCandidates(snapshot(), [
+      {
+        path: 'streams/es.m3u',
+        sha256: 'b'.repeat(64),
+        bytes: crlfText.length,
+        playlist: parsePlaylistText(crlfText),
+      },
+    ]);
+    expect(fromText).toEqual(fromBytes);
+    expect(JSON.stringify(fromText)).toBe(JSON.stringify(fromBytes));
+    for (const candidate of fromText) {
+      expect(candidate.url.includes('\r')).toBe(false);
+      expect(candidate.normalizedUrl.includes('\r')).toBe(false);
+      expect(candidate.state === 'rejected' && candidate.rejectionReason === 'not-http').toBe(false);
+    }
+    expect(fromText.length).toBeGreaterThan(0);
   });
 
   it('gives every candidate a deterministic uuid and the same inputs give the same output', () => {
