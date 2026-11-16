@@ -155,6 +155,22 @@ Formato: `D-0NN` · fecha · estado (`ADOPTADA`, `SUSTITUIDA`, `PENDIENTE`).
 - **Consecuencia:** la puntuación y sus señales se publican en el informe
   (`INFORME-INGESTA-02B.md`) y cada decisión guarda sus señales para auditoría posterior.
 
+## D-015 — La URL de un candidato se guarda redactada; la credencial no entra en la BD
+
+- **Estado:** ADOPTADA (2026-11-16, 02B)
+- **Contexto:** t1 detectó URLs con `userinfo` (`user:pass@host`) y con parámetros de tipo token en
+  los listados upstream. `EXECUTION_CONTRACT §4.5` prohíbe credenciales en payloads y logs.
+- **Decisión:** al construir el candidato se eliminan `userinfo` y los valores de query con pinta de
+  token, y el candidato queda con `authRequired` (bandera `UNPUBLISHABLE_FLAGS`). El hash y la clave
+  de idempotencia se calculan sobre la URL **normalizada y ya redactada**, así que dos capturas del
+  mismo enlace producen el mismo `_id` sin que la contraseña se guarde nunca.
+- **Alternativa descartada:** guardar la URL completa para "poder reproducirla más adelante". Un
+  sistema que no va a proxificar la señal no necesita un secreto ajeno almacenado, y guardarlo
+  convierte cualquier volcado de la colección en una filtración.
+- **Consecuencia:** un emisor que exige credencial no puede publicarse desde nuestro catálogo; su
+  candidato existe solo como evidencia de procedencia. Si 02C necesita el valor original, se relee
+  del snapshot en el momento, nunca de la base de datos.
+
 ## D-014 — Los snapshots upstream viven fuera de Git y son la única entrada de ingesta
 
 - **Estado:** ADOPTADA (2026-11-16, 02B)
