@@ -13,7 +13,23 @@ This document lets a third party reproduce the deployment from an empty machine.
 No third-party data feed is required to run the platform. The catalogue import
 reads a file you supply; the guide import reads a file you supply.
 
-## 2. First start
+## 2. Development mode
+
+```bash
+npm run dev:backend     # http://127.0.0.1:4010, restarts on source changes
+npm run dev:frontend    # Angular dev server on :4200
+```
+
+`dev:backend` runs `src/server/dev.ts` directly with Node's type stripping: no
+build step is required, and the process restarts on every change under
+`apps/backend/src`. It is development only — `npm start` and every production
+path run the compiled `dist/`.
+
+If you see `ExperimentalWarning: Transform Types`, it is expected: TypeScript
+parameter properties need it, and it is the reason the script passes
+`--experimental-transform-types`.
+
+## 3. First start
 
 ```bash
 git clone <repository> tdt-api01 && cd tdt-api01
@@ -49,7 +65,7 @@ The replica set advertises `127.0.0.1:27117`, so a host client connects through
 the published port. Do not change that address to the container name: outside the
 compose network the name does not resolve.
 
-## 3. First administrator
+## 4. First administrator
 
 The administrative API is never reachable with a key shipped to a browser. The
 first account is created once, from a token that exists only in the environment:
@@ -72,7 +88,7 @@ TOKEN=$(curl -s -X POST http://127.0.0.1:4010/api/v1/auth/login \
   -d '{"email":"editor@example.invalid","password":"<same password>"}' | jq -r .data.token)
 ```
 
-## 4. Frontend
+## 5. Frontend
 
 ```bash
 cd apps/frontend
@@ -84,7 +100,7 @@ node scripts/serve-dist.mjs         # serves dist/ and proxies /api to :4010
 The build requests `/api/v1` on its own origin. Set `TDT_API_BASE_URL` at build
 time to point a build at an absolute API instead.
 
-## 5. Verification commands
+## 6. Verification commands
 
 | Command | What it proves |
 | --- | --- |
@@ -101,7 +117,7 @@ time to point a build at an absolute API instead.
 `npm run audit:bootstrap`, `npm run openapi:export` and `npm run test:load` are
 the short forms once the backend is built.
 
-## 6. Configuration reference
+## 7. Configuration reference
 
 All values are read from `apps/backend/.env` or the process environment; the
 process environment wins.
@@ -121,7 +137,7 @@ process environment wins.
 | `EGRESS_GUARD_ENABLED` / `BLOCKED_EGRESS_HOSTS` | `false` / empty | Blocks outbound hosts (used by the independence test) |
 | `YOUTUBE_API_KEY` | unset | Optional: resolves a `/channel/<id>/live` page to its current video |
 
-## 7. Operations
+## 8. Operations
 
 - **Health**: `GET /api/v1/health` reports the database, the cache and the real
   record counts; it answers `503` when the database is unreachable.
