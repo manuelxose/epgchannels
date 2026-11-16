@@ -188,8 +188,9 @@ node apps/backend/scripts/ingestion-bench.mjs         # rendimiento (t4)
 `TDT_SNAPSHOT_DIR=... node apps/backend/scripts/ingestion-bench.mjs` → **exit 0**
 
 **El throughput depende de la máquina y de la carga, así que se publica el rango medido, no un
-número único.** Tres ejecuciones del mismo comando dieron **944,4**, **799,9** y **480,3**
-entradas/s. Lo reproducible son los **counts**, no la velocidad.
+número único.** Cuatro ejecuciones del mismo comando dieron **944,4**, **799,9**, **480,3** y
+**395,1** entradas/s (esta última, la del revisor independiente en su propio worktree). El rango
+honesto es **≈395–945 entradas/s**. Lo reproducible son los **counts**, no la velocidad.
 
 ### Cifras vigentes (después de la corrección TDT02B-REV-004)
 

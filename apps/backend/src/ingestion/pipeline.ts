@@ -409,25 +409,8 @@ export async function runIngestion(
         createdChannelIds.push(channelId);
         createdHere = true;
         // A later candidate with the same identity key joins this channel
-        // through `knownChannels`, so no index rebuild is needed here.
+        // Registered by key as well, so a same-key candidate links immediately.
         knownChannels.set(key, channelId);
-        /*
-         * Publish the new channel into the live identity index so a later
-         * candidate can corroborate against it (tvg-id and URL host included).
-         * The rebuild is amortised: rebuilding per created channel would make a
-         * full ingest quadratic again, so it happens in bounded batches.
-         */
-        const tvgForView = candidate.attributes['tvg-id'];
-        const hostForView = hostOf(candidate.normalizedUrl ?? candidate.url);
-        viewsByKey.set(key, {
-          channelId,
-          key,
-          name: candidate.name,
-          country,
-          variantKey: null,
-          tvgIds: tvgForView !== undefined && tvgForView !== '' ? [tvgForView] : [],
-          urlHosts: hostForView !== null ? [hostForView] : [],
-        });
         /*
          * A channel created now must be scorable by the next candidate that
          * shares its identity key (two feeds of one station often sit a few
@@ -437,6 +420,8 @@ export async function runIngestion(
          * (1, 2, 4 … 512 creations between rebuilds), which is O(log n) rebuilds
          * with immediate key-level visibility.
          */
+        const tvgForView = candidate.attributes['tvg-id'];
+        const hostForView = hostOf(candidate.normalizedUrl ?? candidate.url);
         viewsByKey.set(key, {
           channelId,
           key,
