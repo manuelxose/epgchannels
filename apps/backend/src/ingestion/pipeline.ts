@@ -375,6 +375,15 @@ export async function runIngestion(
     metrics: emptyMetrics(snapshot.upstream),
   });
 
+  /*
+   * The snapshot row is provenance, so the pipeline owns it rather than leaving
+   * it to whichever caller remembered to write it. Only inserted when absent: a
+   * re-run must not rewrite the original retrieval timestamp or checksum.
+   */
+  await database
+    .collection<SourceSnapshotDoc>(COLLECTIONS.sourceSnapshots)
+    .updateOne({ _id: snapshot._id }, { $setOnInsert: snapshot }, { upsert: true });
+
   await bulkUpsert(database.collection<ChannelDoc>(COLLECTIONS.channels), newChannels, () => ({}), batchSize);
   await bulkUpsert(database.collection<SourceCandidateDoc>(COLLECTIONS.sourceCandidates), writtenCandidates, () => ({}), batchSize);
   await bulkUpsert(database.collection<ChannelAliasDoc>(COLLECTIONS.channelAliases), aliases, (doc) => ({
