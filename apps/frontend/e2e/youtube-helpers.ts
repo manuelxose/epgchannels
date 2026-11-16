@@ -1,13 +1,12 @@
 import { expect, type Page, type Route } from '@playwright/test';
 
 /**
- * Shared E2E helpers for in-app YouTube playback (TDT-CLONE-12).
+ * Shared E2E helpers for in-app YouTube playback.
  *
- * Everything here is deterministic and offline: the catalogue is intercepted and
+ * Everything here is deterministic and offline: our API is served from fixtures
+ * that carry the YouTube descriptors (`engine: youtube-iframe`), and
  * `https://www.youtube.com/iframe_api` is fulfilled from a local stub that
- * behaves like the real API — it builds a player, creates an iframe, and lets
- * the test drive `onStateChange` / `onError` on demand. No request ever reaches
- * YouTube.
+ * behaves like the real API. No request ever reaches YouTube.
  */
 
 /** What the fake player exposes to the test through `window.__yt`. */
@@ -58,7 +57,6 @@ export const YOUTUBE_API_STUB = `
     iframe.setAttribute('data-testid', 'youtube-iframe');
     iframe.setAttribute('title', 'Reproductor de YouTube');
     iframe.className = 'fake-yt-frame';
-    // The real API assigns width/height inlines; the stub must too.
     iframe.width = '100%';
     iframe.height = '100%';
     iframe.style.border = '0';
@@ -99,9 +97,7 @@ export const YOUTUBE_API_STUB = `
   }
   // MEASURED against the real service: the iframe_api script's load event fires
   // BEFORE YT.Player exists, and the API announces readiness by calling
-  // window.onYouTubeIframeAPIReady a moment later. The stub reproduces that
-  // order, so a loader that settles on onload fails here as it would in
-  // production.
+  // window.onYouTubeIframeAPIReady a moment later. Reproduced here on purpose.
   setTimeout(function () {
     window.YT = { Player: Player, PlayerState: { UNSTARTED: -1, ENDED: 0, PLAYING: 1, PAUSED: 2, BUFFERING: 3, CUED: 5 } };
     if (window.onYouTubeIframeAPIReady) window.onYouTubeIframeAPIReady();
@@ -114,8 +110,6 @@ export async function stubYoutube(page: Page): Promise<void> {
   await page.route('https://www.youtube.com/iframe_api', async (route: Route) => {
     await route.fulfill({ status: 200, contentType: 'text/javascript', body: YOUTUBE_API_STUB });
   });
-  // The stub creates the frame element itself from a URL that is never fetched:
-  // abort anything else so no test can accidentally depend on the network.
   await page.route(/https:\/\/(www\.)?(youtube|youtube-nocookie)\.com\/(?!iframe_api)/, async (route: Route) => {
     await route.abort('blockedbyclient');
   });
@@ -125,7 +119,7 @@ export async function stubYoutube(page: Page): Promise<void> {
 export async function youtubeProbe(page: Page): Promise<YoutubeProbe> {
   return page.evaluate(() => {
     const yt = (window as unknown as { __yt?: Record<string, unknown> }).__yt;
-    const probe = {
+    return {
       players: Number(yt?.['players'] ?? 0),
       livePlayers: Number(yt?.['livePlayers'] ?? 0),
       destroyed: Number(yt?.['destroyed'] ?? 0),
@@ -133,7 +127,6 @@ export async function youtubeProbe(page: Page): Promise<YoutubeProbe> {
       calls: (yt?.['calls'] as string[]) ?? [],
       iframes: document.querySelectorAll('[data-testid="yt-engine-shell"] iframe').length,
     };
-    return probe;
   });
 }
 
@@ -154,9 +147,6 @@ export async function emitPlayerError(page: Page, code: number): Promise<void> {
  * Turns on the channel → live resolution for the current page, the way a
  * deployment with a (restricted) Data API key would, and stubs the documented
  * endpoints with a deterministic answer.
- *
- * `live: false` answers "no active public live broadcast"; `live: true` answers
- * with one embeddable live video owned by the requested channel.
  */
 export async function enableDataApi(
   page: Page,
@@ -180,7 +170,6 @@ export async function enableDataApi(
   await page.route('https://www.googleapis.com/youtube/v3/videos**', async (route: Route) => {
     const url = new URL(route.request().url());
     const ids = (url.searchParams.get('id') ?? '').split(',');
-    // The owner of the live video is the channel the fixture published.
     const channelId = 'UCOCGPFW1UqPP9zdol7vEK1A';
     await route.fulfill({
       status: 200,
@@ -197,11 +186,7 @@ export async function enableDataApi(
   });
 }
 
-/**
- * Navigates INSIDE the running application (a real in-app link), so the
- * controller, the shell and the page script state survive the transition.
- * A full `page.goto()` would reload the document and reset every counter.
- */
+/** Navigates INSIDE the running application, so page script state survives. */
 export async function navigateInApp(page: Page, channelSlug: string): Promise<void> {
   await page.evaluate((slug: string) => {
     const link = document.querySelector(`a[href$="/television/${slug}"]`) as HTMLAnchorElement | null;
@@ -218,7 +203,9 @@ declare global {
   interface Window {
     __ytChannel?: string;
   }
-}/** The player status probe rendered by our shell. */
+}
+
+/** The player status probe rendered by our shell. */
 export async function playerStatus(page: Page): Promise<string> {
   return ((await page.getByTestId('player-state').textContent()) ?? '').trim();
 }
@@ -228,95 +215,33 @@ export async function waitForStatus(page: Page, status: string, timeout = 15_000
   await expect.poll(() => playerStatus(page), { timeout }).toBe(status);
 }
 
-/**
- * A catalogue with one channel per YouTube shape, so each source kind is
- * exercised by its own page. All of them are published exactly as the real
- * catalogue publishes them (`format: youtube`, an official page URL).
- */
-export function youtubeCatalogue(): Record<string, unknown> {
-  const channels = [
-    {
-      // A specific live video: /live/VIDEO_ID.
-      name: 'Youtube Directo',
-      web: 'https://example.org/yt-directo',
-      options: [{ format: 'youtube', url: 'https://www.youtube.com/live/OkQduT-9Pyc' }],
-      extra_info: ['EMB'],
-    },
-    {
-      // /watch?v=VIDEO_ID
-      name: 'Youtube Watch',
-      web: 'https://example.org/yt-watch',
-      options: [{ format: 'youtube', url: 'https://www.youtube.com/watch?v=cN8S9e2pLxI' }],
-      extra_info: ['EMB'],
-    },
-    {
-      // /channel/CHANNEL_ID/live — the shape 205 of 215 published options use.
-      name: 'Youtube Canal',
-      web: 'https://example.org/yt-canal',
-      options: [{ format: 'youtube', url: 'https://www.youtube.com/channel/UCOCGPFW1UqPP9zdol7vEK1A/live' }],
-      extra_info: ['EMB'],
-    },
-    {
-      // A channel page with no API key: we cannot know whether it is live.
-      name: 'Youtube Sin Clave',
-      web: 'https://example.org/yt-sin-clave',
-      options: [{ format: 'youtube', url: 'https://www.youtube.com/channel/UC7QZIf0dta-XPXsp9Hv4dTw/live' }],
-      extra_info: ['EMB'],
-    },
-    {
-      // A live video whose owner forbids embedding (101/150).
-      name: 'Youtube Prohibido',
-      web: 'https://example.org/yt-prohibido',
-      options: [{ format: 'youtube', url: 'https://www.youtube.com/live/Pz_yFcM45sc' }],
-      extra_info: ['EMB'],
-    },
-    {
-      // A live video that has ended (100).
-      name: 'Youtube Terminado',
-      web: 'https://example.org/yt-terminado',
-      options: [{ format: 'youtube', url: 'https://www.youtube.com/live/499wgS85QKQ' }],
-      extra_info: ['EMB'],
-    },
-    {
-      // Two YouTube lives: switching between them must not stack players.
-      name: 'Youtube Segundo',
-      web: 'https://example.org/yt-segundo',
-      options: [{ format: 'youtube', url: 'https://www.youtube.com/live/hJ5nR0FXhCA' }],
-      extra_info: ['EMB'],
-    },
-    {
-      // A YouTube live and a real HLS stream on the same channel.
-      name: 'Youtube Y Hls',
-      web: 'https://example.org/yt-y-hls',
-      options: [
-        { format: 'youtube', url: 'https://www.youtube.com/live/OkQduT-9Pyc' },
-        { format: 'm3u8', url: '/demo/media/single/index.m3u8' },
-      ],
-      extra_info: ['EMB'],
-    },
-    {
-      // HLS first, YouTube second: the other switching direction.
-      name: 'Hls Y Youtube',
-      web: 'https://example.org/hls-y-yt',
-      options: [
-        { format: 'm3u8', url: '/demo/media/single/index.m3u8' },
-        { format: 'youtube', url: 'https://www.youtube.com/live/OkQduT-9Pyc' },
-      ],
-      extra_info: ['EMB'],
-    },
-    {
-      // A handle: names a channel but carries no id we can verify.
-      name: 'Youtube Handle',
-      web: 'https://example.org/yt-handle',
-      options: [{ format: 'youtube', url: 'https://www.youtube.com/@emisora/live' }],
-      extra_info: ['EMB'],
-    },
-  ];
-
-  return {
-    license: { source: 'e2e fixture', url: 'https://example.org' },
-    epg: { json: 'https://upstream.invalid/epg.json' },
-    countries: [{ name: 'Spain', ambits: [{ name: 'Generalistas', channels }] }],
-    updated: Math.floor(Date.now() / 1000),
-  };
+export interface YoutubeFixtureChannel {
+  readonly slug: string;
+  readonly name: string;
+  /** The official YouTube page that becomes the descriptor URL. */
+  readonly youtubeUrl: string;
+  /** Optional HLS alternative played by our own engine. */
+  readonly hlsUrl?: string;
+  /** Which source our API would prefer for this channel. */
+  readonly preferYoutube?: boolean;
 }
+
+/**
+ * One channel per YouTube shape, so each is exercised by its own page.
+ *
+ * The descriptor a real API would produce for each is derived from the page URL:
+ * a `/live/<id>` or `/watch?v=<id>` becomes a YouTube engine option; a channel
+ * page or a handle keeps the official page as the offered route.
+ */
+export const YOUTUBE_CHANNELS: YoutubeFixtureChannel[] = [
+  { slug: 'yt-directo', name: 'Youtube Directo', youtubeUrl: 'https://www.youtube.com/live/OkQduT-9Pyc' },
+  { slug: 'yt-watch', name: 'Youtube Watch', youtubeUrl: 'https://www.youtube.com/watch?v=cN8S9e2pLxI' },
+  { slug: 'yt-canal', name: 'Youtube Canal', youtubeUrl: 'https://www.youtube.com/channel/UCOCGPFW1UqPP9zdol7vEK1A/live' },
+  { slug: 'yt-sin-clave', name: 'Youtube Sin Clave', youtubeUrl: 'https://www.youtube.com/channel/UC7QZIf0dta-XPXsp9Hv4dTw/live' },
+  { slug: 'yt-prohibido', name: 'Youtube Prohibido', youtubeUrl: 'https://www.youtube.com/live/Pz_yFcM45sc' },
+  { slug: 'yt-terminado', name: 'Youtube Terminado', youtubeUrl: 'https://www.youtube.com/live/499wgS85QKQ' },
+  { slug: 'yt-segundo', name: 'Youtube Segundo', youtubeUrl: 'https://www.youtube.com/live/hJ5nR0FXhCA' },
+  { slug: 'yt-y-hls', name: 'Youtube Y Hls', youtubeUrl: 'https://www.youtube.com/live/OkQduT-9Pyc', hlsUrl: '/demo/media/single/index.m3u8', preferYoutube: true },
+  { slug: 'hls-y-yt', name: 'Hls Y Youtube', youtubeUrl: 'https://www.youtube.com/live/OkQduT-9Pyc', hlsUrl: '/demo/media/single/index.m3u8', preferYoutube: false },
+  { slug: 'yt-handle', name: 'Youtube Handle', youtubeUrl: 'https://www.youtube.com/@emisora/live' },
+];

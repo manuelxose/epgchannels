@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test';
-import { stubData, waitForCatalogue } from './helpers';
+import { stubApi, waitForCatalogue } from './helpers';
 
 test.describe('EPG y navegación', () => {
   test.beforeEach(async ({ page }) => {
-    await stubData(page);
+    await stubApi(page);
   });
 
   test('muestra programa actual, siguiente y después con horarios locales', async ({ page }) => {
@@ -46,6 +46,9 @@ test.describe('EPG y navegación', () => {
     await page.getByLabel('Buscar canal en la parrilla').fill('europe');
     await expect(page.locator('.row')).toHaveCount(1);
     await expect(page.locator('.row').first()).toContainText('Europe News');
+    // A name that only one channel carries, so the filter has a real subject.
+    await page.getByLabel('Buscar canal en la parrilla').fill('la uno');
+    await expect(page.locator('.row')).toHaveCount(1);
     await page.getByLabel('Buscar canal en la parrilla').fill('zzzz');
     await expect(page.locator('.row')).toHaveCount(0);
   });

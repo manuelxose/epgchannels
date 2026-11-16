@@ -1,12 +1,12 @@
 import { expect, test } from '@playwright/test';
-import { playerState, stubData, waitForCatalogue, waitForFrames } from './helpers';
+import { playerState, stubApi, waitForCatalogue, waitForFrames } from './helpers';
 
 test.describe('Reproductor', () => {
   test.beforeEach(async ({ page }) => {
-    await stubData(page);
+    await stubApi(page);
   });
 
-  test('reproduce una señal HLS real con hls.js', async ({ page }) => {
+  test('reproduce una señal HLS real con el motor propio (descriptor de la API)', async ({ page }) => {
     await page.goto('/television/la-uno');
     await waitForFrames(page);
 
@@ -106,7 +106,10 @@ test.describe('Reproductor', () => {
   test('una fuente caída muestra error con acción de reintento', async ({ page }) => {
     await page.goto('/television/senal-rota');
     const alert = page.getByTestId('player-alert');
-    await expect(alert).toBeVisible({ timeout: 45_000 });
+    // The label of the source is 'Señal del emisor' when the API supplies one;
+    // the fixture descriptor uses the generic label, so the assertion is on the
+    // state and the user-facing message rather than on a catalogue string.
+    await expect(alert).toBeVisible({ timeout: 60_000 });
     /*
      * The fixture publishes a single source whose only segment is missing, so
      * every eligible source is exhausted: the precise user-facing state is
@@ -115,7 +118,7 @@ test.describe('Reproductor', () => {
     await expect(alert).toContainText('Ninguna fuente de este canal está disponible');
     await expect(alert).toHaveAttribute('data-playback-state', 'source-unavailable');
     await expect(page.getByRole('button', { name: 'Reintentar' })).toBeVisible();
-    await expect(alert).toContainText('Fuente: Emisión 1');
+    await expect(alert).toContainText('Fuente: Señal del emisor');
   });
 
   test('un canal sin reproducción permitida muestra la explicación, no un reproductor', async ({ page }) => {

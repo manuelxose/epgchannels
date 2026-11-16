@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test';
-import { playerState, stubData, waitForCatalogue } from './helpers';
+import { playerState, stubApi, waitForCatalogue } from './helpers';
 
 test.describe('Accesibilidad', () => {
   test.beforeEach(async ({ page }) => {
-    await stubData(page);
+    await stubApi(page);
   });
 
   test('expone una estructura de landmarks y un enlace de salto', async ({ page }) => {
@@ -103,7 +103,7 @@ test.describe('Accesibilidad', () => {
 
 test.describe('Responsive', () => {
   test.beforeEach(async ({ page }) => {
-    await stubData(page);
+    await stubApi(page);
   });
 
   test('no hay desplazamiento horizontal en ningún ancho', async ({ page }) => {
@@ -167,7 +167,7 @@ test.describe('Responsive', () => {
 
 test.describe('Limpieza de recursos', () => {
   test('cambios repetidos de canal no filtran elementos multimedia', async ({ page }) => {
-    await stubData(page);
+    await stubApi(page);
     await page.goto('/television/la-uno');
     await expect(page.locator('video')).toHaveCount(1);
 
@@ -206,7 +206,7 @@ test.describe('Limpieza de recursos', () => {
   });
 
   test('salir del canal destruye el motor', async ({ page }) => {
-    await stubData(page);
+    await stubApi(page);
     await page.goto('/television/la-uno');
     await expect(page.locator('video')).toHaveCount(1);
 

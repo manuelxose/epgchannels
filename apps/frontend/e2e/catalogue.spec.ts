@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test';
-import { searchFor, stubData, waitForCatalogue } from './helpers';
+import { searchFor, stubApi, waitForCatalogue } from './helpers';
 
-test.describe('Catálogo', () => {
+test.describe('Catálogo (contrato de nuestra API)', () => {
   test.beforeEach(async ({ page }) => {
-    await stubData(page);
+    await stubApi(page);
     await page.goto('/television');
   });
 
@@ -36,12 +36,13 @@ test.describe('Catálogo', () => {
   test('el filtro por categoría reduce el catálogo', async ({ page }) => {
     await waitForCatalogue(page);
     const select = page.getByLabel('Filtrar por categoría');
-    await expect(select.locator('optgroup')).toHaveCount(2);
+    await expect(select.locator('optgroup')).toHaveCount(1);
     const options = await select.locator('option').allTextContents();
     expect(options.some((label) => label.includes('Generalistas'))).toBe(true);
-    await select.selectOption({ label: 'Generalistas (7)' });
-    await expect(page.locator('app-channel-tile')).toHaveCount(7);
-    await expect(page.getByTestId('catalogue-summary')).toHaveText('7 resultados');
+    // Five of the eight fixture channels are generalistas (the other three are internacionales).
+    await select.selectOption({ label: 'Generalistas (5)' });
+    await expect(page.locator('app-channel-tile')).toHaveCount(5);
+    await expect(page.getByTestId('catalogue-summary')).toHaveText('5 resultados');
   });
 
   test('el filtro por disponibilidad separa estados de reproducción', async ({ page }) => {
@@ -78,11 +79,36 @@ test.describe('Catálogo', () => {
     await expect(page.locator('app-channel-tile')).toHaveCount(8);
   });
 
-  test('mantiene el catálogo usando los datos de demostración si la fuente falla', async ({ page }) => {
+  test('un fallo de la API se explica y no se sustituye por datos ajenos', async ({ page }) => {
     await page.unrouteAll();
-    await stubData(page, { failCatalog: true, failEpg: true });
+    await stubApi(page, { failApi: true });
     await page.goto('/television');
-    await expect(page.getByText('Catálogo de demostración', { exact: false })).toBeVisible();
-    await expect(page.locator('app-channel-tile').first()).toBeVisible();
+    await expect(page.getByRole('alert').first()).toContainText('No se ha podido cargar el catálogo');
+    await expect(page.locator('app-channel-tile')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Reintentar' })).toBeVisible();
+  });
+
+  test('un error 5xx de la API se explica con su mensaje', async ({ page }) => {
+    await page.unrouteAll();
+    await stubApi(page, { serverError: true });
+    await page.goto('/television');
+    await expect(page.getByRole('alert').first()).toContainText('Fallo interno');
+  });
+
+  test('no hay ninguna petición fuera de nuestra API', async ({ page }) => {
+    const external: string[] = [];
+    page.on('request', (request) => {
+      const url = new URL(request.url());
+      const isOurs = url.origin === 'http://127.0.0.1:4400';
+      const isMedia = url.pathname.startsWith('/demo/media/');
+      const isYoutube = /(?:youtube\.com|youtube-nocookie\.com|ytimg\.com)/.test(url.hostname);
+      if (!isOurs && !isMedia && !isYoutube) {
+        external.push(request.url());
+      }
+    });
+    await waitForCatalogue(page);
+    await page.getByRole('link', { name: /La Uno/ }).first().click();
+    await page.waitForTimeout(2_000);
+    expect(external).toEqual([]);
   });
 });
