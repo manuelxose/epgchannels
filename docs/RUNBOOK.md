@@ -16,18 +16,31 @@ reads a file you supply; the guide import reads a file you supply.
 ## 2. Development mode
 
 ```bash
-npm run dev:backend     # http://127.0.0.1:4010, restarts on source changes
-npm run dev:frontend    # Angular dev server on :4200
+npm run dev             # backend (:4010) + frontend (:4200), one command
+npm run dev:backend     # backend only, restarts on source changes
+npm run dev:frontend    # frontend only (Angular dev server)
+npm run stop:dev        # stops whatever `npm run dev` left behind
+```
+
+`npm run dev` starts both servers with prefixed output (`[api]` / `[web]`), waits
+until each one answers, and stops both on Ctrl+C. The Angular dev server proxies
+`/api/v1` to the backend (`apps/frontend/proxy.conf.json`), so the browser sees a
+single origin — the same topology as production.
+
+**Ports are taken.** If 4010 or 4200 is in use, the command says so and suggests
+`npm run stop:dev`: on Windows the children of a killed shell survive and keep
+their ports. `npm run dev` records the PIDs it started in `.dev-pids.json`
+(ignored by Git) so they can always be found again. Other ports:
+
+```bash
+PORT=4020 WEB_PORT=4201 npm run dev                # bash
+$env:PORT=4020; $env:WEB_PORT=4201; npm run dev    # PowerShell
 ```
 
 `dev:backend` runs `src/server/dev.ts` directly with Node's type stripping: no
-build step is required, and the process restarts on every change under
-`apps/backend/src`. It is development only — `npm start` and every production
-path run the compiled `dist/`.
-
-If you see `ExperimentalWarning: Transform Types`, it is expected: TypeScript
-parameter properties need it, and it is the reason the script passes
-`--experimental-transform-types`.
+build step is required. If you see `ExperimentalWarning: Transform Types`, it is
+expected — TypeScript parameter properties need it. Every production path runs
+the compiled `dist/`.
 
 ## 3. First start
 

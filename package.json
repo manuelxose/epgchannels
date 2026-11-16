@@ -28,8 +28,10 @@
     "client:generate": "npm --prefix packages/api-client run client:generate",
     "audit:bootstrap": "node apps/backend/dist/scripts/bootstrap-audit.js",
     "audit:acceptance": "node scripts/audit-tdt-api-01.mjs",
+    "dev": "node scripts/dev.mjs",
+    "stop:dev": "node scripts/stop-dev.mjs",
     "dev:backend": "npm run dev -w @tdt/backend",
-    "dev:frontend": "npm --prefix apps/frontend run start",
+    "dev:frontend": "npm --prefix apps/frontend run start --",
     "infra:up": "docker compose -f infra/docker-compose.yml up -d",
     "infra:down": "docker compose -f infra/docker-compose.yml down"
   }

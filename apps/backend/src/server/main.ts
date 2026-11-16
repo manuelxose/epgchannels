@@ -10,6 +10,7 @@ import { initCliEnvironment } from '../scripts/cli-env.js';
 import { ensureIndexes } from '../infrastructure/schema.js';
 import { createApp } from './app.js';
 import { createContext } from './bootstrap.js';
+import { listenWithExplanation } from './listen-errors.js';
 import { startJobs, stopJobs } from '../jobs/scheduler.js';
 
 async function main(): Promise<void> {
@@ -20,6 +21,7 @@ async function main(): Promise<void> {
 
   const { app } = createApp(config, context);
   const server = createServer(app);
+  listenWithExplanation(server, config.PORT, config.HOST);
 
   server.listen(config.PORT, config.HOST, () => {
     context.logger.info(

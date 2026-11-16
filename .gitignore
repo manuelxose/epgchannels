@@ -37,3 +37,7 @@ apps/frontend/.angular/
 apps/frontend/playwright-report/
 apps/frontend/test-results/
 
+
+# PID file written by npm run dev
+.dev-pids.json
+
