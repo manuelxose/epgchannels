@@ -88,16 +88,28 @@ Muestra real de canales con fuentes de ambas fuentes:
 
 ## 6. Cobertura
 
+Cifras leídas de la colección `channels` (el catálogo de registro), no de los scripts de medición:
+
 | Métrica | Valor |
 |---|---|
-| Países distintos con ISO alpha-2 resuelto | 13 006 canales (iptv-org) |
-| Canales con país desconocido (`identity.country: null`) | 697 |
-| Canales con idioma declarado o inferido por país | 9 781 |
-| Canales con idioma `und` (honesto, sin inventar) | 5 461 |
+| Canales con país ISO alpha-2 resuelto | **13 006** (139 países distintos) |
+| Canales con país genuinamente desconocido (`identity.country: null`) | 697 |
+| Canales con idioma conocido | **8 740** (10 idiomas distintos) |
+| Canales con idioma `und` (honesto, sin inventar) | 4 963 |
+| Canales sin documento `identity` | **0** |
 
-El idioma venía ausente en el 100 % de las entradas de iptv-org (no publica `tvg-language`). Se
+Idiomas principales: `en:2725 es:1419 ru:829 de:588 it:397 pt:388 fr:356 sv:255 tr:207 nl:202`.
+Países principales: `US:2571 RU:829 IN:825 DE:550 IT:397 CN:391 ES:377 FR:356`.
+
+El idioma venía ausente en el **100 %** de las entradas de iptv-org (no publica `tvg-language`). Se
 infiere solo para países sin ambigüedad lingüística (`catalogue-identity/language.ts`, 43 países); el
 resto queda `und`. No se inventa un idioma.
+
+**Corrección de una medición errónea:** `ingestion-metrics.mjs` informaba `languageCoverage.distinct: 0`
+porque contaba solo el idioma **declarado por el upstream** en el candidato, no el idioma efectivo
+resuelto en el canal. Un cero que contradice los datos es un fallo de medición; se ha pedido al
+especialista separar «declarado por la fuente» de «conocido en el catálogo» y usar el segundo como
+autoritativo.
 
 ## 7. Rendimiento
 
