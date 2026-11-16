@@ -18,7 +18,11 @@ const COUNTRIES = ['ES', 'US', 'GB', 'MX', 'FR', 'DE', 'IT', 'PT', 'AR', 'BR'];
 const NETWORKS = ['Canal', 'Tele', 'Radio', 'TV', 'Net'];
 
 function viewName(i: number): string {
-  return `${NETWORKS[i % NETWORKS.length] ?? 'Canal'} ${i % 200}${i % 7 === 0 ? ' HD' : ''}`;
+  const net = NETWORKS[i % NETWORKS.length] ?? 'Canal';
+  const num = i % 200;
+  const tv = i % 3 === 0 ? ' TV' : '';
+  const hd = i % 7 === 0 ? ' HD' : '';
+  return `${net} ${num}${tv}${hd}`;
 }
 
 function viewCountry(i: number): string {
@@ -46,10 +50,11 @@ function makeView(i: number): ChannelIdentityView {
 }
 
 function makeCandidate(i: number, totalViews: number): ReconcileCandidate {
-  const mode = i % 5;
+  const mode = i % 6;
   const j = i % totalViews;
   const country = viewCountry(j);
   if (mode === 0) {
+    // Exact clone of a view → `same`.
     return {
       name: viewName(j),
       country,
@@ -61,6 +66,7 @@ function makeCandidate(i: number, totalViews: number): ReconcileCandidate {
     };
   }
   if (mode === 1) {
+    // Same name + country, disagreeing tvg-id → `review`.
     return {
       name: viewName(j),
       country,
@@ -72,6 +78,7 @@ function makeCandidate(i: number, totalViews: number): ReconcileCandidate {
     };
   }
   if (mode === 2) {
+    // Regional variant (city qualifier in the name) → `review`, never `same`.
     return {
       name: `${viewName(j)} (Ciudad)`,
       country,
@@ -83,6 +90,7 @@ function makeCandidate(i: number, totalViews: number): ReconcileCandidate {
     };
   }
   if (mode === 3) {
+    // Unknown country, shared base name (and sometimes the shared 'tv' token).
     return {
       name: viewName(j),
       country: null,
@@ -93,15 +101,28 @@ function makeCandidate(i: number, totalViews: number): ReconcileCandidate {
       attributes: {},
     };
   }
-  const cc = COUNTRIES[i % COUNTRIES.length] ?? 'ES';
+  if (mode === 4) {
+    // Same country, completely different name → `different` via the 0.25
+    // same-country residual (no name/tvg/host signal).
+    return {
+      name: `Zorblax ${10000 + i}`,
+      country,
+      url: `https://c${i}.example/stream.m3u8`,
+      provider: null,
+      groupTitle: null,
+      language: 'es',
+      attributes: {},
+    };
+  }
+  // Country not in the catalogue + unrelated name → `different`, score 0.
   return {
-    name: `Zorblax ${i}`,
-    country: cc,
+    name: `Qwerty ${20000 + i}`,
+    country: 'XK',
     url: `https://c${i}.example/stream.m3u8`,
     provider: null,
     groupTitle: null,
     language: 'es',
-    attributes: { 'tvg-id': `Zorblax${i}.${cc.toLowerCase()}` },
+    attributes: {},
   };
 }
 
@@ -156,11 +177,11 @@ describe('reconcileIndexed — bucketed (sub-linear) lookup', () => {
     };
     const plausible = collectCandidateViews(candidate, index);
     expect(plausible.length).toBeGreaterThan(0);
-    // O(1) in the catalogue size: key + one token + one tvg-id + one host.
+    // O(1) in catalogue size: key + one token + one tvg-id + one host.
     expect(plausible.length).toBeLessThanOrEqual(5);
   });
 
-  it('scores only the same-country population for a known-country candidate', () => {
+  it('does NOT scan the same-country population for a known-country candidate', () => {
     const viewCount = 4000;
     const views = Array.from({ length: viewCount }, (_, i) => makeDistinctView(i));
     const index = buildIdentityIndex(views);
@@ -175,8 +196,8 @@ describe('reconcileIndexed — bucketed (sub-linear) lookup', () => {
     };
     const plausible = collectCandidateViews(candidate, index);
     expect(plausible.length).toBeGreaterThan(0);
-    // Bounded by the ES population (viewCount / MANY_COUNTRIES.length), not by viewCount.
-    expect(plausible.length).toBeLessThan(viewCount / 10);
+    // Country is a scoring filter, not a candidate-set expander.
+    expect(plausible.length).toBeLessThanOrEqual(5);
   });
 });
 
@@ -258,40 +279,68 @@ describe('reconcileIndexed — tolerates the store projection', () => {
 
 describe('reconcileIndexed — before/after per-call cost', () => {
   it('indexed per-call cost is far below the naive full scan', () => {
-    const viewCount = 4000;
+    const viewCount = 14000;
     const views = Array.from({ length: viewCount }, (_, i) => makeDistinctView(i));
     const index = buildIdentityIndex(views);
-    const candidate: ReconcileCandidate = {
-      name: 'UniqueNet0',
-      country: 'ES',
-      url: 'https://c0.example/stream.m3u8',
-      provider: null,
-      groupTitle: null,
-      language: 'es',
-      attributes: { 'tvg-id': 'U0.es' },
-    };
 
-    // Warm both paths once, then measure.
-    reconcileIndexed(candidate, index);
-    reconcileNaive(candidate, views);
+    // Mixed realistic candidates: exact clone, token-share, unknown country.
+    const candidates: ReconcileCandidate[] = [];
+    for (let i = 0; i < 500; i += 1) {
+      const kind = i % 3;
+      const cc = MANY_COUNTRIES[i % MANY_COUNTRIES.length] ?? 'ES';
+      if (kind === 0) {
+        candidates.push({
+          name: `UniqueNet${i}`,
+          country: cc,
+          url: `https://c${i}.example/stream.m3u8`,
+          provider: null,
+          groupTitle: null,
+          language: 'es',
+          attributes: { 'tvg-id': `U${i}.${cc.toLowerCase()}` },
+        });
+      } else if (kind === 1) {
+        candidates.push({
+          name: `UniqueNet${i} Extra`,
+          country: cc,
+          url: `https://c${i}.example/stream.m3u8`,
+          provider: null,
+          groupTitle: null,
+          language: 'es',
+          attributes: {},
+        });
+      } else {
+        candidates.push({
+          name: `UniqueNet${i}`,
+          country: null,
+          url: `https://c${i}.example/stream.m3u8`,
+          provider: null,
+          groupTitle: null,
+          language: 'es',
+          attributes: {},
+        });
+      }
+    }
 
-    const indexedCalls = 5000;
+    // Warm both paths.
+    reconcileIndexed(candidates[0] as ReconcileCandidate, index);
+    reconcileNaive(candidates[0] as ReconcileCandidate, views);
+
     let start = performance.now();
-    for (let i = 0; i < indexedCalls; i += 1) {
+    for (const candidate of candidates) {
       reconcileIndexed(candidate, index);
     }
-    const perCallIndexed = (performance.now() - start) / indexedCalls;
+    const perCallIndexed = (performance.now() - start) / candidates.length;
 
-    const naiveCalls = 20;
+    const naiveCalls = 5;
     start = performance.now();
     for (let i = 0; i < naiveCalls; i += 1) {
-      reconcileNaive(candidate, views);
+      reconcileNaive(candidates[i] as ReconcileCandidate, views);
     }
     const perCallNaive = (performance.now() - start) / naiveCalls;
 
     // eslint-disable-next-line no-console
     console.log(
-      `[reconcile perf] catalogue=${viewCount} perCallNaive=${perCallNaive.toFixed(3)}ms perCallIndexed=${perCallIndexed.toFixed(4)}ms`,
+      `[reconcile perf] catalogue=${viewCount} perCallNaive=${perCallNaive.toFixed(3)}ms perCallIndexed=${perCallIndexed.toFixed(4)}ms (500 mixed candidates)`,
     );
 
     expect(perCallIndexed).toBeLessThan(perCallNaive);

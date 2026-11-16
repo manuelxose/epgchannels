@@ -9,12 +9,11 @@
  * AND country AND `tvg-id` corroboration, and a differing regional/local
  * qualifier forces `review` even when everything else agrees.
  *
- * Performance: `reconcile(candidate, existing)` is a thin wrapper that builds
- * an index and delegates to `reconcileIndexed`. The hot path is
- * `buildIdentityIndex(views)` once, then `reconcileIndexed(candidate, index)`
- * per candidate — the index scores only the plausible buckets (key, name
- * tokens, tvg-id, host, country) instead of the whole catalogue, so per-call
- * cost is sub-linear in the global catalogue size.
+ * Performance: the lookup index is bucketed only by discriminating signals —
+ * exact identity key, every normalized-name token, tvg-id base and URL host.
+ * Country is NOT used to expand the candidate set (that would be a full scan
+ * of the same-country population); it acts as a filter/tie-break inside the
+ * scoring formula, where it already contributes 0.25.
  */
 import {
   foldText,
@@ -177,17 +176,18 @@ interface PreparedChannel {
 }
 
 /**
- * Immutable lookup index over known channels, bucketed by key, name token,
- * tvg-id base, URL host and country. Build it once; reuse it for every
- * candidate in the run.
+ * Immutable lookup index over known channels, bucketed only by discriminating
+ * signals: exact identity key, every normalized-name token, tvg-id base and
+ * URL host. Country is stored as per-country counts (used to decide whether a
+ * same-country-only channel exists), never as a whole population bucket.
  */
 export interface IdentityIndex {
   readonly byKey: ReadonlyMap<string, readonly PreparedChannel[]>;
   readonly byToken: ReadonlyMap<string, readonly PreparedChannel[]>;
   readonly byTvgBase: ReadonlyMap<string, readonly PreparedChannel[]>;
   readonly byHost: ReadonlyMap<string, readonly PreparedChannel[]>;
-  readonly byCountry: ReadonlyMap<string, readonly PreparedChannel[]>;
-  readonly nullCountry: readonly PreparedChannel[];
+  readonly countryCounts: ReadonlyMap<string, number>;
+  readonly nullCount: number;
   readonly total: number;
 }
 
@@ -240,8 +240,8 @@ export function buildIdentityIndex(views: readonly ChannelIdentityView[]): Ident
   const byToken = new Map<string, PreparedChannel[]>();
   const byTvgBase = new Map<string, PreparedChannel[]>();
   const byHost = new Map<string, PreparedChannel[]>();
-  const byCountry = new Map<string, PreparedChannel[]>();
-  const nullCountry: PreparedChannel[] = [];
+  const countryCounts = new Map<string, number>();
+  let nullCount = 0;
   const seen = new Set<string>();
 
   for (const view of views) {
@@ -261,13 +261,13 @@ export function buildIdentityIndex(views: readonly ChannelIdentityView[]): Ident
       addBucket(byHost, host, prepared);
     }
     if (prepared.country === null) {
-      nullCountry.push(prepared);
+      nullCount += 1;
     } else {
-      addBucket(byCountry, prepared.country, prepared);
+      countryCounts.set(prepared.country, (countryCounts.get(prepared.country) ?? 0) + 1);
     }
   }
 
-  return { byKey, byToken, byTvgBase, byHost, byCountry, nullCountry, total: seen.size };
+  return { byKey, byToken, byTvgBase, byHost, countryCounts, nullCount, total: seen.size };
 }
 
 interface CandidateFacts {
@@ -301,13 +301,9 @@ function computeCandidateFacts(candidate: ReconcileCandidate): CandidateFacts {
 }
 
 /**
- * Collects the plausible channels for a candidate: the exact-key bucket, every
- * token bucket, the tvg-id base bucket, the host bucket, and (for a known
- * country) the exact-country and null-country buckets.
- *
- * This set is a superset of every channel whose score can reach the review
- * threshold, and of every channel with a non-zero score, so scoring only these
- * views yields exactly the same decision as a full scan.
+ * Collects the plausible channels for a candidate using ONLY discriminating
+ * signals: the exact-key bucket, every token bucket, the tvg-id base bucket and
+ * the host bucket. Country is deliberately not used to expand this set.
  */
 function collectPrepared(facts: CandidateFacts, index: IdentityIndex): Map<string, PreparedChannel> {
   const collected = new Map<string, PreparedChannel>();
@@ -331,10 +327,6 @@ function collectPrepared(facts: CandidateFacts, index: IdentityIndex): Map<strin
   }
   if (facts.candHost !== null) {
     push(index.byHost.get(facts.candHost));
-  }
-  if (facts.candCountry !== null) {
-    push(index.byCountry.get(facts.candCountry));
-    push(index.nullCountry);
   }
   return collected;
 }
@@ -414,53 +406,85 @@ function describeReview(name: number, country: number, tvgId: number): string {
   return `manual review: ${parts.join('; ')}`;
 }
 
-/** Determines the decision from the winning match, exactly as the naive scan. */
-function decide(facts: CandidateFacts, winner: ScoredMatch): MatchDecision {
-  const { name, country, tvgId, urlHost } = winner.signals;
-  const signals: MatchSignals = { name, country, tvgId, urlHost };
-
-  if (winner.score < REVIEW_THRESHOLD) {
+/**
+ * Renders the final decision. `prepared` is `null` only for a "residual" winner
+ * (a same-country-only or neutral-country-only channel with no name/tvg/host
+ * signal), whose score is always below the review threshold, so it can only
+ * produce `different`.
+ */
+function decide(
+  facts: CandidateFacts,
+  score: number,
+  signals: MatchSignals,
+  prepared: PreparedChannel | null,
+): MatchDecision {
+  if (score < REVIEW_THRESHOLD) {
     return {
       kind: 'different',
-      score: winner.score,
+      score,
       signals,
       channelId: null,
-      reason: `no sufficient match (score ${winner.score.toFixed(3)} below ${REVIEW_THRESHOLD})`,
+      reason: `no sufficient match (score ${score.toFixed(3)} below ${REVIEW_THRESHOLD})`,
     };
   }
 
-  const regionConflict = (facts.candRegion ?? null) !== (winner.prepared.variantRegion ?? null);
+  const channel = prepared as PreparedChannel;
+  const regionConflict = (facts.candRegion ?? null) !== (channel.variantRegion ?? null);
   if (regionConflict) {
     const reason =
-      facts.candRegion !== null && winner.prepared.variantRegion !== null
-        ? `regional/local qualifier differs (${facts.candRegion} vs ${winner.prepared.variantRegion})`
-        : `regional/local variant detected (${facts.candRegion ?? winner.prepared.variantRegion ?? 'unknown'})`;
-    return {
-      kind: 'review',
-      score: winner.score,
-      signals,
-      channelId: winner.prepared.view.channelId,
-      reason,
-    };
+      facts.candRegion !== null && channel.variantRegion !== null
+        ? `regional/local qualifier differs (${facts.candRegion} vs ${channel.variantRegion})`
+        : `regional/local variant detected (${facts.candRegion ?? channel.variantRegion ?? 'unknown'})`;
+    return { kind: 'review', score, signals, channelId: channel.view.channelId, reason };
   }
 
-  if (name === 1 && country === 1 && tvgId === 1 && winner.score >= SAME_THRESHOLD) {
+  if (
+    signals.name === 1 &&
+    signals.country === 1 &&
+    signals.tvgId === 1 &&
+    score >= SAME_THRESHOLD
+  ) {
     return {
       kind: 'same',
-      score: winner.score,
+      score,
       signals,
-      channelId: winner.prepared.view.channelId,
+      channelId: channel.view.channelId,
       reason: 'name, country and tvg-id agree',
     };
   }
 
   return {
     kind: 'review',
-    score: winner.score,
+    score,
     signals,
-    channelId: winner.prepared.view.channelId,
-    reason: describeReview(name, country, tvgId),
+    channelId: channel.view.channelId,
+    reason: describeReview(signals.name, signals.country, signals.tvgId),
   };
+}
+
+/** The best score a channel with no name/tvg/host signal could contribute. */
+function residualFor(
+  facts: CandidateFacts,
+  index: IdentityIndex,
+  collectedCountryCount: number,
+  collectedNullCount: number,
+  collectedTotal: number,
+): { score: number; country: number } | null {
+  if (facts.candCountry !== null) {
+    const sameCountry = index.countryCounts.get(facts.candCountry) ?? 0;
+    if (sameCountry > collectedCountryCount) {
+      return { score: 0.25, country: 1 };
+    }
+    if (index.nullCount > collectedNullCount) {
+      return { score: 0.125, country: 0.5 };
+    }
+    return null;
+  }
+  // Unknown candidate country → every channel is neutral (country 0.5).
+  if (index.total > collectedTotal) {
+    return { score: 0.125, country: 0.5 };
+  }
+  return null;
 }
 
 /**
@@ -487,8 +511,16 @@ export function reconcileIndexed(
 
   const collected = collectPrepared(facts, index);
 
+  let collectedCountryCount = 0;
+  let collectedNullCount = 0;
   let best: ScoredMatch | null = null;
   for (const prepared of collected.values()) {
+    if (facts.candCountry !== null && prepared.country === facts.candCountry) {
+      collectedCountryCount += 1;
+    }
+    if (prepared.country === null) {
+      collectedNullCount += 1;
+    }
     const scored = scorePrepared(facts, prepared);
     if (
       best === null ||
@@ -499,22 +531,32 @@ export function reconcileIndexed(
     }
   }
 
-  if (best === null) {
-    // No plausible view: every channel has a zero non-country signal, so the
-    // whole catalogue scores either 0 (known candidate country) or 0.125
-    // (unknown candidate country, which makes every country signal neutral).
-    const country = facts.candCountry === null ? 0.5 : 0;
-    const score = facts.candCountry === null ? 0.125 : 0;
-    return {
-      kind: 'different',
-      score,
-      signals: { name: 0, country, tvgId: 0, urlHost: 0 },
-      channelId: null,
-      reason: `no sufficient match (score ${score.toFixed(3)} below ${REVIEW_THRESHOLD})`,
-    };
+  const residual = residualFor(
+    facts,
+    index,
+    collectedCountryCount,
+    collectedNullCount,
+    collected.size,
+  );
+
+  let score: number;
+  let signals: MatchSignals;
+  let prepared: PreparedChannel | null;
+  if (residual !== null && (best === null || residual.score > best.score)) {
+    score = residual.score;
+    signals = { name: 0, country: residual.country, tvgId: 0, urlHost: 0 };
+    prepared = null;
+  } else if (best !== null) {
+    score = best.score;
+    signals = best.signals;
+    prepared = best.prepared;
+  } else {
+    score = 0;
+    signals = { name: 0, country: 0, tvgId: 0, urlHost: 0 };
+    prepared = null;
   }
 
-  return decide(facts, best);
+  return decide(facts, score, signals, prepared);
 }
 
 /**
@@ -552,7 +594,8 @@ export function reconcileNaive(
     }
   }
 
-  return decide(facts, best as ScoredMatch);
+  const winner = best as ScoredMatch;
+  return decide(facts, winner.score, winner.signals, winner.prepared);
 }
 
 /**
