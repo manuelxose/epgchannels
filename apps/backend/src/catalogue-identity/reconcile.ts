@@ -33,6 +33,17 @@ import type {
 export const REVIEW_THRESHOLD = 0.55;
 export const SAME_THRESHOLD = 0.85;
 
+/**
+ * A name token whose inverted bucket exceeds this size is a generic stop-word
+ * (`tv`, 3,792 entries in the real corpus): its full bucket is NOT unioned into
+ * the candidate set. Only the single-token views of such a token are collected,
+ * because those are the only generic-only views that can reach `review` via a
+ * whole-word containment match (e.g. view "TV" contained in "Pluto TV").
+ * A candidate whose tokens are all generic falls back to the full buckets so
+ * exact/containment matches are never lost.
+ */
+export const GENERIC_TOKEN_CUTOFF = 512;
+
 // Weights sum to 1. `name` and `country` are the primary identity signals;
 // `tvg-id` is a strong corroborator; `urlHost` only breaks ties toward review.
 const W_NAME = 0.45;
@@ -184,6 +195,8 @@ interface PreparedChannel {
 export interface IdentityIndex {
   readonly byKey: ReadonlyMap<string, readonly PreparedChannel[]>;
   readonly byToken: ReadonlyMap<string, readonly PreparedChannel[]>;
+  /** Single-token views per token (the only generic-only views kept for review). */
+  readonly bySingleToken: ReadonlyMap<string, readonly PreparedChannel[]>;
   readonly byTvgBase: ReadonlyMap<string, readonly PreparedChannel[]>;
   readonly byHost: ReadonlyMap<string, readonly PreparedChannel[]>;
   readonly countryCounts: ReadonlyMap<string, number>;
@@ -238,6 +251,7 @@ function addBucket<K>(
 export function buildIdentityIndex(views: readonly ChannelIdentityView[]): IdentityIndex {
   const byKey = new Map<string, PreparedChannel[]>();
   const byToken = new Map<string, PreparedChannel[]>();
+  const bySingleToken = new Map<string, PreparedChannel[]>();
   const byTvgBase = new Map<string, PreparedChannel[]>();
   const byHost = new Map<string, PreparedChannel[]>();
   const countryCounts = new Map<string, number>();
@@ -251,8 +265,15 @@ export function buildIdentityIndex(views: readonly ChannelIdentityView[]): Ident
     seen.add(view.channelId);
     const prepared = prepareChannel(view);
     addBucket(byKey, view.key, prepared);
-    for (const token of tokens(prepared.normalizedName)) {
+    const nameTokens = tokens(prepared.normalizedName);
+    for (const token of nameTokens) {
       addBucket(byToken, token, prepared);
+    }
+    if (nameTokens.length === 1) {
+      const single = nameTokens[0];
+      if (single !== undefined) {
+        addBucket(bySingleToken, single, prepared);
+      }
     }
     for (const t of prepared.tvg) {
       addBucket(byTvgBase, t.base, prepared);
@@ -267,7 +288,16 @@ export function buildIdentityIndex(views: readonly ChannelIdentityView[]): Ident
     }
   }
 
-  return { byKey, byToken, byTvgBase, byHost, countryCounts, nullCount, total: seen.size };
+  return {
+    byKey,
+    byToken,
+    bySingleToken,
+    byTvgBase,
+    byHost,
+    countryCounts,
+    nullCount,
+    total: seen.size,
+  };
 }
 
 interface CandidateFacts {
@@ -302,8 +332,15 @@ function computeCandidateFacts(candidate: ReconcileCandidate): CandidateFacts {
 
 /**
  * Collects the plausible channels for a candidate using ONLY discriminating
- * signals: the exact-key bucket, every token bucket, the tvg-id base bucket and
- * the host bucket. Country is deliberately not used to expand this set.
+ * signals: the exact-key bucket, the tvg-id base bucket, the host bucket, and
+ * name-token buckets that are small enough to be selective.
+ *
+ * A generic token (bucket size > `GENERIC_TOKEN_CUTOFF`) does not expand the
+ * candidate set: only its single-token views are collected, because those are
+ * the only generic-only views that can reach `review` (whole-word containment,
+ * e.g. view "TV" inside "Pluto TV"). A candidate whose tokens are ALL generic
+ * falls back to the full token buckets so exact/containment matches are never
+ * lost.
  */
 function collectPrepared(facts: CandidateFacts, index: IdentityIndex): Map<string, PreparedChannel> {
   const collected = new Map<string, PreparedChannel>();
@@ -319,14 +356,37 @@ function collectPrepared(facts: CandidateFacts, index: IdentityIndex): Map<strin
   };
 
   push(index.byKey.get(facts.candKey));
-  for (const token of facts.candTokens) {
-    push(index.byToken.get(token));
-  }
   if (facts.candTvgBase !== null) {
     push(index.byTvgBase.get(facts.candTvgBase));
   }
   if (facts.candHost !== null) {
     push(index.byHost.get(facts.candHost));
+  }
+
+  const generic: string[] = [];
+  const discriminating: string[] = [];
+  for (const token of facts.candTokens) {
+    const size = index.byToken.get(token)?.length ?? 0;
+    if (size > GENERIC_TOKEN_CUTOFF) {
+      generic.push(token);
+    } else {
+      discriminating.push(token);
+    }
+  }
+
+  if (discriminating.length > 0) {
+    for (const token of discriminating) {
+      push(index.byToken.get(token));
+    }
+    for (const token of generic) {
+      push(index.bySingleToken.get(token));
+    }
+  } else {
+    // No discriminating token: a short/all-generic candidate must be able to
+    // exact/containment-match, so scan its full token buckets (rare path).
+    for (const token of facts.candTokens) {
+      push(index.byToken.get(token));
+    }
   }
   return collected;
 }
