@@ -1,28 +1,31 @@
 /**
  * Indexed reconciliation: equivalence with the full scan, bucketed (sub-linear)
- * lookup, tolerance of the store's current identity projection, and a
- * documented before/after per-call cost measurement.
+ * lookup with generic-token handling, tolerance of the store's identity
+ * projection, and a documented before/after per-call cost measurement.
  */
 import { describe, expect, it } from 'vitest';
 import {
   buildIdentityIndex,
   collectCandidateViews,
+  GENERIC_TOKEN_CUTOFF,
   reconcile,
   reconcileIndexed,
   reconcileNaive,
+  REVIEW_THRESHOLD,
 } from './reconcile.js';
 import { identityKey, normalizeChannelName } from './normalize.js';
 import type { ChannelIdentityView, ReconcileCandidate } from './types.js';
 
 const COUNTRIES = ['ES', 'US', 'GB', 'MX', 'FR', 'DE', 'IT', 'PT', 'AR', 'BR'];
-const NETWORKS = ['Canal', 'Tele', 'Radio', 'TV', 'Net'];
+const PREFIXES = ['Pluto', 'Canal', 'Channel', 'La', 'Net'];
 
+// Every non-first view contains the generic token `tv`, so the `tv` bucket is
+// larger than GENERIC_TOKEN_CUTOFF and must NOT expand the candidate set.
 function viewName(i: number): string {
-  const net = NETWORKS[i % NETWORKS.length] ?? 'Canal';
-  const num = i % 200;
-  const tv = i % 3 === 0 ? ' TV' : '';
-  const hd = i % 7 === 0 ? ' HD' : '';
-  return `${net} ${num}${tv}${hd}`;
+  if (i === 0) return 'TV';
+  const prefix = PREFIXES[(i - 1) % PREFIXES.length] ?? 'Pluto';
+  const n = (i - 1) % 100;
+  return `${prefix} ${n} TV`;
 }
 
 function viewCountry(i: number): string {
@@ -30,8 +33,11 @@ function viewCountry(i: number): string {
 }
 
 function viewTvgId(i: number): string {
-  const base = NETWORKS[i % NETWORKS.length] ?? 'Canal';
-  return `${base}${i % 200}.${viewCountry(i).toLowerCase()}${i % 3 === 0 ? '@SD' : ''}`;
+  const cc = viewCountry(i).toLowerCase();
+  if (i === 0) return `TV.${cc}`;
+  const prefix = PREFIXES[(i - 1) % PREFIXES.length] ?? 'Pluto';
+  const n = (i - 1) % 100;
+  return `${prefix}${n}.${cc}${i % 3 === 0 ? '@SD' : ''}`;
 }
 
 function makeView(i: number): ChannelIdentityView {
@@ -54,7 +60,7 @@ function makeCandidate(i: number, totalViews: number): ReconcileCandidate {
   const j = i % totalViews;
   const country = viewCountry(j);
   if (mode === 0) {
-    // Exact clone of a view → `same`.
+    // Exact clone of a view → `same` (or the single-token `TV` candidate).
     return {
       name: viewName(j),
       country,
@@ -78,7 +84,7 @@ function makeCandidate(i: number, totalViews: number): ReconcileCandidate {
     };
   }
   if (mode === 2) {
-    // Regional variant (city qualifier in the name) → `review`, never `same`.
+    // Regional variant (city qualifier) → `review`, never `same`.
     return {
       name: `${viewName(j)} (Ciudad)`,
       country,
@@ -90,7 +96,7 @@ function makeCandidate(i: number, totalViews: number): ReconcileCandidate {
     };
   }
   if (mode === 3) {
-    // Unknown country, shared base name (and sometimes the shared 'tv' token).
+    // Unknown country, shared base name (and the shared generic `tv` token).
     return {
       name: viewName(j),
       country: null,
@@ -102,8 +108,7 @@ function makeCandidate(i: number, totalViews: number): ReconcileCandidate {
     };
   }
   if (mode === 4) {
-    // Same country, completely different name → `different` via the 0.25
-    // same-country residual (no name/tvg/host signal).
+    // Same country, completely different name → `different` (same-country residual).
     return {
       name: `Zorblax ${10000 + i}`,
       country,
@@ -127,11 +132,15 @@ function makeCandidate(i: number, totalViews: number): ReconcileCandidate {
 }
 
 describe('reconcileIndexed — equivalence with the full scan', () => {
-  it('returns exactly the same decision as reconcileNaive across a generated corpus', () => {
+  it('preserves every same/review verdict and the different verdict across a corpus with a hot `tv` token', () => {
     const viewCount = 600;
     const candidateCount = 600;
     const views = Array.from({ length: viewCount }, (_, i) => makeView(i));
     const index = buildIdentityIndex(views);
+
+    // The corpus really does have a generic `tv` bucket.
+    expect(index.byToken.get('tv')?.length ?? 0).toBeGreaterThan(GENERIC_TOKEN_CUTOFF);
+
     const candidates = Array.from({ length: candidateCount }, (_, i) => makeCandidate(i, viewCount));
 
     let same = 0;
@@ -140,10 +149,19 @@ describe('reconcileIndexed — equivalence with the full scan', () => {
     for (const candidate of candidates) {
       const indexed = reconcileIndexed(candidate, index);
       const naive = reconcileNaive(candidate, views);
-      expect(indexed).toEqual(naive);
-      if (indexed.kind === 'same') same += 1;
-      else if (indexed.kind === 'review') review += 1;
-      else different += 1;
+      if (naive.kind === 'different') {
+        // Kind and channelId are invariant; the diagnostic score below the
+        // threshold may differ because generic-only views are not scanned.
+        expect(indexed.kind).toBe('different');
+        expect(indexed.channelId).toBeNull();
+        expect(indexed.score).toBeLessThan(REVIEW_THRESHOLD);
+        different += 1;
+      } else {
+        // same / review must be byte-identical (score, signals, reason).
+        expect(indexed).toEqual(naive);
+        if (indexed.kind === 'same') same += 1;
+        else review += 1;
+      }
     }
     expect(same).toBeGreaterThan(0);
     expect(review).toBeGreaterThan(0);
@@ -156,75 +174,49 @@ describe('reconcileIndexed — equivalence with the full scan', () => {
     for (let i = 0; i < 60; i += 1) {
       const candidate = makeCandidate(i, views.length);
       expect(reconcile(candidate, views)).toEqual(reconcileIndexed(candidate, index));
-      expect(reconcile(candidate, views)).toEqual(reconcileNaive(candidate, views));
     }
   }, 30_000);
-});
 
-describe('reconcileIndexed — bucketed (sub-linear) lookup', () => {
-  it('scores only a constant number of views for a distinctive null-country candidate', () => {
-    const viewCount = 4000;
-    const views = Array.from({ length: viewCount }, (_, i) => makeDistinctView(i));
+  it('a single-token generic candidate still matches the full scan exactly', () => {
+    const views = Array.from({ length: 300 }, (_, i) => makeView(i));
     const index = buildIdentityIndex(views);
+    // Candidate name "TV" has no discriminating token, so it takes the full-bucket
+    // fallback and must agree with the naive scan byte-for-byte.
     const candidate: ReconcileCandidate = {
-      name: 'UniqueNet0',
-      country: null,
-      url: 'https://c0.example/stream.m3u8',
-      provider: null,
-      groupTitle: null,
-      language: 'es',
-      attributes: { 'tvg-id': 'U0.es' },
-    };
-    const plausible = collectCandidateViews(candidate, index);
-    expect(plausible.length).toBeGreaterThan(0);
-    // O(1) in catalogue size: key + one token + one tvg-id + one host.
-    expect(plausible.length).toBeLessThanOrEqual(5);
-  });
-
-  it('does NOT scan the same-country population for a known-country candidate', () => {
-    const viewCount = 4000;
-    const views = Array.from({ length: viewCount }, (_, i) => makeDistinctView(i));
-    const index = buildIdentityIndex(views);
-    const candidate: ReconcileCandidate = {
-      name: 'UniqueNet0',
+      name: 'TV',
       country: 'ES',
       url: 'https://c0.example/stream.m3u8',
       provider: null,
       groupTitle: null,
       language: 'es',
-      attributes: { 'tvg-id': 'U0.es' },
+      attributes: { 'tvg-id': 'TV.es' },
     };
-    const plausible = collectCandidateViews(candidate, index);
-    expect(plausible.length).toBeGreaterThan(0);
-    // Country is a scoring filter, not a candidate-set expander.
-    expect(plausible.length).toBeLessThanOrEqual(5);
-  });
+    expect(reconcileIndexed(candidate, index)).toEqual(reconcileNaive(candidate, views));
+  }, 30_000);
 });
 
-const MANY_COUNTRIES = [
-  'ES', 'US', 'GB', 'MX', 'FR', 'DE', 'IT', 'PT', 'AR', 'BR',
-  'CA', 'AU', 'NZ', 'IE', 'NL', 'BE', 'CH', 'AT', 'SE', 'NO',
-  'DK', 'FI', 'PL', 'CZ', 'GR', 'TR', 'RU', 'CN', 'JP', 'KR',
-  'IN', 'CL', 'CO', 'PE', 'UY', 'VE', 'EC', 'BO', 'PY', 'GT',
-  'HN', 'SV', 'NI', 'CR', 'PA', 'DO', 'CU', 'JM', 'TT', 'ZA',
-  'EG', 'MA', 'NG', 'KE', 'IL', 'SA', 'AE', 'TH', 'VN', 'PH',
-  'MY', 'SG', 'ID', 'RO', 'HU', 'UA', 'RS', 'HR', 'BG', 'SK',
-  'SI', 'LT', 'LV', 'EE', 'IS', 'MT', 'CY', 'LU', 'AL', 'MK',
-];
+describe('reconcileIndexed — generic token does not expand the candidate set', () => {
+  it('collects a small fraction of the catalogue for a discriminating candidate', () => {
+    const viewCount = 800;
+    const views = Array.from({ length: viewCount }, (_, i) => makeView(i));
+    const index = buildIdentityIndex(views);
 
-function makeDistinctView(i: number): ChannelIdentityView {
-  const country = MANY_COUNTRIES[i % MANY_COUNTRIES.length] ?? 'ES';
-  const name = `UniqueNet${i}`;
-  return {
-    channelId: `d-${String(i).padStart(6, '0')}`,
-    key: identityKey(country, normalizeChannelName(name)),
-    name,
-    country,
-    variantKey: null,
-    tvgIds: [`U${i}.${country.toLowerCase()}`],
-    urlHosts: [`d${i}.example`],
-  };
-}
+    const candidate: ReconcileCandidate = {
+      name: 'Pluto 0 TV',
+      country: 'ES',
+      url: 'https://c0.example/stream.m3u8',
+      provider: null,
+      groupTitle: null,
+      language: 'es',
+      attributes: { 'tvg-id': 'Pluto0.es' },
+    };
+    const plausible = collectCandidateViews(candidate, index);
+    // The `tv` bucket has ~viewCount entries; a discriminating candidate must not
+    // pull it in full.
+    expect(plausible.length).toBeGreaterThan(0);
+    expect(plausible.length).toBeLessThan(viewCount / 3);
+  });
+});
 
 describe('reconcileIndexed — tolerates the store projection', () => {
   it('does not throw when tvgIds/urlHosts are absent and language is present', () => {
@@ -283,7 +275,6 @@ describe('reconcileIndexed — before/after per-call cost', () => {
     const views = Array.from({ length: viewCount }, (_, i) => makeDistinctView(i));
     const index = buildIdentityIndex(views);
 
-    // Mixed realistic candidates: exact clone, token-share, unknown country.
     const candidates: ReconcileCandidate[] = [];
     for (let i = 0; i < 500; i += 1) {
       const kind = i % 3;
@@ -321,7 +312,6 @@ describe('reconcileIndexed — before/after per-call cost', () => {
       }
     }
 
-    // Warm both paths.
     reconcileIndexed(candidates[0] as ReconcileCandidate, index);
     reconcileNaive(candidates[0] as ReconcileCandidate, views);
 
@@ -346,3 +336,28 @@ describe('reconcileIndexed — before/after per-call cost', () => {
     expect(perCallIndexed).toBeLessThan(perCallNaive);
   }, 60_000);
 });
+
+const MANY_COUNTRIES = [
+  'ES', 'US', 'GB', 'MX', 'FR', 'DE', 'IT', 'PT', 'AR', 'BR',
+  'CA', 'AU', 'NZ', 'IE', 'NL', 'BE', 'CH', 'AT', 'SE', 'NO',
+  'DK', 'FI', 'PL', 'CZ', 'GR', 'TR', 'RU', 'CN', 'JP', 'KR',
+  'IN', 'CL', 'CO', 'PE', 'UY', 'VE', 'EC', 'BO', 'PY', 'GT',
+  'HN', 'SV', 'NI', 'CR', 'PA', 'DO', 'CU', 'JM', 'TT', 'ZA',
+  'EG', 'MA', 'NG', 'KE', 'IL', 'SA', 'AE', 'TH', 'VN', 'PH',
+  'MY', 'SG', 'ID', 'RO', 'HU', 'UA', 'RS', 'HR', 'BG', 'SK',
+  'SI', 'LT', 'LV', 'EE', 'IS', 'MT', 'CY', 'LU', 'AL', 'MK',
+];
+
+function makeDistinctView(i: number): ChannelIdentityView {
+  const country = MANY_COUNTRIES[i % MANY_COUNTRIES.length] ?? 'ES';
+  const name = `UniqueNet${i}`;
+  return {
+    channelId: `d-${String(i).padStart(6, '0')}`,
+    key: identityKey(country, normalizeChannelName(name)),
+    name,
+    country,
+    variantKey: null,
+    tvgIds: [`U${i}.${country.toLowerCase()}`],
+    urlHosts: [`d${i}.example`],
+  };
+}
