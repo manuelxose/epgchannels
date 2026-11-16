@@ -353,3 +353,32 @@ describe('security boundary', () => {
     expect(metrics.text).not.toContain('secret-slug');
   });
 });
+
+describe('02C authorization gate at the public API', () => {
+  /*
+   * The decisive end-to-end proof, through HTTP and the real services: a stream
+   * that answers perfectly is only playable when a recorded right says so.
+   * Each posture is exercised through the same public descriptor the client uses.
+   */
+  it('denies healthy streams whose right is absent, restricted or unresolved', async () => {
+    for (const [name, authorization] of [
+      ['Sin Derecho', 'none'],
+      ['Restringido', 'restricted'],
+      ['Sin Resolver', 'unresolved'],
+    ] as const) {
+      const channel = await createChannel(harness, { name, status: 'published' });
+      await createSource(harness, channel._id, { technicalStatus: 'ok', authorization });
+      const response = await request(harness.app).get(`/api/v1/channels/${channel.slug}/playback`).expect(200);
+      expect(response.body.data.playback.status).toBe('unavailable');
+      expect(response.body.data.playback.url).toBeNull();
+    }
+  });
+
+  it('plays a healthy stream once a right is recorded', async () => {
+    const channel = await createChannel(harness, { name: 'Con Derecho', status: 'published' });
+    await createSource(harness, channel._id, { technicalStatus: 'ok' });
+    const response = await request(harness.app).get(`/api/v1/channels/${channel.slug}/playback`).expect(200);
+    expect(response.body.data.playback.status).toBe('available');
+    expect(response.body.data.playback.url).toBe('https://example.org/live/master.m3u8');
+  });
+});

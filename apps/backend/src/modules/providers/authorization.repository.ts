@@ -66,6 +66,19 @@ export class AuthorizationRepository {
   }
 
   /**
+   * Removes every decision owned by one source, matched on the source id
+   * embedded in `_id`. Used when a source is genuinely withdrawn rather than
+   * withdrawn editorially, and by tests that must express "no recorded right".
+   */
+  async deleteForSourceId(sourceId: string): Promise<number> {
+    const suffix = `:${sourceId}`;
+    const result = await this.collection().deleteMany({
+      _id: { $in: [`editorial${suffix}`, `fixture${suffix}`] },
+    });
+    return result.deletedCount;
+  }
+
+  /**
    * The decision owned by one source, matched on the source id embedded in `_id`
    * (`editorial:<id>`, `fixture:<id>`). Prefers an editorial decision over a
    * fixture one when both exist, because the operator's own record is the

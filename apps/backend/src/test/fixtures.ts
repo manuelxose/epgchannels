@@ -78,16 +78,32 @@ async function recordFixtureAuthorization(
   spec: SourceSpec,
 ): Promise<void> {
   const posture = spec.authorization ?? 'own-emitter';
-  if (posture === 'none') return;
+  const repository = new AuthorizationRepository(harness.context.database);
+
+  /*
+   * `createSource` goes through the real service, and that service now records an
+   * operator decision for every source it creates. A test that wants the
+   * healthy-but-no-right case must therefore REMOVE that decision; skipping our
+   * own write is not enough, because the service's record would still be there
+   * and the source would play.
+   */
+  if (posture === 'none') {
+    await repository.deleteForSourceId(source._id);
+    return;
+  }
 
   const permitted = posture === 'own-emitter';
   /*
-   * The admin service already records a decision for a source it creates. Only
-   * add one when nothing owns it yet, so a source never ends up with two
-   * conflicting decisions.
+   * The admin service already recorded a decision. Keep it for the default
+   * posture, but for an explicit negative posture the service's permitted record
+   * must be removed first, otherwise the requested verdict never takes effect and
+   * the test silently asserts the opposite of what it says.
    */
-  const existing = await new AuthorizationRepository(harness.context.database).forSourceId(source._id);
-  if (existing !== null) return;
+  const existing = await repository.forSourceId(source._id);
+  if (existing !== null) {
+    if (permitted) return;
+    await repository.deleteForSourceId(source._id);
+  }
   /*
    * The class follows what the source actually IS, exactly as the gate expects:
    * an `external` source can only ever be a link, an embed can only be an embed,
