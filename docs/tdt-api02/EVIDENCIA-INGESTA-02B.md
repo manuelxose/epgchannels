@@ -101,19 +101,38 @@ resto queda `und`. No se inventa un idioma.
 
 ## 7. Rendimiento
 
-| Escenario | Catálogo previo | Duración | Nota |
-|---|---|---|---|
-| Pasada 1, iptv-org (18 756) | 0 | 10–21 s | según estado de caché de Mongo |
-| Pasada 2, iptv-org (18 756) | 13 703 | 87,5 s | antes de la corrección de tokens genéricos: **199,7 s** |
-| Free-TV (4 406) | 13 703 | 22,6 s | |
+| Escenario | Catálogo previo | Duración | Entradas/s | Nota |
+|---|---|---|---|---|
+| Pasada 1, iptv-org (18 756) | 0 | **8,7 s** | ≈ 2 156 | crea 13 703 canales |
+| Pasada 2, iptv-org (18 756) | 13 703 | **28,3 s** | ≈ 663 | idempotente, 0 canales nuevos |
+| Free-TV (4 406) | 13 703 | 22,6 s | ≈ 195 | primera versión, antes de la corrección |
 
-Perfil por etapas (pasada sobre catálogo poblado): parseo 1,03 s; lectura de identidades 0,42 s;
-construcción del índice 0,39 s; reconciliación 87,0 s.
+Perfil por etapas de la pasada 2 (medido, `data/profile-stages.cjs`): parseo 1,40 s; lectura de
+identidades 0,57 s; construcción del índice 0,43 s; reconciliación 28,03 s = **1,49 ms por
+candidato** contra 13 703 canales.
 
-**Hallazgo abierto de rendimiento (R-02B-1):** la reconciliación sigue costando ~4,6 ms por candidato
-contra 13 703 canales porque el token genérico `tv` (3 792 canales) expande el conjunto a puntuar.
-No cambia ninguna decisión (equivalencia probada contra el oráculo ingenuo), pero domina el tiempo.
-Detalle y estado: `MILESTONE_STATUS.md`.
+### Historia de la optimización (todas las cifras medidas)
+
+La reconciliación empezó con un recorrido lineal **y un reordenamiento del array completo en cada
+llamada**: 108,5 ms por llamada con 4 000 canales. Una ingesta completa tardaba **más de 10 minutos**
+y empeoraba con el catálogo. Correcciones sucesivas, cada una verificada contra el oráculo ingenuo:
+
+| Corrección | Coste por llamada | Pasada 2 completa |
+|---|---|---|
+| Línea base (escaneo + reordenamiento) | 108,5 ms (4 000 canales) | > 600 s (abortada) |
+| Índice por key/token/tvg-id/host | 4,64 ms (13 703) | 199,7 s |
+| País como filtro, no como expansor | 4,64 ms | 87,5 s |
+| Corte de tokens genéricos (`tv`: 3 792 canales) | **1,49 ms** | **28,3 s** |
+
+**Decisión de equivalencia:** en cada paso se comprobó `reconcileIndexed === reconcileNaive` y que
+las decisiones finales no cambiaran (13 703 canales, 15 268 duplicados, 3 467 revisiones, 0 nuevos)
+antes y después.
+
+**Nota de revisión del capitán:** la justificación escrita del corte genérico afirmaba que un token
+genérico nunca puede alcanzar `review` (0,475 < 0,55). Eso **omite el peso del host** (0,10): la cota
+real es 0,575, por encima del umbral. La implementación sigue siendo correcta porque el host y el
+tvg-id se recogen siempre por sus propios índices, pero la razón escrita era incompleta; se pidió
+corregir el comentario y añadir el caso como test.
 
 ## 8. Rollback
 
