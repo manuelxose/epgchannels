@@ -1,6 +1,6 @@
 {
   "audit": "TDT-API-01 independent acceptance audit",
-  "generatedAt": "2026-11-16T00:40:01.066Z",
+  "generatedAt": "2026-11-16T08:10:50.449Z",
   "target": {
     "api": "http://127.0.0.1:4010/api/v1",
     "database": "tdt_platform"
@@ -25,13 +25,13 @@
               {
                 "name": "mongodb",
                 "state": "up",
-                "latencyMs": 31,
+                "latencyMs": 8,
                 "message": null
               },
               {
                 "name": "redis",
                 "state": "up",
-                "latencyMs": 28,
+                "latencyMs": 7,
                 "message": null
               }
             ]
@@ -461,13 +461,13 @@
     {
       "label": "backend",
       "ok": true,
-      "milliseconds": 117741,
+      "milliseconds": 15151,
       "summary": " Test Files  9 passed (9) |       Tests  154 passed (154)"
     },
     {
       "label": "sdk",
       "ok": true,
-      "milliseconds": 11592,
+      "milliseconds": 3186,
       "summary": " Test Files  1 passed (1) |       Tests  14 passed (14)"
     }
   ],
