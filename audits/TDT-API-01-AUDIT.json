@@ -1,0 +1,476 @@
+{
+  "audit": "TDT-API-01 independent acceptance audit",
+  "generatedAt": "2026-11-16T00:40:01.066Z",
+  "target": {
+    "api": "http://127.0.0.1:4010/api/v1",
+    "database": "tdt_platform"
+  },
+  "dimensions": {
+    "API_IMPLEMENTATION": {
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "health-live",
+          "claim": "El backend responde /api/v1/health con estado y recuentos reales",
+          "ok": true,
+          "evidence": {
+            "status": 200,
+            "counts": {
+              "channels": 768,
+              "publishedChannels": 412,
+              "sources": 1364,
+              "programmes": 11112
+            },
+            "dependencies": [
+              {
+                "name": "mongodb",
+                "state": "up",
+                "latencyMs": 31,
+                "message": null
+              },
+              {
+                "name": "redis",
+                "state": "up",
+                "latencyMs": 28,
+                "message": null
+              }
+            ]
+          },
+          "severity": "none"
+        },
+        {
+          "id": "public-endpoints",
+          "claim": "Todos los endpoints públicos documentados responden",
+          "ok": true,
+          "evidence": [
+            {
+              "path": "/channels",
+              "status": 200
+            },
+            {
+              "path": "/channels/la-1",
+              "status": 200
+            },
+            {
+              "path": "/channels/la-1/playback",
+              "status": 200
+            },
+            {
+              "path": "/channels/la-1/schedule",
+              "status": 200
+            },
+            {
+              "path": "/epg/now",
+              "status": 200
+            },
+            {
+              "path": "/epg/next",
+              "status": 200
+            },
+            {
+              "path": "/categories",
+              "status": 200
+            },
+            {
+              "path": "/regions",
+              "status": 200
+            },
+            {
+              "path": "/integration/manifest",
+              "status": 200
+            },
+            {
+              "path": "/integration/guiatv/channels",
+              "status": 200
+            },
+            {
+              "path": "/integration/guiatv/identity-map",
+              "status": 200
+            }
+          ],
+          "severity": "none"
+        },
+        {
+          "id": "validation-envelope",
+          "claim": "Una entrada inválida devuelve 400 con el sobre de error documentado",
+          "ok": true,
+          "evidence": {
+            "status": 400,
+            "code": "validation_failed"
+          },
+          "severity": "none"
+        },
+        {
+          "id": "admin-protected",
+          "claim": "La superficie administrativa exige sesión",
+          "ok": true,
+          "evidence": {
+            "status": 401
+          },
+          "severity": "none"
+        },
+        {
+          "id": "etag-revalidation",
+          "claim": "Las respuestas llevan ETag y admiten revalidación 304",
+          "ok": true,
+          "evidence": {
+            "etag": "W/\"Gx-dPI4IufzKbqrMy9Xb5EAXr4I\"",
+            "status": 304
+          },
+          "severity": "none"
+        },
+        {
+          "id": "openapi-document",
+          "claim": "Existe un documento OpenAPI 3.1 exportado con los endpoints públicos",
+          "ok": true,
+          "evidence": {
+            "openapi": "3.1.0",
+            "paths": 19,
+            "schemas": 28
+          },
+          "severity": "none"
+        },
+        {
+          "id": "persisted-data",
+          "claim": "La API sirve datos persistidos, no fixtures: el total coincide con la base de datos",
+          "ok": true,
+          "evidence": {
+            "databaseChannels": 768,
+            "publishedInApi": 412
+          },
+          "severity": "none"
+        },
+        {
+          "id": "frontend-uses-own-api",
+          "claim": "El cliente Angular no contiene ninguna URL de datos de terceros",
+          "ok": true,
+          "evidence": {
+            "scanned": 65,
+            "offenders": []
+          },
+          "severity": "none"
+        }
+      ]
+    },
+    "DATA_INDEPENDENCE": {
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "channels-have-provenance",
+          "claim": "Cada canal publicado registra su procedencia",
+          "ok": true,
+          "evidence": {
+            "inspected": 412,
+            "withoutProvenance": []
+          },
+          "severity": "none"
+        },
+        {
+          "id": "third-party-attribution",
+          "claim": "Todo dato de terceros lleva su atribución",
+          "ok": true,
+          "evidence": {
+            "offenders": []
+          },
+          "severity": "none"
+        },
+        {
+          "id": "migration-ledger",
+          "claim": "La migración del catálogo queda registrada con su digest y sus exclusiones documentadas",
+          "ok": true,
+          "evidence": {
+            "runId": "catalogue-import:2026-11-15T22:26:54.505Z",
+            "digest": "f1ceaef3f9ffd313",
+            "channels": 768,
+            "exclusions": 356,
+            "exclusionsByReason": {
+              "no-public-source": 47,
+              "no-integratable-source": 309
+            }
+          },
+          "severity": "none"
+        },
+        {
+          "id": "guide-stored-locally",
+          "claim": "La guía se sirve desde nuestra base de datos, con licencia por origen",
+          "ok": true,
+          "evidence": {
+            "programmes": 11112,
+            "sources": [
+              {
+                "name": "Redacción TDT Platform",
+                "licence": "editorial",
+                "ingestionEnabled": false
+              },
+              {
+                "name": "Guía de referencia (instantánea Apache-2.0)",
+                "licence": "Apache-2.0",
+                "ingestionEnabled": false
+              }
+            ]
+          },
+          "severity": "none"
+        },
+        {
+          "id": "works-with-provider-blocked",
+          "claim": "Con el proveedor de datos bloqueado a nivel de proceso, catálogo, búsqueda, guía y reproducción siguen funcionando",
+          "ok": true,
+          "evidence": {
+            "catalogue": 200,
+            "search": 200,
+            "playback": 200,
+            "guide": 200,
+            "blockedHostAttempts": 0
+          },
+          "severity": "none"
+        },
+        {
+          "id": "no-provider-url-in-code",
+          "claim": "El código en tiempo de ejecución no contiene ninguna URL del proveedor de datos",
+          "ok": true,
+          "evidence": {
+            "offenders": []
+          },
+          "severity": "none"
+        }
+      ]
+    },
+    "PLAYBACK_COVERAGE": {
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "no-unlicensed-source-public",
+          "claim": "Ninguna fuente sin permiso puede quedar publicada",
+          "ok": true,
+          "evidence": {
+            "checked": 1364,
+            "leaked": 0
+          },
+          "severity": "none"
+        },
+        {
+          "id": "authorised-in-app-sources",
+          "claim": "Existen fuentes en reproducción propia autorizadas y registradas",
+          "ok": true,
+          "evidence": {
+            "inAppSources": 320,
+            "verifiedOk": 0,
+            "byType": {
+              "hls": 107,
+              "youtube": 213
+            }
+          },
+          "severity": "none"
+        },
+        {
+          "id": "external-sources",
+          "claim": "Los canales solo vía emisor se registran como acceso externo, no como reproducción propia",
+          "ok": true,
+          "evidence": {
+            "externalSources": 153
+          },
+          "severity": "none"
+        },
+        {
+          "id": "descriptor-consistency",
+          "claim": "El estado del listado coincide con el descriptor y cada descriptor es coherente con su URL",
+          "ok": true,
+          "evidence": {
+            "sampled": 412,
+            "available": 259,
+            "external": 153,
+            "eventual": 0,
+            "unavailable": 0,
+            "mismatches": []
+          },
+          "severity": "none"
+        },
+        {
+          "id": "traceability",
+          "claim": "Se conserva la trazabilidad de la cobertura anterior sin confundirla con permisos",
+          "ok": true,
+          "evidence": {
+            "previousMilestoneAudit": "TDT-CLONE-10: 318 channels played in-app (reference-project measurement)",
+            "migratedPublishedChannels": 412,
+            "note": "Los 318 son una medición técnica de reproducción del hito anterior, no una autorización de integración: este registro solo publica las fuentes con permiso y condiciones registrados."
+          },
+          "severity": "none"
+        }
+      ]
+    },
+    "GUIATV_INTEGRATION_READINESS": {
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "integration-manifest",
+          "claim": "Existe un manifiesto de integración con la política de slugs",
+          "ok": true,
+          "evidence": {
+            "apiVersion": "v1",
+            "basePath": "/api/v1",
+            "serverToServer": {
+              "requiresApiKey": false,
+              "supportsSsr": true
+            },
+            "engines": [
+              "hls",
+              "dash",
+              "youtube-iframe",
+              "official-embed",
+              "external"
+            ],
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/channels",
+                "description": "Catálogo paginado con filtros y búsqueda."
+              },
+              {
+                "method": "GET",
+                "path": "/channels/:slug",
+                "description": "Ficha canónica de un canal."
+              },
+              {
+                "method": "GET",
+                "path": "/channels/:slug/playback",
+                "description": "Descriptor de reproducción."
+              },
+              {
+                "method": "GET",
+                "path": "/channels/:slug/schedule",
+                "description": "Programación del canal."
+              },
+              {
+                "method": "GET",
+                "path": "/epg/now",
+                "description": "Qué se emite ahora."
+              },
+              {
+                "method": "GET",
+                "path": "/epg/next",
+                "description": "Qué se emite a continuación."
+              },
+              {
+                "method": "GET",
+                "path": "/categories",
+                "description": "Taxonomía canónica con recuentos."
+              },
+              {
+                "method": "GET",
+                "path": "/regions",
+                "description": "Comunidades autónomas con recuentos."
+              },
+              {
+                "method": "GET",
+                "path": "/integration/guiatv/channels",
+                "description": "Catálogo para GuíaTV."
+              },
+              {
+                "method": "GET",
+                "path": "/integration/guiatv/identity-map",
+                "description": "Tabla de correspondencia de identificadores."
+              },
+              {
+                "method": "GET",
+                "path": "/health",
+                "description": "Estado del servicio y de sus dependencias."
+              }
+            ],
+            "slugPolicy": {
+              "authoritative": "tdt-platform",
+              "guiatvSlugWinsWhenPresent": true
+            }
+          },
+          "severity": "none"
+        },
+        {
+          "id": "identity-map",
+          "claim": "Existe la tabla de correspondencia de identificadores",
+          "ok": true,
+          "evidence": {
+            "entries": 412,
+            "sample": {
+              "tdtId": "6aa466fc-1811-4d67-bbb8-d152d252ace3",
+              "slug": "plus-24",
+              "guiatvSlug": null,
+              "match": "unmapped",
+              "updatedAt": "2026-11-15T22:26:54.505Z"
+            }
+          },
+          "severity": "none"
+        },
+        {
+          "id": "guiatv-catalogue",
+          "claim": "El catálogo se sirve en el contrato que GuíaTV consume",
+          "ok": true,
+          "evidence": {
+            "total": 412
+          },
+          "severity": "none"
+        },
+        {
+          "id": "sdk-package",
+          "claim": "Existe un paquete cliente TypeScript compilado",
+          "ok": true,
+          "evidence": {
+            "manifest": true,
+            "built": true
+          },
+          "severity": "none"
+        },
+        {
+          "id": "generated-types",
+          "claim": "Los tipos del cliente se generan del documento OpenAPI",
+          "ok": true,
+          "evidence": {
+            "file": true
+          },
+          "severity": "none"
+        },
+        {
+          "id": "integration-docs",
+          "claim": "Existe documentación de integración para GuíaTV",
+          "ok": true,
+          "evidence": {
+            "file": true
+          },
+          "severity": "none"
+        },
+        {
+          "id": "server-to-server",
+          "claim": "La API pública es utilizable servidor a servidor sin credenciales de navegador",
+          "ok": true,
+          "evidence": {
+            "status": 200
+          },
+          "severity": "none"
+        },
+        {
+          "id": "no-inverse-dependency",
+          "claim": "TDT Platform no depende de GuíaTV",
+          "ok": true,
+          "evidence": {
+            "offenders": []
+          },
+          "severity": "none"
+        }
+      ]
+    }
+  },
+  "suites": [
+    {
+      "label": "backend",
+      "ok": true,
+      "milliseconds": 117741,
+      "summary": " Test Files  9 passed (9) |       Tests  154 passed (154)"
+    },
+    {
+      "label": "sdk",
+      "ok": true,
+      "milliseconds": 11592,
+      "summary": " Test Files  1 passed (1) |       Tests  14 passed (14)"
+    }
+  ],
+  "globalVerdict": "GO",
+  "blockers": []
+}

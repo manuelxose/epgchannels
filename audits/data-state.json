@@ -1,0 +1,106 @@
+{
+  "generatedAt": "2026-11-16T00:40:26.798Z",
+  "catalogue": {
+    "channelsStored": 768,
+    "published": 412,
+    "inReview": 356,
+    "byCountry": {
+      "ES": 294,
+      "INT": 118
+    },
+    "byCategory": {
+      "generalista": 16,
+      "informativos": 17,
+      "deportes": 28,
+      "infantil": 14,
+      "otros": 40,
+      "autonomica": 179,
+      "internacional": 118
+    }
+  },
+  "sources": {
+    "total": 1364,
+    "publiclyExposed": 473,
+    "publiclyExposedInApp": 320,
+    "publiclyExposedExternal": 153,
+    "withheld": 891,
+    "withheldByReason": {
+      "unlicensed": 891
+    },
+    "inAppByType": {
+      "hls": 107,
+      "youtube": 213
+    },
+    "channelsWithInAppSource": 259,
+    "channelsExternalOnly": 153
+  },
+  "guide": {
+    "programmes": 11112,
+    "sources": [
+      {
+        "name": "Redacción TDT Platform",
+        "kind": "editorial",
+        "licence": "editorial",
+        "ingestionEnabled": false,
+        "programmes": 0
+      },
+      {
+        "name": "Guía de referencia (instantánea Apache-2.0)",
+        "kind": "json-tdtchannels",
+        "licence": "Apache-2.0",
+        "ingestionEnabled": false,
+        "programmes": 11123
+      }
+    ]
+  },
+  "migration": [
+    {
+      "runId": "001-indexes",
+      "exclusions": 0,
+      "exclusionsByReason": {}
+    },
+    {
+      "runId": "002-epg-editorial-source",
+      "exclusions": 0,
+      "exclusionsByReason": {}
+    },
+    {
+      "runId": "catalogue-import:2026-11-15T22:25:49.359Z",
+      "digest": "f1ceaef3f9ffd31303ea1360ff629d2d5a190e3f2db93e2fce67634a43a50aeb",
+      "channelRecords": 768,
+      "stats": {
+        "channelsCreated": 768,
+        "channelsUpdated": 0,
+        "sourcePublished": 473,
+        "sourceWithheld": 891,
+        "sourcesSkippedDuplicate": 0
+      },
+      "exclusions": 1247,
+      "exclusionsByReason": {
+        "credentials-required": 12,
+        "unlicensed": 841,
+        "no-public-source": 47,
+        "no-integratable-source": 309,
+        "requires-forged-header": 7,
+        "emitter-app-only": 31
+      }
+    },
+    {
+      "runId": "catalogue-import:2026-11-15T22:26:54.505Z",
+      "digest": "f1ceaef3f9ffd31303ea1360ff629d2d5a190e3f2db93e2fce67634a43a50aeb",
+      "channelRecords": 768,
+      "stats": {
+        "channelsCreated": 0,
+        "channelsUpdated": 768,
+        "sourcePublished": 0,
+        "sourceWithheld": 0,
+        "sourcesSkippedDuplicate": 1364
+      },
+      "exclusions": 356,
+      "exclusionsByReason": {
+        "no-public-source": 47,
+        "no-integratable-source": 309
+      }
+    }
+  ]
+}

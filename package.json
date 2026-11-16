@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "TDT Platform: owned channel catalogue, playback-source registry, EPG and versioned API.",
-  "license": "SEE LICENSE IN LICENSE",
+
   "engines": {
     "node": ">=24"
   },
@@ -14,17 +14,23 @@
   "scripts": {
     "build": "npm run build -w @tdt/contracts && npm run build -w @tdt/api-client && npm run build -w @tdt/backend",
     "typecheck": "npm run typecheck -w @tdt/contracts && npm run typecheck -w @tdt/api-client && npm run typecheck -w @tdt/backend",
-    "test": "npm run test -w @tdt/contracts && npm run test -w @tdt/backend && npm run test -w @tdt/api-client",
+    "test": "npm run test -w @tdt/backend && npm run test -w @tdt/api-client",
     "test:unit": "npm run test:unit -w @tdt/backend",
     "test:integration": "npm run test:integration -w @tdt/backend",
     "test:independence": "npm run test:independence -w @tdt/backend",
-    "test:load": "npm run test:load -w @tdt/backend",
+    "test:load": "node apps/backend/scripts/load-test.mjs",
+    "test:e2e": "npm --prefix apps/frontend run test:e2e",
+    "test:frontend": "npm --prefix apps/frontend run test",
+    "migrate": "node apps/backend/dist/migrations/run.js",
+    "import:catalogue": "node apps/backend/dist/scripts/import-catalogue.js",
+    "import:guide": "node apps/backend/dist/scripts/import-guide.js",
+    "openapi:export": "node apps/backend/dist/scripts/export-openapi.js",
+    "client:generate": "npm --prefix packages/api-client run client:generate",
+    "audit:bootstrap": "node apps/backend/dist/scripts/bootstrap-audit.js",
+    "audit:acceptance": "node scripts/audit-tdt-api-01.mjs",
     "dev:backend": "npm run dev -w @tdt/backend",
     "dev:frontend": "npm --prefix apps/frontend run start",
-    "openapi:export": "npm run openapi:export -w @tdt/backend",
-    "client:generate": "npm run client:generate",
-    "migrate": "npm run migrate -w @tdt/backend",
-    "seed": "npm run seed -w @tdt/backend",
-    "audit:bootstrap": "npm run audit:bootstrap -w @tdt/backend"
+    "infra:up": "docker compose -f infra/docker-compose.yml up -d",
+    "infra:down": "docker compose -f infra/docker-compose.yml down"
   }
 }

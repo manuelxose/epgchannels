@@ -1,6 +1,6 @@
 // GENERATED — do not edit by hand.
 // Source: openapi/openapi.json (TDT Platform API v1).
-// Generated: 2026-11-15T22:34:57.781Z
+// Generated: 2026-11-16T08:10:07.483Z
 
 export type ApiError = {
   readonly error: {
@@ -547,7 +547,7 @@ export type CreateSourceInput = {
     readonly browserCompatibility: "all" | "desktop" | "mobile";
     readonly requiresForgedHeader: boolean;
     readonly emitterAppOnly: boolean;
-    readonly notes: string | null;
+    readonly notes?: string | null;
   };
   readonly priority?: number;
   readonly editorialStatus?: "draft" | "review" | "published" | "withdrawn";
