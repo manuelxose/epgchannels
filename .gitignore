@@ -46,3 +46,6 @@ apps/frontend/test-results/
 *-out.txt
 *-err.txt
 
+
+# upstream snapshots captured by data/fetch-snapshots.mjs (never committed: bounded, versioned, licence-bounded)
+data/
