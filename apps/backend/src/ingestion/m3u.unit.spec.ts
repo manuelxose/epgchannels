@@ -6,7 +6,13 @@
  * store something unbounded (the Free-TV `x-tvg-url` header is tens of KB).
  */
 import { describe, expect, it } from 'vitest';
-import { decodePlaylistBytes, MAX_ATTRIBUTE_VALUE_CHARS, MAX_RAW_BOUND_BYTES, parseM3u } from './m3u.js';
+import {
+  decodePlaylistBytes,
+  MAX_ATTRIBUTE_VALUE_CHARS,
+  MAX_RAW_BOUND_BYTES,
+  parseM3u,
+  parsePlaylistText,
+} from './m3u.js';
 import { M3U_EXCERPT } from './m3u.fixture.js';
 import { FREE_TV_ENTRIES_PLAYLIST, FREE_TV_HEADER_PLAYLIST } from './free-tv.fixture.js';
 
@@ -198,6 +204,40 @@ describe('parseM3u — malformed input never throws and is never silent', () => 
     expect(crlf.entries).toEqual(lf.entries);
     expect(crlf.entries[0]?.url).toBe('https://a.example/x.m3u8');
     expect(crlf.entries[0]?.url?.endsWith('\r')).toBe(false);
+  });
+
+  it('normalises line endings inside parsePlaylistText, not only in parseM3u', () => {
+    // Regression: a caller handing raw text used to get URLs ending in '\r',
+    // which changes the URL hash and can fake a `not-http` rejection.
+    const lfText = '#EXTM3U\n#EXTINF:-1 tvg-id="x.es",X\nhttps://a.example/x.m3u8\n';
+    const crlfText = lfText.replace(/\n/g, '\r\n');
+    const fromText = parsePlaylistText(crlfText);
+    expect(fromText.entries[0]?.url).toBe('https://a.example/x.m3u8');
+    expect(fromText.entries[0]?.url?.endsWith('\r')).toBe(false);
+    expect(fromText.entries[0]?.rejected).toBeNull();
+    expect(fromText.rejected).toEqual([]);
+    expect(fromText).toEqual(parsePlaylistText(lfText));
+    expect(fromText).toEqual(parseM3u(utf8(crlfText)));
+  });
+
+  it('treats a lone CR as a line ending too', () => {
+    const lfText = '#EXTM3U\n#EXTINF:-1,A, B\nhttps://a.example/x.m3u8\n';
+    const crText = lfText.replace(/\n/g, '\r');
+    expect(parsePlaylistText(crText)).toEqual(parsePlaylistText(lfText));
+    expect(parsePlaylistText(crText).entries[0]?.name).toBe('A, B');
+    expect(parsePlaylistText(crText).entries[0]?.url).toBe('https://a.example/x.m3u8');
+  });
+
+  it('keeps CRLF, LF and CR identical for the real upstream excerpt', () => {
+    const lf = parseM3u(utf8(M3U_EXCERPT));
+    const crlfText = M3U_EXCERPT.replace(/\n/g, '\r\n');
+    expect(parsePlaylistText(crlfText)).toEqual(lf);
+    expect(parsePlaylistText(M3U_EXCERPT.replace(/\n/g, '\r'))).toEqual(lf);
+    for (const entry of parsePlaylistText(crlfText).entries) {
+      expect(entry.url?.includes('\r') ?? false).toBe(false);
+      for (const value of Object.values(entry.attributes)) expect(value.includes('\r')).toBe(false);
+      for (const value of Object.values(entry.directives)) expect(value.includes('\r')).toBe(false);
+    }
   });
 
   it('parses UTF-16LE and UTF-16BE playlists', () => {
