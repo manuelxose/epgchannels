@@ -209,7 +209,7 @@ describe('catalogue migrations on a real database', () => {
         'candidate_state_upstream',
         'candidate_upstream_path',
       ],
-      [COLLECTIONS.channelAliases]: ['alias_namespace_value_unique', 'alias_channel'],
+      [COLLECTIONS.channelAliases]: ['alias_namespace_value_channel_unique', 'alias_namespace_value', 'alias_channel'],
       [COLLECTIONS.channelVariants]: ['variant_channel_key_unique'],
       [COLLECTIONS.sourceAuthorization]: ['authorization_candidate_unique', 'authorization_channel_decision'],
       [COLLECTIONS.sourceHealth]: ['health_candidate_unique', 'health_state_next_check'],
@@ -224,6 +224,22 @@ describe('catalogue migrations on a real database', () => {
         expect(actual.has(name), `${collection} index ${name}`).toBe(true);
       }
     }
+  });
+
+  it('replaces the pre-fix alias unique index so fresh and existing databases converge', async () => {
+    const database = harness.context.database;
+    // Simulate a database that already ran the pre-fix migration.
+    await database.db
+      .collection(COLLECTIONS.channelAliases)
+      .createIndex({ namespace: 1, value: 1 }, { name: 'alias_namespace_value_unique', unique: true });
+
+    await migrate(database);
+
+    const names = await indexNames(COLLECTIONS.channelAliases);
+    expect(names).not.toContain('alias_namespace_value_unique');
+    expect(names).toContain('alias_namespace_value_channel_unique');
+    expect(names).toContain('alias_namespace_value');
+    expect(names).toContain('alias_channel');
   });
 
   it('preserves _id, slug, mergedInto and relationships while backfilling identity', async () => {
@@ -334,7 +350,8 @@ describe('catalogue migrations on a real database', () => {
     await rollbackMigration(database, '006-incremental-dedup');
     await rollbackMigration(database, '005-source-snapshot-provenance');
 
-    expect(await indexNames(COLLECTIONS.channelAliases)).not.toContain('alias_namespace_value_unique');
+    expect(await indexNames(COLLECTIONS.channelAliases)).not.toContain('alias_namespace_value_channel_unique');
+    expect(await indexNames(COLLECTIONS.channelAliases)).not.toContain('alias_namespace_value');
     expect(await indexNames(COLLECTIONS.sourceCandidates)).not.toContain('candidate_snapshot_url_line_unique');
     expect(await indexNames(COLLECTIONS.ingestionRuns)).not.toContain('run_snapshot');
     expect(await indexNames(COLLECTIONS.channels)).toContain('identity_key_unique');
@@ -421,5 +438,58 @@ describe('ChannelStore idempotency', () => {
 
     const storedRun = await harness.context.database.collection<IngestionRunDoc>(COLLECTIONS.ingestionRuns).findOne({ _id: 'run-1' });
     expect(storedRun?.status).toBe('rolled-back');
+  });
+
+  it('allows a shared tvg-id across channels and idempotently re-adds the same alias', async () => {
+    const store = new ChannelStore(harness.context.database);
+    await migrate(harness.context.database); // ensures the new unique index set exists
+
+    await store.upsertChannel(catalogueChannel('ch-1', { slug: 'canal-uno' }));
+    await store.upsertChannel(catalogueChannel('ch-2', { slug: 'canal-dos' }));
+
+    // Same tvg-id, different channels → both attach without error.
+    await store.addAlias(aliasDoc('alias-1', 'ch-1')); // value 'Uno.TV'
+    await store.addAlias(aliasDoc('alias-2', 'ch-2')); // value 'Uno.TV'
+
+    // Repeated add of the same {namespace, value, channelId} is a no-op, even
+    // when a fresh `_id` is supplied (natural-key idempotency).
+    await store.addAlias(aliasDoc('alias-1b', 'ch-1'));
+
+    expect(await harness.context.database.collection(COLLECTIONS.channelAliases).countDocuments({})).toBe(2);
+
+    const owners = await harness.context.database
+      .collection<ChannelAliasDoc>(COLLECTIONS.channelAliases)
+      .find({ namespace: 'tvg-id', value: 'Uno.TV' })
+      .sort({ channelId: 1 })
+      .toArray();
+    expect(owners.map((owner) => owner.channelId)).toEqual(['ch-1', 'ch-2']);
+  });
+
+  it('listIdentities projects tvgIds and urlHosts via batched queries', async () => {
+    const store = new ChannelStore(harness.context.database);
+    await store.upsertChannel(catalogueChannel('ch-1', { slug: 'canal-uno' }));
+    await store.addAlias(aliasDoc('alias-1', 'ch-1')); // 'Uno.TV'
+    await store.addAlias({ ...aliasDoc('alias-2', 'ch-1'), value: 'Uno.HD' });
+    await store.insertCandidate({
+      ...candidateDoc('cand-1'),
+      channelId: 'ch-1',
+      urlSha256: `${'b'.repeat(63)}1`,
+      normalizedUrl: 'https://rtve.es/live.m3u8',
+    });
+    await store.insertCandidate({
+      ...candidateDoc('cand-2'),
+      channelId: 'ch-1',
+      urlSha256: `${'b'.repeat(63)}2`,
+      normalizedUrl: 'https://rtve.es/alt.m3u8',
+    });
+
+    const identities = await store.listIdentities();
+    expect(identities).toHaveLength(1);
+    expect(identities[0]).toMatchObject({
+      channelId: 'ch-1',
+      key: 'es:canal-uno',
+      tvgIds: expect.arrayContaining(['Uno.TV', 'Uno.HD']),
+      urlHosts: expect.arrayContaining(['rtve.es']),
+    });
   });
 });

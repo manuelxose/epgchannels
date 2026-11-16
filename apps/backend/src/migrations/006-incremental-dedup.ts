@@ -4,16 +4,28 @@
  * authorisation, health, EPG mappings, the reconciliation review queue and the
  * ingestion-run ledger.
  *
- * Like 005 these collections start empty, so the reversible surface is exactly
- * the indexes. The unique keys (`namespace+value`, `channelId+variantKey`,
- * `candidateId`, `channelId+namespace+externalId`) are the dedup guards; the
- * non-unique keys are the read paths for review and health work.
+ * Alias contention fix: a `tvg-id` may belong to several channels, so the
+ * pre-fix unique `{namespace, value}` alias index is dropped first and replaced
+ * with a unique `{namespace, value, channelId}` plus a non-unique
+ * `{namespace, value}` lookup index. A fresh database and an existing one
+ * therefore converge to the same index set. The rollback drops only the indexes
+ * this migration created (it never recreates the old unique index, which would
+ * fail on data that already shares a tvg-id).
  */
 import type { DatabaseHandle } from '../infrastructure/mongo.js';
-import { DEDUP_INDEXES, createCatalogueIndexes, dropCatalogueIndexes } from '../catalogue/schema.js';
+import { COLLECTIONS } from '../infrastructure/mongo.js';
+import {
+  DEDUP_INDEXES,
+  LEGACY_ALIAS_UNIQUE_INDEX,
+  createCatalogueIndexes,
+  dropCatalogueIndexes,
+} from '../catalogue/schema.js';
 import type { Migration } from './types.js';
 
 export async function migrateIncrementalDedup(database: DatabaseHandle): Promise<void> {
+  // Replace the pre-fix alias unique index first so an existing database and a
+  // fresh one end with the identical index set.
+  await dropCatalogueIndexes(database.db, COLLECTIONS.channelAliases, [LEGACY_ALIAS_UNIQUE_INDEX]);
   for (const [collection, indexes] of Object.entries(DEDUP_INDEXES)) {
     await createCatalogueIndexes(database.db, collection, indexes);
   }
