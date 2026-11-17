@@ -93,7 +93,29 @@ export interface SafeEgressRequest {
    * test flag is set. Production redirects stay on standard port pairs.
    */
   readonly allowedRedirectPorts?: readonly number[];
+  /**
+   * Opt-in bounded prefix read: "I only need this many bytes of the body".
+   *
+   * When set (1 … 1 MiB):
+   *  - the declared `content-length` pre-check is skipped for this request, so a
+   *    large media segment is no longer refused just for being large;
+   *  - the read stops once `prefixBytes` have arrived and the socket is DESTROYED
+   *    (not drained), so the origin cannot push the rest of the segment;
+   *  - the call resolves normally with `ok`, `status`, `contentType` and `bytes`
+   *    equal to the prefix actually received (never more than `prefixBytes`).
+   *
+   * The incremental counter still applies on top: a body that exceeds `maxBytes`
+   * before reaching the cap is still `response-too-large`. Every SSRF defence
+   * (scheme/userinfo, reserved names, block list, DNS, private-address, pinning,
+   * peer re-check, per-hop redirect validation) runs first and still refuses.
+   * Out-of-range values are refused with `invalid-url`, never clamped.
+   */
+  readonly prefixBytes?: number;
 }
+
+/** Bounds for `SafeEgressRequest.prefixBytes`. */
+export const MIN_PREFIX_BYTES = 1;
+export const MAX_PREFIX_BYTES = 1024 * 1024;
 
 export interface SafeEgressResponse {
   readonly status: number;
@@ -108,6 +130,11 @@ export interface SafeEgressResponse {
   /** Addresses that were validated and pinned for the final hop. */
   readonly resolvedAddresses: readonly string[];
   readonly latencyMs: number;
+  /**
+   * True when `prefixBytes` was requested and the body was cut at the cap (the
+   * origin had more to send). Absent/undefined means the body ended on its own.
+   */
+  readonly prefixTruncated?: boolean;
 }
 
 export type EgressLookup = (host: string) => Promise<readonly string[]>;
@@ -153,6 +180,8 @@ interface RawResult {
   readonly headers: IncomingHttpHeaders;
   readonly bytes: number;
   readonly body: string | null;
+  /** True when a bounded prefix read stopped the body at `prefixBytes`. */
+  readonly prefixTruncated?: boolean;
 }
 
 export async function safeFetch(
@@ -175,6 +204,23 @@ export async function safeFetch(
     throw new EgressFailure('response-too-large', 'maxBytes must be a positive number', {
       maxBytes: request.maxBytes,
     });
+  }
+  // `prefixBytes` is validated, never clamped: a caller that asks for nonsense
+  // must hear about it rather than silently getting a different budget.
+  if (request.prefixBytes !== undefined) {
+    const prefix = request.prefixBytes;
+    if (
+      typeof prefix !== 'number' ||
+      !Number.isInteger(prefix) ||
+      prefix < MIN_PREFIX_BYTES ||
+      prefix > MAX_PREFIX_BYTES
+    ) {
+      throw new EgressFailure(
+        'invalid-url',
+        `prefixBytes must be an integer in [${MIN_PREFIX_BYTES}, ${MAX_PREFIX_BYTES}]; got ${String(prefix)}`,
+        { prefixBytes: prefix, min: MIN_PREFIX_BYTES, max: MAX_PREFIX_BYTES },
+      );
+    }
   }
   const maxRedirects = request.maxRedirects ?? DEFAULT_MAX_REDIRECTS;
   const method = request.method ?? 'GET';
@@ -289,6 +335,9 @@ export async function safeFetch(
         deadline,
         timeoutMs: totalMs,
         maxBytes: request.maxBytes,
+        // A HEAD never has a body: a prefix limit is meaningless there, and passing
+        // it would only skip the (harmless, empty) declared-length check.
+        ...(method === 'GET' && request.prefixBytes !== undefined ? { prefixBytes: request.prefixBytes } : {}),
         userAgent: request.userAgent ?? DEFAULT_USER_AGENT,
         allowedContentPrefixes: request.allowedContentPrefixes ?? [],
         signal: controller.signal,
@@ -361,6 +410,7 @@ export async function safeFetch(
         redirects,
         resolvedAddresses: current.addresses,
         latencyMs: Date.now() - startedAt,
+        ...(raw.prefixTruncated === true ? { prefixTruncated: true } : {}),
       };
     }
   } catch (error) {
@@ -424,6 +474,8 @@ interface HopOptions {
   readonly maxBytes: number;
   readonly userAgent: string;
   readonly allowedContentPrefixes: readonly string[];
+  /** Bounded prefix read: stop after this many body bytes (validated upstream). */
+  readonly prefixBytes?: number;
   readonly signal: AbortSignal;
   readonly wasTimedOut: () => boolean;
   readonly wasAbortedByCaller: () => boolean;
@@ -495,15 +547,27 @@ function performHop(hop: ValidatedHop, options: HopOptions): Promise<RawResult> 
   const pinned = pickPinnedAddress(hop.addresses);
   return new Promise<RawResult>((resolve, reject) => {
     let settled = false;
-    /** A verdict decided before a deliberate teardown; wins over teardown errors. */
+    /** A failure verdict decided before a deliberate teardown; wins over teardown errors. */
     let pendingError: EgressFailure | null = null;
+    /**
+     * A SUCCESS verdict decided before a deliberate teardown — the bounded prefix
+     * read closing the socket after `prefixBytes`. Pinned for the same reason as
+     * `pendingError`: the `aborted`/`error` events a destroy() produces would
+     * otherwise replace a complete, correct prefix with a transport failure.
+     */
+    let decision: RawResult | null = null;
     const finish = (error: EgressFailure | null, value?: RawResult): void => {
       if (settled) return;
       settled = true;
-      // A deliberate teardown (size cap, refused type, peer mismatch) is followed
-      // by `aborted`/`close` errors from the destroyed socket, in no fixed order.
-      // The decided verdict is the truth, so it is queued and only resolved on the
-      // next tick, after those teardown errors have been ignored.
+      // A deliberate teardown (size cap, refused type, peer mismatch, prefix read
+      // complete) is followed by `aborted`/`close` errors from the destroyed
+      // socket, in no fixed order. The decided verdict is the truth, so it is
+      // queued and only resolved on the next tick, after those errors are ignored.
+      if (decision !== null) {
+        const decidedResult = decision;
+        queueMicrotask(() => resolve(decidedResult));
+        return;
+      }
       if (pendingError !== null) {
         queueMicrotask(() => reject(pendingError as EgressFailure));
         return;
@@ -577,7 +641,13 @@ function performHop(hop: ValidatedHop, options: HopOptions): Promise<RawResult> 
 
         const headers = response.headers;
         const declaredLength = Number(headerValue(headers, 'content-length') ?? '');
-        if (Number.isFinite(declaredLength) && declaredLength > options.maxBytes) {
+        // With a prefix read the declared size is irrelevant to what we will hold:
+        // we are sampling a segment we already vetted at the HEAD layer, and the
+        // whole point is to refuse it *before* transferring it. So this one check
+        // is skipped — and only this one. Everything above it (SSRF checks, the
+        // pin, the peer check) and everything below it (content-type, the
+        // incremental counter, the deadline) still applies.
+        if (options.prefixBytes === undefined && Number.isFinite(declaredLength) && declaredLength > options.maxBytes) {
           abortWith(
             new EgressFailure('response-too-large', `Declared content-length exceeds ${options.maxBytes} bytes`, {
               host: hop.host,
@@ -606,10 +676,12 @@ function performHop(hop: ValidatedHop, options: HopOptions): Promise<RawResult> 
           return;
         }
 
-        // Buffer is bounded by maxBytes: the counter aborts the read the moment it
-        // would exceed the limit, so a hostile stream cannot grow memory first.
+        // Buffer is bounded by the smaller of `maxBytes` and `prefixBytes`: the read
+        // is cut off the moment either limit is reached, so a hostile stream cannot
+        // grow memory and cannot push the rest of a large body at us.
         const chunks: Buffer[] = [];
         let bytes = 0;
+        const prefixBytes = options.prefixBytes;
         const tooLarge = (): void =>
           abortWith(
             new EgressFailure('response-too-large', `Response body exceeds ${options.maxBytes} bytes`, {
@@ -618,8 +690,42 @@ function performHop(hop: ValidatedHop, options: HopOptions): Promise<RawResult> 
               bytes,
             }),
           );
+        const prefixReached = (received: number): void => {
+          // The verdict is a SUCCESS, resolved synchronously before the teardown,
+          // exactly like a decided failure: `decision` pins it so the destroy
+          // errors that follow cannot replace it. `request.destroy()` closes the
+          // socket; the body is never drained.
+          decision = {
+            status: response.statusCode ?? 0,
+            headers,
+            bytes: received,
+            body: options.method === 'GET' ? Buffer.concat(chunks).toString('utf8') : null,
+            prefixTruncated: true,
+          };
+          response.destroy();
+          request.destroy();
+        };
         response.on('data', (chunk: Buffer) => {
           if (settled) return;
+          if (prefixBytes !== undefined) {
+            // Prefix mode: ONE cumulative counter for every byte this response
+            // delivers, checked BEFORE the cap. A prefix read may skip the
+            // declared-length pre-check, but it must never lift the `maxBytes`
+            // ceiling: reaching the cap first is the normal, successful end; a
+            // body that runs past `maxBytes` first is `response-too-large`.
+            bytes += chunk.byteLength;
+            const kept = Math.min(prefixBytes, chunk.byteLength, Math.max(0, prefixBytes - (bytes - chunk.byteLength)));
+            if (kept > 0) chunks.push(chunk.subarray(0, kept));
+            if (bytes >= prefixBytes) {
+              prefixReached(prefixBytes);
+              return;
+            }
+            if (bytes > options.maxBytes) {
+              tooLarge();
+              return;
+            }
+            return;
+          }
           bytes += chunk.byteLength;
           if (bytes > options.maxBytes) {
             tooLarge();
@@ -629,6 +735,8 @@ function performHop(hop: ValidatedHop, options: HopOptions): Promise<RawResult> 
         });
         response.on('end', () => {
           if (settled) return;
+          // NOTE: when a prefix/destroy verdict is pinned, `finish` resolves with
+          // that pinned value itself, so no separate branch is needed here.
           finish(null, {
             status: response.statusCode ?? 0,
             headers,
@@ -638,10 +746,18 @@ function performHop(hop: ValidatedHop, options: HopOptions): Promise<RawResult> 
         });
         response.on('error', (error) => {
           if (settled) return;
+          if (decision !== null) {
+            finish(null, decision);
+            return;
+          }
           finish(closeError(options, 'connection-failed', error.message, decided));
         });
         response.on('aborted', () => {
           if (settled) return;
+          if (decision !== null) {
+            finish(null, decision);
+            return;
+          }
           finish(closeError(options, 'connection-failed', 'Response aborted before completion', decided));
         });
       },
@@ -656,9 +772,13 @@ function performHop(hop: ValidatedHop, options: HopOptions): Promise<RawResult> 
     request.on('error', (error: NodeJS.ErrnoException) => {
       if (settled) return;
       // A deliberate teardown after a verdict (`response-too-large`, refused
-      // content-type, peer mismatch) surfaces here as ECONNRESET/aborted, in no
-      // fixed order relative to the response events. The verdict we decided is
-      // the truth, so it wins over any generic close.
+      // content-type, peer mismatch, prefix complete) surfaces here as
+      // ECONNRESET/aborted, in no fixed order relative to the response events.
+      // The verdict we decided is the truth, so it wins over any generic close.
+      if (decision !== null) {
+        finish(null, decision);
+        return;
+      }
       if (pendingError !== null) {
         finish(pendingError);
         return;
