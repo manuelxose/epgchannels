@@ -1,0 +1,938 @@
+/**
+ * The layered validation engine: two-sided, and adversarial about the one thing
+ * that matters most in this milestone.
+ *
+ * The central negative test is the one a naive implementation fails:
+ * `HTTP 200 is not health`. A stream can answer 200 with a valid HLS
+ * content-type and still be unusable (HTML body, empty playlist, forbidden
+ * segments). Each of those must stop at the layer that found the problem, and
+ * none of them may ever be reported `healthy`.
+ *
+ * The other central test is the ordering one: eligibility runs **before** egress,
+ * proven with a spy, because a socket opened for an unauthorised source would be
+ * a rights violation and not a bug.
+ */
+import { describe, expect, it, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import type { PlaybackSourceDoc } from '../infrastructure/schema.js';
+import type { AuthorizationRecord } from '../modules/providers/authorization.js';
+import { createDefaultAdapterRegistry } from '../modules/providers/adapter.registry.js';
+import {
+  FAILURE_CATEGORIES,
+  FAILURE_CAUSE,
+  isFailureCategory,
+  isRetryable,
+  type FailureCategory,
+} from './failures.js';
+import { HEALTH_COLLECTIONS, isTerminalCheckState, type FailureCause } from './health.schema.js';
+import { MAX_MANIFEST_PARSE_BYTES, parseManifest, samplePlaylistUris } from './manifest.js';
+import {
+  runValidation,
+  statusCategory,
+  type BrowserProbeResult,
+  type EgressFn,
+  type EgressRequest,
+  type EgressResponse,
+  type ValidationResult,
+} from './validator.js';
+import { BACKOFF_MAX_MS, computeBackoff, deterministicJitterUnit, statusForOutcome } from './backoff.js';
+
+const NOW = new Date('2026-11-17T10:00:00.000Z');
+const SOURCE_URL = 'https://example.test/live/master.m3u8';
+
+const DISCOVERY = {
+  upstream: 'fixture',
+  snapshotId: 'fixture-1',
+  path: 'es.m3u',
+  line: 1,
+  sourceUrl: SOURCE_URL,
+  documentUrl: null,
+  retrievedAt: NOW,
+};
+
+/** A written licence we could plausibly hold: the positive side of the gate. */
+function authorization(overrides: Partial<AuthorizationRecord> = {}): AuthorizationRecord {
+  return {
+    _id: `fixture:${SOURCE_URL}`,
+    operatorId: 'fixture-operator',
+    sourceUrl: SOURCE_URL,
+    providerKind: 'broadcaster_cdn',
+    verdict: 'permitted-direct-playback',
+    basis: 'written-licence',
+    quotedClause: null,
+    clauseUrl: 'https://example.test/licence-agreement.pdf',
+    method: 'direct-playback',
+    publicationScope: 'in-app',
+    territory: { allowed: [], restricted: [], worldwide: true, geoBlocked: false },
+    restrictions: [],
+    attribution: 'Fixture Operator',
+    discovery: DISCOVERY,
+    lifecycle: 'active',
+    expiresAt: null,
+    validationTimestamp: NOW,
+    authorizationTimestamp: NOW,
+    reviewStatus: 'reviewed',
+    notes: null,
+    ...overrides,
+  };
+}
+
+function source(overrides: Partial<PlaybackSourceDoc> = {}): PlaybackSourceDoc {
+  return {
+    _id: 'src-1',
+    channelId: 'chan-1',
+    provider: 'fixture',
+    type: 'hls',
+    url: SOURCE_URL,
+    officialPageUrl: null,
+    permission: 'emitter-public-stream',
+    authorisationEvidence: null,
+    conditions: {
+      // `technicalStatus` is deliberately `ok`: availability must never rescue a
+      // missing right, and the eligibility layer must not read it as a permission.
+      embedAllowed: true,
+      proxyAllowed: false,
+      worldwide: true,
+      restrictedRegions: [],
+      browserCompatibility: 'all',
+      requiresForgedHeader: false,
+      emitterAppOnly: false,
+      notes: null,
+    },
+    priority: 1,
+    editorialStatus: 'published',
+    technicalStatus: 'ok',
+    lastVerifiedAt: null,
+    lastVerification: null,
+    provenance: [],
+    createdAt: NOW,
+    updatedAt: NOW,
+    revision: 1,
+    ...overrides,
+  };
+}
+
+const HLS_MIME = 'application/vnd.apple.mpegurl';
+
+const MEDIA_PLAYLIST = [
+  '#EXTM3U',
+  '#EXT-X-VERSION:3',
+  '#EXT-X-TARGETDURATION:6',
+  '#EXT-X-MEDIA-SEQUENCE:42',
+  '#EXTINF:6.0,',
+  'segment-1.ts?token=SECRET-TOKEN-1',
+  '#EXTINF:6.0,',
+  'segment-2.ts?token=SECRET-TOKEN-2',
+  '#EXTINF:6.0,',
+  'segment-3.ts?token=SECRET-TOKEN-3',
+  '#EXT-X-ENDLIST',
+  '',
+].join('\n');
+
+const MASTER_PLAYLIST = [
+  '#EXTM3U',
+  '#EXT-X-VERSION:4',
+  '#EXT-X-STREAM-INF:BANDWIDTH=2500000,RESOLUTION=1280x720',
+  '720p/index.m3u8',
+  '#EXT-X-STREAM-INF:BANDWIDTH=500000,RESOLUTION=640x360',
+  '360p/index.m3u8',
+  '',
+].join('\n');
+
+function response(overrides: Partial<EgressResponse> = {}): EgressResponse {
+  return {
+    status: 200,
+    ok: true,
+    contentType: HLS_MIME,
+    bytes: 1024,
+    body: MEDIA_PLAYLIST,
+    finalUrl: SOURCE_URL,
+    latencyMs: 42,
+    ...overrides,
+  };
+}
+
+interface EgressSpy {
+  readonly fn: EgressFn;
+  readonly calls: EgressRequest[];
+}
+
+/** A scripted egress: the callback decides per request, and every call is recorded. */
+function scriptedEgress(handler: (req: EgressRequest) => EgressResponse) {
+  const calls: EgressRequest[] = [];
+  const fn = vi.fn(async (req: EgressRequest): Promise<EgressResponse> => {
+    calls.push(req);
+    return handler(req);
+  });
+  const spy: EgressSpy = { fn, calls };
+  return spy;
+}
+
+/** Default: manifest as given, every segment 2xx. */
+function healthyEgress(body = MEDIA_PLAYLIST, contentType = HLS_MIME) {
+  return scriptedEgress((req) =>
+    req.url.includes('segment-')
+      ? response({ contentType: 'video/mp2t', body: null, bytes: 4096, finalUrl: req.url })
+      : response({ body, contentType, finalUrl: SOURCE_URL }),
+  );
+}
+
+async function validate(
+  overrides: Partial<Parameters<typeof runValidation>[0]> = {},
+): Promise<ValidationResult> {
+  const egress = healthyEgress();
+  return runValidation({
+    source: source(),
+    authorization: authorization(),
+    registry: createDefaultAdapterRegistry(),
+    egress: egress.fn,
+    now: NOW,
+    ...overrides,
+  });
+}
+
+function codeOf(result: ValidationResult): string {
+  return result.failure?.category ?? `none:${result.outcome}`;
+}
+
+describe('failure vocabulary — exactly the contract, two-sided', () => {
+  const CONTRACT: readonly FailureCategory[] = [
+    'timeout',
+    'dns-failure',
+    'tls-failure',
+    'connection-refused',
+    'http-404',
+    'http-403',
+    'http-401',
+    'http-451',
+    'http-5xx',
+    'invalid-manifest',
+    'unsupported-format',
+    'missing-segments',
+    'segments-forbidden',
+    'cors-limitation',
+    'browser-incompatible',
+    'codec-failure',
+    'georestriction',
+    'expired-source',
+    'ssrf-blocked',
+    'ineligible',
+    'response-too-large',
+    'redirect-unsafe',
+    'unknown-error',
+  ];
+
+  it('is exactly the 23 contract categories: no more, no fewer, no renames', () => {
+    expect([...FAILURE_CATEGORIES].sort()).toEqual([...CONTRACT].sort());
+    for (const category of CONTRACT) expect(isFailureCategory(category)).toBe(true);
+    expect(isFailureCategory('http-418')).toBe(false);
+    expect(isFailureCategory('')).toBe(false);
+  });
+
+  it('every category maps to exactly one of the six causes, and only `ineligible` is authorization', () => {
+    const causes: readonly FailureCause[] = ['authorization', 'network', 'protocol', 'content', 'browser', 'policy'];
+    for (const category of FAILURE_CATEGORIES) {
+      const cause = FAILURE_CAUSE[category];
+      expect(causes).toContain(cause);
+    }
+    const authorizationCategories = FAILURE_CATEGORIES.filter((c) => FAILURE_CAUSE[c] === 'authorization');
+    expect(authorizationCategories).toEqual(['ineligible']);
+  });
+
+  it('retries only transient transport faults; permanents are never retried', () => {
+    const retryable = FAILURE_CATEGORIES.filter(isRetryable);
+    expect([...retryable].sort()).toEqual(['connection-refused', 'dns-failure', 'http-5xx', 'timeout', 'tls-failure']);
+
+    for (const never of [
+      'http-404',
+      'http-403',
+      'http-401',
+      'http-451',
+      'georestriction',
+      'ineligible',
+      'invalid-manifest',
+      'unsupported-format',
+      'missing-segments',
+      'segments-forbidden',
+      'browser-incompatible',
+      'codec-failure',
+      'cors-limitation',
+      'ssrf-blocked',
+      'redirect-unsafe',
+      'response-too-large',
+      'expired-source',
+      'unknown-error',
+    ] as const) {
+      expect(isRetryable(never)).toBe(false);
+    }
+  });
+
+  it('names collections per contract §1 and never reuses the legacy source_health', () => {
+    expect(HEALTH_COLLECTIONS).toEqual({
+      checks: 'source_health_checks_02d',
+      health: 'source_health_02d',
+      policies: 'verification_policies_02d',
+    });
+    expect(Object.values(HEALTH_COLLECTIONS)).not.toContain('source_health');
+  });
+
+  it('terminal states are done/failed/skipped only', () => {
+    expect(isTerminalCheckState('done')).toBe(true);
+    expect(isTerminalCheckState('failed')).toBe(true);
+    expect(isTerminalCheckState('skipped')).toBe(true);
+    expect(isTerminalCheckState('running')).toBe(false);
+    expect(isTerminalCheckState('pending')).toBe(false);
+  });
+});
+
+describe('manifest parser — structured facts only', () => {
+  it('POSITIVE: a media playlist becomes counts and a 4 KiB digest, never text', () => {
+    const parsed = parseManifest(MEDIA_PLAYLIST, HLS_MIME, { expected: 'hls' });
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    expect(parsed.facts.format).toBe('hls-media');
+    expect(parsed.facts.startsWithExtM3u).toBe(true);
+    expect(parsed.facts.segmentCount).toBe(3);
+    expect(parsed.facts.variantCount).toBe(0);
+    expect(parsed.facts.mediaSequence).toBe(42);
+    expect(parsed.facts.targetDuration).toBe(6);
+    expect(parsed.facts.endsWithEndList).toBe(true);
+    expect(parsed.facts.first4KiBSha256).toMatch(/^[0-9a-f]{64}$/);
+    // Nothing in the returned facts can carry playlist text or a token.
+    expect(JSON.stringify(parsed.facts)).not.toMatch(/SECRET-TOKEN|segment-1|EXTINF/);
+  });
+
+  it('POSITIVE: a master playlist is recognised as master with its variant count', () => {
+    const parsed = parseManifest(MASTER_PLAYLIST, HLS_MIME, { expected: 'hls' });
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    expect(parsed.facts.format).toBe('hls-master');
+    expect(parsed.facts.variantCount).toBe(2);
+    expect(parsed.facts.segmentCount).toBe(0);
+  });
+
+  it('NEGATIVE: an HTML body with an HLS MIME is `invalid-manifest`, not a manifest', () => {
+    const parsed = parseManifest('<!doctype html><html><body>Access denied</body></html>', HLS_MIME, { expected: 'hls' });
+    expect(parsed.ok).toBe(false);
+    if (parsed.ok) return;
+    expect(parsed.reason).toBe('invalid-manifest');
+  });
+
+  it('NEGATIVE: a body with no HLS MIME and no header is `unsupported-format`', () => {
+    const parsed = parseManifest('{"stream":"x"}', 'application/json', { expected: 'hls' });
+    expect(parsed.ok).toBe(false);
+    if (parsed.ok) return;
+    expect(parsed.reason).toBe('unsupported-format');
+  });
+
+  it('NEGATIVE: header only (empty playlist) is `invalid-manifest`', () => {
+    const parsed = parseManifest('#EXTM3U\n#EXT-X-VERSION:3\n', HLS_MIME, { expected: 'hls' });
+    expect(parsed.ok).toBe(false);
+    if (parsed.ok) return;
+    expect(parsed.reason).toBe('invalid-manifest');
+    expect(parsed.detail).toMatch(/no #EXT-X-STREAM-INF/);
+  });
+
+  it('BOUND: never parses more than 200 KiB and says it truncated', () => {
+    const huge = `#EXTM3U\n#EXT-X-TARGETDURATION:6\n${'#EXTINF:6.0,\nseg.ts\n'.repeat(40_000)}`;
+    expect(Buffer.byteLength(huge)).toBeGreaterThan(MAX_MANIFEST_PARSE_BYTES);
+    const parsed = parseManifest(huge, HLS_MIME, { expected: 'hls' });
+    expect(parsed.truncated).toBe(true);
+    if (!parsed.ok) return;
+    expect(parsed.facts.parsedBytes).toBe(MAX_MANIFEST_PARSE_BYTES);
+  });
+
+  it('DASH: a real MPD passes, an MPD without a Period does not', () => {
+    const ok = parseManifest(
+      '<?xml version="1.0"?><MPD xmlns="urn:mpeg:dash:schema:mpd:2011"><Period id="p0"/></MPD>',
+      'application/dash+xml',
+      { expected: 'dash' },
+    );
+    expect(ok.ok).toBe(true);
+    const bad = parseManifest('<?xml version="1.0"?><MPD></MPD>', 'application/dash+xml', { expected: 'dash' });
+    expect(bad.ok).toBe(false);
+  });
+
+  it('sampling resolves relative URIs and never follows a non-http scheme', () => {
+    const sampled = samplePlaylistUris(
+      '#EXTM3U\n#EXTINF:6,\nseg-1.ts\n#EXTINF:6,\ndata:text/plain,evil\n#EXTINF:6,\nseg-3.ts\n',
+      'https://example.test/live/index.m3u8',
+      5,
+    );
+    expect(sampled.segments).toEqual([
+      'https://example.test/live/seg-1.ts',
+      'https://example.test/live/seg-3.ts',
+    ]);
+  });
+});
+
+describe('validator — layer 1 runs before any network call (spy)', () => {
+  it('CENTRAL: an ineligible source never calls egress, not once', async () => {
+    const spy = healthyEgress();
+    const result = await validate({
+      source: source({ permission: 'unlicensed' as PlaybackSourceDoc['permission'] }),
+      authorization: authorization(),
+      egress: spy.fn,
+    });
+    expect(spy.fn).not.toHaveBeenCalled();
+    expect(spy.calls).toHaveLength(0);
+    expect(result.outcome).toBe('ineligible');
+    expect(result.cause).toBe('authorization');
+    expect(result.depthReached).toBe('eligibility');
+    expect(result.failure?.category).toBe('ineligible');
+  });
+
+  it('a source with no authorisation record is refused before egress (and 200 cannot rescue it)', async () => {
+    const spy = healthyEgress();
+    const result = await validate({ authorization: null, egress: spy.fn, source: source({ technicalStatus: 'ok' }) });
+    expect(spy.fn).not.toHaveBeenCalled();
+    expect(result.outcome).toBe('ineligible');
+    expect(result.eligibilityAt.playable).toBe(false);
+    expect(result.eligibilityAt.reason).toBe('no-authorization-record');
+  });
+
+  it('an expired right is refused before egress', async () => {
+    const spy = healthyEgress();
+    const result = await validate({
+      authorization: authorization({ expiresAt: new Date('2026-11-01T00:00:00.000Z') }),
+      egress: spy.fn,
+    });
+    expect(spy.fn).not.toHaveBeenCalled();
+    expect(result.failure?.category).toBe('ineligible');
+  });
+
+  it('a URL carrying userinfo is refused without being used or stored', async () => {
+    const spy = healthyEgress();
+    const withCreds = 'https://user:pass@example.test/live/master.m3u8';
+    const result = await validate({ source: source({ url: withCreds }), egress: spy.fn });
+    expect(spy.fn).not.toHaveBeenCalled();
+    expect(result.failure?.category).toBe('ineligible');
+    expect(JSON.stringify(result.evidence)).not.toMatch(/pass@|user:/);
+  });
+});
+
+describe('validator — the positive path', () => {
+  it('POSITIVE: a valid live HLS media playlist with 2xx segments is healthy at depth `segments`', async () => {
+    const spy = healthyEgress();
+    const result = await validate({ egress: spy.fn });
+    expect(result.outcome).toBe('healthy');
+    expect(result.cause).toBeNull();
+    expect(result.failure).toBeNull();
+    expect(result.depthReached).toBe('segments');
+    expect(result.uncertainty.browserNotProbed).toBe(true);
+    expect(result.evidence.httpStatus).toBe(200);
+    expect(result.evidence.sampleSha256).toMatch(/^[0-9a-f]{64}$/);
+    expect(result.evidence.manifest?.segmentCount).toBe(3);
+    // Default sample size is 2 (§4), and the manifest itself is the first call.
+    expect(result.evidence.samplesAttempted).toBe(2);
+    expect(result.evidence.segmentStatuses).toEqual([200, 200]);
+    expect(spy.calls).toHaveLength(3);
+    expect(result.eligibilityAt.playable).toBe(true);
+  });
+
+  it('POSITIVE: tokenized segment URLs are redacted in the evidence', async () => {
+    const result = await validate();
+    const urls = result.evidence.urls.join(' ');
+    expect(urls).not.toMatch(/SECRET-TOKEN/);
+    expect(urls).toMatch(/segment-1\.ts/);
+  });
+
+  it('POSITIVE: a DASH MPD is recognised', async () => {
+    const spy = scriptedEgress(() =>
+      response({
+        contentType: 'application/dash+xml',
+        body: '<?xml version="1.0"?><MPD><Period id="p0"/></MPD>',
+      }),
+    );
+    const result = await validate({ source: source({ type: 'dash' }), egress: spy.fn });
+    expect(result.evidence.manifest?.format).toBe('dash');
+    // An MPD resolves no segment URIs here, so segments are declared unobserved
+    // rather than sampled: a 200 with a valid MPD is never `healthy` on its own.
+    expect(result.depthReached).toBe('manifest');
+    expect(result.outcome).toBe('degraded');
+    expect(result.uncertainty.segmentsNotSampled).toBe(true);
+  });
+});
+
+describe('validator — HTTP 200 is NOT health (central negatives)', () => {
+  it('CENTRAL: 200 + valid HLS content-type + HTML body is `invalid-manifest`, never healthy', async () => {
+    const spy = scriptedEgress(() => response({ body: '<!doctype html><html>geo blocked</html>' }));
+    const result = await validate({ egress: spy.fn });
+    expect(result.outcome).toBe('failing');
+    expect(result.depthReached).toBe('manifest');
+    expect(result.failure?.category).toBe('invalid-manifest');
+    expect(result.cause).toBe('content');
+  });
+
+  it('CENTRAL: 200 + `#EXTM3U` header and no segments is `invalid-manifest`, never healthy', async () => {
+    const spy = scriptedEgress(() => response({ body: '#EXTM3U\n#EXT-X-VERSION:3\n#EXT-X-TARGETDURATION:6\n' }));
+    const result = await validate({ egress: spy.fn });
+    expect(result.outcome).toBe('failing');
+    expect(result.depthReached).toBe('manifest');
+    expect(result.failure?.category).toBe('invalid-manifest');
+  });
+
+  it('CENTRAL: 200 with the wrong content-type stops at `transport` as `unsupported-format`', async () => {
+    const spy = scriptedEgress(() => response({ contentType: 'text/html; charset=utf-8' }));
+    const result = await validate({ egress: spy.fn });
+    expect(result.outcome).toBe('failing');
+    expect(result.depthReached).toBe('transport');
+    expect(result.failure?.category).toBe('unsupported-format');
+    // A 200 whose type is wrong must not even read the body as a manifest.
+    expect(spy.calls).toHaveLength(1);
+  });
+
+  it('CENTRAL: segmentSample=0 cannot produce healthy — segments are not observed', async () => {
+    const result = await validate({ segmentSample: 0 });
+    expect(result.outcome).toBe('degraded');
+    expect(result.depthReached).toBe('manifest');
+    expect(result.uncertainty.segmentsNotSampled).toBe(true);
+  });
+
+  it('a master playlist is `degraded` at `playlist`: its media playlists were not sampled', async () => {
+    const spy = scriptedEgress(() => response({ body: MASTER_PLAYLIST }));
+    const result = await validate({ egress: spy.fn });
+    expect(result.outcome).toBe('degraded');
+    expect(result.depthReached).toBe('playlist');
+    expect(result.uncertainty.segmentsNotSampled).toBe(true);
+    expect(result.evidence.manifest?.variantCount).toBe(2);
+  });
+});
+
+describe('validator — every failure category is reachable from real evidence', () => {
+  const cases: readonly { name: string; run: () => Promise<ValidationResult>; category: FailureCategory; depth: string }[] = [
+    {
+      name: 'http-404',
+      category: 'http-404',
+      depth: 'transport',
+      run: () => {
+        const spy = scriptedEgress(() => response({ status: 404, ok: false, body: null }));
+        return validate({ egress: spy.fn });
+      },
+    },
+    {
+      name: 'http-403',
+      category: 'http-403',
+      depth: 'transport',
+      run: () => {
+        const spy = scriptedEgress(() => response({ status: 403, ok: false, body: null }));
+        return validate({ egress: spy.fn });
+      },
+    },
+    {
+      name: 'http-401',
+      category: 'http-401',
+      depth: 'transport',
+      run: () => {
+        const spy = scriptedEgress(() => response({ status: 401, ok: false, body: null }));
+        return validate({ egress: spy.fn });
+      },
+    },
+    {
+      name: 'http-451',
+      category: 'http-451',
+      depth: 'transport',
+      run: () => {
+        const spy = scriptedEgress(() => response({ status: 451, ok: false, body: null }));
+        return validate({ egress: spy.fn });
+      },
+    },
+    {
+      name: 'http-5xx',
+      category: 'http-5xx',
+      depth: 'transport',
+      run: () => {
+        const spy = scriptedEgress(() => response({ status: 503, ok: false, body: null }));
+        return validate({ egress: spy.fn });
+      },
+    },
+    {
+      name: 'timeout',
+      category: 'timeout',
+      depth: 'transport',
+      run: () => {
+        const spy = scriptedEgress(() => {
+          throw new Error('egress timeout after 15000ms');
+        });
+        return validate({ egress: spy.fn });
+      },
+    },
+    {
+      name: 'tls-failure',
+      category: 'tls-failure',
+      depth: 'transport',
+      run: () => {
+        const spy = scriptedEgress(() => {
+          throw new Error('TLS handshake failed: certificate expired');
+        });
+        return validate({ egress: spy.fn });
+      },
+    },
+    {
+      name: 'connection-refused',
+      category: 'connection-refused',
+      depth: 'transport',
+      run: () => {
+        const spy = scriptedEgress(() => {
+          throw new Error('connect ECONNREFUSED 203.0.113.10:443');
+        });
+        return validate({ egress: spy.fn });
+      },
+    },
+    {
+      name: 'dns-failure',
+      category: 'dns-failure',
+      depth: 'dns',
+      run: async () => {
+        const spy = healthyEgress();
+        return validate({
+          egress: spy.fn,
+          dns: async () => {
+            throw new Error('getaddrinfo ENOTFOUND example.test');
+          },
+        });
+      },
+    },
+    {
+      name: 'ssrf-blocked',
+      category: 'ssrf-blocked',
+      depth: 'transport',
+      run: () => {
+        const spy = scriptedEgress(() => {
+          throw new Error('destination is private/loopback');
+        });
+        return validate({ egress: spy.fn });
+      },
+    },
+    {
+      name: 'redirect-unsafe',
+      category: 'redirect-unsafe',
+      depth: 'transport',
+      run: () => {
+        const spy = scriptedEgress(() => {
+          throw new Error('unsafe redirect to file:///etc/passwd');
+        });
+        return validate({ egress: spy.fn });
+      },
+    },
+    {
+      name: 'response-too-large',
+      category: 'response-too-large',
+      depth: 'transport',
+      run: () => {
+        const spy = scriptedEgress(() => {
+          throw new Error('response exceeds 2097152 byte limit');
+        });
+        return validate({ egress: spy.fn });
+      },
+    },
+    {
+      name: 'invalid-manifest',
+      category: 'invalid-manifest',
+      depth: 'manifest',
+      run: () => {
+        const spy = scriptedEgress(() => response({ body: '#EXTM3U\n#EXT-X-ENDLIST\n' }));
+        return validate({ egress: spy.fn });
+      },
+    },
+    {
+      name: 'unsupported-format',
+      category: 'unsupported-format',
+      depth: 'transport',
+      run: () => {
+        const spy = scriptedEgress(() => response({ contentType: 'video/mp4' }));
+        return validate({ egress: spy.fn });
+      },
+    },
+    {
+      name: 'missing-segments',
+      category: 'missing-segments',
+      depth: 'playlist',
+      run: () => {
+        const spy = scriptedEgress((req) =>
+          req.url.includes('segment-')
+            ? response({ status: 404, ok: false, contentType: 'text/plain', body: null, finalUrl: req.url })
+            : response(),
+        );
+        return validate({ egress: spy.fn });
+      },
+    },
+    {
+      name: 'segments-forbidden',
+      category: 'segments-forbidden',
+      depth: 'playlist',
+      run: () => {
+        const spy = scriptedEgress((req) =>
+          req.url.includes('segment-')
+            ? response({ status: 403, ok: false, contentType: 'text/plain', body: null, finalUrl: req.url })
+            : response(),
+        );
+        return validate({ egress: spy.fn });
+      },
+    },
+    {
+      /*
+       * `georestriction` is NOT producible by this engine at all: the validator
+       * never bypasses a geo block, and an operator-recorded geo restriction
+       * makes the source ineligible at layer 1 (`authorization`), which is a
+       * different axis. Encoded here as the negative side of the same property:
+       * a geo-restricted right is refused before any request is made.
+       */
+      name: 'georestriction (recorded as a right restriction, refused at layer 1)',
+      category: 'ineligible',
+      depth: 'eligibility',
+      run: () => {
+        const spy = healthyEgress();
+        return validate({
+          authorization: authorization({
+            territory: { allowed: [], restricted: ['ES'], worldwide: false, geoBlocked: true },
+            restrictions: ['Geo-blocked'],
+          }),
+          egress: spy.fn,
+        });
+      },
+    },
+    {
+      name: 'unsupported-format (no URL)',
+      category: 'unsupported-format',
+      depth: 'eligibility',
+      run: () => {
+        const spy = healthyEgress();
+        return validate({ source: source({ url: null }), egress: spy.fn });
+      },
+    },
+    {
+      name: 'unknown-error',
+      category: 'unknown-error',
+      depth: 'transport',
+      run: () => {
+        const spy = scriptedEgress(() => {
+          throw new Error('something entirely unexpected');
+        });
+        return validate({ egress: spy.fn });
+      },
+    },
+    {
+      name: 'ineligible',
+      category: 'ineligible',
+      depth: 'eligibility',
+      run: () => {
+        const spy = healthyEgress();
+        return validate({
+          authorization: authorization({ verdict: 'restricted', method: 'none', publicationScope: 'none', basis: 'published-terms' }),
+          egress: spy.fn,
+        });
+      },
+    },
+  ];
+
+  for (const testCase of cases) {
+    it(`${testCase.name} is reachable and reports depth ${testCase.depth}`, async () => {
+      const result = await testCase.run();
+      expect(codeOf(result)).toBe(testCase.category);
+      expect(result.depthReached).toBe(testCase.depth);
+      expect(result.cause).toBe(FAILURE_CAUSE[testCase.category]);
+      expect(result.outcome).not.toBe('healthy');
+    });
+  }
+
+  it('the vocabulary entries not produced by a network probe are still mapped, not guessed', () => {
+    // `cors-limitation`, `browser-incompatible`, `codec-failure`, `expired-source`
+    // and `georestriction` come from the browser axis / operator decisions. They
+    // must still be categorised; a missing mapping is a silent fallback.
+    for (const browserCategory of ['cors-limitation', 'browser-incompatible', 'codec-failure'] as const) {
+      expect(FAILURE_CAUSE[browserCategory]).toBe('browser');
+    }
+    expect(FAILURE_CAUSE['expired-source']).toBe('content');
+    expect(FAILURE_CAUSE['georestriction']).toBe('policy');
+  });
+});
+
+describe('validator — layer 6 consumes an injected browser result and never opens one', () => {
+  const failures = ['browser-incompatible', 'codec-failure', 'cors-limitation'] as const;
+
+  for (const failure of failures) {
+    it(`${failure} from the injected probe is degraded at depth browser`, async () => {
+      const spy = healthyEgress();
+      const result = await validate({
+        egress: spy.fn,
+        browser: {
+          reproduced: false,
+          failure,
+          note: 'fixture probe',
+          evidence: { mediaErrorCode: 4, manifestRequests: 1, segmentRequests: 2, blockedByCors: failure === 'cors-limitation' },
+          probedAt: NOW,
+        },
+      });
+      expect(result.outcome).toBe('degraded');
+      expect(result.depthReached).toBe('browser');
+      expect(result.failure?.category).toBe(failure);
+      expect(result.cause).toBe('browser');
+    });
+  }
+
+  it('a reproduced stream reaches `healthy` at depth `browser` with browserNotProbed=false', async () => {
+    const spy = healthyEgress();
+    const result = await validate({
+      egress: spy.fn,
+      browser: {
+        reproduced: true,
+        failure: null,
+        note: null,
+        evidence: { mediaErrorCode: null, manifestRequests: 1, segmentRequests: 3, blockedByCors: false },
+        probedAt: NOW,
+      },
+    });
+    expect(result.outcome).toBe('healthy');
+    expect(result.depthReached).toBe('browser');
+    expect(result.uncertainty.browserNotProbed).toBe(false);
+  });
+
+  it('no browser available ⇒ pre-browser health stands and browserNotProbed says so', async () => {
+    const spy = healthyEgress();
+    const result = await validate({ egress: spy.fn, browser: null });
+    expect(result.outcome).toBe('healthy');
+    expect(result.depthReached).toBe('segments');
+    expect(result.uncertainty.browserNotProbed).toBe(true);
+    // Not inferred as a reproduction failure: no failure detail at all.
+    expect(result.failure).toBeNull();
+  });
+
+  it('a non-HTTP type is `unverifiable`, not `failing`: availability is not observable here', async () => {
+    const spy = healthyEgress();
+    const youtubeUrl = 'https://www.youtube.com/watch?v=fixture';
+    const result = await validate({
+      source: source({ type: 'youtube', url: youtubeUrl }),
+      authorization: authorization({
+        _id: `fixture:${youtubeUrl}`,
+        sourceUrl: youtubeUrl,
+        providerKind: 'platform',
+        operatorId: 'youtube',
+        verdict: 'permitted-official-embed',
+        method: 'official-embed',
+        basis: 'published-terms',
+        quotedClause: 'Embedded playback is permitted through the official player.',
+        clauseUrl: 'https://www.youtube.com/t/terms',
+      }),
+      egress: spy.fn,
+    });
+    expect(spy.fn).not.toHaveBeenCalled();
+    expect(result.outcome).toBe('unverifiable');
+    expect(result.failure).toBeNull();
+    expect(result.uncertainty.notes).toContain('type-not-probed-over-http');
+  });
+});
+
+describe('validator — layer 2 (DNS) is observed when injected and declared when not', () => {
+  it('an empty DNS answer is `dns-failure` at depth `dns` before egress', async () => {
+    const spy = healthyEgress();
+    const result = await validate({ egress: spy.fn, dns: async () => ({ host: 'example.test', addresses: [] }) });
+    expect(spy.fn).not.toHaveBeenCalled();
+    expect(result.failure?.category).toBe('dns-failure');
+    expect(result.depthReached).toBe('dns');
+  });
+
+  it('a TLS error from the resolver is `tls-failure`, not a generic DNS failure', async () => {
+    const spy = healthyEgress();
+    const result = await validate({
+      egress: spy.fn,
+      dns: async () => {
+        throw new Error('TLS certificate verify failed');
+      },
+    });
+    expect(result.failure?.category).toBe('tls-failure');
+  });
+
+  it('without a resolver, the row says DNS was not observed instead of claiming it passed', async () => {
+    const result = await validate();
+    expect(result.uncertainty.notes).toContain('dns-not-observed');
+  });
+});
+
+describe('status mapping', () => {
+  it('maps statuses onto contract categories without inventing a retryable 4xx', () => {
+    expect(statusCategory(401)).toBe('http-401');
+    expect(statusCategory(403)).toBe('http-403');
+    expect(statusCategory(404)).toBe('http-404');
+    expect(statusCategory(410)).toBe('http-404');
+    expect(statusCategory(451)).toBe('http-451');
+    expect(statusCategory(418)).toBe('http-404');
+    expect(statusCategory(500)).toBe('http-5xx');
+    expect(statusCategory(503)).toBe('http-5xx');
+    expect(statusCategory(429)).toBe('http-5xx');
+    expect(isRetryable(statusCategory(418))).toBe(false);
+    expect(isRetryable(statusCategory(503))).toBe(true);
+  });
+});
+
+describe('back-off — deterministic, capped, bounded', () => {
+  const from = NOW;
+
+  it('uses the contract bases per status', () => {
+    const healthy = computeBackoff({ status: 'healthy', attempt: 1, sourceId: 's1' }, from);
+    const degraded = computeBackoff({ status: 'degraded', attempt: 1, sourceId: 's1' }, from);
+    const failing = computeBackoff({ status: 'failing', attempt: 1, sourceId: 's1' }, from);
+    const unknown = computeBackoff({ status: 'unknown', attempt: 1, sourceId: 's1' }, from);
+    expect(healthy.baseDelayMs).toBe(6 * 60 * 60 * 1000);
+    expect(degraded.baseDelayMs).toBe(2 * 60 * 60 * 1000);
+    expect(failing.baseDelayMs).toBe(30 * 60 * 1000);
+    expect(unknown.baseDelayMs).toBe(15 * 60 * 1000);
+  });
+
+  it('doubles per attempt and caps at 24 h', () => {
+    const a1 = computeBackoff({ status: 'failing', attempt: 1, sourceId: 's1' }, from);
+    const a2 = computeBackoff({ status: 'failing', attempt: 2, sourceId: 's1' }, from);
+    expect(a2.baseDelayMs).toBe(a1.baseDelayMs * 2);
+    const capped = computeBackoff({ status: 'healthy', attempt: 12, sourceId: 's1' }, from);
+    expect(capped.baseDelayMs).toBe(BACKOFF_MAX_MS);
+    expect(capped.delayMs).toBeLessThanOrEqual(BACKOFF_MAX_MS);
+  });
+
+  it('jitter is deterministic per (sourceId, attempt), bounded by ±20 %, and differs across sources', () => {
+    const one = computeBackoff({ status: 'healthy', attempt: 1, sourceId: 'source-a' }, from);
+    const repeat = computeBackoff({ status: 'healthy', attempt: 1, sourceId: 'source-a' }, from);
+    expect(one).toEqual(repeat);
+
+    for (const sourceId of ['source-a', 'source-b', 'source-c']) {
+      for (const attempt of [1, 2, 3]) {
+        const plan = computeBackoff({ status: 'degraded', attempt, sourceId }, from);
+        expect(Math.abs(plan.jitterMs)).toBeLessThanOrEqual(Math.round(plan.baseDelayMs * 0.2) + 1);
+        expect(deterministicJitterUnit(sourceId, attempt)).toBeGreaterThanOrEqual(-1);
+        expect(deterministicJitterUnit(sourceId, attempt)).toBeLessThan(1);
+      }
+    }
+    const others = new Set(
+      ['source-a', 'source-b', 'source-c'].map((s) => computeBackoff({ status: 'healthy', attempt: 1, sourceId: s }, from).jitterMs),
+    );
+    expect(others.size).toBeGreaterThan(1);
+  });
+
+  it('retry is bounded by the attempt cap and never happens for paused/unverifiable', () => {
+    expect(computeBackoff({ status: 'failing', attempt: 1, sourceId: 's', maxAttempts: 3 }, from).retryable).toBe(true);
+    expect(computeBackoff({ status: 'failing', attempt: 3, sourceId: 's', maxAttempts: 3 }, from).retryable).toBe(false);
+    const paused = computeBackoff({ status: 'paused', attempt: 1, sourceId: 's' }, from);
+    expect(paused.retryable).toBe(false);
+    expect(paused.delayMs).toBe(0);
+    expect(statusForOutcome('healthy')).toBe('healthy');
+    expect(statusForOutcome('ineligible')).toBe('unknown');
+    expect(statusForOutcome('paused')).toBe('paused');
+  });
+
+  it('nextCheckAt is exactly from + delay', () => {
+    const plan = computeBackoff({ status: 'unknown', attempt: 2, sourceId: 's' }, from);
+    expect(plan.nextCheckAt.getTime()).toBe(from.getTime() + plan.delayMs);
+  });
+});
+
+describe('validator — source hygiene', () => {
+  it('the validator module never opens a browser or a socket itself', () => {
+    const path = fileURLToPath(new URL('./validator.ts', import.meta.url));
+    const text = readFileSync(path, 'utf8');
+    // No imports of a browser driver, a scheduler, or raw network primitives:
+    // the only I/O is the injected `egress`/`dns` seam.
+    for (const forbidden of ['playwright', 'puppeteer', 'child_process', 'node:net', 'node:http', 'node:https', 'undici']) {
+      expect(text).not.toMatch(new RegExp(`from '${forbidden.replace(/[/\\]/g, '\\$&')}'`));
+    }
+  });
+});
