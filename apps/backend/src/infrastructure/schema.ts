@@ -115,6 +115,17 @@ export interface ProgrammeDoc {
   editedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
+  /*
+   * TDT-API-02FG (all optional: existing rows keep their shape).
+   */
+  /** Wall clock the upstream published, before zone normalisation (audit only). */
+  originalStart?: Date;
+  /** Zone the upstream timestamp was authored in (`UTC` when it carried an offset). */
+  timezone?: string;
+  /** `_id` of the emission that wins when this one is a duplicate; null otherwise. */
+  duplicateOf?: string | null;
+  /** Outside the window the source currently promises. */
+  stale?: boolean;
 }
 
 export interface EpgSourceDoc {
@@ -131,6 +142,38 @@ export interface EpgSourceDoc {
   lastRunProgrammes: number;
   createdAt: Date;
   updatedAt: Date;
+  /*
+   * TDT-API-02FG per-source geography (all optional).
+   *
+   * `timezone` is the zone the guide is *authored* in and is what an XMLTV
+   * timestamp without an offset is interpreted in. The scheduled job's own
+   * interval, retries and HTTP validators live here too.
+   */
+  country?: string | null;
+  language?: string | null;
+  timezone?: string | null;
+  fetchIntervalMinutes?: number;
+  lastSuccessAt?: Date | null;
+  consecutiveFailures?: number;
+  nextRunAt?: Date | null;
+  httpEtag?: string | null;
+  httpLastModified?: string | null;
+}
+
+/** One synchronisation run of one guide source (`epg_sync_runs`). */
+export interface EpgSyncRunDoc {
+  _id: string;
+  sourceId: string;
+  startedAt: Date;
+  finishedAt: Date | null;
+  status: 'ok' | 'failed';
+  programmes: number;
+  channelsMatched: number;
+  rejected: number;
+  duplicates: number;
+  /** Generic failure class: never an upstream URL or a raw provider message. */
+  error: string | null;
+  trigger: 'scheduled' | 'manual' | 'incremental';
 }
 
 export interface AuditDoc {
@@ -243,11 +286,25 @@ export async function ensureIndexes(db: Db): Promise<void> {
       { key: { channelId: 1, externalKey: 1 }, name: 'channel_external_unique', unique: true },
       { key: { end: 1 }, name: 'end_expiry' },
       { key: { sourceId: 1, start: 1 }, name: 'source_start' },
+      // TDT-API-02FG: overlap lookup per channel, the duplicate scan and the
+      // coverage aggregate all read `(channelId, start, end)`.
+      { key: { channelId: 1, start: 1, end: 1 }, name: 'channel_window' },
+      { key: { duplicateOf: 1 }, name: 'duplicate_of' },
     ]);
 
   await db
     .collection<EpgSourceDoc>(COLLECTIONS.epgSources)
-    .createIndexes([{ key: { name: 1 }, name: 'name_unique', unique: true }]);
+    .createIndexes([
+      { key: { name: 1 }, name: 'name_unique', unique: true },
+      { key: { nextRunAt: 1 }, name: 'next_run_queue' },
+    ]);
+
+  await db
+    .collection<EpgSyncRunDoc>(COLLECTIONS.epgSyncRuns)
+    .createIndexes([
+      { key: { sourceId: 1, startedAt: -1 }, name: 'source_recent' },
+      { key: { status: 1, startedAt: -1 }, name: 'status_started' },
+    ]);
 
   await db
     .collection<AuditDoc>(COLLECTIONS.audits)
