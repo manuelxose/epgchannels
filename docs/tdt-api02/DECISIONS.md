@@ -260,3 +260,68 @@ Formato: `D-0NN` · fecha · estado (`ADOPTADA`, `SUSTITUIDA`, `PENDIENTE`).
   `reviewed`, para que un auditor distinga un derecho auto-registrado de uno investigado.
 - **Consecuencia:** un operador que registra una fuente sin evidencia obtiene una fuente **registrada
   pero no reproducible**, que es la respuesta honesta.
+
+## D-020 — La salud de una fuente es un eje propio, con vocabulario cerrado y `lease`
+
+- **Estado:** ADOPTADA (2026-11-17, 02D)
+- **Contexto:** la misión de 02D exige verificar fuentes automáticamente y persistir su historia, sin
+  que caídas de proceso marquen una fuente como sana. La exploración mostró que la colección heredada
+  `source_health` tiene `_id = candidateId` y unicidad por candidato, no por `sourceId`.
+- **Decisión:** la salud vive en colecciones **propias** (`source_health_checks_02d`,
+  `source_health_02d`, `verification_policies_02d`); **no** se reutiliza la heredada (sería un mapeo
+  silencioso). El vocabulario de resultados es cerrado (`healthy|degraded|failing|unknown|unverifiable`)
+  y la **categoría de fallo** es otro vocabulario. Un check toma un `lease`; un lease vencido se
+  reconcilia como `state: failed`, `outcome: unknown`, `failure.category: unknown-error`,
+  `uncertainty.leaseExpired`, y la salud agregada **no se toca**.
+- **Por qué:** un proceso caído no es evidencia de que el stream funcione ni de que falle. «No lo sé, y
+  no lo sé porque el proceso murió» es `unknown`, y así se registra.
+- **Consecuencia:** el `_id` del check es determinista (`sourceId:scheduledFor`), de modo que un
+  reintento tras una caída **no duplica** trabajo ni dispara una segunda petición externa.
+
+## D-021 — Tres presupuestos de tamaño distintos, y el tercero no es un filtro
+
+- **Estado:** ADOPTADA (2026-11-17, 02D), tras corregir dos veces
+- **Contexto:** el contrato fijaba «2 MiB manifiesto, 512 KiB segmento, 64 KiB por segmento muestreado».
+  La primera implementación aplicó los 64 KiB al segmento entero: un directo HD sano se reportaba
+  `missing-segments`. La segunda subió el techo a 512 KiB y siguió rechazando streams sanos (un
+  segmento real medido: 1 915 156 B). **Una política de tamaño estaba diciendo «no reproducible» de una
+  fuente sana.**
+- **Decisión:** (1) manifiesto 2 MiB; (2) **tolerancia** de longitud declarada del segmento 4 MiB, que
+  NO es filtro de admisión; (3) **sonda** de 64 KiB: los bytes realmente leídos por segmento muestreado,
+  mediante `prefixBytes` en `safeFetch` (HEAD primero y lectura de prefijo acotada). El ancho de banda
+  por muestra queda acotado (medido: 1 544 984 B → 65 536 B, 23× menos).
+- **Consecuencia declarada:** un segmento enorme que se sirve bien se **muestrea y se reporta sano**.
+  `SEGMENT_MAX_BYTES` **no** garantiza que un cuerpo sobredimensionado se rechace cuando fluye. La
+  garantía que sí se mantiene es el ancho de banda por muestra. «Saludable» significa que manifiesto,
+  variante y segmentos muestreados se recuperan y son del tipo correcto; **no** significa «cualquier
+  tamaño es aceptable».
+
+## D-022 — Una playlist maestra desciende exactamente un nivel
+
+- **Estado:** ADOPTADA (2026-11-17, 02D)
+- **Contexto:** la implementación inicial devolvía `degraded` con `failure: null` al reconocer un
+  maestro, **sin pedir ninguna variante**. Como casi todo emisor publica un maestro, la capa de
+  segmentos —la que de verdad demuestra que hay vídeo— era **inalcanzable**. El caso medido: maestro
+  `200`, variante `404`; el navegador lo detectaba y el motor decía «degraded».
+- **Decisión:** se sigue **exactamente una** variante (constante explícita, sin recursión). Si esa
+  variante es a su vez un maestro, se registra `nested-master-not-followed` y no se pide nada más. El
+  número de peticiones está acotado por construcción y hay un test que lo afirma.
+- **Consecuencia:** un maestro cuya variante falla produce una **categoría de fallo nombrada**, no un
+  «degraded» vacío.
+
+## D-023 — Toda defensa necesita al menos una prueba por la vía real, sin seam inyectado
+
+- **Estado:** ADOPTADA (2026-11-17, 02D) — la lección más cara de la ronda
+- **Contexto:** `safe-egress` se entregó con **131 tests adversariales en verde** y **no podía descargar
+  ninguna URL `https` pública** (`ERR_INVALID_IP_ADDRESS`): el `lookup` fijado respondía una dirección
+  única y Node lo invoca con `{all:true}` exigiendo un **array**. Todos los tests pasaban porque
+  **todos inyectaban `deps.lookup`**: ejercitaban la vía de prueba, nunca la de producción. En la misma
+  ronda, `prefixBytes` se fusionó pero `runtime.ts` lo **descartaba** silenciosamente.
+- **Decisión:** ninguna defensa de red ni capacidad de la capa de egreso se considera probada mientras
+  su única cobertura inyecte la capa que puede romperse. Se exige, como mínimo, **una** prueba por
+  costura crítica que recorra la ruta real (una petición real a un host público; un fixture de loopback
+  sin `lookup` simulado), y una **prueba por mutación con recompilación** que demuestre que la suite
+  falla cuando la defensa cae.
+- **Consecuencia:** los módulos de la capa de red deben exponer su costura para poder probar la vía real,
+  y el revisor independiente tiene instrucción explícita de auditar toda defensa que sólo se ejercite a
+  través de un doble.
