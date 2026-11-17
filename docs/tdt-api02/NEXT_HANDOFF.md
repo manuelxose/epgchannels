@@ -1,106 +1,75 @@
-# NEXT_HANDOFF — TDT-API-02 (traspaso a 02E)
+# NEXT_HANDOFF — TDT-API-02 (traspaso tras el cierre de 02FG)
 
-Documento de traspaso. Se lee **antes** de empezar cualquier trabajo nuevo. Si algo aquí contradice el
-estado real del repositorio, **gana el repositorio**: actualízalo y dilo.
+Leer **antes** de empezar cualquier trabajo nuevo. Si algo contradice el repositorio, **gana el
+repositorio**: actualízalo y dilo.
 
-Última actualización: 2026-11-17 (cierre de 02D).
-
----
-
-## 0. Leer primero, en este orden
-
-1. `EXECUTION_CONTRACT.md` — reglas obligatorias (Git, agentes, seguridad, REA, tokens, pruebas).
-2. `MILESTONE_STATUS-02D.md` — estado real de 02D, **calificación PARTIAL y por qué** (§9).
-3. `MODULE-CONTRACT-02D.md` — contrato del sistema de verificación. **Gobierna 02D y sucesores.**
-4. `GATE-02D.md` — qué se midió, con qué exit codes, y **por qué engine-04 no puede certificarlo aquí**.
-5. `VERIFICACION-FUENTES-02D.md` — HTTP 200 ≠ reproducible, medido; y la limitación del catálogo.
-6. `DECISIONS.md` — **D-020..D-023** (salud como eje propio; tres presupuestos de tamaño; maestro
-   desciende un nivel; **toda defensa necesita prueba por la vía real**). D-016/D-017/D-019 siguen vigentes.
-7. `MUTACION-SSRF-02D.md` — cómo se probó que el probe SSRF discrimina de verdad.
+Última actualización: 2026-11-17, cierre de TDT-API-02FG.
 
 ---
 
-## 1. Estado al entregar 02D
+## 0. Leer en este orden
 
-- **Motor de verificación en capas** (elegibilidad → DNS/transporte → HTTP/content-type → manifiesto →
-  playlist/segmentos → navegador), con **`safeFetch` SSRF-safe**: resolución DNS explícita, rechazo de
-  direcciones privadas/reservadas, **fijación de la IP validada** (pin), re-validación de cada salto de
-  redirección, sin credenciales, y **lectura de prefijo acotada** (`prefixBytes`).
-- **Ledger de salud persistente** con `lease`, `revision` CAS, anillo de historia y recuperación tras caída.
-- **Planificador** con concurrencia global y **por host**, backoff determinista con jitter, tope de
-  reintentos, **circuit breakers** por fuente y por host, y **un solo canal** de decisión de reintento.
-- **Controles de operador** autenticados que fallan cerrado (`/api/v1/admin/verification/*`): pausar,
-  reanudar, reintentar con motivo, estado y métricas Prometheus **sin URLs ni hostnames** (buckets).
-- **Medido, no afirmado:** 3 de 4 fuentes públicas de prueba `healthy` a profundidad `segments`; la
-  cuarta rota en el origen (404 real). Matriz de fixtures **14/14**. Probe SSRF adversarial **10/10
-  rechazados, 0 conexiones**, con prueba de mutación.
+1. `EXECUTION_CONTRACT.md` — reglas obligatorias.
+2. `MILESTONE_STATUS-02FG.md` — estado real del cierre, gate medido, defectos y límites.
+3. `02fg/PERF.md` — rendimiento medido antes/después.
+4. `02fg/INTERFACE-CONTRACT-02FG.md` y su `-COMPLEMENT` — contratos compartidos y vocabulario de datos.
+5. `DECISIONS.md` — D-016..D-023 vigentes.
+6. `02e/PLAYBACK-VERIFICATION.md` — evidencia del reproductor.
 
-## 2. Lo que **no** se hizo (deliberado, y por qué)
+## 1. Estado al entregar
 
-- **Consumir `healthy` en el descriptor público.** `publication-policy.ts:isSourceHealthy()` sigue
-  tratando `technicalStatus: 'unknown'` como sano. Cambiarlo altera el descriptor público de
-  reproducción: es una decisión de producto, no un detalle de implementación.
-- **Persistir el rastro maestro→variante.** Se produce y tipa, pero `health.repository.ts` copia la
-  evidencia verbatim; ensanchar el esquema persistido es un cambio de contrato de almacenamiento.
-- **Verificación del catálogo real.** Ver §3.1. **Ninguna fuente del catálogo ha sido verificada.**
-- **CI/CD (R3).** Sigue sin existir.
-- **SEC-02** (clave de servicio) sigue fuera de alcance.
+`main` está en **`da06897`** (PR #7 fusionado). El producto es una demo funcional integrada:
 
----
+- Catálogo canónico **412 canales publicados** (ES 294 / INT 118) sobre 768 registros.
+- **EPG propia** (XMLTV + json), mapeos canónicos, DST, dedup, cobertura `fresh/stale/empty/not-mapped`.
+- **API pública internacional** documentada en OpenAPI (46 rutas / 43 esquemas) y cliente regenerado.
+- **Consola de administración** real (backend + UI Angular) conectada a la API.
+- **Reproductor** de 02E funcionando contra la API final, con progresión real medida.
+- Gate consolidado **11/11** y navegador **36/36**.
 
-## 3. Lo más importante para 02E
+## 2. Lo más importante para quien siga
 
-### 3.1 La limitación que gobierna todo lo demás
+### 2.1 Lo que NO es
 
-**El motor no ha verificado ni una sola fuente del catálogo.** Medido: **81** fuentes publicadas
-`hls`/`dash` con URL, **0** con registro de autorización; ni `source_authorizations_02c` ni
-`source_authorization` existen en la base operativa. El gate las declara `ineligible` y **no abre
-sockets** — que es lo correcto, pero significa que 02D demostró el motor contra fuentes públicas de
-prueba, **no** contra el catálogo.
+- **No hay derechos de difusión.** Las 81 autorizaciones son del propietario para *verificar*
+  (`reviewStatus: pending-review`) y su cláusula dice que no son prueba de concesión del emisor.
+- **No hay CI/CD.** `.github/` no existe: nada despliega al fusionar, pero tampoco valida un PR. El
+  único gate es local (`scripts/validate-02fg.mjs`, `scripts/validate-02fg-browser.mjs`).
+- **La cobertura de medios no es un censo.** Ver `02e/PLAYBACK-VERIFICATION.md` §5 (Firefox/WebKit no
+  medidos, DASH ausente del catálogo).
 
-**Para desbloquearlo no hace falta código: hace falta que un operador registre autorizaciones reales,
-con evidencia citable.** La vía está en 02C (`AuthorizationRepository.record`). No fabriques derechos
-para que las cifras suban: ése fue exactamente el defecto que la revisión de 02C encontró.
+### 2.2 Trampas confirmadas (ampliación de la lista de 02D)
 
-### 3.2 La lección más cara: verde con la vía real apagada
+- **El payload de `/admin/catalogue` NO va doblemente envuelto**: es `{data:[...], pagination}`. Un
+  helper que "desenvuelva siempre `data`" pierde la paginación. Ver `core/admin/json-shape.ts`.
+- **`/admin/epg/coverage` SÍ va envuelto** (`{data:{entries,totals,conflicts,asOf}}`). Los dos casos
+  conviven: lee despacio antes de aplicar un patrón único.
+- **Un endpoint de la consola puede responder 200 sin sesión aparente** en las pruebas si reutilizas
+  un token de un run anterior: los tokens viven en `admin_sessions` y caducan.
+- **Pausar un trabajo sólo funciona si el proceso lo ha registrado** (`JOBS_ENABLED=true`). Con los
+  trabajos desactivados, la operación responde 404 honestamente: no es un defecto.
+- **La base operativa ya tiene un administrador** (`editor@tdt.invalid`) cuya contraseña no está en el
+  repositorio. Para probar administración, usa una base desechable y `ADMIN_BOOTSTRAP_TOKEN` canario.
+- **`npx vitest run` debe ejecutarse con cwd = `apps/backend`**; desde la raíz recoge los specs del
+  frontend y falla.
+- **`npm --prefix apps/frontend run test`** es la forma correcta; `ng test --browsers=...` confunde.
 
-`safe-egress` tuvo **131 tests en verde** sin poder descargar **ninguna** URL https real, porque todos
-inyectaban `deps.lookup`. Después, `prefixBytes` se fusionó pero `runtime.ts` lo descartaba. Es el mismo
-defecto que 02C encontró (defecto 5) en otro eje.
+### 2.3 Reglas de oro (sin cambios)
 
-**Regla para 02E (D-023):** ninguna defensa de red está probada mientras su única cobertura inyecte la
-capa que puede romperse. Exige **una** prueba por la vía real y **una mutación con recompilación**.
-
-### 3.3 Trampas confirmadas esta ronda
-
-- **`git stash` en un worktree puede borrar ficheros rastreados** si luego haces `stash drop`. Me pasó:
-  recuperé con `git checkout --`. No uses stash para «limpiar» un worktree.
-- **`dist/` heredado hace vacuas las pruebas de mutación.** Recompila **siempre** entre mutar y medir.
-- **El gate de sellado compara contra el *baseline* original**, no contra el head actual: en un worktree
-  ya fusionado marca como violación todo el histórico del milestone. `git status --porcelain` en el
-  worktree es la medida correcta; el sello captain-side con scope completo sigue siendo obligatorio.
-- **El runner ACL de engine-04 no puede lanzar `npm` en este host** (`CreateProcessAsUserW Win32 2`).
-  Ejecuta cada etapa **directamente** y registra los exit codes; no lo presentes como gate certificado.
-- **`npx vitest` debe ejecutarse con cwd = `apps/backend`** (la config es relativa al paquete).
-- Los CDN **no informan `content-length` en HEAD** (devuelven 0). Nunca trates 0 como «cabe».
-
-### 3.4 El patrón de defecto dominante
-
-**Culpar al contenido de una decisión de política.** Ocurrió dos veces: 64 KiB aplicados al segmento
-entero (directo HD sano → `missing-segments`) y bipbop_16x9 tratado como «irreparable» cuando su
-segmento era `video/MP2T` válido. Cuando una fuente sana se reporta rota, sospecha primero del
-presupuesto, no del origen.
-
-## 4. Reglas de oro (sin cambios)
-
-1. Un escritor por worktree; worktrees solo vía `parallel-dev.mjs`.
+1. Un escritor por worktree; worktrees sólo vía `parallel-dev.mjs`.
 2. Nunca `git reset --hard`, `git clean -fdx`, `checkout -f` ni push forzado.
-3. Nunca fusionar sin tests reales, revisión independiente y comprobación de CI/CD.
+3. Nunca fusionar sin ejecutar de verdad las etapas y sin comprobar CI/CD.
 4. Nunca inventar resultados ni afirmar que algo funciona sin exit code real.
 5. Nunca escribir valores de secretos: solo nombres de variables de entorno.
-6. Toda tarea de revisión nace con dependencias explícitas.
-7. **Congela el SHA antes de pedir revisión; no escribas mientras te revisan.**
-8. **Un defecto encontrado al ejecutar vale más que diez leídos**; y uno encontrado en el **resultado
-   observable** vale más que diez unitarios.
-9. **Cuando declares un `inScope`, incluye todos los ficheros que tus propias instrucciones piden**
-   (me pasó dos veces en 02D y bloqueó dos tareas correctas).
+6. **Comprueba la rama en la que estás** antes de dar por fusionado algo: `git checkout` puede abortar
+   y dejarte en la rama anterior (pasó en este milestone; `git rev-parse --abbrev-ref HEAD` lo detecta).
+7. Si un especialista atribuye un fallo a "limitación del entorno", **reprodúcelo antes de aceptarlo**:
+   en 02FG el fallo era un defecto real de lectura del payload.
+
+## 3. Trabajo pendiente concreto (no es un milestone nuevo)
+
+Está en `MILESTONE_STATUS-02FG.md` §9: endurecer `adminIdentityInputSchema`, re-apuntar
+`/admin/epg/ingestion-runs` a `epg_sync_runs`, programar el refresco de la guía en producción, revisión
+visual/contraste fino de la consola y certificación con engine-04 si su runner lo permite.
+
+No hay que abrir otro milestone de revisión para esto: son tareas sueltas.
