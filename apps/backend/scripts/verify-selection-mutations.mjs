@@ -57,8 +57,8 @@ const MUTATIONS = [
     id: 'not-verified-is-failing',
     what: 'an absent verdict read as a failure, which would disable every row on the platform',
     file: 'apps/backend/src/verification/source-health.ts',
-    find: "  return NOT_VERIFIED;\n}\n\n/**\n * Whether health decides attemptability",
-    replace: "  return { ...NOT_VERIFIED, state: 'failing', failure: 'not-verified' };\n}\n\n/**\n * Whether health decides attemptability",
+    find: "  return NOT_VERIFIED;\n}\n\n/**\n * Whether health decides attemptability for this source type",
+    replace: "  return { ...NOT_VERIFIED, state: 'failing', failure: 'not-verified' };\n}\n\n/**\n * Whether health decides attemptability for this source type",
     proves: '`not-verified` is its own state, never collapsed into failing',
   },
   {
@@ -118,13 +118,24 @@ for (const mutation of selected) {
   const stagedEntry = staged.get(mutation.id);
   const { path, copy, digest } = stagedEntry;
   const original = readFileSync(path, 'utf8');
-  if (!original.includes(mutation.find)) {
+  /*
+   * Anchors are written with `\n` because that is what the templates read like,
+   * but this tree is checked out with CRLF on Windows. Matching raw bytes made a
+   * multi-line anchor silently `not-applied` while a single-line one in the same
+   * file still matched — the mutant looked stale when the matcher was the problem.
+   * So compare on normalised text and write the mutation back in the file's own
+   * line ending, which keeps the restore byte-identical in meaning.
+   */
+  const usesCrlf = original.includes('\r\n');
+  const normalised = original.replace(/\r\n/g, '\n');
+  if (!normalised.includes(mutation.find)) {
     results.push({ id: mutation.id, status: 'not-applied', detail: 'anchor text not found; the mutant is stale' });
     survived += 1;
     continue;
   }
   try {
-    writeFileSync(path, original.replace(mutation.find, mutation.replace), 'utf8');
+    const mutated = normalised.replace(mutation.find, mutation.replace);
+    writeFileSync(path, usesCrlf ? mutated.replace(/\n/g, '\r\n') : mutated, 'utf8');
 
     const build = spawnSync('npm', ['run', 'build', '-w', '@tdt/backend'], { cwd: ROOT, encoding: 'utf8', shell: true });
     if (build.status !== 0) {
