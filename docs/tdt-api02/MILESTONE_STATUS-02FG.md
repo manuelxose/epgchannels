@@ -1,7 +1,7 @@
 # MILESTONE_STATUS-02FG — Integración final: EPG global, API, administración, rendimiento y cierre de release
 
-Estado: **PASS / MERGED** (función completada, puertas obligatorias en verde y PR fusionado; los
-elementos no críticos están en §9 como trabajo futuro).
+Estado: **PASS / MERGED**. Gate consolidado **11/11** y smoke local **8/8**. La ronda de acabado (PR #9) cerró tres de los cuatro puntos de código pendientes (§9) con verificación independiente y dejó el arranque completo en un solo comando (`
+npm run demo`).
 
 Fecha: 2026-11-17. Milestone único que combina 02F y 02G.
 
@@ -123,15 +123,37 @@ Playwright contra la API real: `real-backend`, `player`, `catalogue`, `epg` → 
 - Navegadores, Gate engine-04 y el runner ACL no se usaron: el gate se ejecutó directamente con exit
   codes registrados (`§4`), como exige la experiencia de 02D (`CreateProcessAsUserW Win32 2`).
 
-## 9. Trabajo futuro (no bloqueante, deliberadamente fuera de este milestone)
+## 9. Cierre de la lista de trabajo futuro (ronda de acabado, 2026-11-17)
 
-1. Contrato: `adminIdentityInputSchema` acepta una edición sin cambios de identidad (se auditoría y
-   devuelve 200) — endurecer si el producto quiere 409.
-2. `epg_sync_runs` existe en el modelo, pero `/admin/epg/ingestion-runs` sigue leyendo `job_runs`
-   (prefijo `epg:`); re-apuntar es un cambio pequeño y sin riesgo.
-3. Refresco periódico de la guía en producción (la ingesta existe y es manual/programable).
-4. Contraste WCAG y revisión visual fina de la consola de administración.
-5. Certificación con engine-04 cuando su runner pueda lanzar `npm` en este host.
+La ronda de acabado cerró los cuatro puntos que eran código, con verificación independiente
+(`verdict=pass`, verificado por un miembro que no los implementó):
+
+| # | Punto | Estado |
+|---|---|---|
+| 1 | Identidad sin cambios | **cerrado**: `adminIdentityInputSchema` exige al menos un campo y la ruta responde **409** si repite los valores almacenados, sin escribir ni auditar. 3 pruebas (400 / 409 sin auditoría / cambio real con 1 entrada de auditoría) |
+| 2 | `ingestion-runs` sobre `job_runs` | **cerrado**: lee `epg_sync_runs` a través de `EpgSyncRunService` (`server/routes.ts` inyecta `ingestion.syncRuns`); prueba reescrita sobre la colección canónica |
+| 3 | Refresco periódico de la guía | **cerrado**: `jobs/epg-refresh.ts` planifica con `planRuns`/`shouldRetry` y consulta `mayRun` **antes de cada fuente**; 4 pruebas de integración contra MongoDB real (pausa, reanudación que escribe el run, back-off y fuente deshabilitada) |
+| 4 | Contraste WCAG / revisión visual fina | **abierto**: requiere revisión humana, no se auto-certifica aquí |
+| 5 | Certificación engine-04 | **abierto**: el runner ACL sigue sin poder lanzar `npm` en este host |
+
+Además, para dejar el proyecto como uno real y funcional:
+
+- `npm run demo` arranca producto completo (compila, migra, crea el administrador del `.env`, siembra
+  la guía sintética solo si no hay guía vigente y sirve el bundle con proxy `/api`).
+- `.env` (ignorado por git) con las credenciales del panel; `.env.example` documenta qué rellenar.
+- `npm run smoke:local`: 8 comprobaciones reales contra el producto en marcha (catálogo 412,
+  reproducción con progresión de media, guía con programación y acceso real al panel con la cuenta del
+  `.env`). Resultado medido: **8/8**.
+- `favicon.svg` ausente (404 en cada carga) corregido.
+- Se retiró el parámetro muerto `incremental` de `runSource`: el refresco real es incremental por
+  `If-None-Match`.
+
+## 9-bis. Trabajo futuro que queda (no bloqueante)
+
+1. Revisión visual y de contraste WCAG de la consola por una persona.
+2. Certificación con engine-04 cuando su runner pueda lanzar `npm` en este host.
+3. Guía real: sustituir la de demostración por una fuente XMLTV con licencia, cuando el operador la
+   aporte (`DEMO_SEED_GUIDE=false` y `npm run import:guide`).
 
 ## 10. Cierre
 

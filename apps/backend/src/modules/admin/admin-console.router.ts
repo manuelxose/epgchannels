@@ -40,7 +40,7 @@ import {
 } from '@tdt/contracts';
 import type { DatabaseHandle } from '../../infrastructure/mongo.js';
 import { COLLECTIONS } from '../../infrastructure/mongo.js';
-import type { EpgSourceDoc } from '../../infrastructure/schema.js';
+import type { EpgSourceDoc, ChannelDoc } from '../../infrastructure/schema.js';
 import { AppError } from '../../server/errors.js';
 import { regionByCode } from '../../shared/taxonomy.js';
 import type { Logger } from '../../infrastructure/logging.js';
@@ -102,6 +102,15 @@ export interface AdminConsoleDeps {
       readonly rejected: number;
       readonly message: string | null;
     }>;
+    /**
+     * The canonical run history (`epg_sync_runs`), owned by the EPG module's
+     * `EpgSyncRunService`. The console reads it, never re-implements it: the
+     * ingestion service already records one row per attempt, success or failure,
+     * together with the source's own name.
+     */
+    syncRuns: {
+      list(options?: { readonly sourceId?: string; readonly limit?: number }): Promise<EpgSyncRun[]>;
+    };
   };
   /** Runtime metrics for the operations endpoint, already aggregated by the caller. */
   readonly metrics: () => Promise<AdminMetrics>;
@@ -248,6 +257,20 @@ export function createAdminConsoleRouter(deps: AdminConsoleDeps): Router {
       const actor = actorOf(request);
       const id = requireId(request);
       const input = parseBody(adminIdentityInputSchema, request) as AdminIdentityInput;
+      /*
+       * Only a real edit is an edit. The body carries nothing to compare against,
+       * so the stored channel decides: an edit that would leave every identity
+       * column as it already is is refused here with 409, before any write and
+       * before any audit entry, because auditing it would record a change that
+       * never happened.
+       */
+      const current = await deps.database.collection<ChannelDoc>(COLLECTIONS.channels).findOne({ _id: id });
+      if (!current) throw AppError.notFound('Canal no encontrado.');
+      if (!identityChanges(current, input)) {
+        throw AppError.conflict(
+          'La edición no cambia ningún campo de identidad (nombre, nombre corto, país, idioma, categoría o región). No se ha escrito nada ni se ha registrado auditoría.',
+        );
+      }
       /*
        * Identity is an editorial edit, so it goes through the service that owns
        * channel writes: it enforces optimistic concurrency, recomputes the search
@@ -466,11 +489,28 @@ export function createAdminConsoleRouter(deps: AdminConsoleDeps): Router {
         }),
         request,
       );
-      const runs: EpgSyncRun[] = await deps.console.ingestionRuns({
-        ...query,
-        failuresOnly: query.failuresOnly === 'true',
+      /*
+       * The canonical history, read from `epg_sync_runs` — the collection
+       * `EpgIngestionService.runSource` writes one row into per attempt, through
+       * the module that owns its shape (`EpgSyncRunService`). `job_runs` is the
+       * scheduler's own bookkeeping and is no longer the source of this view.
+       *
+       * `status`/`failuresOnly` are applied after the bounded, newest-first read
+       * because the two statuses are already excluded/included by the same
+       * ordering: filtering in memory over at most `limit` rows keeps the answer
+       * exact and bounded, with no unbounded scan and no second query shape.
+       */
+      const runs = await deps.ingestion.syncRuns.list({
+        ...(query.sourceId === undefined ? {} : { sourceId: query.sourceId }),
+        limit: query.limit,
       });
-      response.json({ data: runs });
+      const failuresOnly = query.failuresOnly === 'true';
+      const filtered = runs.filter((run) => {
+        if (query.status !== undefined && run.status !== query.status) return false;
+        if (failuresOnly && run.status !== 'failed') return false;
+        return true;
+      });
+      response.json({ data: filtered.slice(0, query.limit) });
     }),
   );
 
@@ -732,4 +772,34 @@ function regionOf(code: string): { code: string; name: string } {
    * inventing a name: region names are taxonomy data, not a guess.
    */
   return { code, name: known?.name ?? code };
+}
+
+/** The stored identity columns of a channel, compared field by field. */
+type IdentityColumns = Pick<ChannelDoc, 'name' | 'shortName' | 'country' | 'category'> & {
+  readonly languageTag: string;
+  readonly region: { readonly code: string } | null;
+};
+
+/**
+ * Whether this edit would change anything the caller is responsible for.
+ *
+ * `undefined` means "not part of this edit" and is never a difference: only the
+ * fields the body carries are compared, and a field that carries the value the
+ * channel already holds is not a change either.
+ */
+export function identityChanges(
+  current: IdentityColumns,
+  input: Pick<AdminIdentityInput, 'name' | 'shortName' | 'country' | 'language' | 'category' | 'regionCode'>,
+): boolean {
+  if (input.name !== undefined && input.name !== current.name) return true;
+  if (input.shortName !== undefined && input.shortName !== current.shortName) return true;
+  if (input.country !== undefined && input.country !== current.country) return true;
+  if (input.language !== undefined && input.language !== current.languageTag) return true;
+  if (input.category !== undefined && input.category !== current.category) return true;
+  if (input.regionCode !== undefined) {
+    const wanted = input.regionCode === null ? null : input.regionCode;
+    const stored = current.region?.code ?? null;
+    if (wanted !== stored) return true;
+  }
+  return false;
 }

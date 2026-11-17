@@ -7,51 +7,85 @@ TypeScript SDK and an Angular client that consumes it.
 The platform is the source of truth for its catalogue: it does not read a
 third-party catalogue, guide or player at runtime.
 
-## Quick start
+The product has three surfaces: **televisión en directo** (`/television`), la
+**guía / parrilla** (`/schedule`) y la **consola de administración** (`/admin`).
+
+## Arranque completo con un comando
 
 ```bash
-docker compose -f infra/docker-compose.yml up -d     # MongoDB (replica set) + Redis
+docker compose -f infra/docker-compose.yml up -d   # MongoDB (replica set) + Redis
 npm install
-npm run build
-npm run migrate                                      # idempotent schema + editorial guide source
-
-npm run import:catalogue -- --file /path/to/tv.json  # operator-supplied snapshot
-npm run import:guide -- --file /path/to/TV.epg.json --licence Apache-2.0
-
-node apps/backend/dist/server/main.js                # http://127.0.0.1:4010/api/v1/health
+copy .env.example .env                             # y rellena las dos líneas marcadas OBLIGATORIO
+npm run demo                                       # API + web + administración
 ```
 
-Full instructions, including the first administrator and the frontend build:
-[`docs/RUNBOOK.md`](docs/RUNBOOK.md).
+`npm run demo` compila, aplica migraciones, crea el administrador definido en
+`.env` y sirve el bundle que se entrega, con el proxy `/api` al backend:
 
-## Documentation
-
-| Document | Content |
+| Superficie | URL |
 | --- | --- |
-| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Components, request path, publication policy, providers |
-| [`docs/DATA-MODEL.md`](docs/DATA-MODEL.md) | Every collection, field and index |
-| [`docs/RUNBOOK.md`](docs/RUNBOOK.md) | Reproducible deployment, configuration, verification commands |
-| [`docs/PROVENANCE-AND-LICENCES.md`](docs/PROVENANCE-AND-LICENCES.md) | Where every class of data comes from and what may be done with it |
-| [`docs/GUIATV-INTEGRATION.md`](docs/GUIATV-INTEGRATION.md) | How GuíaTV consumes the API without creating duplicate identities |
-| [`docs/DELIVERY-REPORT-TDT-API-01.md`](docs/DELIVERY-REPORT-TDT-API-01.md) | Milestone report, test results and the GO/NO-GO verdict |
-| [`openapi/openapi.json`](openapi/openapi.json) | OpenAPI 3.1 document |
+| Televisión en directo | <http://127.0.0.1:4200/television> |
+| Guía / parrilla | <http://127.0.0.1:4200/schedule> |
+| Administración | <http://127.0.0.1:4200/admin> |
+| API | <http://127.0.0.1:4010/api/v1> |
+| OpenAPI | <http://127.0.0.1:4200/api/v1/openapi.json> |
 
-## Commands
+Las credenciales del panel son las de `.env`
+(`ADMIN_BOOTSTRAP_EMAIL` / `ADMIN_BOOTSTRAP_PASSWORD`). **`.env` está ignorado
+por git**: nunca se commitea. Para comprobar que el producto arranca de verdad:
 
-| Command | What it does |
+```bash
+npm run smoke:local        # 8 comprobaciones reales: catálogo, reproducción, guía y acceso al panel
+```
+
+> **Guía de demostración (contenido sintético).** Este checkout no incluye guía
+> descargable: las instantáneas de `data/` no se versionan a propósito. Con
+> `DEMO_SEED_GUIDE=true` (por defecto en `.env`), `npm run demo` siembra una
+> parrilla generada por el propio proyecto **solo si la base no tiene guía
+> vigente**; todos los títulos terminan en «demo» y la fuente se registra con
+> licencia `synthetic-demo`. No son emisiones reales.
+
+## Modo desarrollo con recarga
+
+```bash
+npm run dev          # API (4010, recarga) + servidor Angular (4200)
+npm run stop:dev
+```
+
+## Documentación
+
+| Documento | Contenido |
 | --- | --- |
-| `npm run build` | Builds contracts, SDK and backend |
-| `npm run typecheck` | TypeScript strict across every package |
-| `npm test` | Backend (unit, integration, independence) and SDK tests |
-| `npm run test:frontend` | 318 client unit tests |
-| `npm run test:e2e` | 75 Playwright tests, including the real-backend suite |
-| `npm run test:load` | Latency and error budgets |
-| `npm run openapi:export` | Regenerates the OpenAPI document |
-| `npm run client:generate` | Regenerates the SDK's wire types |
-| `npm run audit:bootstrap` | Boots the platform from an empty database and checks it |
-| `npm run audit:acceptance` | Independent acceptance audit for TDT-API-01 |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Componentes, ruta de una petición, política de publicación, proveedores |
+| [`docs/DATA-MODEL.md`](docs/DATA-MODEL.md) | Colecciones, campos e índices |
+| [`docs/RUNBOOK.md`](docs/RUNBOOK.md) | Despliegue reproducible, configuración, comandos de verificación |
+| [`docs/PROVENANCE-AND-LICENCES.md`](docs/PROVENANCE-AND-LICENCES.md) | Procedencia de cada clase de dato y qué puede hacerse con ella |
+| [`docs/GUIATV-INTEGRATION.md`](docs/GUIATV-INTEGRATION.md) | Cómo consume la API GuíaTV sin duplicar identidades |
+| [`docs/tdt-api02/MILESTONE_STATUS-02FG.md`](docs/tdt-api02/MILESTONE_STATUS-02FG.md) | Estado del milestone, gate medido y límites |
+| [`docs/tdt-api02/NEXT_HANDOFF.md`](docs/tdt-api02/NEXT_HANDOFF.md) | Traspaso y trampas conocidas |
+| [`openapi/openapi.json`](openapi/openapi.json) | Documento OpenAPI 3.1 (46 rutas) |
 
-## What the platform guarantees
+## Comandos
+
+| Comando | Qué hace |
+| --- | --- |
+| `npm run demo` | Arranca el producto completo (API + web + administración) |
+| `npm run dev` / `npm run stop:dev` | Modo desarrollo con recarga |
+| `npm run smoke:local` | Comprueba el producto en marcha de punta a punta |
+| `npm run build` | Compila contratos, SDK y backend |
+| `npm run typecheck` | TypeScript estricto en todos los paquetes |
+| `npm test` | Backend (unit, integration, independence) y SDK |
+| `npm run test:frontend` | Tests unitarios del cliente |
+| `npm run test:e2e` | Playwright, incluida la suite contra el backend real |
+| `npm run test:load` | Presupuestos de latencia y errores |
+| `npm run validate` | Gate consolidado del milestone (11 etapas, exit codes reales) |
+| `npm run openapi:export` | Regenera el documento OpenAPI |
+| `npm run client:generate` | Regenera los tipos del SDK |
+| `npm run import:catalogue -- --file <path>` | Importa una instantánea de catálogo que aporta el operador |
+| `npm run import:guide -- --file <path> --kind xmltv` | Importa una guía XMLTV |
+| `npm run demo:guide` | Genera la guía **sintética** de demostración |
+| `npm run audit:bootstrap` | Arranca desde una base vacía y la comprueba |
+| `npm run audit:acceptance` | Auditoría de aceptación de TDT-API-01 |
 
 - A public channel always has provenance, and third-party data always carries
   its attribution.
@@ -67,3 +101,4 @@ Full instructions, including the first administrator and the frontend build:
 
 Not yet declared. The code is the property of its author; deciding the licence is
 a precondition for publication.
+

@@ -19,7 +19,7 @@
  *   or failure, plus the source's own counters (`consecutiveFailures`,
  *   `lastSuccessAt`, `nextRunAt`, the HTTP validators).
  */
-import type { EpgIngestResult } from '@tdt/contracts';
+import type { EpgIngestResult, EpgSyncRun } from '@tdt/contracts';
 import { randomUUID } from 'node:crypto';
 import type { EgressOptions } from '../../infrastructure/egress.js';
 import { fetchWithPolicy } from '../../infrastructure/egress.js';
@@ -54,6 +54,21 @@ export interface FetchedGuide {
   readonly body: string | null;
   readonly etag: string | null;
   readonly lastModified: string | null;
+}
+
+/** The one write ingestion does, narrowed so a scheduler can inject it. */
+export interface IngestionPort {
+  runSource(
+    sourceId: string,
+    egress: EgressOptions,
+    triggeredBy: string,
+    options?: { readonly trigger?: SyncTrigger },
+  ): Promise<EpgIngestResult>;
+}
+
+/** The canonical run history, as the EPG module publishes it. */
+export interface SyncRunsPort {
+  list(options?: { readonly sourceId?: string; readonly limit?: number }): Promise<EpgSyncRun[]>;
 }
 
 export type GuideFetcher = (url: string, egress: EgressOptions, validators: SourceValidators) => Promise<FetchedGuide>;
@@ -160,7 +175,7 @@ export class EpgIngestionService {
     sourceId: string,
     egress: EgressOptions,
     triggeredBy: string,
-    options: { readonly trigger?: SyncTrigger; readonly incremental?: boolean } = {},
+    options: { readonly trigger?: SyncTrigger } = {},
   ): Promise<EpgIngestResult> {
     const startedAt = new Date();
     const trigger: SyncTrigger =
