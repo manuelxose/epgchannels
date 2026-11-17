@@ -1,7 +1,7 @@
 {
   "ok": true,
   "mode": "live",
-  "generatedAt": "2026-11-17T11:01:55.913Z",
+  "generatedAt": "2026-11-17T11:14:18.056Z",
   "database": "tdt_platform",
   "catalogue": {
     "publishedHlsOrDash": 81,
@@ -15,7 +15,7 @@
       "outcome": "failing",
       "failure": "missing-segments",
       "depthReached": "playlist",
-      "latencyMs": 492,
+      "latencyMs": 398,
       "egressRequests": 2,
       "uncertainty": {
         "browserNotProbed": false,
@@ -40,7 +40,7 @@
       "outcome": "failing",
       "failure": "missing-segments",
       "depthReached": "playlist",
-      "latencyMs": 264,
+      "latencyMs": 2400,
       "egressRequests": 4,
       "uncertainty": {
         "browserNotProbed": false,
@@ -63,10 +63,10 @@
       "label": "Mux public test stream (x36xhzz)",
       "host": "test-streams.mux.dev",
       "outcome": "failing",
-      "failure": "unsupported-format",
-      "depthReached": "transport",
-      "latencyMs": 202,
-      "egressRequests": 1,
+      "failure": "missing-segments",
+      "depthReached": "playlist",
+      "latencyMs": 350,
+      "egressRequests": 4,
       "uncertainty": {
         "browserNotProbed": false,
         "segmentsNotSampled": false,
@@ -78,8 +78,8 @@
       },
       "evidence": {
         "status": null,
-        "contentType": null,
-        "bytes": null,
+        "contentType": "audio/mpegurl",
+        "bytes": 752,
         "variants": null,
         "segments": null
       }
@@ -90,7 +90,7 @@
       "outcome": "failing",
       "failure": "missing-segments",
       "depthReached": "playlist",
-      "latencyMs": 1305,
+      "latencyMs": 1833,
       "egressRequests": 4,
       "uncertainty": {
         "browserNotProbed": false,

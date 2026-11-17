@@ -134,6 +134,22 @@ Cada categoría mapea a **una** de las causas del eje: `authorization` (sólo `i
   operador. Detecta `userinfo` en la URL ⇒ `ineligible`, no la usa.
 - **Tamaño:** `content-length` verificado **y** contador incremental; 2 MiB manifiesto, 512 KiB
   segmento, 64 KiB por segmento muestreado.
+
+> **Tres presupuestos, no dos (corregido durante la implementación).** La primera implementación aplicó
+> los 64 KiB al **segmento entero**, y con eso un directo HD real —cuyos segmentos pesan cientos de
+> KiB— se reportaba `missing-segments`, es decir, se culpaba al **contenido** de una decisión de
+> **política**. Es el peor tipo de error: una respuesta falsa con aire de diagnóstico. Los tres
+> presupuestos son distintos y deben nombrarse distinto:
+>
+> | Presupuesto | Valor | Qué limita |
+> |---|---|---|
+> | manifiesto | 2 MiB | el cuerpo de la playlist |
+> | segmento entero | 512 KiB | techo absoluto; por encima ⇒ `response-too-large` |
+> | **sonda** de segmento | 64 KiB | bytes leídos por segmento muestreado |
+>
+> La sonda es `HEAD` primero y luego una **lectura de prefijo acotada**: basta probar que el segmento
+> se recupera y es de tipo media, no hace falta poseerlo. Descargar el segmento entero para
+> comprobarlo contradiría el §4 (minimizar ancho de banda y carga al proveedor).
 - Todo esto se prueba con **fixtures controlados**: servidor HTTP local en loopback que simula
   redirecciones, cuerpos grandes, DNS rebind y timeouts. Los fixtures corren en
   `*_BOUND_LOOPBACK` sólo bajo un flag explícito de test.
@@ -156,6 +172,14 @@ Cada categoría mapea a **una** de las causas del eje: `authorization` (sólo `i
 > `text/html` es lo primero, no lo segundo. La distinción importa para el operador: «me devuelven una
 > página web en vez de un stream» y «el manifiesto está roto» exigen acciones distintas.
 | 5 | Playlist y segmentos | `#EXT-X-STREAM-INF` o `#EXTINF` + al menos N segmentos muestreados 2xx con tipo media | `missing-segments`, `segments-forbidden` |
+
+> **Una playlist MAESTRA debe descendir un nivel.** La primera implementación devolvía `degraded` con
+> `failure: null` al reconocer un maestro, **sin pedir ninguna variante**, de modo que la capa de
+> segmentos era inalcanzable para la forma que publica casi todo emisor. El caso Akamai del §9 lo
+> demuestra: maestro `200` y variante `404`; el navegador lo detecta, el motor decía «degraded».
+> Regla: se sigue **exactamente una** variante (constante explícita, sin recursión); si esa variante es
+> a su vez un maestro se registra `nested-master-not-followed` y no se pide nada más. El número de
+> peticiones queda acotado por construcción y hay un test que lo afirma.
 | 6 | Reproducción en navegador | sólo cuando el operador la habilita y el navegador es accesible | `browser-incompatible`, `codec-failure`, `cors-limitation` |
 
 El `depth` reportado es la capa **de la que se obtuvo evidencia**, no la solicitada. Un check que

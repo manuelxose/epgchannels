@@ -85,6 +85,30 @@ salida 0: es un desconocido honesto, ni un pase ni un fallo. Ese camino está de
 - **No** dice que un `played` implique disponibilidad futura: un directo puede caer un minuto después.
   Es una observación con marca de tiempo, no una garantía.
 
+## 5-bis. Limitación principal, declarada sin adornos
+
+**El motor no ha verificado ni una sola fuente del catálogo real.** Medido sobre la base de datos viva:
+
+| Dato | Valor medido |
+|---|---|
+| fuentes publicadas `hls`/`dash` con URL | **81** |
+| con registro de autorización (`source_authorizations_02c`) | **0** |
+| sin registro | **81** |
+
+La colección `source_authorizations_02c` **no existe** en la base de datos operativa. Como el gate de
+02C falla cerrado, las 81 fuentes son `ineligible` y el motor **no abre un solo socket** hacia ellas.
+Eso **es el resultado correcto**, no un fallo del motor: es la prueba de que la elegibilidad precede a
+la red. Pero implica que la verificación real contra el catálogo **no está demostrada** en este
+milestone, y así se reporta.
+
+Lo que sí está medido con red real: las cuatro distribuciones públicas de prueba, que ejercitan de
+verdad el guard SSRF, el transporte, el manifiesto y la capa de segmentos (1–4 peticiones por fuente),
+más la prueba de reproducción en navegador de §2.
+
+Por qué no se «arregla» creando autorizaciones: fabricar un derecho para que una fuente pase el gate es
+exactamente el defecto que la revisión independiente de 02C encontró, y este milestone no lo repite. La
+única vía honesta es que un operador registre autorizaciones reales con evidencia citable.
+
 ## 6. Reproducir
 
 ```powershell
