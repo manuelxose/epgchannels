@@ -91,8 +91,22 @@ describe('public catalogue filters', () => {
   });
 
   it('keeps every other query parameter exactly as the contract defined it', () => {
+    /*
+     * `country`/`language` are lists since TDT-API-02FG (multi-select filters);
+     * a single value arrives as a one-element selection, so the meaning of the
+     * old query is unchanged. The single-value aliases are checked too, because
+     * an existing caller still reads them.
+     */
     const parsed = publicChannelListQuerySchema.parse({ country: 'INT', language: 'multi' });
-    expect(parsed).toMatchObject({ country: 'INT', language: 'multi', sort: 'name', page: 1, pageSize: 24 });
+    expect(parsed).toMatchObject({
+      country: ['INT'],
+      language: ['multi'],
+      countries: ['INT'],
+      languages: ['multi'],
+      sort: 'name',
+      page: 1,
+      pageSize: 24,
+    });
     // The pre-existing bounds are unchanged.
     expect(publicChannelListQuerySchema.safeParse({ pageSize: 1000 }).success).toBe(false);
     expect(publicChannelListQuerySchema.safeParse({ category: 'nope' }).success).toBe(false);

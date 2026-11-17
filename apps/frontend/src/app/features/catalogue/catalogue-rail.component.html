@@ -20,39 +20,50 @@
     </div>
 
     <div class="rail__selects">
-      <label class="rail__select">
+      <!--
+        Multi-select filters (TDT-API-02FG). `multiple` is what lets a person
+        pick two categories at once; the previous single `<select>` replaced the
+        value instead of adding to it, which is why "several filters" never
+        combined. Ctrl/Cmd or Shift click adds and removes, as in any listbox.
+      -->
+      <label class="rail__select rail__select--multi">
         <span class="visually-hidden">Filtrar por categoría</span>
         <select
-          aria-label="Filtrar por categoría"
-          [value]="query.categoryId()"
-          (change)="onCategory($event)"
+          aria-label="Filtrar por categoría (selección múltiple)"
+          data-testid="category-filter"
+          multiple
+          size="5"
+          (change)="onCategories($event)"
         >
-          <option value="all">Todas las categorías</option>
           @for (group of query.groupedCategories(); track group.country) {
             <optgroup [label]="group.country">
               @for (category of group.categories; track category.id) {
-                <option [value]="category.id">{{ category.name }} ({{ category.channelCount }})</option>
+                <option [value]="category.id" [selected]="isCategorySelected(category.id)">
+                  {{ category.name }} ({{ category.channelCount }})
+                </option>
               }
             </optgroup>
           }
         </select>
-        <app-icon name="chevron-down" [size]="16" />
+        <span class="rail__select-hint">{{ selectionHint(query.categories(), 'categoría') }}</span>
       </label>
 
-      <label class="rail__select rail__select--compact">
+      <label class="rail__select rail__select--compact rail__select--multi">
         <span class="visually-hidden">Filtrar por país</span>
         <select
-          aria-label="Filtrar por país"
+          aria-label="Filtrar por país (selección múltiple)"
           data-testid="country-filter"
-          [value]="query.country()"
-          (change)="onCountry($event)"
+          multiple
+          size="5"
+          (change)="onCountries($event)"
         >
-          <option value="all">Todos los países</option>
-          @for (country of query.countries(); track country.code) {
-            <option [value]="country.code">{{ country.label }} ({{ country.channelCount }})</option>
+          @for (country of query.countryOptions(); track country.code) {
+            <option [value]="country.code" [selected]="isCountrySelected(country.code)">
+              {{ country.label }} ({{ country.channelCount }})
+            </option>
           }
         </select>
-        <app-icon name="chevron-down" [size]="16" />
+        <span class="rail__select-hint">{{ selectionHint(query.countries(), 'país') }}</span>
       </label>
 
       <!--
@@ -60,20 +71,22 @@
         publishes, so an empty filter is never offered. A channel the API does
         not label is not counted under any language.
       -->
-      <label class="rail__select rail__select--compact">
+      <label class="rail__select rail__select--compact rail__select--multi">
         <span class="visually-hidden">Filtrar por idioma</span>
         <select
-          aria-label="Filtrar por idioma"
+          aria-label="Filtrar por idioma (selección múltiple)"
           data-testid="language-filter"
-          [value]="query.language()"
-          (change)="onLanguage($event)"
+          multiple
+          size="5"
+          (change)="onLanguages($event)"
         >
-          <option value="all">Todos los idiomas</option>
-          @for (language of query.languages(); track language.code) {
-            <option [value]="language.code">{{ language.label }} ({{ language.channelCount }})</option>
+          @for (language of query.languageOptions(); track language.code) {
+            <option [value]="language.code" [selected]="isLanguageSelected(language.code)">
+              {{ language.label }} ({{ language.channelCount }})
+            </option>
           }
         </select>
-        <app-icon name="chevron-down" [size]="16" />
+        <span class="rail__select-hint">{{ selectionHint(query.languages(), 'idioma') }}</span>
       </label>
 
       <label class="rail__select rail__select--compact">

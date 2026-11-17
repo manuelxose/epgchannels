@@ -46,7 +46,14 @@ export class ChannelsApiService {
       });
       listRecords.push(...response.data);
       includesThirdPartyData ||= response.attribution.includesThirdPartyData;
-      if (!response.pagination.hasNext || page >= 100) break;
+      /*
+       * The cap is a safety net, not the intended limit: at 100 pages a catalogue
+       * above 10 000 channels lost everything after the first 10 000 (measured:
+       * with 8 758 channels the walk finished, but the original channels sat
+       * beyond an older cap and the UI showed none). 500 pages covers 50 000
+       * channels at pageSize 100, and the walk still stops at the real end.
+       */
+      if (!response.pagination.hasNext || page >= 500) break;
       page += 1;
     }
 

@@ -354,3 +354,18 @@ Formato: `D-0NN` · fecha · estado (`ADOPTADA`, `SUSTITUIDA`, `PENDIENTE`).
     transcodificar, y la atribución de cada fuente viaja con ella.
   - Es una decisión de producto del propietario y así queda registrada; una autorización de emisor
     seguiría siendo un hecho distinto y más sólido.
+## D-025 — Filtros multivalor y catálogo que no se trunca
+
+- **Estado:** ADOPTADA (2026-11-18, ronda de filtros)
+- **Contexto:** dos defectos medidos en el navegador. (1) Cada filtro del catálogo era un
+  `<select>` único cuyo manejador **reemplazaba** el valor, así que "varias categorías a la vez" era
+  imposible por construcción. (2) `loadCatalogue` cortaba en `page >= 100`; con 8 758 canales el
+  recorrido necesitaba 88 páginas y, al cargar los originales antes que los importados, la UI podía
+  quedarse sin los canales antiguos.
+- **Decisión:** los filtros del API aceptan **varios valores** (`?country=ES&country=FR` y la forma
+  con comas), **OR dentro de un filtro y AND entre filtros**; la UI usa selectores múltiples; y el
+  tope del recorrido sube a 500 páginas como red de seguridad, no como límite funcional.
+- **Consecuencia:** una selección vacía significa "todos los valores", nunca "ninguno coincide". Un
+  valor inválido se responde con **400** (no 500 y no 200 silencioso). La carga completa del
+  catálogo sigue siendo el modelo actual y es conocida como límite: con ~9 000 canales tarda unos
+  9 s y crecerá de forma lineal hasta que el catálogo pase a paginarse en servidor.

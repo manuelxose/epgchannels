@@ -112,10 +112,15 @@ export function toChannel(
 
 export interface ChannelFilter {
   readonly q?: string | undefined;
-  readonly country?: string | undefined;
-  readonly region?: string | undefined;
-  readonly category?: string | undefined;
-  readonly language?: string | undefined;
+  /*
+   * Filters accept one value or a list. Within one filter the values are an OR
+   * (any of these countries); different filters are ANDed. A single value keeps
+   * working exactly as before.
+   */
+  readonly country?: string | readonly string[] | undefined;
+  readonly region?: string | readonly string[] | undefined;
+  readonly category?: string | readonly string[] | undefined;
+  readonly language?: string | readonly string[] | undefined;
   readonly playable?: boolean | undefined;
   readonly sort: 'name' | 'name-desc' | 'updated' | 'relevance';
 }
@@ -136,10 +141,22 @@ export class ChannelsService {
    */
   buildFilter(filter: ChannelFilter): Record<string, unknown> {
     const clauses: Record<string, unknown>[] = [{ ...PUBLIC_CHANNEL_MATCH }];
-    if (filter.country) clauses.push({ country: filter.country });
-    if (filter.region) clauses.push({ 'region.code': filter.region });
-    if (filter.category) clauses.push({ category: filter.category });
-    if (filter.language) clauses.push({ languageTag: filter.language });
+    /*
+     * One clause per filter: `$in` for a list, equality for a single value.
+     * Within a filter the values are an OR; different filters are ANDed. Keeping
+     * it to one clause per filter is what lets several filters compose and what
+     * lets an index serve `country` together with `category`.
+     */
+    const equalOrIn = (field: string, value: string | readonly string[] | undefined): void => {
+      if (value === undefined) return;
+      const list = Array.isArray(value) ? value : [value as string];
+      if (list.length === 0) return;
+      clauses.push(list.length === 1 ? { [field]: list[0] } : { [field]: { $in: [...list] } });
+    };
+    equalOrIn('country', filter.country);
+    equalOrIn('region.code', filter.region);
+    equalOrIn('category', filter.category);
+    equalOrIn('languageTag', filter.language);
     if (filter.q) {
       const folded = normalizeForSearch(filter.q);
       if (folded) {

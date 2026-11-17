@@ -257,6 +257,53 @@ describe('CatalogStore + CatalogueQuery integration (our API)', () => {
       expect(query.view().pageChannels.map((channel) => channel.name)).toEqual(['Cuatro']);
     });
 
+    /*
+     * TDT-API-02FG: the previous filter was a single `<select>` whose handler
+     * REPLACED the value, so "two categories at once" was impossible by
+     * construction. These tests pin the multi-value contract that replaced it.
+     */
+    it('combines several categories in one selection (any of them)', () => {
+      const query = TestBed.inject(CatalogueQuery);
+      const store = TestBed.inject(CatalogStore);
+      const generalistas = store.categories().find((c) => c.name === 'Generalistas')!.id;
+      const other = store.categories().map((category) => category.id).find((id) => id !== generalistas)!;
+
+      query.setCategories([generalistas, other]);
+      expect(query.categories()).toEqual([generalistas, other]);
+      expect(query.view().filteredCount).toBeGreaterThanOrEqual(3);
+      expect(query.view().isFiltered).toBe(true);
+    });
+
+    it('toggles a value on and off instead of replacing the selection', () => {
+      const query = TestBed.inject(CatalogueQuery);
+      query.toggleCountry('ES');
+      expect(query.countries()).toEqual(['ES']);
+      query.toggleCountry('FR');
+      expect(query.countries()).toEqual(['ES', 'FR']);
+      query.toggleCountry('ES');
+      expect(query.countries()).toEqual(['FR']);
+    });
+
+    it('combines different filters with AND', () => {
+      const query = TestBed.inject(CatalogueQuery);
+      const store = TestBed.inject(CatalogStore);
+      const generalistas = store.categories().find((c) => c.name === 'Generalistas')!.id;
+      query.setCategories([generalistas]);
+      query.setCountries(['ES']);
+      const both = query.view().filteredCount;
+
+      query.setCountries(['ES', 'FR']);
+      expect(query.view().filteredCount).toBe(both);
+    });
+
+    it('an empty selection means "every value", never "nothing matches"', () => {
+      const query = TestBed.inject(CatalogueQuery);
+      query.setCountries([]);
+      query.setCategories([]);
+      expect(query.view().isFiltered).toBe(false);
+      expect(query.view().filteredCount).toBe(4);
+    });
+
     it('filters by favourites and reports an empty favourites state', () => {
       const query = TestBed.inject(CatalogueQuery);
       const preferences = TestBed.inject(PreferencesStore);
@@ -286,8 +333,8 @@ describe('CatalogStore + CatalogueQuery integration (our API)', () => {
       const query = TestBed.inject(CatalogueQuery);
       // Every fixture is published from ES, so the option list holds exactly one
       // entry and never offers a filter that cannot match anything.
-      expect(query.countries().map((country) => country.code)).toEqual(['ES']);
-      expect(query.countries()[0]?.channelCount).toBe(4);
+      expect(query.countryOptions().map((country) => country.code)).toEqual(['ES']);
+      expect(query.countryOptions()[0]?.channelCount).toBe(4);
 
       query.setCountry('ES');
       expect(query.view().filteredCount).toBe(4);
@@ -301,7 +348,7 @@ describe('CatalogStore + CatalogueQuery integration (our API)', () => {
     it('filters by language, and does not claim a language for unlabelled channels', () => {
       const query = TestBed.inject(CatalogueQuery);
       // The API labels every fixture `es`.
-      expect(query.languages().map((language) => language.code)).toEqual(['es']);
+      expect(query.languageOptions().map((language) => language.code)).toEqual(['es']);
       expect(query.channelsWithoutLanguage()).toBe(0);
 
       query.setLanguage('es');

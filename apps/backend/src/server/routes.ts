@@ -287,10 +287,15 @@ export function createRouter(context: AppContext, logger: Logger, metrics?: Metr
       const result = await context.channels.list(
         {
           q: query.q,
-          country: query.country,
-          region: query.region,
-          category: query.category,
-          language: query.language,
+          /*
+           * Multi-valued: ?country=ES&country=FR. The transformed query also
+           * carries the countries/categories/… aliases, which mean the same;
+           * the singular fields keep the old clients working unchanged.
+           */
+          country: query.countries,
+          region: query.regions,
+          category: query.categories,
+          language: query.languages,
           playable: query.playable,
           sort: query.sort,
         },
