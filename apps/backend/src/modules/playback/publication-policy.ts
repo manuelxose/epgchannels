@@ -4,17 +4,24 @@
  *
  * Three questions are answered separately and never collapsed:
  *
- * | question                   | answered by                     |
- * | -------------------------- | ------------------------------- |
- * | may we expose it at all?   | `permission` + `conditions`     |
- * | is it healthy right now?   | `technicalStatus` (verification)|
- * | which engine plays it?     | `type` (and our engines)        |
+ * | question                   | answered by                                |
+ * | -------------------------- | ------------------------------------------ |
+ * | may we expose it at all?   | `permission` + `conditions`                |
+ * | is it healthy right now?   | the recorded check, then `technicalStatus` |
+ * | which engine plays it?     | `type` (and our engines)                   |
  *
  * A source is public when it is published, carries a permission that allows
  * public exposure, is not marked as requiring forged headers or the emitter's
  * own application, and is not currently marked unhealthy. Authorisation always
  * outranks technical availability: an unhealthy source is not "available", but a
  * disallowed source is never exposed even when it works.
+ *
+ * Exposure and attemptability are *different* answers and the distinction is the
+ * point of this file: exposure is a rights question with a fail-closed health
+ * veto (`blocked`), while attemptability is decided by `source-selection.ts` over
+ * the four axes. Collapsing them either way is a defect we have had: a source
+ * nobody had checked was presented as available, and requiring an `ok` on a
+ * column that is `unknown` for every row would attempt nothing at all.
  */
 import type { ExclusionReason, PlaybackType, Permission } from '@tdt/contracts';
 import type { PlaybackSourceDoc } from '../../infrastructure/schema.js';
@@ -94,9 +101,21 @@ export function isSourcePublic(source: PlaybackSourceDoc): boolean {
   }).public;
 }
 
-/** A public source that may also be attempted in our own player right now. */
-export function isSourceHealthy(source: PlaybackSourceDoc): boolean {
-  return source.technicalStatus === 'ok' || source.technicalStatus === 'unknown';
+/**
+ * Whether the *stored* health of a source permits an attempt right now.
+ *
+ * Fail-closed on the record: only an explicit `ok` is healthy. `unknown` is not
+ * a pass — it is the absence of a verdict, and the earlier version of this
+ * function returning `true` for it is exactly the defect this milestone fixes (a
+ * source nothing had ever checked was presented as available).
+ *
+ * This is the health axis *of the record*. The health a source is judged on in
+ * playback also considers the recorded check (`verification/source-health.ts`),
+ * because `technicalStatus` alone is `unknown` for every row on the platform. Use
+ * `selectPlaybackCandidate` — never this function alone — to decide attemptability.
+ */
+export function isSourceHealthy(source: Pick<PlaybackSourceDoc, 'technicalStatus'>): boolean {
+  return source.technicalStatus === 'ok';
 }
 
 /** Playback types our engines can attempt in-app. */
@@ -110,11 +129,16 @@ export const IN_APP_TYPES: ReadonlySet<PlaybackType> = new Set<PlaybackType>([
 /**
  * Whether the *browser* can attempt a public source in-app. `external` never
  * counts: it is a link to the emitter's own player, not an in-app emission.
+ *
+ * "Exposed" and "attemptable" are separate questions and this keeps them so: a
+ * source whose health record says `unknown` is still public, and is still
+ * attemptable here, because the public policy never claimed a verdict it did not
+ * have. Whether playback *selects* it is decided by the four axes in
+ * `source-selection.ts`, which resolves health from the recorded check as well.
  */
 export function canAttemptInApp(source: PlaybackSourceDoc): boolean {
   return (
     isSourcePublic(source) &&
-    isSourceHealthy(source) &&
     IN_APP_TYPES.has(source.type as PlaybackType) &&
     source.url !== null
   );

@@ -1,6 +1,6 @@
 // GENERATED — do not edit by hand.
 // Source: openapi/openapi.json (TDT Platform API v1).
-// Generated: 2026-11-16T08:10:07.483Z
+// Generated: 2026-11-17T14:37:24.478Z
 
 export type ApiError = {
   readonly error: {
@@ -161,6 +161,21 @@ export type PlaybackDescriptor = {
       readonly externalUrl: string | null;
       readonly geoRestricted: boolean;
       readonly preferred: boolean;
+      readonly health?: {
+        readonly state: "healthy" | "failing" | "not-verified";
+        readonly origin: "health-ledger" | "source-record" | "none";
+        readonly depth: string | null;
+        readonly failure: string | null;
+        readonly observedAt: string | null;
+      };
+      readonly compatibility?: unknown;
+      readonly observedAt?: string | null;
+    }>;
+    readonly unavailableOptions?: ReadonlyArray<{
+      readonly sourceId: string;
+      readonly type: "hls" | "dash" | "youtube" | "official-embed" | "external";
+      readonly axis: "compatibility" | "health" | "address";
+      readonly code: string;
     }>;
     readonly reason: string | null;
   };
@@ -196,6 +211,21 @@ export type PlaybackResponse = {
         readonly externalUrl: string | null;
         readonly geoRestricted: boolean;
         readonly preferred: boolean;
+        readonly health?: {
+          readonly state: "healthy" | "failing" | "not-verified";
+          readonly origin: "health-ledger" | "source-record" | "none";
+          readonly depth: string | null;
+          readonly failure: string | null;
+          readonly observedAt: string | null;
+        };
+        readonly compatibility?: unknown;
+        readonly observedAt?: string | null;
+      }>;
+      readonly unavailableOptions?: ReadonlyArray<{
+        readonly sourceId: string;
+        readonly type: "hls" | "dash" | "youtube" | "official-embed" | "external";
+        readonly axis: "compatibility" | "health" | "address";
+        readonly code: string;
       }>;
       readonly reason: string | null;
     };

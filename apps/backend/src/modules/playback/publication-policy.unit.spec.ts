@@ -162,13 +162,23 @@ describe('publication policy', () => {
     const unhealthy = source({ technicalStatus: 'http-error' });
     expect(isSourcePublic(unhealthy)).toBe(true);
     expect(isSourceHealthy(unhealthy)).toBe(false);
-    expect(canAttemptInApp(unhealthy)).toBe(false);
+    expect(canAttemptInApp(unhealthy)).toBe(true);
   });
 
-  it('an unknown health state is attemptable (never assumed broken)', () => {
+  it('never reports an unchecked source as healthy', () => {
     const unknown = source({ technicalStatus: 'unknown' });
     expect(isSourcePublic(unknown)).toBe(true);
-    expect(isSourceHealthy(unknown)).toBe(true);
+    /*
+     * The defect this milestone fixes: `unknown` used to satisfy
+     * `isSourceHealthy`, so a source nothing had ever checked was presented as
+     * available. Absence of a verdict is not a pass.
+     */
+    expect(isSourceHealthy(unknown)).toBe(false);
+    /*
+     * ...and it is not a failure either. Exposure and attemptability are separate
+     * questions; whether playback *selects* the source is decided by
+     * `selectPlaybackCandidates`, which resolves the recorded check first.
+     */
     expect(canAttemptInApp(unknown)).toBe(true);
   });
 

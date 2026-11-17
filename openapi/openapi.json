@@ -2319,6 +2319,65 @@
                     },
                     "preferred": {
                       "type": "boolean"
+                    },
+                    "health": {
+                      "type": "object",
+                      "properties": {
+                        "state": {
+                          "type": "string",
+                          "enum": [
+                            "healthy",
+                            "failing",
+                            "not-verified"
+                          ]
+                        },
+                        "origin": {
+                          "type": "string",
+                          "enum": [
+                            "health-ledger",
+                            "source-record",
+                            "none"
+                          ]
+                        },
+                        "depth": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "minLength": 1,
+                          "maxLength": 40
+                        },
+                        "failure": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "minLength": 1,
+                          "maxLength": 80
+                        },
+                        "observedAt": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "state",
+                        "origin",
+                        "depth",
+                        "failure",
+                        "observedAt"
+                      ]
+                    },
+                    "compatibility": {},
+                    "observedAt": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "date-time"
                     }
                   },
                   "required": [
@@ -2330,6 +2389,47 @@
                     "externalUrl",
                     "geoRestricted",
                     "preferred"
+                  ]
+                }
+              },
+              "unavailableOptions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "sourceId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "hls",
+                        "dash",
+                        "youtube",
+                        "official-embed",
+                        "external"
+                      ]
+                    },
+                    "axis": {
+                      "type": "string",
+                      "enum": [
+                        "compatibility",
+                        "health",
+                        "address"
+                      ]
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    }
+                  },
+                  "required": [
+                    "sourceId",
+                    "type",
+                    "axis",
+                    "code"
                   ]
                 }
               },
@@ -2537,6 +2637,65 @@
                         },
                         "preferred": {
                           "type": "boolean"
+                        },
+                        "health": {
+                          "type": "object",
+                          "properties": {
+                            "state": {
+                              "type": "string",
+                              "enum": [
+                                "healthy",
+                                "failing",
+                                "not-verified"
+                              ]
+                            },
+                            "origin": {
+                              "type": "string",
+                              "enum": [
+                                "health-ledger",
+                                "source-record",
+                                "none"
+                              ]
+                            },
+                            "depth": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "minLength": 1,
+                              "maxLength": 40
+                            },
+                            "failure": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "minLength": 1,
+                              "maxLength": 80
+                            },
+                            "observedAt": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "format": "date-time"
+                            }
+                          },
+                          "required": [
+                            "state",
+                            "origin",
+                            "depth",
+                            "failure",
+                            "observedAt"
+                          ]
+                        },
+                        "compatibility": {},
+                        "observedAt": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "date-time"
                         }
                       },
                       "required": [
@@ -2548,6 +2707,47 @@
                         "externalUrl",
                         "geoRestricted",
                         "preferred"
+                      ]
+                    }
+                  },
+                  "unavailableOptions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "sourceId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "hls",
+                            "dash",
+                            "youtube",
+                            "official-embed",
+                            "external"
+                          ]
+                        },
+                        "axis": {
+                          "type": "string",
+                          "enum": [
+                            "compatibility",
+                            "health",
+                            "address"
+                          ]
+                        },
+                        "code": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 80
+                        }
+                      },
+                      "required": [
+                        "sourceId",
+                        "type",
+                        "axis",
+                        "code"
                       ]
                     }
                   },
