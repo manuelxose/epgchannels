@@ -87,6 +87,15 @@ export function safeFetchEgress(limits: {
         ...(request.allowedContentPrefixes === undefined
           ? {}
           : { allowedContentPrefixes: request.allowedContentPrefixes }),
+        /*
+         * Forward the bounded prefix read. Without this line the segment probe's
+         * `prefixBytes` is silently dropped here and the cap never reaches
+         * `safeFetch`, so a sampled segment would cost up to the whole-segment
+         * ceiling instead of SEGMENT_PROBE_BYTES. A capability that is only
+         * exercised through an injected test seam is exactly the defect class
+         * this milestone exists to stop repeating.
+         */
+        ...(request.prefixBytes === undefined ? {} : { prefixBytes: request.prefixBytes }),
         ...(limits.allowLoopbackForTests === true ? { allowLoopbackForTests: true } : {}),
       });
       return {
