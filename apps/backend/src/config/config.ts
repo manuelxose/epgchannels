@@ -114,6 +114,27 @@ export const configSchema = z.object({
   YOUTUBE_RESOLVE_INTERVAL_MINUTES: z.coerce.number().int().min(1).max(1440).default(5),
   /** Channels resolved per run: the only knob that sets the external request rate. */
   YOUTUBE_RESOLVE_BATCH: z.coerce.number().int().min(1).max(500).default(40),
+
+  /*
+   * Automated stream verification (TDT-API-02D). Off by default: turning it on
+   * makes the platform contact third-party origins on a schedule, which is an
+   * operator decision, not a default. Every bound below is a *load* bound on
+   * somebody else's server, so they are conservative and never unbounded.
+   */
+  VERIFY_ENABLED: booleanish.default(false),
+  /** Checks in flight in one round, across all hosts. */
+  VERIFY_CONCURRENCY: z.coerce.number().int().min(1).max(32).default(4),
+  /** Checks in flight to any single host: the per-provider politeness limit. */
+  VERIFY_PER_HOST_CONCURRENCY: z.coerce.number().int().min(1).max(16).default(2),
+  VERIFY_TIMEOUT_MS: z.coerce.number().int().min(1000).max(60000).default(10000),
+  /** Manifest body bound (contract §2: 2 MiB). */
+  VERIFY_MAX_BYTES: z.coerce.number().int().min(1024).max(8 * 1024 * 1024).default(2 * 1024 * 1024),
+  /** Segments sampled for diagnosis (contract §4: N=2, never the whole list). */
+  VERIFY_SEGMENT_SAMPLE: z.coerce.number().int().min(0).max(8).default(2),
+  /** Layer 6 is manual-only by default (contract §4). */
+  VERIFY_BROWSER_ENABLED: booleanish.default(false),
+  VERIFY_CIRCUIT_THRESHOLD: z.coerce.number().int().min(1).max(50).default(5),
+  VERIFY_CIRCUIT_MAX_MINUTES: z.coerce.number().int().min(1).max(1440).default(60),
 });
 export type Config = z.infer<typeof configSchema>;
 

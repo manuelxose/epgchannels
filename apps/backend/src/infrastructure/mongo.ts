@@ -7,6 +7,7 @@
  * is a type error, not a missing collection.
  */
 import { MongoClient, type Db, type Collection } from 'mongodb';
+import { HEALTH_COLLECTIONS } from '../verification/health.schema.js';
 
 export const COLLECTIONS = {
   channels: 'channels',
@@ -30,6 +31,14 @@ export const COLLECTIONS = {
   epgMappings: 'epg_mappings',
   reconciliationReview: 'reconciliation_review',
   ingestionRuns: 'ingestion_runs',
+  /*
+   * TDT-API-02D verification. The names come from `HEALTH_COLLECTIONS` so the
+   * declaration lives with the row shapes and cannot drift from them; the keys
+   * here are what the rest of the application addresses them by.
+   */
+  sourceHealthChecks: HEALTH_COLLECTIONS.checks,
+  sourceHealthAggregate: HEALTH_COLLECTIONS.health,
+  verificationPolicies: HEALTH_COLLECTIONS.policies,
 } as const;
 
 export type CollectionName = (typeof COLLECTIONS)[keyof typeof COLLECTIONS];

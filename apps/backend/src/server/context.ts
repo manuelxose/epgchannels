@@ -13,6 +13,7 @@ import type { ChannelsService } from '../modules/channels/channels.service.js';
 import type { EpgIngestionService } from '../modules/epg/epg.ingestion.js';
 import type { EpgService } from '../modules/epg/epg.service.js';
 import type { PlaybackService } from '../modules/playback/playback.service.js';
+import type { VerificationRuntime } from '../verification/runtime.js';
 
 export interface AppContext {
   readonly version: string;
@@ -28,4 +29,10 @@ export interface AppContext {
   readonly adminAuth: AdminAuthService;
   readonly egressOptions: EgressOptions;
   readonly serviceKeyEnabled: boolean;
+  /*
+   * TDT-API-02D verification. One object, constructed once in bootstrap.ts by
+   * `createVerificationRuntime`, so the scheduler, queue, controls and metrics
+   * of a process are necessarily the same instances a route sees.
+   */
+  readonly verification: VerificationRuntime;
 }

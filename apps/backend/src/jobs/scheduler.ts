@@ -28,25 +28,38 @@ export function startJobs(config: Config, context: AppContext): void {
   const verifyJob: Job = {
     name: 'source-verification',
     run: async () => {
-      const sources = await context.database
-        .collection<PlaybackSourceDoc>(COLLECTIONS.sources)
-        .find({ editorialStatus: 'published', type: { $in: ['hls', 'dash'] } })
-        .sort({ lastVerifiedAt: 1 })
-        .limit(50)
-        .toArray();
-      let ok = 0;
-      for (const source of sources) {
-        try {
-          const result = await context.playback.verifySource(source._id, {
-            blockedHosts: context.egressOptions.blockedHosts,
-            timeoutMs: context.egressOptions.timeoutMs,
-          });
-          if (result.status === 'ok') ok += 1;
-        } catch {
-          /* recorded by verifySource when the source exists */
-        }
+      /*
+       * TDT-API-02D: one round of the layered verification engine.
+       *
+       * The round itself enforces every bound that matters to a third party (the
+       * global and per-host concurrency limits, the retry cap, the circuit
+       * breakers) and refuses sources whose aggregate health is paused. This job
+       * contributes the schedule and the `job_runs` bookkeeping and nothing else.
+       *
+       * Gated by `VERIFY_ENABLED`: an operator turns this on deliberately, because
+       * it makes the platform contact third-party origins on a timer. A disabled
+       * round returns before any planning, so it cannot touch Mongo or the network.
+       */
+      if (!config.VERIFY_ENABLED) {
+        context.logger.debug({ job: 'source-verification' }, 'verification disabled (VERIFY_ENABLED=false)');
+        return;
       }
-      context.logger.info({ checked: sources.length, ok }, 'source verification finished');
+      const counts = await context.verification.scheduler.runRound(new Date());
+      context.logger.info(
+        {
+          planned: counts.planned,
+          deferred: counts.deferred,
+          paused: counts.paused,
+          healthy: counts.healthy,
+          degraded: counts.degraded,
+          failed: counts.failed,
+          retries: counts.retries,
+          egressRequests: counts.egressRequests,
+          wallMs: counts.wallMs,
+          peakInFlight: counts.peakInFlight,
+        },
+        'source verification round finished',
+      );
     },
   };
 
