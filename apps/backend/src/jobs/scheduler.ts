@@ -10,6 +10,7 @@ import type { AppContext } from '../server/context.js';
 import { COLLECTIONS } from '../infrastructure/mongo.js';
 import type { JobRunDoc, PlaybackSourceDoc } from '../infrastructure/schema.js';
 import { runResolutionJob } from './youtube-resolution.js';
+import { clearScheduledJobs, registerScheduledJobs } from './job-control.js';
 
 type Job = { readonly name: string; readonly run: () => Promise<void> };
 
@@ -81,6 +82,16 @@ export function startJobs(config: Config, context: AppContext): void {
       context.logger.warn({ job: job.name }, 'job already running, skipping');
       return;
     }
+    /*
+     * TDT-API-02FG: the operator pause is honoured HERE, before anything else and
+     * on every path (timer tick and HTTP trigger), because this is the only place
+     * a job actually starts. A paused job writes no `job_runs` row and contacts
+     * nobody; the pause is a real stop, not a flag on a dashboard.
+     */
+    if (!(await context.jobControl.mayRun(job.name))) {
+      context.logger.info({ job: job.name }, 'job paused by operator, skipping');
+      return;
+    }
     running.add(job.name);
     const startedAt = new Date();
     try {
@@ -123,6 +134,24 @@ export function startJobs(config: Config, context: AppContext): void {
   const youtubeBoot = setTimeout(() => void run(youtubeJob), 15_000);
   youtubeBoot.unref();
   timers = [epgTimer, verifyTimer, youtubeTimer, youtubeBoot];
+  /*
+   * Publish what this process actually scheduled, so the operations endpoint can
+   * report the real jobs (and refuse to pause a name it does not run) instead of
+   * keeping a second, drifting list of names.
+   *
+   * `source-verification` is reported as disabled when `VERIFY_ENABLED` is off:
+   * its timer fires but every run returns without contacting anyone, and saying so
+   * is the honest state.
+   */
+  registerScheduledJobs([
+    { name: epgJob.name, intervalMinutes: config.EPG_REFRESH_INTERVAL_MINUTES, enabled: true },
+    {
+      name: verifyJob.name,
+      intervalMinutes: config.SOURCE_VERIFY_INTERVAL_MINUTES,
+      enabled: config.VERIFY_ENABLED,
+    },
+    { name: youtubeJob.name, intervalMinutes: config.YOUTUBE_RESOLVE_INTERVAL_MINUTES, enabled: true },
+  ]);
   context.logger.info(
     {
       epgMinutes: config.EPG_REFRESH_INTERVAL_MINUTES,
@@ -139,4 +168,6 @@ export function stopJobs(): void {
     clearInterval(timer);
   }
   timers = [];
+  // A stopped scheduler runs nothing, so nothing is pausable by name.
+  clearScheduledJobs();
 }

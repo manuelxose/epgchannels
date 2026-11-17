@@ -80,6 +80,8 @@ export function createRateLimit(options: RateLimitOptions): RequestHandler {
 export class Metrics {
   private readonly counters = new Map<string, number>();
   private readonly histograms = new Map<string, { count: number; sum: number }>();
+  /** Latency histogram buckets per observed family, for a real percentile. */
+  private readonly buckets = new Map<string, number[]>();
   private readonly startedAt = Date.now();
 
   increment(name: string, labels: Record<string, string> = {}, by = 1): void {
@@ -93,6 +95,72 @@ export class Metrics {
     entry.count += 1;
     entry.sum += milliseconds;
     this.histograms.set(key, entry);
+    /*
+     * Bounded buckets alongside the summary. A count and a sum cannot yield a
+     * percentile, and reporting a made-up p95 would be worse than reporting none;
+     * keeping the buckets makes the percentile a measurement with a known
+     * resolution (`LATENCY_BUCKETS_MS`), which is what the operations endpoint
+     * publishes.
+     */
+    const bucket = this.buckets.get(key) ?? new Array<number>(LATENCY_BUCKETS_MS.length + 1).fill(0);
+    let index = LATENCY_BUCKETS_MS.findIndex((bound) => milliseconds <= bound);
+    if (index === -1) index = LATENCY_BUCKETS_MS.length;
+    bucket[index] = (bucket[index] ?? 0) + 1;
+    this.buckets.set(key, bucket);
+  }
+
+  /**
+   * Percentile of one histogram family, across every label set.
+   *
+   * `null` when the family has never been timed: "we did not measure" and "it was
+   * 0 ms" are different answers and must not be conflated.
+   */
+  percentile(name: string, fraction: number): number | null {
+    let total = 0;
+    const merged = new Array<number>(LATENCY_BUCKETS_MS.length + 1).fill(0);
+    for (const [key, bucket] of this.buckets) {
+      if (!key.startsWith(`${name}|`)) continue;
+      for (let index = 0; index < merged.length; index += 1) {
+        merged[index] = (merged[index] ?? 0) + (bucket[index] ?? 0);
+      }
+    }
+    for (const count of merged) total += count;
+    if (total === 0) return null;
+    const target = Math.ceil(total * fraction);
+    let seen = 0;
+    for (let index = 0; index < merged.length; index += 1) {
+      seen += merged[index] ?? 0;
+      if (seen >= target) {
+        /*
+         * Bucket `i` covers values up to `LATENCY_BUCKETS_MS[i]`; the last bucket
+         * is open-ended, so it reports the largest finite bound as a lower bound
+         * of the truth rather than pretending to know the real tail.
+         */
+        return LATENCY_BUCKETS_MS[Math.min(index, LATENCY_BUCKETS_MS.length - 1)] ?? 0;
+      }
+    }
+    return LATENCY_BUCKETS_MS[LATENCY_BUCKETS_MS.length - 1] ?? 0;
+  }
+
+  /** Totals of one counter family, summed over its label sets. */
+  counterTotal(name: string): number {
+    let total = 0;
+    for (const [key, value] of this.counters) {
+      if (key.startsWith(`${name}|`)) total += value;
+    }
+    return total;
+  }
+
+  /** Counter totals of one family, keyed by the value of one label. */
+  counterByLabel(name: string, label: string): Map<string, number> {
+    const out = new Map<string, number>();
+    for (const [key, value] of this.counters) {
+      if (!key.startsWith(`${name}|`)) continue;
+      const match = new RegExp(`(?:^|,)${label}="([^"]*)"`).exec(key.slice(name.length + 1));
+      if (match === null) continue;
+      out.set(match[1] as string, (out.get(match[1] as string) ?? 0) + value);
+    }
+    return out;
   }
 
   render(): string {
@@ -179,3 +247,11 @@ export function createCacheHeaders(options: { maxAgeSeconds: number; publicRespo
 
 /** Body-size guard: JSON bodies are bounded before parsing. */
 export const MAX_JSON_BODY_BYTES = '256kb';
+
+/**
+ * Upper bounds of the latency histogram, in milliseconds.
+ *
+ * Coarse on purpose: the operations console reports p50/p95 with this resolution
+ * and says so, instead of implying millisecond precision it does not have.
+ */
+export const LATENCY_BUCKETS_MS: readonly number[] = [5, 10, 25, 50, 100, 250, 500, 1_000, 2_500, 5_000, 10_000];

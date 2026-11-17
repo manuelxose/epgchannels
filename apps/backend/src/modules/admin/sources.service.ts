@@ -266,6 +266,55 @@ export class SourcesService {
     return updated;
   }
 
+  /**
+   * Re-points an existing source at another channel (TDT-API-02FG §5
+   * `POST /admin/sources/:id/assign`).
+   *
+   * Reuse, not re-implementation: this is a source write and therefore keeps the
+   * same rules as every other one — the target channel must exist, the revision
+   * moves, and `audit_log` records the move with the channel it came from. It does
+   * NOT touch the authorization decision: a right is recorded per URL/operator, so
+   * moving a source does not manufacture permission for the new channel. The
+   * eligibility gate re-evaluates on the next read and refuses if it must.
+   */
+  async assign(
+    id: string,
+    input: { readonly channelId: string; readonly reason: string },
+    actor: Actor,
+    requestId: string,
+  ): Promise<PlaybackSourceDoc> {
+    const existing = await this.sources().findOne({ _id: id });
+    if (!existing) throw AppError.notFound('Fuente no encontrada.');
+    const channel = await this.database
+      .collection<ChannelDoc>(COLLECTIONS.channels)
+      .findOne({ _id: input.channelId });
+    if (!channel) throw AppError.notFound('Canal no encontrado.');
+    if (channel.mergedInto !== null) {
+      throw AppError.conflict('El canal indicado fue fusionado en otro; asigna la fuente al canal vigente.');
+    }
+    if (existing.channelId === input.channelId) {
+      /* Idempotent: still audited, so a repeated click is visible in the trail. */
+      await this.editorial.recordExternal(actor, 'source.assign.noop', 'source', id, requestId, {
+        channelId: input.channelId,
+        reason: input.reason,
+      });
+      return existing;
+    }
+    const updated: PlaybackSourceDoc = {
+      ...existing,
+      channelId: input.channelId,
+      updatedAt: new Date(),
+      revision: existing.revision + 1,
+    };
+    await this.sources().replaceOne({ _id: id }, updated);
+    await this.editorial.recordExternal(actor, 'source.assign', 'source', id, requestId, {
+      fromChannelId: existing.channelId,
+      toChannelId: input.channelId,
+      reason: input.reason,
+    });
+    return updated;
+  }
+
   async verify(id: string, egress: EgressOptions, actor: Actor, requestId: string): Promise<VerifySourceResult> {
     const source = await this.sources().findOne({ _id: id });
     if (!source) throw AppError.notFound('Fuente no encontrada.');

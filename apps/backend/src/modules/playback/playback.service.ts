@@ -55,6 +55,18 @@ export interface PlaybackLookup {
 }
 
 /**
+ * Playback counters the operations console publishes.
+ *
+ * Deliberately narrow: two facts the platform can state without inference.
+ * `descriptorServed` is per derived status, and `refusedUnauthorised` counts a
+ * descriptor refused *because* a right was missing — not every refusal.
+ */
+export interface PlaybackCounters {
+  descriptorServed(status: PlaybackStatus): void;
+  refusedUnauthorised(): void;
+}
+
+/**
  * Authorization decisions for the sources being assembled, keyed by source id.
  *
  * 02C rule (fail-closed): a source is playable only when a recorded right says
@@ -387,7 +399,35 @@ function unavailableOf(selection: PlaybackSelection): NonNullable<PlaybackDescri
 }
 
 export class PlaybackService {
-  constructor(private readonly database: DatabaseHandle) {}
+  /**
+   * Where playback outcomes are counted (TDT-API-02FG operations console).
+   *
+   * Injected rather than imported so the domain service keeps no dependency on
+   * the HTTP layer's registry, and a service built without one (tests, CLI
+   * scripts) simply records nothing.
+   */
+  constructor(
+    private readonly database: DatabaseHandle,
+    private readonly counters: PlaybackCounters | null = null,
+  ) {}
+
+  /**
+   * The one place a served descriptor is counted.
+   *
+   * `refusedUnauthorised` counts channels where the only thing standing between
+   * the visitor and playback was a missing right — that is the number an operator
+   * needs to see, and it is read from the eligibility decision, never guessed.
+   */
+  private countDescriptor(descriptor: PlaybackDescriptor, sources: readonly PlaybackSourceDoc[], authorizations: AuthorizationMap): void {
+    if (this.counters === null) return;
+    this.counters.descriptorServed(descriptor.playback.status);
+    if (descriptor.playback.status !== 'available' && descriptor.playback.status !== 'external') {
+      const unauthorised = sources.some(
+        (source) => source.editorialStatus !== 'withdrawn' && !authorizations.has(source._id),
+      );
+      if (unauthorised) this.counters.refusedUnauthorised();
+    }
+  }
 
   async findChannel(slug: string): Promise<ChannelDoc | null> {
     return this.database
@@ -412,7 +452,9 @@ export class PlaybackService {
       this.authorizationsFor(sources),
       this.evidenceFor(sources),
     ]);
-    return buildDescriptor(channel, sources, new Date(), videos, offline, authorizations, evidence);
+    const descriptor = buildDescriptor(channel, sources, new Date(), videos, offline, authorizations, evidence);
+    this.countDescriptor(descriptor, sources, authorizations);
+    return descriptor;
   }
 
   /**
