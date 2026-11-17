@@ -134,3 +134,72 @@ independiente) depende de t4 y la ejecuta un miembro que no implementó ningún 
 
 Un modelo no certifica su propia implementación. El veredicto final de este documento lo fija la
 revisión independiente más el gate re-ejecutado por el capitán sobre el SHA congelado.
+
+---
+
+## 8. Contribuciones integradas
+
+| Tarea | Autor | Worktree / rama | Commits |
+|---|---|---|---|
+| t1 REA | `rea-playback-investigator` | `wt/02e-rea` / `feat/02e-rea` | `1f56265` |
+| t3 UI | `player-frontend-engineer` | `wt/02e-player` / `feat/02e-player` | `af1acf0` |
+| t2 fuentes | `media-streaming-engineer` | `wt/02e-sources` / `feat/02e-sources` | `f2e5c49` |
+
+Cada rama se selló a mano por el capitán revisando el diff real, excluyendo lo que no correspondía:
+
+- Se **excluyó** `evidence/02e/_scaffold/` (~12,4 MB de fixtures copiados + `hls.min.js`): es un
+  arnés de trabajo, no un artefacto entregable.
+- Se **excluyó** el ruido de `package-lock.json` que produce `npm install` (borraba la línea
+  `license`), restaurado al valor del checkout principal.
+- Se **excluyó** `tmp-probe.mjs` (scratch del autor, que además lo borró él mismo).
+
+## 9. Defectos reales encontrados EJECUTANDO (no leyendo)
+
+La lección de 02D se cumplió otra vez: **cuatro defectos** de t2/t3 solo aparecieron al ejecutar, y
+solo **uno** de ellos lo detectó la suite unitaria del autor.
+
+| # | Defecto | Cómo apareció | Estado |
+|---|---|---|---|
+| 1 | Aserción de depuración olvidada (`toBe('DEBUG')`) que enmascaraba el test real | el capitán ejecutó la suite | corregido |
+| 2 | `statusWithoutInApp` devolvía `degraded` **antes** de comprobar `external`, rompiendo el fallback legal al reproductor del emisor | integración: 2 tests en rojo (179/181) | corregido |
+| 3 | `isEligibleSource` respondía la pregunta de "candidato in-app" en vez de "expuesto", así que un `external` elegible nunca era elegible | integración, tras corregir (2) | corregido |
+| 4 | El arnés de mutación D-023 no aplicaba anclas multilínea por **CRLF vs `\n`**, reportando `not-applied` y haciendo parecer obsoleta la mutación | el capitán re-ejecutó el arnés tras la fusión | corregido por el capitán (`7ec8783`) |
+
+El defecto 4 merece énfasis: era una **avería del instrumento de medida**, no del código, y habría
+hecho que la prueba D-023 pareciera pasar estando una de sus cinco mutaciones sin aplicar. Es la
+misma clase de fallo que `VERIFICACION-FUENTES-02D.md` §«dos errores de instrumento» documenta.
+
+## 10. Gate de 02E medido directamente sobre el árbol integrado
+
+**No certificado por engine-04** (§6, limitación de `npm` bajo el runner ACL). Etapas ejecutadas
+directamente por el capitán sobre la rama integrada, con exit codes reales:
+
+| Etapa | Exit | Resultado |
+|---|---|---|
+| `build` | **0** | OK |
+| `typecheck` | **0** | OK |
+| `unit` | **0** | **572** tests (549 base + 23 nuevos) |
+| `integration` | **0** | **181** tests (base restaurada) |
+| `ingestion` | **0** | 9/9 |
+| `independence` | **0** | 15 tests |
+| `client` | **0** | 14 tests |
+| frontend unit | **0** | **353** tests (318 base + 35 nuevos) |
+| frontend build | **0** | bundle generado |
+| mutación D-023 | **0** | **5/5 capturadas**, restauración byte a byte |
+
+## 11. Selección de fuentes: lo que ahora es cierto y lo que no
+
+Medido por la especificación de ruta real de t2 (sin seam inyectado) sobre
+`evidence/verification-02d/catalogue-verification.json`:
+
+- **63 seleccionables / 18 rechazadas**, con las causas medidas: `http-404` ×9,
+  `missing-segments` ×1, `unsupported-format` ×8.
+- `isSourceHealthy()` ya **no** trata `unknown` como sano — pero el cambio se hizo **separando ejes**,
+  no endureciendo un booleano: ninguna fila de la plataforma lleva `ok`, así que el arreglo ingenuo
+  habría dejado **cero** fuentes intentables. Esto se midió antes de aceptar el diseño
+  (§6-bis de la revisión del capitán): 1364 filas, todas `unknown`.
+- La **compatibilidad es `unknown` en todo el catálogo**: el motor de 02D nunca inyectó una sonda de
+  reproducción en navegador, así que no hay veredicto de compatibilidad que consumir. La UI debe
+  decir "sin verificar", no "compatible".
+- **Nada de esto es una licencia de difusión.** Las autorizaciones son del propietario para
+  **verificar** (§4-bis).
