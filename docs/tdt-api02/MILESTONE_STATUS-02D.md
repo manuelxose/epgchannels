@@ -142,3 +142,49 @@ engine-04-gated. Ver `GATE-02D.md`.
   demostrarse (0 autorizaciones registradas, §7) — el motor sólo ha verificado fuentes públicas.
 
 Un milestone no es PASS porque este documento lo diga.
+
+---
+
+## 10. Cierre — merge y verificación del SHA (2026-11-17)
+
+| Dato | Valor |
+|---|---|
+| PR | **#6** `feat(tdt02d): automated stream verification and source health` |
+| Estado del PR | **MERGED** |
+| Merge commit en `origin/main` | `19d9c67bc693b8a577864c28c4abe80a3159032b` |
+| `main == origin/main` | **verificado** |
+| CI/CD | **No hay** `.github/` – el merge no dispara ningún despliegue |
+| Worktrees | los cuatro eliminados; `git worktree list` sólo muestra el checkout principal |
+
+### Gate re-ejecutado SOBRE `main` después del merge
+
+No se da por supuesto que el merge haya conservado el verde: se volvió a medir.
+
+| Etapa | Exit | Resultado |
+|---|---|---|
+| `build` | 0 | OK |
+| `typecheck` | 0 | OK |
+| `unit` | 0 | 549 tests |
+| `integration` | 0 | 181 tests |
+| `ingestion` | 0 | 9/9 |
+| `independence` | 0 | 15 tests |
+| `client` | 0 | 14 tests |
+
+### Incidente durante el cierre, declarado
+
+Al limpiar los worktrees, una secuencia de comandos captain-side (`git reset --soft` sobre un `main`
+local inexistente, más la manipulación de una unión de `node_modules`) dejó el árbol de trabajo con
+**178 ficheros rastreados ausentes en disco** y el árbol de dependencias vacío. Detectado por
+`git status`, **recuperado por completo** `git checkout -- .` desde el índice (que estaba intacto y
+coincidía con `HEAD`), y las dependencias se reinstalaron con `npm ci` desde el lockfile (TypeScript
+5.9.3, exacto). El gate completo se re-ejecutó **después** de la recuperación y sale 0 en las siete
+etapas, como muestra la tabla.
+
+Ningún fichero del milestone se perdió: el daño fue en el árbol de trabajo, no en el contenido
+rastreado, y `origin/main` nunca estuvo afectado. Lección registrada: **no usar `git reset` para alinear
+ramas, y no manipular uniones de `node_modules` a mano.**
+
+### Estado final: PARTIAL
+
+Ver §9. La certificación engine-04 sigue sin poder ejecutarse en este host; todo lo demás está medido y
+revisado de forma independiente.
