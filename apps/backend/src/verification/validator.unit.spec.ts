@@ -1597,8 +1597,12 @@ describe('segment probe budgets — HEAD + bounded prefix (real fixtures)', () =
     );
   }, 40_000);
 
-  it('PREFIX BOUND: a segment larger than the probe budget is sampled, not downloaded whole', async () => {
-    // 8 MiB, no content-length: only a bounded prefix read can survive this.
+  it('PREFIX BOUND: a huge undeclared body is stopped by the ceiling, reading far less than it', async () => {
+    /*
+     * 8 MiB with no content-length, above the 4 MiB ceiling. The egress layer
+     * counts bytes as they arrive and aborts, so the probe never accumulates the
+     * whole body — the size defence fires and the row is not healthy.
+     */
     const huge = 8 * 1024 * 1024;
     await withFixture(
       {
@@ -1609,11 +1613,6 @@ describe('segment probe budgets — HEAD + bounded prefix (real fixtures)', () =
       },
       async (f) => {
         const result = await probe(f.url('/master.m3u8'), realEgress);
-        /*
-         * 8 MiB is above the 512 KiB ceiling, and with no content-length the
-         * egress layer counts bytes as they arrive, so this is the size defence
-         * firing — correctly, and *not* as a healthy row.
-         */
         expect(result.outcome).not.toBe('healthy');
         expect(result.failure?.category).toBe('response-too-large');
         // Whatever it read, it read far less than the whole 8 MiB.
@@ -1621,6 +1620,47 @@ describe('segment probe budgets — HEAD + bounded prefix (real fixtures)', () =
       },
     );
   }, 40_000);
+
+  it('an UNDECLARED size (the real CDN shape) is UNKNOWN, never assumed to fit', async () => {
+    /*
+     * Measured on the live CDNs: HEAD answers 200 `application/octet-stream`
+     * with no content-length, while the GET of the same segment declares ~1.8 MiB.
+     * A probe that read HEAD's zero as "it fits" would be asserting something it
+     * never observed. The segment here is above the OLD 512 KiB ceiling and
+     * within the new 4 MiB one, with no declared length on HEAD.
+     */
+    const body = 'a'.repeat(1_800_000);
+    await withFixture(
+      {
+        '/master.m3u8': { contentType: HLS_MIME, body: master },
+        '/v0/index.m3u8': { contentType: HLS_MIME, body: media(['a.ts', 'b.ts']) },
+        '/v0/a.ts': { contentType: 'video/mp2t', body },
+        '/v0/b.ts': { contentType: 'video/mp2t', body },
+      },
+      async (f) => {
+        const result = await probe(f.url('/master.m3u8'), realEgress);
+        expect(result.failure).toBeNull();
+        expect(result.outcome).toBe('healthy');
+        expect(result.evidence.segmentStatuses).toEqual([200, 200]);
+      },
+    );
+  }, 40_000);
+
+  it('TWO-SIDED: a hostile 10 MiB body is still refused as response-too-large', async () => {
+    const hostile = 10 * 1024 * 1024;
+    await withFixture(
+      {
+        '/master.m3u8': { contentType: HLS_MIME, body: master },
+        '/v0/index.m3u8': { contentType: HLS_MIME, body: media(['evil.ts']) },
+        '/v0/evil.ts': { contentType: 'video/mp2t', declaredContentLength: hostile, body: 'x' },
+      },
+      async (f) => {
+        const result = await probe(f.url('/master.m3u8'), realEgress);
+        expect(result.failure?.category).toBe('response-too-large');
+        expect(result.outcome).not.toBe('healthy');
+      },
+    );
+  }, 30_000);
 
   it('TWO-SIDED: a genuine 404 stays missing-segments', async () => {
     await withFixture(
