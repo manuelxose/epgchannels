@@ -70,20 +70,51 @@ export class CatalogueRailComponent {
     this.query.setQuery((event.target as HTMLInputElement).value);
   }
 
-  protected onCategory(event: Event): void {
-    this.query.setCategory((event.target as HTMLSelectElement).value);
+  /** Every value currently selected in a multi-select, in DOM order. */
+  private selectedValues(event: Event): string[] {
+    const select = event.target as HTMLSelectElement;
+    return [...select.selectedOptions].map((option) => option.value).filter((value) => value !== '');
+  }
+
+  protected onCategories(event: Event): void {
+    this.query.setCategories(this.selectedValues(event));
+  }
+
+  protected isCategorySelected(id: string): boolean {
+    return this.query.categories().includes(id);
   }
 
   protected onAvailability(event: Event): void {
     this.query.setAvailability((event.target as HTMLSelectElement).value as never);
   }
 
-  protected onCountry(event: Event): void {
-    this.query.setCountry((event.target as HTMLSelectElement).value);
+  protected onCountries(event: Event): void {
+    this.query.setCountries(this.selectedValues(event));
   }
 
-  protected onLanguage(event: Event): void {
-    this.query.setLanguage((event.target as HTMLSelectElement).value);
+  protected isCountrySelected(code: string): boolean {
+    return this.query.countries().includes(code);
+  }
+
+  protected onLanguages(event: Event): void {
+    this.query.setLanguages(this.selectedValues(event));
+  }
+
+  protected isLanguageSelected(code: string): boolean {
+    return this.query.languages().includes(code);
+  }
+
+  /**
+   * Visible summary of a multi-select. "Filtro ninguno" means no filter (every
+   * value shows), never "nothing matches".
+   *
+   * Wording avoids gender agreement on purpose: "Todos"/"Todas" and
+   * "seleccionado"/"seleccionada" cannot both be right for "país" and "categoría",
+   * and a label that reads wrong makes the filter look broken.
+   */
+  protected selectionHint(values: readonly string[], noun: string): string {
+    if (values.length === 0) return `Sin filtro de ${noun}`;
+    return `${values.length} ${noun} en el filtro`;
   }
 
   protected onFavorite(channelId: string): void {

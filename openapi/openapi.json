@@ -4064,6 +4064,7 @@
               "local",
               "autonomica",
               "internacional",
+              "adultos",
               "otros"
             ]
           },
@@ -4181,6 +4182,7 @@
                     "local",
                     "autonomica",
                     "internacional",
+                    "adultos",
                     "otros"
                   ]
                 },
@@ -4370,6 +4372,7 @@
                   "local",
                   "autonomica",
                   "internacional",
+                  "adultos",
                   "otros"
                 ]
               },
@@ -5959,6 +5962,7 @@
               "local",
               "autonomica",
               "internacional",
+              "adultos",
               "otros"
             ]
           },
@@ -6005,6 +6009,7 @@
                     "local",
                     "autonomica",
                     "internacional",
+                    "adultos",
                     "otros"
                   ]
                 },
@@ -6187,6 +6192,7 @@
               "local",
               "autonomica",
               "internacional",
+              "adultos",
               "otros"
             ]
           },
@@ -6302,6 +6308,7 @@
                     "local",
                     "autonomica",
                     "internacional",
+                    "adultos",
                     "otros"
                   ]
                 },
@@ -6724,6 +6731,7 @@
               "local",
               "autonomica",
               "internacional",
+              "adultos",
               "otros"
             ]
           },
@@ -6945,6 +6953,7 @@
               "local",
               "autonomica",
               "internacional",
+              "adultos",
               "otros"
             ]
           },
@@ -7343,6 +7352,7 @@
               "local",
               "autonomica",
               "internacional",
+              "adultos",
               "otros"
             ]
           },
@@ -8207,36 +8217,56 @@
             "maxLength": 120
           },
           "country": {
-            "type": "string",
-            "pattern": "^(?:[A-Z]{2}|INT)$"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
           },
           "region": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 16
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
           },
           "category": {
-            "type": "string",
-            "enum": [
-              "generalista",
-              "informativos",
-              "deportes",
-              "infantil",
-              "musica",
-              "cultura",
-              "cine-series",
-              "documentales",
-              "entretenimiento",
-              "religion",
-              "local",
-              "autonomica",
-              "internacional",
-              "otros"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
             ]
           },
           "language": {
-            "type": "string",
-            "pattern": "^(?:[a-z]{2,3}(?:-[A-Z]{2})?|multi)$"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
           },
           "playable": {
             "anyOf": [
@@ -8264,7 +8294,13 @@
             ],
             "default": "name"
           }
-        }
+        },
+        "required": [
+          "country",
+          "region",
+          "category",
+          "language"
+        ]
       },
       "AdminIdentityInput": {
         "type": "object",
@@ -8311,6 +8347,7 @@
               "local",
               "autonomica",
               "internacional",
+              "adultos",
               "otros"
             ]
           },

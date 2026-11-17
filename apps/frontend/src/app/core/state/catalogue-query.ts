@@ -1,4 +1,4 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, signal, type WritableSignal } from '@angular/core';
 import { inject } from '@angular/core';
 import { CatalogStore } from './catalog.store';
 import { PreferencesStore } from './preferences.store';
@@ -97,26 +97,33 @@ export interface CatalogueView {
 
 function isFiltered(
   query: string,
-  categoryId: string,
+  categories: readonly string[],
   favoritesOnly: boolean,
   availability: AvailabilityFilter,
-  country: string,
-  language: string,
+  countries: readonly string[],
+  languages: readonly string[],
 ): boolean {
   return (
     normalizeForSearch(query).length > 0 ||
-    categoryId !== 'all' ||
+    categories.length > 0 ||
     favoritesOnly ||
     availability !== 'all' ||
-    country !== 'all' ||
-    language !== 'all'
+    countries.length > 0 ||
+    languages.length > 0
   );
 }
 
 /**
  * Catalogue view-model: search, category, country, language, favourites and
- * availability filters plus paging. Kept separate from the components so the
- * rules are unit-testable.
+ * availability filters plus paging.
+ *
+ * Filters are **multi-valued** since TDT-API-02FG: `?category=a&category=b` is
+ * "any of these categories", and different filters combine with AND — which is
+ * what a person means when they pick two categories and then a country. An empty
+ * selection is "all", never "none". The old single-value setters are kept as
+ * one-element selections so existing callers and tests keep working.
+ *
+ * Kept separate from the components so the rules are unit-testable.
  */
 @Injectable({ providedIn: 'root' })
 export class CatalogueQuery {
@@ -124,14 +131,22 @@ export class CatalogueQuery {
   private readonly preferences = inject(PreferencesStore);
 
   readonly query = signal('');
-  readonly categoryId = signal('all');
-  /** `'all'` or an ISO-3166 alpha-2 country code as published by the catalogue. */
-  readonly country = signal('all');
-  /** `'all'` or a language code (`es`, `ca`, `en`…) as published per channel. */
-  readonly language = signal('all');
+  /** Selected categories; empty means every category. */
+  readonly categories = signal<readonly string[]>([]);
+  /** Selected ISO-3166 codes as published by the catalogue; empty means all. */
+  readonly countries = signal<readonly string[]>([]);
+  /** Selected language codes; empty means all. */
+  readonly languages = signal<readonly string[]>([]);
   readonly favoritesOnly = signal(false);
   readonly availability = signal<AvailabilityFilter>('all');
   readonly page = signal(1);
+
+  /** The first selected category, or `'all'`; kept for existing callers. */
+  readonly categoryId = computed(() => this.categories()[0] ?? 'all');
+  /** The first selected country, or `'all'`; kept for existing callers. */
+  readonly country = computed(() => this.countries()[0] ?? 'all');
+  /** The first selected language, or `'all'`; kept for existing callers. */
+  readonly language = computed(() => this.languages()[0] ?? 'all');
 
   private readonly searchIndex = computed(() => {
     const index = new Map<string, string>();
@@ -143,25 +158,29 @@ export class CatalogueQuery {
 
   private readonly filtered = computed<readonly Channel[]>(() => {
     const query = normalizeForSearch(this.query());
-    const category = this.categoryId();
-    const country = this.country();
-    const language = this.language();
+    const categories = new Set(this.categories());
+    const countries = new Set(this.countries());
+    const languages = new Set(this.languages());
     const favoritesOnly = this.favoritesOnly();
     const favorites = this.preferences.favorites();
     const availability = this.availability();
     const index = this.searchIndex();
 
     return this.catalog.channels().filter((channel) => {
-      if (category !== 'all' && channel.categoryId !== category) {
+      /* Within a filter: any of the values. Between filters: all of them. */
+      if (categories.size > 0 && !categories.has(channel.categoryId)) {
         return false;
       }
-      if (country !== 'all' && channel.country !== country) {
+      if (countries.size > 0 && !countries.has(channel.country)) {
         return false;
       }
       // A channel with no published language is not claimed to be in any
       // language: it only appears when no language filter is applied.
-      if (language !== 'all' && channelLanguage(channel) !== language) {
-        return false;
+      if (languages.size > 0) {
+        const language = channelLanguage(channel);
+        if (language === undefined || !languages.has(language)) {
+          return false;
+        }
       }
       if (favoritesOnly && !favorites.has(channel.id)) {
         return false;
@@ -190,11 +209,11 @@ export class CatalogueQuery {
       lastVisible: start + pageChannels.length,
       isFiltered: isFiltered(
         this.query(),
-        this.categoryId(),
+        this.categories(),
         this.favoritesOnly(),
         this.availability(),
-        this.country(),
-        this.language(),
+        this.countries(),
+        this.languages(),
       ),
       hasFavorites: this.preferences.hasFavorites(),
     };
@@ -213,8 +232,11 @@ export class CatalogueQuery {
   /**
    * Countries actually present in the catalogue, with their channel counts.
    * Built from the data so the rail never offers an empty filter.
+   *
+   * countryOptions is the same list under a name that does not collide with
+   * the countries FILTER signal above.
    */
-  readonly countries = computed(() => {
+  readonly countryOptions = computed(() => {
     const counts = new Map<string, number>();
     for (const channel of this.catalog.channels()) {
       counts.set(channel.country, (counts.get(channel.country) ?? 0) + 1);
@@ -228,7 +250,7 @@ export class CatalogueQuery {
    * Languages actually present in the catalogue, with their channel counts.
    * A channel with no published language contributes to no language.
    */
-  readonly languages = computed(() => {
+  readonly languageOptions = computed(() => {
     const counts = new Map<string, number>();
     for (const channel of this.catalog.channels()) {
       const code = channelLanguage(channel);
@@ -269,9 +291,23 @@ export class CatalogueQuery {
     this.page.set(1);
   }
 
+  /**
+   * Replaces the category selection. `'all'` (or an empty list) clears it.
+   * Kept as the single-value entry point for existing callers and tests.
+   */
   setCategory(categoryId: string): void {
-    this.categoryId.set(categoryId);
+    this.setCategories(categoryId === 'all' ? [] : [categoryId]);
+  }
+
+  /** Replaces the whole category selection; several values mean "any of these". */
+  setCategories(values: readonly string[]): void {
+    this.categories.set([...new Set(values.filter((value) => value !== '' && value !== 'all'))]);
     this.page.set(1);
+  }
+
+  /** Adds or removes one value from the current selection. */
+  toggleCategory(categoryId: string): void {
+    this.toggleIn(this.categories, categoryId);
   }
 
   toggleFavoritesOnly(): void {
@@ -285,20 +321,45 @@ export class CatalogueQuery {
   }
 
   setCountry(code: string): void {
-    this.country.set(code);
+    this.setCountries(code === 'all' ? [] : [code]);
+  }
+
+  setCountries(values: readonly string[]): void {
+    this.countries.set([...new Set(values.filter((value) => value !== '' && value !== 'all'))]);
     this.page.set(1);
   }
 
+  toggleCountry(code: string): void {
+    this.toggleIn(this.countries, code);
+  }
+
   setLanguage(code: string): void {
-    this.language.set(code);
+    this.setLanguages(code === 'all' ? [] : [code]);
+  }
+
+  setLanguages(values: readonly string[]): void {
+    this.languages.set([...new Set(values.filter((value) => value !== '' && value !== 'all'))]);
+    this.page.set(1);
+  }
+
+  toggleLanguage(code: string): void {
+    this.toggleIn(this.languages, code);
+  }
+
+  /** Shared toggle for the multi-valued filters: selects, or deselects if present. */
+  private toggleIn(target: WritableSignal<readonly string[]>, value: string): void {
+    if (value === '' || value === 'all') return;
+    target.update((current) =>
+      current.includes(value) ? current.filter((entry) => entry !== value) : [...current, value],
+    );
     this.page.set(1);
   }
 
   clearFilters(): void {
     this.query.set('');
-    this.categoryId.set('all');
-    this.country.set('all');
-    this.language.set('all');
+    this.categories.set([]);
+    this.countries.set([]);
+    this.languages.set([]);
     this.favoritesOnly.set(false);
     this.availability.set('all');
     this.page.set(1);
