@@ -29,6 +29,7 @@ import { providerRegistry } from '../modules/providers/providers.registry.js';
 import type { ChannelDoc, EpgSourceDoc, JobRunDoc, PlaybackSourceDoc } from '../infrastructure/schema.js';
 import { COLLECTIONS } from '../infrastructure/mongo.js';
 import { CATEGORY_LABELS, CATEGORY_ORDER, SPAIN_REGIONS } from '../shared/taxonomy.js';
+import { createVerificationAdminRouter } from '../modules/admin/verification.admin.js';
 
 const uuid = z.string().uuid();
 const slugParam = z.string().min(1).max(120);
@@ -756,6 +757,30 @@ export function createRouter(context: AppContext, logger: Logger): Router {
       );
       const created = await context.epg.createEditorialProgramme(input, `manual:${actorOf(request).id}`);
       response.status(201).json({ data: created });
+    }),
+  );
+
+  /*
+   * TDT-API-02D operator controls, registered last so they cannot shadow any
+   * existing admin route.
+   *
+   * Mounted at `/admin`: the router's own paths already begin with
+   * `/verification`, so the effective paths are `/api/v1/admin/verification/…`.
+   * It reuses the SAME `requireRole('admin')` guard as every other admin route
+   * and passes it down as `requireAdmin` (the router refuses 503 rather than
+   * serving unguarded if that dependency is ever dropped). Nothing here is
+   * mounted on a public path: the public surface is unchanged.
+   */
+  router.use(
+    '/admin',
+    requireAdmin,
+    createVerificationAdminRouter({
+      database: context.database,
+      queue: context.verification.queue,
+      scheduler: context.verification.scheduler,
+      controls: context.verification.controls,
+      metrics: context.verification.metrics,
+      requireAdmin,
     }),
   );
 

@@ -1,0 +1,121 @@
+{
+  "ok": true,
+  "mode": "live",
+  "generatedAt": "2026-11-17T11:52:49.754Z",
+  "database": "tdt_platform",
+  "catalogue": {
+    "publishedHlsOrDash": 81,
+    "withAuthorizationRecord": 0,
+    "withoutAuthorizationRecord": 81
+  },
+  "verified": [
+    {
+      "label": "Akamai public HLS test stream",
+      "host": "cph-p2p-msl.akamaized.net",
+      "outcome": "failing",
+      "failure": "missing-segments",
+      "depthReached": "playlist",
+      "latencyMs": 1086,
+      "egressRequests": 2,
+      "uncertainty": {
+        "browserNotProbed": false,
+        "segmentsNotSampled": false,
+        "leaseExpired": false,
+        "manifestTruncated": false,
+        "notes": [
+          "dns-not-observed"
+        ]
+      },
+      "evidence": {
+        "status": null,
+        "contentType": "application/x-mpegURL",
+        "bytes": 217,
+        "variants": null,
+        "segments": null
+      }
+    },
+    {
+      "label": "Apple HLS authoring sample (BipBop advanced, TS)",
+      "host": "devstreaming-cdn.apple.com",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 470,
+      "egressRequests": 6,
+      "uncertainty": {
+        "browserNotProbed": true,
+        "segmentsNotSampled": false,
+        "leaseExpired": false,
+        "manifestTruncated": false,
+        "notes": [
+          "dns-not-observed"
+        ]
+      },
+      "evidence": {
+        "status": null,
+        "contentType": "application/x-mpegURL",
+        "bytes": 6289,
+        "variants": null,
+        "segments": null
+      }
+    },
+    {
+      "label": "Mux public test stream (x36xhzz)",
+      "host": "test-streams.mux.dev",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 469,
+      "egressRequests": 6,
+      "uncertainty": {
+        "browserNotProbed": true,
+        "segmentsNotSampled": false,
+        "leaseExpired": false,
+        "manifestTruncated": false,
+        "notes": [
+          "dns-not-observed"
+        ]
+      },
+      "evidence": {
+        "status": null,
+        "contentType": "audio/mpegurl",
+        "bytes": 752,
+        "variants": null,
+        "segments": null
+      }
+    },
+    {
+      "label": "Apple BipBop 16x9 variant ladder",
+      "host": "devstreaming-cdn.apple.com",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 430,
+      "egressRequests": 6,
+      "uncertainty": {
+        "browserNotProbed": true,
+        "segmentsNotSampled": false,
+        "leaseExpired": false,
+        "manifestTruncated": false,
+        "notes": [
+          "dns-not-observed"
+        ]
+      },
+      "evidence": {
+        "status": null,
+        "contentType": "application/x-mpegURL",
+        "bytes": 3286,
+        "variants": null,
+        "segments": null
+      }
+    }
+  ],
+  "ineligibleControl": {
+    "source": "Akamai public HLS test stream",
+    "outcome": "ineligible",
+    "failure": "ineligible",
+    "depthReached": "eligibility",
+    "egressRequests": 0,
+    "note": "The gate refused before any socket was opened. HTTP 200 would have been reachable; it is never a proof of playability."
+  }
+}

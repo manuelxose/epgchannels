@@ -1,0 +1,275 @@
+{
+  "generatedAt": "2026-11-17T10:42:04.581Z",
+  "node": "v24.18.0",
+  "probe": {
+    "entryPoint": "apps/backend/dist/infrastructure/safe-egress.js#safeFetch",
+    "injectedDeps": false,
+    "noDeps": "every call is safeFetch(request): the real dns.promises.lookup and the real node:net stack run",
+    "tcpConnectObserver": "node:net Socket.prototype.connect instrumented in-process; counts every connect attempt",
+    "testOnlyBypassAudit": {
+      "checked": "source scan for allowLoopbackForTests outside a REDIRECT-FRONT-BYPASS line",
+      "unmarkedCallSites": [],
+      "passed": true
+    },
+    "loopbackFixtures": "two loopback fixtures exist ONLY for the redirect case: the FRONT hop is reached through the documented test-only allowance so that a redirect can exist at all; the TARGET proves it is never reached (0 connections, 0 requests, 0 connects)"
+  },
+  "cases": [
+    {
+      "url": "http://127.0.0.1:61042/s.m3u8",
+      "expectedRefusal": "host-blocked",
+      "observedCode": "host-blocked",
+      "refused": true,
+      "succeededUnexpectedly": false,
+      "targetConnections": null,
+      "tcpConnectsAttempted": 0,
+      "tcpConnectsToDestination": 0,
+      "dns": {
+        "asked": false,
+        "answers": [],
+        "leakedToSocket": false,
+        "note": "IP literal: the guard never resolves it"
+      },
+      "detail": {
+        "host": "127.0.0.1",
+        "reason": null,
+        "hop": 0
+      },
+      "latencyMs": 2,
+      "note": "loopback literal aimed at the FRONT fixture's live port (61042): a connection here would be counted; the default disposition refused it with no flag passed"
+    },
+    {
+      "url": "http://169.254.169.254/latest/meta-data/",
+      "expectedRefusal": "host-blocked",
+      "observedCode": "host-blocked",
+      "refused": true,
+      "succeededUnexpectedly": false,
+      "targetConnections": null,
+      "tcpConnectsAttempted": 0,
+      "tcpConnectsToDestination": 0,
+      "dns": {
+        "asked": false,
+        "answers": [],
+        "leakedToSocket": false,
+        "note": "IP literal: the guard never resolves it"
+      },
+      "detail": {
+        "host": "169.254.169.254",
+        "reason": null,
+        "hop": 0
+      },
+      "latencyMs": 0,
+      "note": "cloud metadata endpoint (169.254/16 link-local)"
+    },
+    {
+      "url": "http://10.0.0.1/s.m3u8",
+      "expectedRefusal": "host-blocked",
+      "observedCode": "host-blocked",
+      "refused": true,
+      "succeededUnexpectedly": false,
+      "targetConnections": null,
+      "tcpConnectsAttempted": 0,
+      "tcpConnectsToDestination": 0,
+      "dns": {
+        "asked": false,
+        "answers": [],
+        "leakedToSocket": false,
+        "note": "IP literal: the guard never resolves it"
+      },
+      "detail": {
+        "host": "10.0.0.1",
+        "reason": null,
+        "hop": 0
+      },
+      "latencyMs": 0,
+      "note": "RFC1918 10/8"
+    },
+    {
+      "url": "http://192.168.1.1/s.m3u8",
+      "expectedRefusal": "host-blocked",
+      "observedCode": "host-blocked",
+      "refused": true,
+      "succeededUnexpectedly": false,
+      "targetConnections": null,
+      "tcpConnectsAttempted": 0,
+      "tcpConnectsToDestination": 0,
+      "dns": {
+        "asked": false,
+        "answers": [],
+        "leakedToSocket": false,
+        "note": "IP literal: the guard never resolves it"
+      },
+      "detail": {
+        "host": "192.168.1.1",
+        "reason": null,
+        "hop": 0
+      },
+      "latencyMs": 0,
+      "note": "RFC1918 192.168/16"
+    },
+    {
+      "url": "http://[::1]/s.m3u8",
+      "expectedRefusal": "host-blocked",
+      "observedCode": "host-blocked",
+      "refused": true,
+      "succeededUnexpectedly": false,
+      "targetConnections": null,
+      "tcpConnectsAttempted": 0,
+      "tcpConnectsToDestination": 0,
+      "dns": {
+        "asked": false,
+        "answers": [],
+        "leakedToSocket": false,
+        "note": "IP literal: the guard never resolves it"
+      },
+      "detail": {
+        "host": "::1",
+        "reason": null,
+        "hop": 0
+      },
+      "latencyMs": 0,
+      "note": "IPv6 loopback literal (bracketed form)"
+    },
+    {
+      "url": "http://[::ffff:7f00:1]/s.m3u8",
+      "expectedRefusal": "host-blocked",
+      "observedCode": "host-blocked",
+      "refused": true,
+      "succeededUnexpectedly": false,
+      "targetConnections": null,
+      "tcpConnectsAttempted": 0,
+      "tcpConnectsToDestination": 0,
+      "dns": {
+        "asked": false,
+        "answers": [],
+        "leakedToSocket": false,
+        "note": "IP literal: the guard never resolves it"
+      },
+      "detail": {
+        "host": "::ffff:7f00:1",
+        "reason": null,
+        "hop": 0
+      },
+      "latencyMs": 1,
+      "note": "IPv4-mapped IPv6 wrapper around 127.0.0.1"
+    },
+    {
+      "url": "http://localhost/s.m3u8",
+      "expectedRefusal": "host-blocked",
+      "observedCode": "host-blocked",
+      "refused": true,
+      "succeededUnexpectedly": false,
+      "targetConnections": null,
+      "tcpConnectsAttempted": 0,
+      "tcpConnectsToDestination": 0,
+      "dns": {
+        "asked": true,
+        "answers": [
+          "::1",
+          "127.0.0.1"
+        ],
+        "leakedToSocket": false,
+        "note": "resolved independently by the probe; the private answer never reached a connect"
+      },
+      "detail": {
+        "host": "localhost",
+        "reason": null,
+        "hop": 0
+      },
+      "latencyMs": 5,
+      "note": "reserved hostname; refused before resolution"
+    },
+    {
+      "url": "http://0x7f.1/s.m3u8",
+      "expectedRefusal": "host-blocked",
+      "observedCode": "host-blocked",
+      "refused": true,
+      "succeededUnexpectedly": false,
+      "targetConnections": null,
+      "tcpConnectsAttempted": 0,
+      "tcpConnectsToDestination": 0,
+      "dns": {
+        "asked": false,
+        "answers": [],
+        "leakedToSocket": false,
+        "note": "IP literal: the guard never resolves it"
+      },
+      "detail": {
+        "host": "127.0.0.1",
+        "reason": null,
+        "hop": 0
+      },
+      "latencyMs": 0,
+      "note": "hex spelling of 127.0.0.1",
+      "spelling": "0x7f.1"
+    },
+    {
+      "url": "http://2130706433/s.m3u8",
+      "expectedRefusal": "host-blocked",
+      "observedCode": "host-blocked",
+      "refused": true,
+      "succeededUnexpectedly": false,
+      "targetConnections": null,
+      "tcpConnectsAttempted": 0,
+      "tcpConnectsToDestination": 0,
+      "dns": {
+        "asked": false,
+        "answers": [],
+        "leakedToSocket": false,
+        "note": "IP literal: the guard never resolves it"
+      },
+      "detail": {
+        "host": "127.0.0.1",
+        "reason": null,
+        "hop": 0
+      },
+      "latencyMs": 0,
+      "note": "decimal spelling of 127.0.0.1",
+      "spelling": "2130706433"
+    },
+    {
+      "url": "http://127.0.0.1:61042/redirect -> http://127.0.0.1:61041/secret",
+      "expectedRefusal": "redirect-unsafe",
+      "observedCode": "redirect-unsafe",
+      "refused": true,
+      "succeededUnexpectedly": false,
+      "targetConnections": 0,
+      "targetRequests": 0,
+      "frontConnections": 1,
+      "tcpConnectsAttempted": 1,
+      "tcpConnectsToDestination": 0,
+      "dns": {
+        "asked": false,
+        "answers": [],
+        "leakedToSocket": false,
+        "note": "IP literal hops"
+      },
+      "detail": {
+        "reason": null,
+        "redirects": 1,
+        "port": 61041,
+        "fromPort": 61042,
+        "landedOn": null
+      },
+      "latencyMs": 21,
+      "note": "the FRONT hop used the documented test-only loopback allowance (the only such call); the redirect to the TARGET port was re-validated and refused as redirect-unsafe, and the TARGET fixture recorded zero connections and zero requests"
+    }
+  ],
+  "positiveControl": {
+    "url": "test-streams.mux.dev",
+    "status": 200,
+    "ok": true,
+    "bytes": 752,
+    "contentType": "audio/mpegurl",
+    "resolvedAddresses": [
+      "199.232.34.132"
+    ],
+    "note": "same process and entry point with no injected deps: proof the guard is two-sided"
+  },
+  "summary": {
+    "cases": 10,
+    "refused": 10,
+    "succeededUnexpectedly": 0,
+    "positiveControlOk": true
+  },
+  "passed": true
+}
