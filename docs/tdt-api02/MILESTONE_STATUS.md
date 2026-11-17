@@ -332,3 +332,23 @@ verde, contratos de migración verificables, memoria persistente completa, revis
 | Gate ENGINE-04 content-bound | **BLOCKED** (limitación del entorno, ver `MODEL_ROUTING_AND_USAGE.md §4.1`) |
 | PR fusionado y SHA verificado | **PASS** (`origin/main` = `dbb3d5e`, verificado tras el merge) |
 | PR fusionado y SHA verificado | pendiente al cierre |
+
+## Nota de ejecución del gate (medida al cerrar, 2026-11-17)
+
+La suite `unit` se ejecutó en verde varias veces (**290 tests**) durante el milestone. En la última
+verificación, bajo carga sostenida de la máquina (78 procesos `node` residuales de ejecuciones
+anteriores, y duraciones de etapa 3–4× superiores: `integration` 84,6 s frente a 27,5 s), dos pruebas
+**preexistentes y no tocadas por 02C** agotaron su tiempo límite:
+
+- `catalogue-identity/reconcile.indexed.unit.spec.ts` — «preserves every same/review verdict…»,
+  timeout de 60 s (llegó a 143 s; antes 24 s).
+- `ingestion/snapshot-real.unit.spec.ts` — timeout bajo contención; **pasa en aislamiento**.
+
+**Comprobado que no es una regresión de 02C:** la misma prueba falla igual en `main` base
+(`bb54ac9`: `1 failed | 216 passed` de 217), y `git diff --name-only main..HEAD` no toca ninguna de
+las dos. Los **135 tests** de los módulos que 02C modifica (`providers`, `playback`, `admin`) pasan
+íntegros, y `integration` (128), `ingestion` (9/9), `independence` (15) y `client` (14) están en verde
+sobre el commit entregado.
+
+Se declara en lugar de ocultarse: **la etapa `unit` no produjo exit 0 en la última pasada**, y el
+motivo es una prueba de rendimiento preexistente sensible a la carga, no un defecto del milestone.
