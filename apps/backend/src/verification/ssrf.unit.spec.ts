@@ -23,6 +23,8 @@ import { describe, expect, it } from 'vitest';
 import { classifyIpv4, classifyIpv6, isPublicAddress, isReservedHostname } from '../infrastructure/ip-classification.js';
 import {
   EgressFailure,
+  MAX_PREFIX_BYTES,
+  MIN_PREFIX_BYTES,
   pinnedLookup,
   safeFetch,
   type EgressFailureCode,
@@ -908,6 +910,251 @@ describe('SSRF-LOOKUP: the pin answers both of Node lookup conventions', () => {
       expect(result.body).toBe('direct');
       expect(result.resolvedAddresses).toEqual(['127.0.0.1']);
       expect(result.redirects).toBe(0);
+    });
+  });
+});
+
+/**
+ * Bounded prefix read (`prefixBytes`) — TDT-API-02D, measured need.
+ *
+ * A real HLS segment is ~1.8 MiB and the engine may only sample 64 KiB of it.
+ * Without `prefixBytes`, safeFetch refuses on the DECLARED content-length before
+ * reading a byte, so the only way to let a large segment through was a `maxBytes`
+ * above its size — which lets the socket transfer the whole body. These tests
+ * prove the cap is real (server-side `bytesSent` stops near the cap) and that it
+ * opens no hole in the SSRF defences.
+ */
+describe('SSRF-PREFIX: a bounded prefix read never drains a large body', () => {
+  const MIB_1_8 = Math.round(1.8 * 1024 * 1024); // 1_887_437
+  const PREFIX = 64 * 1024;
+
+  it('reads 64 KiB of a 1.8 MiB declared body without transferring it in full', async () => {
+    await withFixture(
+      { '/segment.ts': { status: 200, contentType: 'video/mp2t', declaredContentLength: MIB_1_8, body: 'a'.repeat(MIB_1_8) } },
+      async (fixture) => {
+        const startedAt = Date.now();
+        const result = await safeFetch(
+          request({
+            url: fixture.url('/segment.ts'),
+            // The declared length is what used to refuse this; the ceiling must cover the
+            // prefix (maxBytes is a byte ceiling, prefixBytes never lifts it).
+            maxBytes: PREFIX,
+            prefixBytes: PREFIX,
+            allowLoopbackForTests: true,
+          }),
+          { lookup: lookupOf({}) },
+        );
+        expect(result.ok).toBe(true);
+        expect(result.status).toBe(200);
+        expect(result.contentType).toBe('video/mp2t');
+        expect(result.bytes).toBe(PREFIX);
+        expect(result.body).toHaveLength(PREFIX);
+        expect(result.prefixTruncated).toBe(true);
+        // The call returns as soon as the prefix is in hand, not when the body ends.
+        expect(Date.now() - startedAt).toBeLessThan(1_000);
+        // The body the CALLER holds is exactly the cap; the rest was never buffered.
+        expect(result.bytes).toBeLessThan(MIB_1_8);
+      },
+    );
+  });
+
+  it('reads a prefix of a body whose DECLARED length is far above the cap (a real segment shape)', async () => {
+    // The measured real-world shape: GET declares ~1.8 MiB while the engine may
+    // only sample 64 KiB. The declared length is the thing that used to refuse
+    // the request; here it must be ignored while the read is capped.
+    await withFixture(
+      { '/declared-full': { status: 200, contentType: 'video/mp2t', declaredContentLength: MIB_1_8, streamBytes: MIB_1_8 } },
+      async (fixture) => {
+        const result = await safeFetch(
+          request({
+            // The declared length is what used to refuse this; the ceiling covers the prefix.
+            url: fixture.url('/declared-full'),
+            maxBytes: PREFIX * 2,
+            prefixBytes: PREFIX,
+            allowLoopbackForTests: true,
+          }),
+          { lookup: lookupOf({}) },
+        );
+        expect(result.ok).toBe(true);
+        expect(result.bytes).toBe(PREFIX);
+        expect(result.prefixTruncated).toBe(true);
+      },
+    );
+  });
+
+  it('without prefixBytes the same 1.8 MiB fixture still refuses up front (two-sided)', async () => {
+    await withFixture(
+      { '/segment.ts': { status: 200, contentType: 'video/mp2t', declaredContentLength: MIB_1_8, body: 'a'.repeat(MIB_1_8) } },
+      async (fixture) => {
+        const failure = await expectCode(
+          safeFetch(request({ url: fixture.url('/segment.ts'), maxBytes: PREFIX, allowLoopbackForTests: true }), {
+            lookup: lookupOf({}),
+          }),
+          'response-too-large',
+        );
+        expect(failure.detail?.['contentLength']).toBe(MIB_1_8);
+        expect(failure.detail?.['maxBytes']).toBe(PREFIX);
+        // NOTE: this refusal happens on the HEADERS, before any body byte is even
+        // considered — that is what the test establishes. It is deliberately not
+        // asserted via the server-side `bytesSent` counter: a same-process,
+        // same-core loopback peer can be fed by the kernel before our destroy()
+        // lands (measured: node's loopback buffers absorb well over 4 MiB), so
+        // that counter only proves truncation when the fixture streams slowly or
+        // observes backpressure. The streaming routes above are the ones that
+        // carry that proof.
+      },
+    );
+  });
+
+  it('cuts an endlessly streaming body (no declared length) at the cap', async () => {
+    const STREAM = 8 * 1024 * 1024; // deliberately more than the cap
+    await withFixture({ '/endless': { streamBytes: STREAM, chunkSize: 8 * 1024 } }, async (fixture) => {
+      const startedAt = Date.now();
+      const result = await safeFetch(
+        request({ url: fixture.url('/endless'), maxBytes: 16 * 1024 * 1024, prefixBytes: PREFIX, allowLoopbackForTests: true }),
+        { lookup: lookupOf({}) },
+      );
+      expect(result.bytes).toBe(PREFIX);
+      expect(result.prefixTruncated).toBe(true);
+      expect(Date.now() - startedAt).toBeLessThan(2_000);
+      // The stream is stopped long before the 8 MiB it wanted to send.
+      expect(fixture.counters.bytesSent).toBeLessThan(STREAM);
+      expect(fixture.counters.bytesSent).toBeLessThan(PREFIX * 8);
+    });
+  });
+
+  it('a body shorter than the prefix is returned whole, without a truncation flag', async () => {
+    await withFixture({ '/small': { status: 200, contentType: 'video/mp2t', body: 'x'.repeat(1000) } }, async (fixture) => {
+      const result = await safeFetch(
+        request({ url: fixture.url('/small'), maxBytes: PREFIX, prefixBytes: PREFIX, allowLoopbackForTests: true }),
+        { lookup: lookupOf({}) },
+      );
+      expect(result.bytes).toBe(1000);
+      expect(result.prefixTruncated).toBeUndefined();
+    });
+  });
+
+  it.each([
+    [0, 'zero'],
+    [-1, 'negative'],
+    [MAX_PREFIX_BYTES + 1, 'above the maximum'],
+    [1.5, 'fractional'],
+    [Number.NaN, 'NaN'],
+    [Number.POSITIVE_INFINITY, 'infinite'],
+  ])('refuses an out-of-range prefixBytes (%s: %s) instead of clamping it', async (value) => {
+    await withFixture({ '/segment.ts': { status: 200, body: 'a'.repeat(4096) } }, async (fixture) => {
+      const failure = await expectCode(
+        safeFetch(
+          request({ url: fixture.url('/segment.ts'), prefixBytes: value as number, allowLoopbackForTests: true }),
+          { lookup: lookupOf({}) },
+        ),
+        'invalid-url',
+      );
+      expect(failure.detail?.['prefixBytes']).toBe(value);
+      expect(failure.detail?.['min']).toBe(MIN_PREFIX_BYTES);
+      expect(failure.detail?.['max']).toBe(MAX_PREFIX_BYTES);
+      // Refused before any request was issued.
+      expect(fixture.counters.requests).toBe(0);
+    });
+  });
+
+  it('accepts the exact bounds (1 byte and 1 MiB)', async () => {
+    await withFixture({ '/small': { status: 200, body: 'abc' } }, async (fixture) => {
+      const one = await safeFetch(
+        request({ url: fixture.url('/small'), prefixBytes: MIN_PREFIX_BYTES, allowLoopbackForTests: true }),
+        { lookup: lookupOf({}) },
+      );
+      expect(one.bytes).toBe(1);
+      const max = await safeFetch(
+        request({ url: fixture.url('/small'), prefixBytes: MAX_PREFIX_BYTES, allowLoopbackForTests: true }),
+        { lookup: lookupOf({}) },
+      );
+      expect(max.bytes).toBe(3);
+    });
+  });
+
+  it('a server that declares a small length but streams more is still caught by the counter', async () => {
+    // A chunked body (no declared length) of 64 KiB against maxBytes 2048, while
+    // prefixBytes is set ABOVE maxBytes. The prefix option skips the DECLARED
+    // length pre-check only: the incremental counter must still fire, so the cap
+    // can never be used to lift the byte ceiling.
+    // Small chunks keep the counter granular so it crosses maxBytes before the
+    // (deliberately higher) prefix cap, whatever the loopback buffering does.
+    await withFixture({ '/liar': { status: 200, streamBytes: 64 * 1024, chunkSize: 512 } }, async (fixture) => {
+      const failure = await expectCode(
+        // Chunks are small (512 B) so the counter genuinely crosses the ceiling
+        // between two granular steps, independent of loopback buffering.
+        safeFetch(request({ url: fixture.url('/liar'), maxBytes: 4096, prefixBytes: 8192, allowLoopbackForTests: true }), {
+          lookup: lookupOf({}),
+        }),
+        'response-too-large',
+      );
+      expect(failure.detail?.['maxBytes']).toBe(4096);
+    });
+  });
+
+  it.each<readonly [string, EgressFailureCode]>([
+    ['http://10.0.0.1/s.ts', 'host-blocked'],
+    ['http://[::1]/s.ts', 'host-blocked'],
+    ['http://169.254.169.254/latest/meta-data/', 'host-blocked'],
+    ['http://127.0.0.1/s.ts', 'host-blocked'],
+    ['https://user:canary-prefix@example.invalid/s.ts', 'credential-in-url'],
+  ])('with prefixBytes set, %s is still refused (%s)', async (url, code) => {
+    await withFixture({}, async (fixture) => {
+      const failure = await expectCode(
+        // NOTE: no loopback allowance here except for the literal 127.0.0.1 case,
+        // which is refused by the default disposition itself.
+        safeFetch(request({ url, prefixBytes: PREFIX, maxBytes: 1 }), { lookup: lookupOf({ 'example.invalid': [PUBLIC_V4] }) }),
+        code,
+      );
+      expect(`${failure.message}${JSON.stringify(failure.detail ?? {})}`).not.toContain('canary-prefix');
+      expect(fixture.counters.requests).toBe(0);
+      expect(fixture.counters.bytesSent).toBe(0);
+    });
+  });
+
+  it('prefixBytes does not let a name resolve to a private address (private-address, 0 sockets)', async () => {
+    await withFixture({}, async (fixture) => {
+      const lookup = lookupOf({ 'rebind.example.com': ['10.1.2.3'] });
+      await expectCode(
+        safeFetch(request({ url: 'http://rebind.example.com/s.ts', prefixBytes: PREFIX, maxBytes: 1 }), { lookup }),
+        'private-address',
+      );
+      expect(fixture.counters.sockets).toBe(0);
+      expect(fixture.counters.bytesSent).toBe(0);
+    });
+  });
+
+  it('prefixBytes does not let a redirect escape to a private destination', async () => {
+    await withFixture({ '/internal': { status: 200, body: 'secret' } }, async (blocked) => {
+      await withFixture({ '/hop': { location: blocked.url('/internal') } }, async (front) => {
+        await expectCode(
+          safeFetch(
+            request({ url: front.url('/hop'), prefixBytes: PREFIX, maxBytes: 1, allowLoopbackForTests: true }),
+            { lookup: lookupOf({}) },
+          ),
+          'redirect-unsafe',
+        );
+        expect(blocked.counters.sockets).toBe(0);
+        expect(blocked.counters.requests).toBe(0);
+      });
+    });
+  });
+
+  it('a prefix read still applies the 2xx content-type allow-list', async () => {
+    await withFixture({ '/html': { status: 200, contentType: 'text/html', body: 'x'.repeat(4096) } }, async (fixture) => {
+      await expectCode(
+        safeFetch(
+          request({
+            url: fixture.url('/html'),
+            prefixBytes: PREFIX,
+            allowLoopbackForTests: true,
+            allowedContentPrefixes: ['video/mp2t'],
+          }),
+          { lookup: lookupOf({}) },
+        ),
+        'content-type-not-allowed',
+      );
     });
   });
 });

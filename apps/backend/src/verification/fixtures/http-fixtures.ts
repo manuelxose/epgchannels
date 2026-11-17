@@ -31,6 +31,13 @@ export interface FixtureCounters {
   sockets: number;
   /** Requests whose headers arrived. */
   requests: number;
+  /**
+   * Body BYTES the fixture accepted for writing (summed over every route and
+   * request). A client that tears the socket down after a bounded prefix stops
+   * this counter near its cap instead of the route's total: it is the server-side
+   * proof that a large body was cut off rather than drained.
+   */
+  bytesSent: number;
 }
 
 export type FixtureHandler = (request: http.IncomingMessage, response: http.ServerResponse) => void;
@@ -69,7 +76,7 @@ export interface FixtureRoute {
  * 404. The returned `origin` is loopback: callers must treat it as hostile.
  */
 export async function startHttpFixture(routes: Readonly<Record<string, FixtureRoute>> = {}): Promise<HttpFixture> {
-  const counters: FixtureCounters = { sockets: 0, requests: 0 };
+  const counters: FixtureCounters = { sockets: 0, requests: 0, bytesSent: 0 };
   const received: FixtureRequestRecord[] = [];
   const sockets = new Set<import('node:net').Socket>();
   const timers = new Set<NodeJS.Timeout>();
@@ -108,12 +115,33 @@ export async function startHttpFixture(routes: Readonly<Record<string, FixtureRo
         response.writeHead(route.status ?? 200, headers);
         const chunkSize = route.chunkSize ?? 16 * 1024;
         const chunk = Buffer.alloc(chunkSize, 0x61); // 'a'
+        const total = route.streamBytes!;
         let sent = 0;
         const pump = (): void => {
-          while (sent < route.streamBytes! && !response.destroyed) {
-            sent += chunkSize;
-            if (response.write(chunk) === false) {
-              response.once('drain', pump);
+          while (sent < total && !response.destroyed) {
+            // Never write past the route's declared total: overshooting would make
+            // the framing depend on whether the client happened to time it.
+            const size = Math.min(chunkSize, total - sent);
+            const piece = size === chunkSize ? chunk : chunk.subarray(0, size);
+            sent += size;
+            // Counted when accepted for writing: the server-side measure of how
+            // much body a client actually let through.
+            counters.bytesSent += size;
+            if (response.write(piece) === false) {
+              // A client that stops reading must not wedge the fixture: a stalled
+              // drain is abandoned (the client has already had its answer).
+              let resumed = false;
+              const resume = (): void => {
+                if (resumed) return;
+                resumed = true;
+                pump();
+              };
+              response.once('drain', resume);
+              const stall = setTimeout(() => {
+                timers.delete(stall);
+                resume();
+              }, 250);
+              timers.add(stall);
               return;
             }
           }
@@ -124,8 +152,44 @@ export async function startHttpFixture(routes: Readonly<Record<string, FixtureRo
       }
 
       const status = route.location !== undefined ? (route.status ?? 302) : (route.status ?? 200);
+      const payload = route.body ?? '';
+      // `bytesSent` measures what the server handed to the socket, so a large body
+      // that the client cuts short must be written in pieces: a single
+      // `end(big)` records the whole body at once even if the client only read a
+      // prefix. Small bodies keep the simple path.
       response.writeHead(status, headers);
-      response.end(route.body ?? '');
+      if (Buffer.byteLength(payload, 'utf8') <= 64 * 1024) {
+        counters.bytesSent += Buffer.byteLength(payload, 'utf8');
+        response.end(payload);
+        return;
+      }
+      const pieces = Buffer.from(payload, 'utf8');
+      const step = 16 * 1024;
+      let offset = 0;
+      const flush = (): void => {
+        while (offset < pieces.length && !response.destroyed) {
+          const size = Math.min(step, pieces.length - offset);
+          offset += size;
+          counters.bytesSent += size;
+          if (response.write(pieces.subarray(offset - size, offset)) === false) {
+            let resumed = false;
+            const resume = (): void => {
+              if (resumed) return;
+              resumed = true;
+              flush();
+            };
+            response.once('drain', resume);
+            const stall = setTimeout(() => {
+              timers.delete(stall);
+              resume();
+            }, 250);
+            timers.add(stall);
+            return;
+          }
+        }
+        if (!response.destroyed) response.end();
+      };
+      flush();
     };
     if (route.delayMs !== undefined && route.delayMs > 0) {
       const timer = setTimeout(() => {
