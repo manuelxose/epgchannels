@@ -162,3 +162,36 @@ Además, para dejar el proyecto como uno real y funcional:
   anterior, no de éste) y las cinco ramas borradas tras comprobar que `main` es superconjunto de cada
   una (ningún fichero de rama ausente en `main`).
 - Sin despliegue a producción no autorizado: no existe automatismo que lo dispare.
+
+## 11. Ronda iptv-org (2026-11-17) — catálogo internacional abierto (D-024)
+
+Decisión del propietario: incorporar **iptv-org** íntegro, «todas las que funcionen, sin
+restricciones». Implementado y medido:
+
+| Hecho | Valor medido |
+|---|---|
+| Entradas de stream leídas del snapshot verificado | **18 689** (326 ficheros de país) |
+| `tvg-id` distintos / que casan con `channels.csv` | **11 596 / 100 %** |
+| Filas de la base de canales | **31 843** (231 países) |
+| Canales publicados tras la importación | **8 758** (desde 412) |
+| Países distintos en el catálogo | **139** |
+| Fuentes de reproducción | **12 505** |
+| Canales categorizados desde la base | 6 256 + 44 |
+| Contenido adulto etiquetado (categoría `adultos`) | **4** (no oculto) |
+| Autorizaciones registradas (decisión del operador) | 10 598 |
+| Reproducción real en Chromium (muestra de 5) | **3 played** (hasta 1920×1080), 1 HTTP 403 en origen, 1 sin progreso |
+
+Artefactos: `apps/backend/src/ingestion/iptv-org.ts` (lector y mapeo de la base),
+`iptv-org.import.ts` (orquestador), `adult-label.ts`, `modules/providers/owner-decision.ts` y
+`apps/backend/src/scripts/{import-iptv-org,open-catalogue}.ts`. Análisis reproducible:
+`scripts/analyze-iptv-org.mjs` → `evidence/iptv-org/analysis.json`.
+
+**Cómo se registra la apertura (lo que un auditor debe poder leer):** cada fuente lleva una decisión
+`basis: 'written-licence'` cuya cita literal es la decisión del propietario con su fecha,
+`reviewStatus: 'reviewed'`, y la licencia del listado (Unlicense/CC0) como `clauseUrl`. No se afirma en
+ninguna fila que el emisor haya autorizado la señal. `catalogue_reference` puede autorizar; un
+acortador o una CDN de activos, no.
+
+**Precisión sobre unidades:** iptv-org separa 11 596 *canales* distintos de 18 689 *entradas de
+streaming*; por eso el catálogo tiene ~8 758 canales y no ~16 500. La diferencia es duplicación real de
+la fuente, no una pérdida de la importación.

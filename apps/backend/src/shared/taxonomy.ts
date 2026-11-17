@@ -22,6 +22,7 @@ export const CATEGORY_LABELS: Readonly<Record<ChannelCategory, string>> = {
   local: 'Locales',
   autonomica: 'Autonómicas',
   internacional: 'Internacionales',
+  adultos: 'Adultos',
   otros: 'Otros',
 };
 
@@ -39,6 +40,7 @@ export const CATEGORY_ORDER: readonly ChannelCategory[] = [
   'local',
   'autonomica',
   'internacional',
+  'adultos',
   'otros',
 ];
 

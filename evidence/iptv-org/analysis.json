@@ -1,0 +1,102 @@
+{
+  "measuredAt": "2026-11-17T22:07:41.671Z",
+  "snapshot": {
+    "commitSha": "61b5e2ace91b35262d830e60cd266a9df64e3b1e",
+    "licence": {
+      "spdx": "Unlicense",
+      "url": "https://github.com/iptv-org/iptv/blob/master/LICENSE",
+      "reuse": "public-domain",
+      "notes": "LICENSE file carries the public-domain dedication verified verbatim (2026-11-16); the README badge states CC0. Both permit copying and redistribution. Ingested into staging only; publication additionally requires an emitter authorisation."
+    },
+    "filesInManifest": 400,
+    "entriesInManifest": 18756,
+    "truncatedInManifest": true,
+    "streamsFilesRead": 326,
+    "entriesRead": 18689,
+    "entriesWithTvgId": 16597,
+    "entriesWithoutTvgId": 2092,
+    "distinctTvgIds": 11596,
+    "geoBlockedEntries": 1222,
+    "httpReferrerDirectives": 324,
+    "httpUserAgentDirectives": 1116,
+    "countriesByFile": 292,
+    "topCountries": [
+      [
+        "in",
+        1830
+      ],
+      [
+        "us",
+        1094
+      ],
+      [
+        "ru",
+        686
+      ],
+      [
+        "cn",
+        518
+      ],
+      [
+        "us_samsung",
+        407
+      ],
+      [
+        "us_pluto",
+        400
+      ],
+      [
+        "br",
+        393
+      ],
+      [
+        "it",
+        353
+      ],
+      [
+        "es",
+        307
+      ],
+      [
+        "co",
+        284
+      ],
+      [
+        "de",
+        272
+      ],
+      [
+        "pe",
+        266
+      ]
+    ]
+  },
+  "database": {
+    "source": "downloaded",
+    "rows": 31843,
+    "distinctCountries": 231,
+    "rowsWithCategory": 26474,
+    "rowsWithWebsite": 24859,
+    "rowsWithLogoNote": "logos live in the separate iptv-org/logos repository",
+    "closedRows": 1484,
+    "nsfwRows": 375,
+    "topCategories": [
+      "general",
+      "movies",
+      "news",
+      "auto",
+      "shop"
+    ]
+  },
+  "join": {
+    "tvgIdsResolvingToDatabase": 11596,
+    "tvgIdsUnresolved": 0,
+    "unresolvedSample": [],
+    "existingChannelsMatchedByTvgId": 0,
+    "existingPublishedChannels": 412
+  },
+  "interpretation": {
+    "licence": "iptv-org/iptv and iptv-org/database are public domain (Unlicense/CC0): copying is permitted; it is NOT an emitter authorisation, and every source must carry that distinction.",
+    "playability": "Only geo-blocked entry counts are measured here; actual playability requires the verification engine (02D), never the list itself."
+  }
+}

@@ -325,3 +325,32 @@ Formato: `D-0NN` · fecha · estado (`ADOPTADA`, `SUSTITUIDA`, `PENDIENTE`).
 - **Consecuencia:** los módulos de la capa de red deben exponer su costura para poder probar la vía real,
   y el revisor independiente tiene instrucción explícita de auditar toda defensa que sólo se ejercite a
   través de un doble.
+## D-024 — Catálogo abierto al propietario del producto (iptv-org íntegro)
+
+- **Estado:** ADOPTADA (2026-11-17, ronda iptv-org) — decisión explícita del propietario
+- **Contexto:** el propietario pidió incorporar el catálogo de iptv-org (18 756 entradas, 31 843 filas
+  de base de canales) y, al plantearse las restricciones existentes, respondió: «todas las que
+  funcionen en el catálogo, nada de restricciones». D-016 y el gate de elegibilidad limitaban la
+  exposición a fuentes con autorización registrada y a orígenes capaces de autorizar.
+- **Decisión:**
+  1. El catálogo iptv-org se importa **íntegro** (fuentes cerradas, NSFW y con cabeceras incluidas) y
+     con sus fuentes **habilitadas**.
+  2. La exposición se registra como **decisión del operador**, no como permiso del emisor:
+     `basis: 'written-licence'` citando literalmente la decisión y su fecha en `quotedClause`,
+     `reviewStatus: 'reviewed'`, y la licencia del listado (Unlicense/CC0) en `clauseUrl`. No se afirma
+     en ningún sitio que el emisor haya autorizado nada.
+  3. `catalogue_reference` pasa a poder autorizar reproducción **sólo** con esa clase citable; un
+     acortador o una CDN de activos estáticos siguen sin poder autorizar, porque desde ahí no se llega
+     a la emisión.
+  4. El contenido adulto **se etiqueta** (categoría `adultos` y marca `· adulto` en el nombre), no se
+     oculta ni se excluye.
+  5. El país del canal usa el **ISO real** (`countryMode: 'iso'`), en lugar de plegar todo lo no español
+     en `INT` (se revisa D-010).
+- **Consecuencias y límites, dichos sin adornos:**
+  - El catálogo pasa de 412 a ~8 760 canales publicados en 139 países. Es cobertura real, no
+    certificada: **la verificación (02D) marcará lo que no responde**, y los 90 canales que la base
+    declara cerrados entrarán aunque probablemente no emitan.
+  - La licencia de iptv-org cubre **la lista**, nunca la señal. El producto sigue sin proxyar, grabar ni
+    transcodificar, y la atribución de cada fuente viaja con ella.
+  - Es una decisión de producto del propietario y así queda registrada; una autorización de emisor
+    seguiría siendo un hecho distinto y más sólido.

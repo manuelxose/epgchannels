@@ -54,11 +54,19 @@ export const PROVIDER_KIND_FACTS: Readonly<Record<ProviderKind, ProviderKindFact
     mayAuthorizePlayback: false,
     rationale: 'Una CDN de activos estáticos sirve ficheros; no es el emisor ni puede conceder derechos.',
   },
+  /*
+   * TDT-API-02FG (decisión del propietario del producto, 2026-11-17): un catálogo
+   * de terceros ya no es un origen incapaz de autorizar. El propietario decidió
+   * que todo lo que llega por iptv-org se ofrece; la licencia del listado se
+   * registra como base, pero no se finge autorización del emisor. Lo que NO
+   * cambia: un acortador o una CDN de activos siguen sin poder autorizar nada,
+   * porque ahí no hay ni listado ni emisión, sólo un salto.
+   */
   catalogue_reference: {
     label: 'Catálogo de referencia',
-    mayAuthorizePlayback: false,
+    mayAuthorizePlayback: true,
     rationale:
-      'La licencia de un catálogo de terceros cubre el fichero de lista, nunca los flujos a los que apunta.',
+      'La licencia de un catálogo de terceros cubre el fichero de lista; el propietario del producto decide ofrecerlo y esa decisión se registra como su base. No certifica autorización del emisor.',
   },
   broadcaster_cdn: {
     label: 'CDN del emisor',
