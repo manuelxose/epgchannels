@@ -97,6 +97,36 @@ presenta como encarcelamiento verificable.
 Cualquier afirmación de «navegadores soportados» en 02E debe decir: **Chromium medido;
 Firefox/WebKit no medidos en este entorno**. Instalarlos no está autorizado por este hito.
 
+## 6-bis. Prerrequisito de arranque de worktrees (encontrado ejecutando, no leyendo)
+
+Un worktree recién creado **no puede compilar `apps/frontend` tal cual**. Reproducido por el capitán
+en `wt/02e-player`:
+
+```
+npm --prefix apps/frontend run build
+  → exit 1, X [ERROR] TS2307: Cannot find module '@tdt/contracts'
+```
+
+**Causa medida:** `packages/contracts` y `packages/api-client` resuelven por
+`types: ./dist/index.d.ts`; ningún worktree hereda `dist/` porque está en `.gitignore`. Además ambas
+están **hoisteadas** en el `node_modules/@tdt` de la **raíz** (junctions a `packages/*`), y
+`apps/frontend/node_modules/@tdt` sólo contiene la junction de `api-client`. Por eso el frontend
+resuelve a través del hoist de la raíz y no desde su propio directorio.
+
+**Secuencia correcta, con exit codes reales:**
+
+| Comando | Exit |
+|---|---|
+| `npm install` (en el worktree) | 0 |
+| `npm run build -w @tdt/contracts -w @tdt/api-client` | **0** |
+| `npm --prefix apps/frontend run build` | **0** («Application bundle generation complete») |
+
+**Precisión importante:** construir **sólo** `@tdt/contracts` **no basta** — medido: tras eso el build
+seguía en exit 1 con otro error (desajuste de tipos de parámetro en `channels-api.service.ts`). Hay que
+construir **los dos** paquetes.
+
+Es un hecho de **entorno/arranque**, no un defecto del código, y afecta también a t4.
+
 ## 7. Estado del plan
 
 Cinco tareas, aprobadas por el usuario. t1/t2/t3 en paralelo; t4 depende de t2+t3; t5 (revisión
