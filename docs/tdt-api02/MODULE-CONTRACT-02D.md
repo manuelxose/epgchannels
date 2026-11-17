@@ -132,24 +132,27 @@ Cada categoría mapea a **una** de las causas del eje: `authorization` (sólo `i
   esquema, a otro puerto no estándar de egreso o a una IP privada ⇒ `redirect-unsafe`.
 - **Credenciales:** el verificador **nunca** envía `Authorization`, `Cookie`, `Origin` ni cabeceras del
   operador. Detecta `userinfo` en la URL ⇒ `ineligible`, no la usa.
-- **Tamaño:** `content-length` verificado **y** contador incremental; 2 MiB manifiesto, 512 KiB
-  segmento, 64 KiB por segmento muestreado.
+- **Tamaño:** `content-length` verificado **y** contador incremental; 2 MiB manifiesto, 4 MiB
+  tolerancia de longitud declarada del segmento, 64 KiB por segmento muestreado.
 
-> **Tres presupuestos, no dos (corregido durante la implementación).** La primera implementación aplicó
-> los 64 KiB al **segmento entero**, y con eso un directo HD real —cuyos segmentos pesan cientos de
-> KiB— se reportaba `missing-segments`, es decir, se culpaba al **contenido** de una decisión de
-> **política**. Es el peor tipo de error: una respuesta falsa con aire de diagnóstico. Los tres
-> presupuestos son distintos y deben nombrarse distinto:
+> **Tres presupuestos, no dos — y el tercero NO es un filtro de admisión (corregido dos veces).**
+> La primera implementación aplicó los 64 KiB al **segmento entero**, y con eso un directo HD real
+> —cuyos segmentos pesan cientos de KiB— se reportaba `missing-segments`: se culpaba al **contenido**
+> de una decisión de **política**. La segunda versión subió el techo a 512 KiB y siguió rechazando
+> streams sanos. El estado **vigente**, verificado por revisión independiente, es éste:
 >
-> | Presupuesto | Valor | Qué limita |
+> | Presupuesto | Valor | Qué hace |
 > |---|---|---|
-> | manifiesto | 2 MiB | el cuerpo de la playlist |
-> | segmento entero | 512 KiB | techo absoluto; por encima ⇒ `response-too-large` |
-> | **sonda** de segmento | 64 KiB | bytes leídos por segmento muestreado |
+> | manifiesto | 2 MiB | limita el cuerpo de la playlist |
+> | longitud declarada del segmento | 4 MiB | **tolerancia**, no filtro: con lectura por prefijo se salta la comprobación previa |
+> | **sonda** de segmento | 64 KiB | bytes realmente leídos y retenidos por segmento muestreado |
 >
-> La sonda es `HEAD` primero y luego una **lectura de prefijo acotada**: basta probar que el segmento
-> se recupera y es de tipo media, no hace falta poseerlo. Descargar el segmento entero para
-> comprobarlo contradiría el §4 (minimizar ancho de banda y carga al proveedor).
+> **Consecuencia declarada (decisión del capitán, opción (a)).** Un segmento enorme que **se sirve
+> bien** se muestrea y se reporta sano. `SEGMENT_MAX_BYTES` ya **no** es una garantía de que un cuerpo
+> sobredimensionado se rechace cuando fluye: es tolerancia de longitud declarada. Lo que sí se mantiene
+> es la disciplina de ancho de banda — medido: **1 544 984 B sin tope → 65 536 B con tope** por muestra.
+> «Saludable» significa que el manifiesto, la variante y los segmentos muestreados se recuperan y son
+> del tipo correcto; **no** significa «cualquier tamaño es aceptable».
 - Todo esto se prueba con **fixtures controlados**: servidor HTTP local en loopback que simula
   redirecciones, cuerpos grandes, DNS rebind y timeouts. Los fixtures corren en
   `*_BOUND_LOOPBACK` sólo bajo un flag explícito de test.

@@ -84,6 +84,17 @@ export function safeFetchEgress(limits: {
         ...(request.method === undefined ? {} : { method: request.method }),
         timeoutMs: limits.timeoutMs,
         maxBytes: Math.min(request.maxBytes || limits.maxBytes, limits.maxBytes),
+        /*
+         * `maxBytes` is clamped to the operator's VERIFY_MAX_BYTES, which is a
+         * transfer ceiling and stays in force. It is NOT the segment declared-size
+         * tolerance: an independent reviewer flagged that keeping the clamp as the
+         * only size limit would silently lower the 4 MiB declared tolerance to the
+         * operator default (2 MiB). It happens not to bite today because a prefix
+         * read stops at the probe cap long before either limit, but the two limits
+         * are still conflated. The clamp is deliberate (it bounds what a hostile
+         * origin can push through this adapter); the segment tolerance is applied
+         * inside the validator, so this line is a bandwidth bound, not a verdict.
+         */
         ...(request.allowedContentPrefixes === undefined
           ? {}
           : { allowedContentPrefixes: request.allowedContentPrefixes }),
