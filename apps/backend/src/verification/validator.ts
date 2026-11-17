@@ -48,6 +48,21 @@ import { isDashMime, isHlsMime, parseManifest, samplePlaylistUris } from './mani
 export type { ValidationDepth } from './health.schema.js';
 
 /**
+ * Evidence plus the master-descent trail.
+ *
+ * The trail lives here, in the module that produces it, rather than widening
+ * `BoundedEvidence` in `health.schema.ts`: it is additive and optional, so any
+ * consumer typed against `BoundedEvidence` still accepts it, and the shape the
+ * ledger persists is untouched.
+ */
+export interface BoundedEvidenceWithPath extends BoundedEvidence {
+  /** The variant actually followed from a master (redacted); null for media playlists. */
+  readonly followedVariant?: string | null;
+  /** HTTP status of that variant fetch; 0 when it threw before a status existed. */
+  readonly variantStatus?: number | null;
+}
+
+/**
  * What a single bounded egress call returns. Deliberately smaller than
  * `EgressResult`: the verification engine needs a body and a status, and the
  * SSRF owner (`ssrf-engineer`) implements the real one.
@@ -129,13 +144,20 @@ export interface ValidationResult {
   readonly outcome: CheckOutcomeCode;
   readonly cause: FailureCause | null;
   readonly depthReached: ValidationDepth;
-  readonly evidence: BoundedEvidence;
+  readonly evidence: BoundedEvidenceWithPath;
   readonly failure: FailureDetail | null;
   readonly uncertainty: Uncertainty;
   readonly eligibilityAt: EligibilitySnapshot;
 }
 
 export const DEFAULT_SEGMENT_SAMPLE = 2;
+/**
+ * How many variants of a master playlist are followed. One is the default and
+ * one level is the *only* depth: a variant that is itself a master is recorded
+ * as `nested-master-not-followed` and never fetched again. This is the ceiling
+ * that stops a hostile nested-master chain from multiplying requests.
+ */
+export const MAX_VARIANT_FOLLOW = 1;
 export const SEGMENT_TIMEOUT_MS = 8_000;
 export const MANIFEST_TIMEOUT_MS = 15_000;
 export const MANIFEST_MAX_BYTES = 2 * 1024 * 1024;
@@ -195,6 +217,10 @@ export async function runValidation(request: ValidationRequest): Promise<Validat
     latencyMs: null as number | null,
     samplesRequested: segmentSample,
     samplesAttempted: 0,
+    /** The variant actually followed from a master, redacted. Null for media playlists. */
+    followedVariant: null as string | null,
+    /** HTTP status of that variant fetch; 0 when it threw before a status existed. */
+    variantStatus: null as number | null,
   };
   const uncertainty = { ...EMPTY_UNCERTAINTY, notes: [] as string[] };
 
@@ -368,8 +394,16 @@ export async function runValidation(request: ValidationRequest): Promise<Validat
   // ── Layer 5: playlist and segment sampling ───────────────────────────────
   const baseUrl = response.finalUrl;
   const sampled = samplePlaylistUris(response.body ?? '', baseUrl, segmentSample);
+  /*
+   * Variant resolution is NOT limited by the segment sample size: a master that
+   * resolves no variant is a broken manifest, while `segmentSample: 0` only means
+   * "do not fetch segments". Tying the two together would report a valid master
+   * as `invalid-manifest` whenever segment sampling was disabled.
+   */
+  const variants = samplePlaylistUris(response.body ?? '', baseUrl, MAX_VARIANT_FOLLOW).variants;
+
   if (parsed.facts.format === 'hls-master') {
-    if (sampled.variants.length === 0) {
+    if (variants.length === 0) {
       return finish({
         outcome: 'failing',
         depth: 'playlist',
@@ -379,14 +413,117 @@ export async function runValidation(request: ValidationRequest): Promise<Validat
         eligibilityAt,
       });
     }
-    return finish({
-      outcome: 'degraded',
-      depth: 'playlist',
-      evidence: evidenceOf(probe),
-      failure: null,
-      uncertainty: markSegmentsNotSampled(uncertainty, 'master-playlist-segments-not-sampled'),
-      eligibilityAt,
-    });
+
+    /*
+     * A master playlist carries no segments of its own: it names other playlists.
+     * Without following one, layer 5 is unreachable for the shape nearly every
+     * emitter publishes, and a master whose variant is 404 would be reported as a
+     * bare `degraded` — the very hole this descent closes.
+     */
+    if (segmentSample === 0) {
+      // Nothing may be sampled at all, so the variant fetch would prove nothing.
+      return finish({
+        outcome: 'degraded',
+        depth: 'playlist',
+        evidence: evidenceOf(probe),
+        failure: null,
+        uncertainty: markSegmentsNotSampled(uncertainty, 'segment-sample-size-zero'),
+        eligibilityAt,
+      });
+    }
+
+    // Bounded descent: at most MAX_VARIANT_FOLLOW variants, never recursive.
+    const variantUrl = variants[0];
+    if (variantUrl === undefined) {
+      return finish({
+        outcome: 'failing',
+        depth: 'playlist',
+        evidence: evidenceOf(probe),
+        failure: failure('invalid-manifest', 'playlist', 'Master playlist variant did not resolve to a URL.'),
+        uncertainty,
+        eligibilityAt,
+      });
+    }
+    probe.followedVariant = redactCredentials(variantUrl, true);
+    probe.urls.push(probe.followedVariant);
+
+    let variantResponse: EgressResponse;
+    try {
+      variantResponse = await request.egress({
+        url: variantUrl,
+        method: 'GET',
+        timeoutMs: MANIFEST_TIMEOUT_MS,
+        maxBytes: MANIFEST_MAX_BYTES,
+        allowedContentPrefixes: ['application/vnd.apple.mpegurl', 'application/x-mpegurl'],
+      });
+    } catch (error) {
+      const category = transportCategory(error);
+      probe.variantStatus = 0;
+      return finish({
+        outcome: 'failing',
+        depth: 'playlist',
+        evidence: evidenceOf(probe),
+        failure: failure(category, 'playlist', `Variant fetch failed: ${messageOf(error)}`),
+        uncertainty,
+        eligibilityAt,
+      });
+    }
+    probe.variantStatus = variantResponse.status;
+
+    if (!variantResponse.ok) {
+      // The Akamai shape: master 200, variant 404. Name the variant failure.
+      const category = statusCategory(variantResponse.status);
+      return finish({
+        outcome: 'failing',
+        depth: 'playlist',
+        evidence: evidenceOf(probe),
+        failure: failure(
+          category === 'http-401' || category === 'http-403' ? 'segments-forbidden' : 'missing-segments',
+          'playlist',
+          `Master variant answered HTTP ${variantResponse.status}: the manifest names a playlist that does not serve.`,
+        ),
+        uncertainty,
+        eligibilityAt,
+      });
+    }
+
+    const variantParsed = parseManifest(variantResponse.body ?? '', variantResponse.contentType, { expected: 'hls' });
+    if (!variantParsed.ok) {
+      return finish({
+        outcome: 'failing',
+        depth: 'manifest',
+        evidence: evidenceOf(probe),
+        failure: failure(variantParsed.reason, 'manifest', `Followed variant: ${variantParsed.detail}`),
+        uncertainty,
+        eligibilityAt,
+      });
+    }
+    if (variantParsed.facts.format === 'hls-master') {
+      // One level only. Recorded, never followed: recursion is the attack.
+      return finish({
+        outcome: 'degraded',
+        depth: 'playlist',
+        evidence: evidenceOf(probe),
+        failure: null,
+        uncertainty: markSegmentsNotSampled(uncertainty, 'nested-master-not-followed'),
+        eligibilityAt,
+      });
+    }
+    if (variantParsed.truncated) uncertainty.manifestTruncated = true;
+
+    const variantSegments = samplePlaylistUris(variantResponse.body ?? '', variantResponse.finalUrl, segmentSample)
+      .segments;
+    if (variantSegments.length === 0) {
+      return finish({
+        outcome: 'failing',
+        depth: 'playlist',
+        evidence: evidenceOf(probe),
+        failure: failure('invalid-manifest', 'playlist', 'Followed variant declares segments but none resolved.'),
+        uncertainty,
+        eligibilityAt,
+      });
+    }
+    return finish(await sampleSegments(variantSegments));
   }
 
   if (segmentSample === 0) {
@@ -429,75 +566,83 @@ export async function runValidation(request: ValidationRequest): Promise<Validat
     });
   }
 
-  let segmentsOk = 0;
-  let firstCategory: FailureCategory | null = null;
-  for (const segmentUrl of sampled.segments) {
-    probe.urls.push(redactCredentials(segmentUrl, true));
-    probe.samplesAttempted += 1;
-    try {
-      const segment = await request.egress({
-        url: segmentUrl,
-        method: 'GET',
-        timeoutMs: SEGMENT_TIMEOUT_MS,
-        maxBytes: SEGMENT_MAX_BYTES,
-      });
-      probe.segmentStatuses.push(segment.status);
-      if (segment.ok) segmentsOk += 1;
-      else if (firstCategory === null) firstCategory = statusCategory(segment.status);
-    } catch (error) {
-      probe.segmentStatuses.push(0);
-      if (firstCategory === null) firstCategory = transportCategory(error);
+  return finish(await sampleSegments(sampled.segments));
+
+  /**
+   * Layer 5 sampling, shared by the media-playlist path and the followed variant
+   * so both produce identical evidence and categories.
+   */
+  async function sampleSegments(segmentUrls: readonly string[]): Promise<FinishInput> {
+    let segmentsOk = 0;
+    let firstCategory: FailureCategory | null = null;
+    for (const segmentUrl of segmentUrls) {
+      probe.urls.push(redactCredentials(segmentUrl, true));
+      probe.samplesAttempted += 1;
+      try {
+        const segment = await request.egress({
+          url: segmentUrl,
+          method: 'GET',
+          timeoutMs: SEGMENT_TIMEOUT_MS,
+          maxBytes: SEGMENT_MAX_BYTES,
+        });
+        probe.segmentStatuses.push(segment.status);
+        if (segment.ok) segmentsOk += 1;
+        else if (firstCategory === null) firstCategory = statusCategory(segment.status);
+      } catch (error) {
+        probe.segmentStatuses.push(0);
+        if (firstCategory === null) firstCategory = transportCategory(error);
+      }
     }
-  }
 
-  if (firstCategory !== null) {
-    const category: FailureCategory =
-      firstCategory === 'http-401' || firstCategory === 'http-403' ? 'segments-forbidden' : 'missing-segments';
-    return finish({
-      outcome: 'failing',
-      depth: 'playlist',
-      evidence: evidenceOf(probe),
-      failure: failure(category, 'playlist', `Sampled segments: ${segmentsOk}/${probe.samplesAttempted} answered 2xx.`),
-      uncertainty,
-      eligibilityAt,
-    });
-  }
+    if (firstCategory !== null) {
+      const category: FailureCategory =
+        firstCategory === 'http-401' || firstCategory === 'http-403' ? 'segments-forbidden' : 'missing-segments';
+      return {
+        outcome: 'failing',
+        depth: 'playlist',
+        evidence: evidenceOf(probe),
+        failure: failure(category, 'playlist', `Sampled segments: ${segmentsOk}/${probe.samplesAttempted} answered 2xx.`),
+        uncertainty,
+        eligibilityAt,
+      };
+    }
 
-  // ── Layer 6: injected browser reproduction ──────────────────────────────
-  const browser = request.browser ?? null;
-  if (browser === null) {
-    const marked = { ...uncertainty, notes: [...uncertainty.notes] };
-    marked.browserNotProbed = true;
-    return finish({
+    // ── Layer 6: injected browser reproduction ────────────────────────────
+    const browser = request.browser ?? null;
+    if (browser === null) {
+      const marked = { ...uncertainty, notes: [...uncertainty.notes] };
+      marked.browserNotProbed = true;
+      return {
+        outcome: 'healthy',
+        depth: 'segments',
+        evidence: evidenceOf(probe),
+        failure: null,
+        uncertainty: marked,
+        eligibilityAt,
+      };
+    }
+
+    if (!browser.reproduced) {
+      const category: FailureCategory = browser.failure ?? 'browser-incompatible';
+      return {
+        outcome: 'degraded',
+        depth: 'browser',
+        evidence: evidenceOf(probe),
+        failure: failure(category, 'browser', browser.note ?? 'Browser did not reproduce the stream.'),
+        uncertainty,
+        eligibilityAt,
+      };
+    }
+
+    return {
       outcome: 'healthy',
-      depth: 'segments',
-      evidence: evidenceOf(probe),
-      failure: null,
-      uncertainty: marked,
-      eligibilityAt,
-    });
-  }
-
-  if (!browser.reproduced) {
-    const category: FailureCategory = browser.failure ?? 'browser-incompatible';
-    return finish({
-      outcome: 'degraded',
       depth: 'browser',
       evidence: evidenceOf(probe),
-      failure: failure(category, 'browser', browser.note ?? 'Browser did not reproduce the stream.'),
+      failure: null,
       uncertainty,
       eligibilityAt,
-    });
+    };
   }
-
-  return finish({
-    outcome: 'healthy',
-    depth: 'browser',
-    evidence: evidenceOf(probe),
-    failure: null,
-    uncertainty,
-    eligibilityAt,
-  });
 }
 
 function markSegmentsNotSampled(uncertainty: Uncertainty, note: string): Uncertainty {
@@ -625,7 +770,9 @@ function evidenceOf(probe: {
   latencyMs: number | null;
   samplesRequested: number;
   samplesAttempted: number;
-}): BoundedEvidence {
+  followedVariant: string | null;
+  variantStatus: number | null;
+}): BoundedEvidenceWithPath {
   return {
     httpStatus: probe.httpStatus,
     contentType: probe.contentType,
@@ -637,6 +784,8 @@ function evidenceOf(probe: {
     latencyMs: probe.latencyMs,
     samplesRequested: probe.samplesRequested,
     samplesAttempted: probe.samplesAttempted,
+    followedVariant: probe.followedVariant,
+    variantStatus: probe.variantStatus,
   };
 }
 

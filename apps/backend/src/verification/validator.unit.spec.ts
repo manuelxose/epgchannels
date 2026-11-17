@@ -493,13 +493,22 @@ describe('validator — HTTP 200 is NOT health (central negatives)', () => {
     expect(result.uncertainty.segmentsNotSampled).toBe(true);
   });
 
-  it('a master playlist is `degraded` at `playlist`: its media playlists were not sampled', async () => {
+  it('HONEST UNKNOWN: a master whose followed variant is itself a master is degraded, not healthy', async () => {
+    /*
+     * Formerly this fixture answered the master body for *every* URL, so the
+     * descent landed on another master. That is exactly the nested case: the
+     * engine must stop after one level, say so, and never recurse.
+     */
     const spy = scriptedEgress(() => response({ body: MASTER_PLAYLIST }));
     const result = await validate({ egress: spy.fn });
     expect(result.outcome).toBe('degraded');
     expect(result.depthReached).toBe('playlist');
     expect(result.uncertainty.segmentsNotSampled).toBe(true);
+    expect(result.uncertainty.notes).toContain('nested-master-not-followed');
     expect(result.evidence.manifest?.variantCount).toBe(2);
+    // Exactly two requests: the master, then one variant. Never a third.
+    expect(spy.calls).toHaveLength(2);
+    expect(result.evidence.variantStatus).toBe(200);
   });
 });
 
@@ -1120,4 +1129,215 @@ describe('validator — source hygiene', () => {
       expect(text).not.toMatch(new RegExp(`from '${forbidden.replace(/[/\\]/g, '\\$&')}'`));
     }
   });
+});
+
+/**
+ * Master → one variant → segments, through a REAL socket and the REAL safeFetch.
+ *
+ * Before this repair the master branch returned `degraded`/`failure: null`
+ * without ever fetching a variant, so layer 5 was unreachable for the shape most
+ * emitters publish. These tests drive the actual engine over an actual HTTP
+ * server: no injected fake, no hand-made response.
+ */
+describe('master playlist descent — layer 5 actually runs (real fixtures)', () => {
+  const MASTER_VARIANTS = [
+    '#EXTM3U',
+    '#EXT-X-VERSION:4',
+    '#EXT-X-STREAM-INF:BANDWIDTH=2500000,RESOLUTION=1280x720',
+    'v0/index.m3u8',
+    '#EXT-X-STREAM-INF:BANDWIDTH=500000,RESOLUTION=640x360',
+    'v1/index.m3u8',
+    '',
+  ].join('\n');
+
+  const media = (segments: readonly string[]): string =>
+    ['#EXTM3U', '#EXT-X-VERSION:3', '#EXT-X-TARGETDURATION:6', ...segments.flatMap((s) => ['#EXTINF:6.0,', s]), ''].join(
+      '\n',
+    );
+
+  /** The real egress executor behind the validator's injected seam. */
+  const realEgress: EgressFn = async (request) => {
+    const response = await safeFetch({
+      url: request.url,
+      ...(request.method === undefined ? {} : { method: request.method }),
+      timeoutMs: request.timeoutMs,
+      maxBytes: request.maxBytes,
+      ...(request.allowedContentPrefixes === undefined
+        ? {}
+        : { allowedContentPrefixes: request.allowedContentPrefixes }),
+      allowLoopbackForTests: true,
+    });
+    return {
+      status: response.status,
+      ok: response.ok,
+      contentType: response.contentType,
+      bytes: response.bytes,
+      body: response.body,
+      finalUrl: response.finalUrl,
+      latencyMs: response.latencyMs,
+    };
+  };
+
+  /** Counts every egress call the engine makes, so "bounded" is measured. */
+  function countingEgress(calls: string[]): EgressFn {
+    return async (request) => {
+      calls.push(request.url);
+      return realEgress(request);
+    };
+  }
+
+  function probe(url: string, egress: EgressFn, segmentSample?: number) {
+    return runValidation({
+      source: source({ url }),
+      authorization: authorization({ sourceUrl: url }),
+      registry: createDefaultAdapterRegistry(),
+      egress,
+      ...(segmentSample === undefined ? {} : { segmentSample }),
+      now: NOW,
+      dns: async () => ({ host: '127.0.0.1', addresses: [{ address: '127.0.0.1', family: 4 }] }),
+    });
+  }
+
+  async function withFixture<T>(
+    routes: Parameters<typeof startHttpFixture>[0],
+    body: (f: HttpFixture) => Promise<T>,
+  ): Promise<T> {
+    const fixture = await startHttpFixture(routes);
+    try {
+      return await body(fixture);
+    } finally {
+      await fixture.close();
+    }
+  }
+
+  it('CENTRAL: master → media → 2 valid segments is healthy at depth segments', async () => {
+    await withFixture(
+      {
+        '/master.m3u8': { contentType: HLS_MIME, body: MASTER_VARIANTS },
+        '/v0/index.m3u8': { contentType: HLS_MIME, body: media(['seg-1.ts', 'seg-2.ts']) },
+        '/v0/seg-1.ts': { contentType: 'video/mp2t', body: 'AAAA' },
+        '/v0/seg-2.ts': { contentType: 'video/mp2t', body: 'BBBB' },
+      },
+      async (f) => {
+        const calls: string[] = [];
+        const result = await probe(f.url('/master.m3u8'), countingEgress(calls));
+        expect(result.failure).toBeNull();
+        expect(result.outcome).toBe('healthy');
+        expect(result.depthReached).toBe('segments');
+        // The operator can see the path taken.
+        expect(result.evidence.followedVariant).toContain('/v0/index.m3u8');
+        expect(result.evidence.variantStatus).toBe(200);
+        expect(result.evidence.segmentStatuses).toEqual([200, 200]);
+        expect(result.evidence.samplesAttempted).toBe(2);
+        // Bounded: master + 1 variant + 2 segments.
+        expect(calls).toHaveLength(4);
+      },
+    );
+  }, 30_000);
+
+  it('master → media whose segment is 404 is missing-segments, not degraded', async () => {
+    await withFixture(
+      {
+        '/master.m3u8': { contentType: HLS_MIME, body: MASTER_VARIANTS },
+        '/v0/index.m3u8': { contentType: HLS_MIME, body: media(['gone.ts']) },
+        // '/v0/gone.ts' deliberately absent → the fixture answers 404.
+      },
+      async (f) => {
+        const result = await probe(f.url('/master.m3u8'), realEgress);
+        expect(result.failure?.category).toBe('missing-segments');
+        expect(result.outcome).toBe('failing');
+        expect(result.depthReached).toBe('playlist');
+        expect(result.evidence.segmentStatuses).toContain(404);
+      },
+    );
+  }, 30_000);
+
+  it('master → media whose segment is 403 is segments-forbidden, not degraded', async () => {
+    await withFixture(
+      {
+        '/master.m3u8': { contentType: HLS_MIME, body: MASTER_VARIANTS },
+        '/v0/index.m3u8': { contentType: HLS_MIME, body: media(['locked.ts']) },
+        '/v0/locked.ts': { status: 403, contentType: 'text/plain', body: 'forbidden' },
+      },
+      async (f) => {
+        const result = await probe(f.url('/master.m3u8'), realEgress);
+        expect(result.failure?.category).toBe('segments-forbidden');
+        expect(result.outcome).toBe('failing');
+        expect(result.depthReached).toBe('playlist');
+      },
+    );
+  }, 30_000);
+
+  it('AKAMAI SHAPE: master 200 whose variant is 404 is a named failure, never degraded/null', async () => {
+    await withFixture(
+      {
+        // The real case: the master serves, the playlist it names does not.
+        '/master.m3u8': { contentType: HLS_MIME, body: MASTER_VARIANTS },
+      },
+      async (f) => {
+        const result = await probe(f.url('/master.m3u8'), realEgress);
+        expect(result.outcome).toBe('failing');
+        expect(result.failure).not.toBeNull();
+        expect(result.failure?.category).toBe('missing-segments');
+        expect(result.depthReached).toBe('playlist');
+        expect(result.evidence.variantStatus).toBe(404);
+        expect(result.failure?.message).toMatch(/variant answered HTTP 404/);
+      },
+    );
+  }, 30_000);
+
+  it('NESTED MASTERS: never recurses and the request count stays bounded', async () => {
+    await withFixture(
+      {
+        '/master.m3u8': { contentType: HLS_MIME, body: MASTER_VARIANTS },
+        // Every variant is itself a master, each naming more masters.
+        '/v0/index.m3u8': { contentType: HLS_MIME, body: MASTER_VARIANTS },
+        '/v1/index.m3u8': { contentType: HLS_MIME, body: MASTER_VARIANTS },
+      },
+      async (f) => {
+        const calls: string[] = [];
+        const result = await probe(f.url('/master.m3u8'), countingEgress(calls));
+        expect(result.outcome).toBe('degraded');
+        expect(result.failure).toBeNull();
+        expect(result.uncertainty.notes).toContain('nested-master-not-followed');
+        expect(result.uncertainty.segmentsNotSampled).toBe(true);
+        // Master + exactly one variant. A chain cannot multiply requests.
+        expect(calls).toHaveLength(2);
+      },
+    );
+  }, 30_000);
+
+  it('TWO-SIDED: segmentSample=0 keeps the honest degraded/null-failure', async () => {
+    await withFixture(
+      { '/master.m3u8': { contentType: HLS_MIME, body: MASTER_VARIANTS } },
+      async (f) => {
+        const calls: string[] = [];
+        const result = await probe(f.url('/master.m3u8'), countingEgress(calls), 0);
+        expect(result.outcome).toBe('degraded');
+        expect(result.failure).toBeNull();
+        expect(result.uncertainty.segmentsNotSampled).toBe(true);
+        expect(result.uncertainty.notes).toContain('segment-sample-size-zero');
+        // Nothing was sampled, so no variant was even fetched.
+        expect(calls).toHaveLength(1);
+      },
+    );
+  }, 30_000);
+
+  it('a media playlist still works unchanged (no variant descent for non-masters)', async () => {
+    await withFixture(
+      {
+        '/media.m3u8': { contentType: HLS_MIME, body: media(['s1.ts', 's2.ts']) },
+        '/s1.ts': { contentType: 'video/mp2t', body: 'A' },
+        '/s2.ts': { contentType: 'video/mp2t', body: 'B' },
+      },
+      async (f) => {
+        const calls: string[] = [];
+        const result = await probe(f.url('/media.m3u8'), countingEgress(calls));
+        expect(result.outcome).toBe('healthy');
+        expect(result.depthReached).toBe('segments');
+        expect(result.evidence.followedVariant).toBeNull();
+        expect(calls).toHaveLength(3);
+      },
+    );
+  }, 30_000);
 });
