@@ -74,6 +74,35 @@ Cuando el navegador no está disponible, el veredicto es **`not-observable`** co
 salida 0: es un desconocido honesto, ni un pase ni un fallo. Ese camino está demostrado de verdad
 (`--no-browser`), no supuesto.
 
+## 2-bis. Verificación real del motor sobre las fuentes públicas (posterior a §2)
+
+Ejecutado con el motor de 02D (no con el comprobador de navegador) contra las mismas cuatro
+distribuciones, tras corregir cuatro defectos que sólo aparecieron al ejecutar:
+
+| Fuente | Resultado del motor | ¿Es verdad? |
+|---|---|---|
+| `test-streams.mux.dev/x36xhzz/x36xhzz.m3u8` | **`healthy` @ profundidad `segments`**, 6 peticiones | **sí** — maestro → variante → segmentos 200 |
+| `devstreaming-cdn.apple.com/…/img_bipbop_adv_example_ts/master.m3u8` | **`healthy` @ profundidad `segments`**, 6 peticiones | **sí** |
+| `devstreaming-cdn.apple.com/…/bipbop_16x9/bipbop_16x9_variant.m3u8` | `failing` / `response-too-large` | **sí** — medido: su primer segmento declara **59 366 640** bytes |
+| `cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8` | `failing` / `missing-segments` | **sí** — medido: su única variante responde **404** |
+
+Las dos filas «failing» **no son defectos del motor**: son la realidad del origen, medida
+independientemente por el capitán (variante 404; segmento de 59 MB). Que el motor las distinga de las
+sanas, con categorías distintas y en la profundidad donde obtuvo la evidencia, es el resultado buscado.
+
+**Antes de estas correcciones las cuatro fallaban**, y fallaban con la categoría equivocada: un
+directo HD sano se reportaba `missing-segments` por un presupuesto de tamaño mal aplicado. Ese es el
+valor de haber ejecutado en vez de leer: cuatro defectos reales, ninguno visible con la suite en verde.
+
+### Limitación que queda abierta (declarada)
+
+El segmento de BipBop 16x9 declara 59 MB. Para **muestrear** (leer sólo 64 KiB y cortar) hace falta una
+capacidad de lectura de prefijo en `safeFetch` que hoy no existe: la capa de egreso rechaza por
+`content-length` declarado **antes de leer un byte**. Por eso, hoy, el ancho de banda por segmento
+muestreado está acotado por el **techo de 4 MiB**, no por los 64 KiB de muestreo. La corrección de
+contrato está registrada como t14 (propiedad de `ssrf-engineer`). Hasta que exista, esta cifra se
+reporta tal cual, sin presentarla como si ya fuera 64 KiB.
+
 ## 5. Lo que este documento NO afirma
 
 - **No** afirma nada sobre la legalidad de ninguna fuente. La autorización es otro eje (02C) y este
