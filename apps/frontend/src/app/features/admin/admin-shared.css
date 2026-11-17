@@ -1,0 +1,461 @@
+/* ==========================================================================
+   Admin — styles shared by the admin feature components (styleUrl, not global).
+   Compact, scannable, and always using the theme tokens so light/dark both pass
+   contrast. Designed to stay well under the 12 kB anyComponentStyle budget.
+   ========================================================================== */
+
+.catalogue,
+.sources,
+.epg,
+.operations {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  min-width: 0;
+}
+
+.catalogue__head,
+.sources__head,
+.epg__head,
+.operations__head,
+.drawer__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-2) var(--s-4);
+}
+
+.catalogue__head h2,
+.sources__head h2,
+.epg__head h2,
+.operations__head h2 {
+  font-size: var(--fs-xl);
+}
+
+.admin-count {
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+
+.admin-note {
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+
+.admin-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--danger);
+  border-radius: var(--r-md);
+  background: var(--danger-soft);
+  color: var(--text);
+  font-size: var(--fs-sm);
+}
+
+.admin-ok {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--ok);
+  border-radius: var(--r-md);
+  background: color-mix(in srgb, var(--ok) 12%, transparent);
+  color: var(--text);
+  font-size: var(--fs-sm);
+}
+
+/* ---------------------------------------------------------------- filters */
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface-1);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+  min-width: 180px;
+}
+
+.field__label {
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.field__control {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 0 var(--s-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  color: var(--text-muted);
+}
+
+.field__control input,
+.field input,
+.field select,
+.drawer input,
+.drawer select,
+.drawer textarea {
+  min-height: 38px;
+  width: 100%;
+  padding: 0 var(--s-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-sm);
+}
+
+.field__control input {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.field input:focus-visible,
+.field select:focus-visible,
+.field__control:focus-within {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* ------------------------------------------------------------------ table */
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface-1);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+}
+
+.admin-table th,
+.admin-table td {
+  padding: var(--s-2) var(--s-3);
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.admin-table tbody tr:last-child th,
+.admin-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.admin-table tbody tr:hover {
+  background: var(--surface-2);
+}
+
+.cell-strong {
+  display: block;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.cell-sub {
+  display: block;
+  color: var(--text-subtle);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+}
+
+.cell-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.cell-actions .btn + .btn {
+  margin-left: var(--s-1);
+}
+
+/* ------------------------------------------------------------------- pills */
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  padding: 2px var(--s-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-pill);
+  background: var(--surface-3);
+  color: var(--text);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-pill::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.9;
+}
+
+/* Colour plus the label text: meaning never depends on colour alone. */
+.status-pill[data-status='ok'],
+.status-pill[data-status='published'],
+.status-pill[data-status='healthy'] {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+
+.status-pill[data-status='warn'],
+.status-pill[data-status='review'],
+.status-pill[data-status='stale'],
+.status-pill[data-status='unknown'] {
+  border-color: var(--warn);
+  color: var(--warn);
+}
+
+.status-pill[data-status='error'],
+.status-pill[data-status='withdrawn'],
+.status-pill[data-status='failed'],
+.status-pill[data-status='unreachable'] {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+/* ------------------------------------------------------------------ pager */
+
+.pager {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  justify-content: flex-end;
+}
+
+.pager__label {
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+
+/* ----------------------------------------------------------------- drawer */
+
+.drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 520px);
+}
+
+.drawer__scrim {
+  background: rgba(3, 6, 12, 0.55);
+  border: 0;
+}
+
+.drawer__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  overflow-y: auto;
+  padding: var(--s-5);
+  background: var(--bg-elevated);
+  border-left: 1px solid var(--border);
+}
+
+.drawer__title {
+  font-size: var(--fs-lg);
+}
+
+.drawer__sub {
+  color: var(--text-subtle);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+}
+
+.drawer__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface-1);
+}
+
+.drawer__section h3 {
+  font-size: var(--fs-md);
+}
+
+.drawer__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--s-3);
+}
+
+.drawer__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+details > summary {
+  cursor: pointer;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+details[open] > summary {
+  color: var(--text);
+  margin-bottom: var(--s-3);
+}
+
+/* ----------------------------------------------------------------- metrics */
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--s-3);
+  margin: var(--s-3) 0;
+}
+
+.metrics div {
+  padding: var(--s-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface-1);
+}
+
+.metrics dt {
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.metrics dd {
+  margin: var(--s-1) 0 0;
+  font-size: var(--fs-xl);
+  font-weight: 650;
+}
+
+.metrics small {
+  color: var(--text-subtle);
+  font-size: var(--fs-xs);
+}
+
+/* ------------------------------------------------------------------- lists */
+
+.runs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+
+.runs li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface-1);
+  font-size: var(--fs-sm);
+}
+
+.routes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+  font-size: var(--fs-sm);
+}
+
+.routes li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.history {
+  max-height: 180px;
+  overflow: auto;
+  padding: var(--s-2);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  white-space: pre-wrap;
+}
+
+/* ------------------------------------------------------------------ sign in */
+
+.sign-in {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  max-width: 420px;
+  padding: var(--s-5);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface-1);
+}
+
+.sign-in__title {
+  font-size: var(--fs-lg);
+}
+
+.sign-in .btn {
+  align-self: flex-start;
+}
+
+@media (max-width: 760px) {
+  .drawer {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .drawer__panel {
+    border-left: 0;
+    padding: var(--s-4);
+  }
+}

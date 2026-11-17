@@ -20,6 +20,9 @@
       <a routerLink="/schedule" routerLinkActive="is-active" ariaCurrentWhenActive="page" (click)="closeMenu()"
         >Parrilla</a
       >
+      <a routerLink="/admin" routerLinkActive="is-active" ariaCurrentWhenActive="page" (click)="closeMenu()"
+        >Administración</a
+      >
     </nav>
 
     <p class="app-header__note">Guía y reproductor para señales que sus emisores publican en abierto.</p>
@@ -53,6 +56,9 @@
     >
     <a routerLink="/schedule" routerLinkActive="is-active" ariaCurrentWhenActive="page" (click)="closeMenu()"
       >Parrilla</a
+    >
+    <a routerLink="/admin" routerLinkActive="is-active" ariaCurrentWhenActive="page" (click)="closeMenu()"
+      >Administración</a
     >
     <button type="button" class="mobile-menu__theme" (click)="toggleTheme(); closeMenu()">
       <app-icon [name]="themeIcon()" [size]="18" />
