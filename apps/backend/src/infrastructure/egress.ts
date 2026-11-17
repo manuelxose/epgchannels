@@ -14,6 +14,8 @@
  * module is used only by verification jobs and by guide ingestion from sources
  * an operator explicitly enabled.
  */
+import { EgressFailure, safeFetch } from './safe-egress.js';
+
 export class EgressBlockedError extends Error {
   constructor(public readonly host: string) {
     super(`Egress to "${host}" is blocked by policy.`);
@@ -36,6 +38,17 @@ export interface EgressOptions {
   /** Probe only: `HEAD` avoids downloading a media manifest body. */
   readonly method?: 'GET' | 'HEAD';
   readonly signal?: AbortSignal;
+  /**
+   * Run the request through the SSRF guard (`safe-egress.ts`) instead of plain
+   * `fetch`: explicit DNS resolution, private/reserved destination refusal, a
+   * pinned connection, re-validated redirects and a body-size counter.
+   *
+   * **Off by default** so that `fetchWithPolicy` keeps its historical behaviour
+   * exactly; TDT-API-02D's verification engine sets it. Callers that opt in get
+   * `EgressFailure` (from `safe-egress.ts`) for guard refusals and the existing
+   * error types for the pre-existing checks.
+   */
+  readonly ssrfGuard?: boolean;
 }
 
 export interface EgressResult {
@@ -83,6 +96,50 @@ export async function fetchWithPolicy(url: string, options: EgressOptions): Prom
   }
 
   const maxBytes = options.maxBytes ?? DEFAULT_MAX_BYTES;
+
+  // SSRF guard delegation (TDT-API-02D, SEC-01). Opt-in only: the historical
+  // path below is untouched so guide ingestion and the youtube probe behave
+  // exactly as before. When enabled, `safe-egress.ts` owns DNS resolution,
+  // private-address refusal, connection pinning, redirect validation and the
+  // body-size counter; refusals surface as `EgressFailure` and the two
+  // pre-existing error types are preserved for the two pre-existing conditions
+  // (blocked host, oversized body).
+  if (options.ssrfGuard === true) {
+    let guarded;
+    try {
+      guarded = await safeFetch({
+        url: parsed.toString(),
+        method: options.method ?? 'GET',
+        timeoutMs: options.timeoutMs,
+        maxBytes,
+        blockedHosts: options.blockedHosts,
+        ...(options.userAgent !== undefined ? { userAgent: options.userAgent } : {}),
+        ...(options.signal !== undefined ? { signal: options.signal } : {}),
+      });
+    } catch (error) {
+      if (error instanceof EgressFailure) {
+        // Preserve the historical error types for the two conditions this module
+        // has always reported; every other refusal is the guard's own code.
+        if (error.code === 'response-too-large') {
+          const host = typeof error.detail?.['host'] === 'string' ? error.detail['host'] : parsed.hostname;
+          throw new EgressResponseTooLargeError(host, maxBytes);
+        }
+        if (error.code === 'host-blocked') {
+          throw new EgressBlockedError(parsed.hostname);
+        }
+      }
+      throw error;
+    }
+    return {
+      status: guarded.status,
+      ok: guarded.ok,
+      contentType: guarded.contentType,
+      bytes: guarded.bytes,
+      body: guarded.body,
+      finalHost: guarded.finalHost,
+    };
+  }
+
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(new Error('egress timeout')), options.timeoutMs);
   const onOuterAbort = (): void => controller.abort(options.signal?.reason);
