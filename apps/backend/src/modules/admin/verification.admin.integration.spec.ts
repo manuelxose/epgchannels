@@ -227,10 +227,19 @@ const admin = () => ({ Authorization: `Bearer ${adminToken}` });
 const editor = () => ({ Authorization: `Bearer ${editorToken}` });
 
 describe.skipIf(skip)('verification operator endpoints', () => {
-  it('is not reachable from the real application until the captain wires it', async () => {
-    // Proof the router is not mounted publicly: the real app 404s the path.
-    const unwired = await request(harness.app).get('/api/v1/admin/verification/status').set(admin());
-    expect(unwired.status).toBe(404);
+  it('is wired into the real application behind the admin guard', async () => {
+    /*
+     * t4 mounted the router on `/admin` in `createRouter`, so the effective paths
+     * are `/api/v1/admin/verification/…`. This asserts the wiring exists AND is
+     * guarded: an administrator gets an answer, an anonymous caller does not.
+     */
+    const authenticated = await request(harness.app)
+      .get('/api/v1/admin/verification/status')
+      .set(admin());
+    expect(authenticated.status).toBe(200);
+
+    const anonymous = await request(harness.app).get('/api/v1/admin/verification/status');
+    expect(anonymous.status).toBe(401);
   });
 
   it('refuses an anonymous caller with 401 on every route', async () => {

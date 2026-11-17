@@ -13,6 +13,9 @@ import { ChannelsService } from '../modules/channels/channels.service.js';
 import { EpgIngestionService } from '../modules/epg/epg.ingestion.js';
 import { EpgService } from '../modules/epg/epg.service.js';
 import { PlaybackService } from '../modules/playback/playback.service.js';
+import { createVerificationRuntime } from '../verification/runtime.js';
+import { COLLECTIONS } from '../infrastructure/mongo.js';
+import type { PlaybackSourceDoc } from '../infrastructure/schema.js';
 import type { AppContext } from './context.js';
 
 export async function createContext(config: Config): Promise<AppContext> {
@@ -39,6 +42,15 @@ export async function createContext(config: Config): Promise<AppContext> {
       timeoutMs: config.EGRESS_TIMEOUT_MS,
     },
     serviceKeyEnabled: config.SERVICE_API_KEY_SHA256 !== undefined,
+    verification: createVerificationRuntime({
+      database,
+      logger,
+      config,
+      // The 02C gate's recorded decision, read through the service that owns it.
+      authorizationsFor: (sources) => playback.authorizationsFor(sources),
+      findSource: (sourceId) =>
+        database.collection<PlaybackSourceDoc>(COLLECTIONS.sources).findOne({ _id: sourceId }),
+    }),
   };
   return context;
 }
