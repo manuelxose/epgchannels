@@ -120,7 +120,13 @@ export function broadcasterDirectAdapter(): ProviderAdapter {
       id: 'broadcaster-direct',
       name: 'Reproducción directa del emisor',
       types: ['hls', 'dash'],
-      providerKinds: ['broadcaster', 'broadcaster_cdn'],
+      /*
+       * catalogue_reference añadido con la decisión del propietario (02FG): el
+       * catálogo de terceros se ofrece íntegro. La exigencia sigue siendo
+       * written-licence, que es lo que la decisión del propietario aporta como
+       * cita; no se relaja a una política publicada.
+       */
+      providerKinds: ['broadcaster', 'broadcaster_cdn', 'catalogue_reference'],
       requiresAuthorization: 'written-licence',
       grants: 'permitted-direct-playback',
       method: 'direct-playback',
@@ -202,7 +208,7 @@ export function externalLinkAdapter(): ProviderAdapter {
       id: 'external-link',
       name: 'Acceso externo (enlace al emisor)',
       types: ['external'],
-      providerKinds: ['broadcaster', 'broadcaster_cdn', 'fast_platform', 'platform'],
+      providerKinds: ['broadcaster', 'broadcaster_cdn', 'fast_platform', 'platform', 'catalogue_reference'],
       requiresAuthorization: 'published-terms',
       grants: 'external-link-only',
       method: 'external-link',

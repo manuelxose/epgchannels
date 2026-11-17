@@ -44,7 +44,7 @@ import type {
   SourceSnapshotDoc,
 } from '../catalogue/schema.js';
 import { ChannelStore } from '../catalogue/store.js';
-import { buildCandidates, type LoadedPlaylist } from '../ingestion/index.js';
+import { buildCandidates, type CandidateBuildOptions, type LoadedPlaylist } from '../ingestion/index.js';
 import type { MatchDecision } from '../catalogue-identity/types.js';
 import { buildIdentityIndex, reconcileIndexed } from '../catalogue-identity/reconcile.js';
 import { identityKey, normalizeChannelName, normalizeCountry } from '../catalogue-identity/normalize.js';
@@ -58,6 +58,10 @@ export interface RunIngestionOptions {
   idNamespace?: string;
   /** Rows per bulk write. Small enough to stay under the driver limits. */
   batchSize?: number;
+  /** Candidate-building options; an upstream may need its own country resolution. */
+  buildOptions?: CandidateBuildOptions;
+  /** iso keeps the real ISO code; 	dt is the historical ES/INT bucket. */
+  countryMode?: CountryMode;
 }
 
 export interface RunIngestionResult {
@@ -103,9 +107,27 @@ function uniqueRunId(snapshot: SourceSnapshotDoc): string {
   return stableId('run', `${snapshot._id}:${snapshot.upstream}:${Date.now()}:${process.pid}`);
 }
 
-/** Top-level compatibility field (D-010): `ES` stays `ES`, everything else `INT`. */
-function compatCountry(iso: string | null): string {
-  return iso === 'ES' ? 'ES' : 'INT';
+/**
+ * How a channel's `country` is derived from its upstream country (D-010, revised
+ * for TDT-API-02FG).
+ *
+ * D-010 punched every non-Spanish channel into one `INT` bucket, which was
+ * adequate while the catalogue was Spanish-only. It is not adequate for an
+ * international catalogue: a catalogue whose countries are `ES` and `INT` cannot
+ * answer "channels by country", and the public `/countries` endpoint would keep
+ * publishing two rows for the whole world.
+ *
+ * `iso` keeps the real ISO code, and still falls back to `INT` when the upstream
+ * gave no usable country — so nothing is invented. The compatibility field that
+ * D-010 introduced is preserved for whoever still reads it: the `INT` bucket
+ * keeps meaning "not Spain", it is simply no longer the only alternative.
+ */
+export type CountryMode = 'iso' | 'tdt';
+
+export function channelCountry(iso: string | null, mode: CountryMode = 'iso'): string {
+  if (mode === 'tdt') return iso === 'ES' ? 'ES' : 'INT';
+  if (iso === null) return 'INT';
+  return iso;
 }
 
 function uniqueSlugFrom(base: string, taken: Set<string>): string {
@@ -135,6 +157,7 @@ function newChannelDoc(
   country: string | null,
   language: string,
   now: Date,
+  countryMode: CountryMode = 'iso',
 ): ChannelDoc {
   const name = candidate.name.trim() !== '' ? candidate.name.trim() : key;
   return {
@@ -142,7 +165,7 @@ function newChannelDoc(
     slug,
     name,
     shortName: name,
-    country: compatCountry(country),
+    country: channelCountry(country, countryMode),
     region: null,
     locality: null,
     languageTag: language,
@@ -255,7 +278,7 @@ export async function runIngestion(
   const runId = options.runId ?? uniqueRunId(snapshot);
   const now = new Date();
 
-  const candidates = buildCandidates(snapshot, [...playlists]).sort((a, b) =>
+  const candidates = buildCandidates(snapshot, [...playlists], options.buildOptions).sort((a, b) =>
     a._id < b._id ? -1 : a._id > b._id ? 1 : 0,
   );
 
@@ -405,7 +428,7 @@ export async function runIngestion(
          */
         channelId = stableId(idNamespace, key);
         const slug = uniqueSlugFrom(slugify(normalizedName !== '' ? normalizedName : candidate.name), takenSlugs);
-        newChannels.push(newChannelDoc(candidate, channelId, slug, key, country, resolveLanguage(candidate), now));
+        newChannels.push(newChannelDoc(candidate, channelId, slug, key, country, resolveLanguage(candidate), now, options.countryMode ?? 'iso'));
         createdChannelIds.push(channelId);
         createdHere = true;
         // A later candidate with the same identity key joins this channel

@@ -498,7 +498,49 @@ function readName(entry: M3uEntry): string {
  * It does not touch the network, does not decide identity, and never stores
  * userinfo or token query values in `url` / `normalizedUrl`.
  */
-export function buildCandidates(snapshot: SourceSnapshotDoc, playlists: readonly LoadedPlaylist[]): SourceCandidateDoc[] {
+export function buildCandidates(
+  snapshot: SourceSnapshotDoc,
+  playlists: readonly LoadedPlaylist[],
+  options: CandidateBuildOptions = {},
+): SourceCandidateDoc[] {
+  return buildCandidateRows(snapshot, playlists, options);
+}
+
+/**
+ * A catalogue whose channel identities come from another database (iptv-org).
+ *
+ * `sourceCandidates` is the record of "this URL appeared in this snapshot", and
+ * it must stay exactly that: one row per line, no half-real rows. The channel
+ * database tells us the name, the country and the genre of every channel, which
+ * the M3U line does not. Importing that knowledge into the *channel* is this
+ * module's job (see `ingestion/iptv-org.import.ts`); importing it into a
+ * candidate would make the candidate disagree with the line it claims to
+ * describe.
+ *
+ * For the country specifically the playlist hint is already exact: iptv-org
+ * files are `streams/<cc>.m3u`, and an extra-region file such as `us_pluto.m3u`
+ * keeps `us`. This option asks for that behaviour explicitly rather than relying
+ * on it, so a future change to the path rules cannot silently reclassify a
+ * catalogue that has no per-line country attribute.
+ */
+export interface CandidateBuildOptions {
+  /**
+   * Resolve the country from the playlist file name even when the channel
+   * database knows better; used when the candidate must mirror its own line.
+   */
+  readonly countryFromPlaylist?: boolean;
+}
+
+/**
+ * The candidate builder itself. `options.countryFromPlaylist` only reorders the
+ * country resolution so the playlist hint is preferred over a per-line
+ * attribute; every other rule is unchanged.
+ */
+function buildCandidateRows(
+  snapshot: SourceSnapshotDoc,
+  playlists: readonly LoadedPlaylist[],
+  options: CandidateBuildOptions = {},
+): SourceCandidateDoc[] {
   const out: SourceCandidateDoc[] = [];
   for (const playlist of playlists) {
     const retrievedAt = snapshot.retrievedAt;
@@ -508,7 +550,11 @@ export function buildCandidates(snapshot: SourceSnapshotDoc, playlists: readonly
       const displayName = entry.name.trim() !== '' ? entry.name.trim() : readName(entry);
       const normalized = rawUrl === '' ? { normalized: '', authRequired: false, credentialsStripped: false } : normalizeUrl(rawUrl);
       const kind = rawUrl === '' ? 'external' : detectStreamType(rawUrl);
-      const country = resolveCountry(entry, playlist);
+      const country = options.countryFromPlaylist === true
+        ? (countryFromPath(playlist.path) !== null
+            ? { country: countryFromPath(playlist.path), source: 'path' as const }
+            : resolveCountry(entry, playlist))
+        : resolveCountry(entry, playlist);
       const quality = inferQuality(entry.name, entry.attributes['tvg-name'], entry.attributes['tvg-quality']);
       const rejection = rejectionFor(entry, displayName, rawUrl);
       const flags = collectFlags(entry, normalized.authRequired, kind, displayName);

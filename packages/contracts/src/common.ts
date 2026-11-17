@@ -52,6 +52,8 @@ export const channelCategorySchema = z.enum([
   'local',
   'autonomica',
   'internacional',
+  /* Contenido para adultos: se etiqueta, no se oculta. */
+  'adultos',
   'otros',
 ]);
 export type ChannelCategory = z.infer<typeof channelCategorySchema>;

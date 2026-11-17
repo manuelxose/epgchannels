@@ -8,3 +8,4 @@ export * from './m3u.js';
 export * from './snapshot.js';
 export * from './provenance.js';
 export * from './metrics.js';
+export * from './iptv-org.js';

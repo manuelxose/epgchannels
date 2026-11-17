@@ -158,11 +158,28 @@ describe('eligibility gate — fail closed', () => {
     if (!decision.eligible) expect(decision.reason).toBe('provider-kind-cannot-authorize');
   });
 
-  it('a catalogue reference can never authorize', () => {
+  it('a catalogue reference may authorize ONLY with a written-class right that is cited', () => {
+    /*
+     * TDT-API-02FG: the product owner decided the iptv-org catalogue is offered
+     * whole, and that decision is recorded as a `written-licence` class citing the
+     * owner and the date. The gate therefore accepts a catalogue origin that
+     * carries that right… and still refuses one that does not — which is what
+     * keeps the opening from becoming a blanket "anything goes".
+     */
     const forged = record({ providerKind: 'catalogue_reference' });
-    const decision = decideEligibility({ record: forged, now: NOW });
-    expect(decision.eligible).toBe(false);
-    if (!decision.eligible) expect(decision.reason).toBe('provider-kind-cannot-authorize');
+    const uncited = decideEligibility({ record: forged, now: NOW });
+    expect(uncited.eligible).toBe(false);
+
+    const ownerDecision = record({
+      providerKind: 'catalogue_reference',
+      basis: 'written-licence',
+      clauseUrl: 'https://github.com/iptv-org/iptv/blob/master/LICENSE',
+      quotedClause: 'Decisión del propietario del producto (2026-11-17).',
+      reviewStatus: 'reviewed',
+      /* El fixture restringe a ES y el origen del catálogo es mundial. */
+      territory: { allowed: [], restricted: [], worldwide: true, geoBlocked: false },
+    });
+    expect(decideEligibility({ record: ownerDecision, now: NOW }).eligible).toBe(true);
   });
 
   it('a permitted verdict without a citable right is denied (green field, no evidence)', () => {
@@ -341,8 +358,13 @@ describe('territory scope', () => {
 
 describe('provider kinds', () => {
   it('only grant-capable kinds may authorize', () => {
+    /*
+     * Shorteners and static CDNs reach nothing to play, so they can never
+     * authorize. A catalogue reference can, but only through the owner decision
+     * the eligibility test above pins down.
+     */
     const capable = (['shortener', 'cdn', 'catalogue_reference'] as const).map(kindMayAuthorizePlayback);
-    expect(capable).toEqual([false, false, false]);
+    expect(capable).toEqual([false, false, true]);
     expect(PROVIDER_KIND_FACTS.broadcaster.mayAuthorizePlayback).toBe(true);
     expect(PROVIDER_KIND_FACTS.platform.mayAuthorizePlayback).toBe(true);
   });
