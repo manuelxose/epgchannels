@@ -534,8 +534,72 @@ export function statusCategory(status: number): FailureCategory {
   return 'http-404';
 }
 
-function transportCategory(error: unknown): FailureCategory {
-  const message = messageOf(error).toLowerCase();
+/**
+ * `EgressFailure.code` → contract category. This is the authoritative mapping:
+ * the code is a structured contract from the egress layer, while a message is
+ * prose that changes whenever someone rewords a log line.
+ *
+ * The failure this replaces is instructive. The old classifier matched
+ * `/too large|maxbytes|exceed/` on the message text, and the redirect error reads
+ * "Redirect limit 5 exceeded" — so a redirect loop was reported as
+ * `response-too-large`, a timeout as the same, and a 2xx whose content-type was
+ * rejected as `unknown-error`. Every one of those was a category for a cause we
+ * had actually identified.
+ *
+ * `content-type-not-allowed` deserves its own note: the egress layer applies the
+ * allow-list to **2xx only**, so a `200 text/html` (the classic "not a manifest"
+ * case) arrives here as this code and must become `unsupported-format` — not a
+ * generic error, and never `healthy`.
+ */
+const EGRESS_CODE_CATEGORY: Readonly<Record<string, FailureCategory>> = {
+  timeout: 'timeout',
+  'dns-failure': 'dns-failure',
+  'tls-failure': 'tls-failure',
+  'connection-failed': 'connection-refused',
+  // Every refusal to reach a destination is one SSRF/policy outcome to the
+  // health ledger: the operator needs "we did not connect", not the sub-reason.
+  'private-address': 'ssrf-blocked',
+  'dns-rebind': 'ssrf-blocked',
+  'host-blocked': 'ssrf-blocked',
+  'scheme-not-allowed': 'ssrf-blocked',
+  'invalid-url': 'ssrf-blocked',
+  'credential-in-url': 'ssrf-blocked',
+  'redirect-unsafe': 'redirect-unsafe',
+  'too-many-redirects': 'redirect-unsafe',
+  'response-too-large': 'response-too-large',
+  'content-type-not-allowed': 'unsupported-format',
+};
+
+/** A string `code` on the thrown value, when it carries one. */
+function egressCodeOf(error: unknown): string | null {
+  if (typeof error !== 'object' || error === null) return null;
+  const code = (error as { code?: unknown }).code;
+  return typeof code === 'string' && code.length > 0 ? code : null;
+}
+
+/**
+ * Classifies a transport-layer throw.
+ *
+ * **Structured code first.** When the error carries a string `code` (an
+ * `EgressFailure`, or anything shaped like one) that code decides. An unknown
+ * code is `unknown-error` and is deliberately *not* passed to the message
+ * fallback: a code we do not recognise means the contract moved, and guessing
+ * from prose on top of that would hide it.
+ *
+ * **Message matching is a best-effort fallback** for errors that carry no code at
+ * all — a plain `Error` from a custom `egress` implementation, a Node system
+ * error wrapping something else. It is documented as best-effort precisely
+ * because it is not a contract; no finding here should ever be read as stronger
+ * than the code path.
+ */
+export function transportCategory(error: unknown): FailureCategory {
+  const code = egressCodeOf(error);
+  if (code !== null) return EGRESS_CODE_CATEGORY[code] ?? 'unknown-error';
+  return transportCategoryFromMessage(messageOf(error).toLowerCase());
+}
+
+/** Best-effort classification for errors with no structured code. */
+function transportCategoryFromMessage(message: string): FailureCategory {
   if (/timeout|timed out|abort/.test(message)) return 'timeout';
   if (/too large|maxbytes|exceed/.test(message)) return 'response-too-large';
   if (/tls|certificate|ssl/.test(message)) return 'tls-failure';
