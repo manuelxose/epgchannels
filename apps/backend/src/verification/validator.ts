@@ -43,7 +43,13 @@ import {
   type Uncertainty,
   type ValidationDepth,
 } from './health.schema.js';
-import { isDashMime, isHlsMime, parseManifest, samplePlaylistUris } from './manifest.js';
+import {
+  isDashMime,
+  isHlsMime,
+  manifestContentTypeAllowList,
+  parseManifest,
+  samplePlaylistUris,
+} from './manifest.js';
 
 export type { ValidationDepth } from './health.schema.js';
 
@@ -315,6 +321,8 @@ export async function runValidation(request: ValidationRequest): Promise<Validat
   }
 
   // ── Layer 3: bounded transport + content type ────────────────────────────
+  /** The format the source declares; the allow-list and the check both use it. */
+  const declared: 'hls' | 'dash' = source.type === 'dash' ? 'dash' : 'hls';
   let response: EgressResponse;
   try {
     response = await request.egress({
@@ -322,7 +330,9 @@ export async function runValidation(request: ValidationRequest): Promise<Validat
       method: 'GET',
       timeoutMs: MANIFEST_TIMEOUT_MS,
       maxBytes: MANIFEST_MAX_BYTES,
-      allowedContentPrefixes: ['application/vnd.apple.mpegurl', 'application/x-mpegurl', 'application/dash+xml'],
+      // Derived from the manifest MIME sets: the request must accept exactly what
+      // the parser will accept, or a good stream dies before it is parsed.
+      allowedContentPrefixes: manifestContentTypeAllowList(declared),
     });
   } catch (error) {
     const category = transportCategory(error);
@@ -356,7 +366,6 @@ export async function runValidation(request: ValidationRequest): Promise<Validat
     });
   }
 
-  const declared: 'hls' | 'dash' = source.type === 'dash' ? 'dash' : 'hls';
   const mimeMatches = declared === 'hls' ? isHlsMime(response.contentType) : isDashMime(response.contentType);
   if (!mimeMatches) {
     // A 200 with the wrong type is not a manifest: nothing downstream can be
@@ -454,7 +463,9 @@ export async function runValidation(request: ValidationRequest): Promise<Validat
         method: 'GET',
         timeoutMs: MANIFEST_TIMEOUT_MS,
         maxBytes: MANIFEST_MAX_BYTES,
-        allowedContentPrefixes: ['application/vnd.apple.mpegurl', 'application/x-mpegurl'],
+        // Same derivation as the master fetch: a variant is parsed as HLS, so it
+        // must be accepted with exactly the types the HLS parser accepts.
+        allowedContentPrefixes: manifestContentTypeAllowList('hls'),
       });
     } catch (error) {
       const category = transportCategory(error);
