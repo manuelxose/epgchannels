@@ -175,19 +175,29 @@ export const MANIFEST_TIMEOUT_MS = 15_000;
 export const MANIFEST_MAX_BYTES = 2 * 1024 * 1024;
 /**
  * The three budgets of contract §2 are three different numbers, and conflating
- * two of them produced a policy-induced wrong answer: a real HD segment is many
- * times 64 KiB, so applying the *sampled-probe* budget to a whole GET reported a
- * perfectly good live stream as `missing-segments`.
+ * any two of them produced a policy-induced wrong answer — twice:
  *
- * - `MANIFEST_MAX_BYTES` (2 MiB): the whole manifest.
- * - `SEGMENT_MAX_BYTES` (512 KiB): a whole segment's ceiling. A segment may not
- *   exceed this — the size defence still exists and still reports
- *   `response-too-large`. It is only ever used to *vet* a segment, never as a
- *   download budget, so raising it costs no bandwidth.
- * - `SEGMENT_PROBE_BYTES` (64 KiB): what one sampled segment may actually
- *   transfer. This is the budget the probe reads under.
+ * 1. First, the 64 KiB *sampled-probe* budget was used as the whole-GET budget, so
+ *    every real HD segment looked oversized and a healthy stream was reported as
+ *    `missing-segments`.
+ * 2. Then 512 KiB was still used as the whole-GET budget, and a *measured* real
+ *    HLS segment is ~1.8 MiB (1 915 156 bytes), so live sources reported
+ *    `response-too-large` instead.
+ *
+ * The numbers, each doing exactly one job:
+ *
+ * - `MANIFEST_MAX_BYTES` (2 MiB): the whole manifest. Fetched in full.
+ * - `SEGMENT_MAX_BYTES` (4 MiB): the **tolerated** whole-segment size. This is the
+ *   value the egress layer checks against a declared `content-length`, so it is
+ *   what decides `response-too-large`. It is a *tolerance*, not a download
+ *   budget: we never intend to keep a whole segment. 4 MiB is chosen because
+ *   real HD HLS segments are ~1.8 MiB (measured) and a 4 MiB ceiling still
+ *   refuses a hostile 10 MiB body. Changing this is a contract-bound change and
+ *   was authorised by the captain.
+ * - `SEGMENT_PROBE_BYTES` (64 KiB): the **sampling** budget — how much we are
+ *   willing to read and keep per sampled segment.
  */
-export const SEGMENT_MAX_BYTES = 512 * 1024;
+export const SEGMENT_MAX_BYTES = 4 * 1024 * 1024;
 export const SEGMENT_PROBE_BYTES = 64 * 1024;
 /** A HEAD that does not answer in this long is not worth a GET. */
 export const SEGMENT_HEAD_TIMEOUT_MS = 5_000;
@@ -851,7 +861,18 @@ async function probeSegment(
   egress: EgressFn,
   segmentUrl: string,
 ): Promise<SegmentProbeResult> {
-  // 1. HEAD: exists? how big?
+  /*
+   * 1. HEAD: does it exist, and did it declare a size?
+   *
+   * `declaredBytes` stays `null` when the origin declares nothing (or reports 0),
+   * and **null means UNKNOWN — never "it fits"**. This is a measured real-world
+   * case: the Akamai/Apple CDNs answer HEAD with `200`, `application/octet-stream`
+   * and NO `content-length`, while the GET of the same segment declares ~1.8 MiB.
+   * Treating "0" as authoritative would either short-circuit the size decision
+   * (a lie in the unsafe direction) or make the probe declare success it never
+   * checked. So an unknown size simply defers the ceiling to the GET, where the
+   * declared length IS visible to the egress layer.
+   */
   let declaredBytes: number | null = null;
   try {
     const head = await egress({
@@ -871,13 +892,12 @@ async function probeSegment(
       };
     }
     /*
-     * NOTE: the seam reports `bytes` as the *body* received, which is 0 for a
-     * HEAD, and exposes no header map — so the origin's declared length is not
-     * observable here. The whole-segment ceiling is therefore enforced where the
-     * declared length IS visible: the egress layer checks `content-length`
-     * against `maxBytes` on the GET (below). Do not pretend to vet it here.
+     * The seam reports `bytes` as the *body* received, which is 0 for any HEAD,
+     * and exposes no header map — so a HEAD can only ever tell us "it exists".
+     * `head.bytes` is therefore not a size signal here; it is left as UNKNOWN on
+     * purpose rather than being read as "0 bytes, fits".
      */
-    if (head.bytes > 0) declaredBytes = head.bytes;
+    declaredBytes = null;
   } catch (error) {
     // A server may refuse HEAD (405) while serving GET fine. That is not a
     // segment failure: fall through to the prefix read, which is the real test.
