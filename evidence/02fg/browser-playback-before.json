@@ -1,0 +1,217 @@
+{
+  "tool": "browser-playback-check",
+  "generatedAt": "2026-11-17T17:12:36.013Z",
+  "axes": "axisA = plain HTTP fetch of the manifest (reachability). axisB = observed playback in real Chromium. The verdict is never derived from axisA.",
+  "browser": {
+    "available": true,
+    "via": "sibling:apps/frontend/node_modules/playwright/index.mjs",
+    "version": "158.0.8127.18"
+  },
+  "timeoutMs": 25000,
+  "summary": {
+    "sources": 3,
+    "played": 2,
+    "failed": 1,
+    "notObservable": 0,
+    "httpOkButNotPlayable": 1
+  },
+  "sources": [
+    {
+      "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+      "axisA": {
+        "status": 200,
+        "contentType": "audio/mpegurl",
+        "bytes": 752,
+        "elapsedMs": 221,
+        "startsWithExtM3u": true,
+        "manifest": {
+          "kind": "master",
+          "variantCount": 5,
+          "segmentCount": 0,
+          "mediaSequence": null,
+          "targetDuration": null,
+          "endList": false,
+          "extensions": 2
+        },
+        "redirect": null,
+        "corsAllowOrigin": "*",
+        "error": null
+      },
+      "axisB": {
+        "verdict": "played",
+        "reason": "playhead advanced to 0.12s at 1920x1080 (readyState 4)",
+        "media": {
+          "readyState": 4,
+          "peakReadyState": 4,
+          "networkState": 2,
+          "currentTime": 0.120378,
+          "playheadAdvanced": true,
+          "paused": false,
+          "ended": false,
+          "playingEvent": true,
+          "pausedAfterPlaying": false,
+          "videoWidth": 1920,
+          "videoHeight": 1080,
+          "duration": 634.634,
+          "mediaError": null,
+          "playResult": "resolved",
+          "playError": null,
+          "events": [
+            "waiting",
+            "stalled",
+            "loadedmetadata",
+            "loadeddata",
+            "canplay",
+            "playing"
+          ],
+          "timedOut": false
+        },
+        "network": {
+          "blockedByCors": false,
+          "corsProbe": null,
+          "failedRequests": [],
+          "failedRequestCount": 0,
+          "errorResponses": [],
+          "failureTexts": []
+        },
+        "consoleBounded": []
+      }
+    },
+    {
+      "url": "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8",
+      "axisA": {
+        "status": 200,
+        "contentType": "application/x-mpegURL",
+        "bytes": 6289,
+        "elapsedMs": 105,
+        "startsWithExtM3u": true,
+        "manifest": {
+          "kind": "master",
+          "variantCount": 24,
+          "segmentCount": 0,
+          "mediaSequence": null,
+          "targetDuration": null,
+          "endList": false,
+          "extensions": 6
+        },
+        "redirect": null,
+        "corsAllowOrigin": null,
+        "error": null
+      },
+      "axisB": {
+        "verdict": "played",
+        "reason": "playhead advanced to 0.24s at 480x270 (readyState 4)",
+        "media": {
+          "readyState": 4,
+          "peakReadyState": 4,
+          "networkState": 2,
+          "currentTime": 0.242287,
+          "playheadAdvanced": true,
+          "paused": false,
+          "ended": false,
+          "playingEvent": true,
+          "pausedAfterPlaying": false,
+          "videoWidth": 480,
+          "videoHeight": 270,
+          "duration": 600,
+          "mediaError": null,
+          "playResult": "resolved",
+          "playError": null,
+          "events": [
+            "waiting",
+            "loadedmetadata",
+            "loadeddata",
+            "canplay",
+            "playing"
+          ],
+          "timedOut": false
+        },
+        "network": {
+          "blockedByCors": false,
+          "corsProbe": null,
+          "failedRequests": [
+            {
+              "resourceType": "media",
+              "kind": "aborted",
+              "count": 2
+            }
+          ],
+          "failedRequestCount": 2,
+          "errorResponses": [],
+          "failureTexts": [
+            "net::ERR_ABORTED"
+          ]
+        },
+        "consoleBounded": []
+      }
+    },
+    {
+      "url": "https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8",
+      "axisA": {
+        "status": 200,
+        "contentType": "application/x-mpegURL",
+        "bytes": 217,
+        "elapsedMs": 147,
+        "startsWithExtM3u": true,
+        "manifest": {
+          "kind": "master",
+          "variantCount": 1,
+          "segmentCount": 0,
+          "mediaSequence": null,
+          "targetDuration": null,
+          "endList": false,
+          "extensions": 4
+        },
+        "redirect": null,
+        "corsAllowOrigin": "*",
+        "error": null
+      },
+      "axisB": {
+        "verdict": "playback-failed-format",
+        "reason": "a media request returned HTTP 404 (cph-p2p-msl.akamaized.net/hls/live/2000341/test/mastermaster_video10000k.m3u8): a resource inside the manifest is missing",
+        "media": {
+          "readyState": 0,
+          "peakReadyState": 0,
+          "networkState": 3,
+          "currentTime": 0,
+          "playheadAdvanced": false,
+          "paused": true,
+          "ended": false,
+          "playingEvent": false,
+          "pausedAfterPlaying": false,
+          "videoWidth": 0,
+          "videoHeight": 0,
+          "duration": null,
+          "mediaError": {
+            "code": 4,
+            "message": ""
+          },
+          "playResult": "rejected",
+          "playError": "NotSupportedError: Failed to load because no supported source was found.",
+          "events": [
+            "waiting",
+            "error"
+          ],
+          "timedOut": false
+        },
+        "network": {
+          "blockedByCors": false,
+          "corsProbe": null,
+          "failedRequests": [],
+          "failedRequestCount": 0,
+          "errorResponses": [
+            {
+              "resourceType": "media",
+              "status": 404,
+              "url": "cph-p2p-msl.akamaized.net/hls/live/2000341/test/mastermaster_video10000k.m3u8"
+            }
+          ],
+          "failureTexts": []
+        },
+        "consoleBounded": [
+          "console.error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+        ]
+      }
+    }
+  ]
+}

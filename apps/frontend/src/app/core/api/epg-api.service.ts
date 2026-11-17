@@ -40,19 +40,30 @@ export class EpgApiService {
     slugs: readonly string[],
     options: { hours?: number; signal?: AbortSignal } = {},
   ): Promise<EpgSnapshot> {
-    const entries = await Promise.all(
-      slugs.map(async (slug) => {
-        try {
-          const result = await this.schedule(slug, options);
-          return [slug, result.schedule] as const;
-        } catch (error) {
-          if (ApiGateway.isNotFound(error)) {
-            return [slug, { epgId: slug, programs: [] }] as const;
-          }
-          throw error;
-        }
-      }),
+    // `Promise.all` rejects with the first failure but leaves the other requests
+    // running and unobserved, which surfaces later as an unhandled rejection.
+    // `allSettled` collects every outcome, then the first real failure is rethrown.
+    const results = await Promise.allSettled(
+      slugs.map((slug) => this.schedule(slug, options)),
     );
+    const entries: (readonly [string, ChannelSchedule])[] = [];
+    let failure: { error: unknown } | undefined;
+    results.forEach((result, index) => {
+      const slug = slugs[index] as string;
+      if (result.status === 'fulfilled') {
+        entries.push([slug, result.value.schedule] as const);
+        return;
+      }
+      if (ApiGateway.isNotFound(result.reason)) {
+        // This channel simply has no guide: a legitimate, per-channel answer.
+        entries.push([slug, { epgId: slug, programs: [] }] as const);
+        return;
+      }
+      failure ??= { error: result.reason };
+    });
+    if (failure) {
+      throw failure.error;
+    }
     return toEpgSnapshot(new Map(entries));
   }
 

@@ -31,6 +31,10 @@ export class ChannelsApiService {
 
   /** Every published channel, walked page by page (bounded by the API's own cap). */
   async loadCatalogue(signal?: AbortSignal): Promise<CatalogueLoad> {
+    const categoriesRequest = this.gateway.client.catalogue.categories(signal ? { signal } : {});
+    // If the page walk throws first, nobody awaits `categoriesRequest`; without a
+    // handler attached now its rejection surfaces as an unhandled promise later.
+    categoriesRequest.catch(() => undefined);
     const listRecords: ApiChannelList[] = [];
     let page = 1;
     let includesThirdPartyData = false;
@@ -46,7 +50,10 @@ export class ChannelsApiService {
       page += 1;
     }
 
-    const categoriesResponse = await this.gateway.client.catalogue.categories(signal ? { signal } : {});
+    // The taxonomies do not depend on the page walk: they are requested alongside
+    // the first page and awaited once, so the boot costs one walk, not a walk plus
+    // a serial tail.
+    const categoriesResponse = await categoriesRequest;
     const categoryNames = new Map(categoriesResponse.data.map((category) => [category.id, category.name]));
     const channels = listRecords.map((record) => listToChannel(record, categoryNames));
     return {

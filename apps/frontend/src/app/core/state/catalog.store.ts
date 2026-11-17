@@ -49,6 +49,8 @@ export class CatalogStore {
 
   private loadedAt = 0;
   private inFlight: Promise<void> | undefined;
+  /** A guide request already on the wire; a second caller joins it instead of refetching. */
+  private epgInFlight: Promise<void> | undefined;
 
   channelById(id: string | null | undefined): Channel | undefined {
     return id ? this.channelIndex().get(id) : undefined;
@@ -82,7 +84,6 @@ export class CatalogStore {
           rejected: 0,
         });
         this.catalogStatusState.set('ready');
-        void this.ensureEpg();
       } catch (error) {
         this.catalogStatusState.set('error');
         this.catalogErrorState.set(ApiGateway.describe(error));
@@ -101,9 +102,12 @@ export class CatalogStore {
   }
 
   /**
-   * Loads the guide of the given channels (default: the first page). The API
-   * answers per channel, so this stays bounded instead of downloading a guide
-   * for the whole catalogue on every visit.
+   * Loads the guide of the given channels (default: the first page).
+   *
+   * Callers are the views that actually render a guide — the watch page for one
+   * channel, the schedule page for the grid — never the catalogue, whose home
+   * showed no EPG data while paying one `/schedule` request per channel. Repeated
+   * calls honour `epgRefreshMs` and join a request already in flight.
    */
   async ensureEpg(slugs: readonly string[] = [], force = false): Promise<void> {
     const fresh = Date.now() - this.loadedAt < this.config.epgRefreshMs;
@@ -111,20 +115,31 @@ export class CatalogStore {
     if (!force && fresh && this.epgStatusState() === 'ready' && this.epgState() !== undefined) {
       return;
     }
+    // Three callers race on a channel open (the detail effect, the loader and the
+    // clock). Joining the request in flight is what stops the same guide being
+    // fetched several times for one visit.
+    if (this.epgInFlight) {
+      return this.epgInFlight;
+    }
     const targets = slugs.length > 0 ? slugs : this.channels().slice(0, 21).map((channel) => channel.id);
     if (targets.length === 0) {
       return;
     }
-    this.epgStatusState.set('loading');
-    try {
-      const snapshot = await this.epgApi.schedules(targets, { hours: 24 });
-      this.epgState.set(snapshot);
-      this.epgStatusState.set('ready');
-      this.loadedAt = Date.now();
-    } catch {
-      // The catalogue stays usable without a guide; the UI shows none.
-      this.epgStatusState.set('error');
-    }
+    this.epgInFlight = (async () => {
+      this.epgStatusState.set('loading');
+      try {
+        const snapshot = await this.epgApi.schedules(targets, { hours: 24 });
+        this.epgState.set(snapshot);
+        this.epgStatusState.set('ready');
+        this.loadedAt = Date.now();
+      } catch {
+        // The catalogue stays usable without a guide; the UI shows none.
+        this.epgStatusState.set('error');
+      } finally {
+        this.epgInFlight = undefined;
+      }
+    })();
+    return this.epgInFlight;
   }
 
   /** Loads one channel's full record (sources + descriptor) on demand. */

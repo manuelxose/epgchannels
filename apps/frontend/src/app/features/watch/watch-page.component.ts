@@ -198,11 +198,13 @@ export class WatchPageComponent implements OnDestroy {
     });
 
     // Keep the guide window accurate without re-rendering on every video frame.
+    // `force: false`: the clock only refreshes what `epgRefreshMs` has aged out,
+    // instead of asking the API for the same guide every 30 s.
     this.clock = setInterval(() => {
       this.now.set(new Date());
       const slug = this.channelId();
       if (slug) {
-        void this.catalog.ensureEpg([slug], true);
+        void this.catalog.ensureEpg([slug]);
       }
     }, 30_000);
   }
@@ -210,7 +212,9 @@ export class WatchPageComponent implements OnDestroy {
   /** Loads the channel record and descriptor from our API, then its guide. */
   private async loadChannelDetail(slug: string): Promise<void> {
     await this.catalog.ensureChannelDetail(slug);
-    await this.catalog.ensureEpg([slug], true);
+    // Not forced: the record effect above already asked for this guide, and
+    // `ensureEpg` joins the request in flight rather than issuing a second one.
+    await this.catalog.ensureEpg([slug]);
   }
 
   ngOnDestroy(): void {
