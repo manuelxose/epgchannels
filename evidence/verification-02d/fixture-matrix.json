@@ -1,18 +1,18 @@
 {
-  "ok": false,
+  "ok": true,
   "mode": "fixture",
-  "generatedAt": "2026-11-17T10:48:48.349Z",
+  "generatedAt": "2026-11-17T11:00:21.759Z",
   "cases": 14,
-  "matched": 11,
+  "matched": 14,
   "results": [
     {
       "case": "healthy-hls",
       "expect": "healthy",
-      "outcome": "degraded",
+      "outcome": "healthy",
       "failure": null,
-      "depthReached": "playlist",
-      "latencyMs": 25,
-      "requests": 1
+      "depthReached": "segments",
+      "latencyMs": 34,
+      "requests": 4
     },
     {
       "case": "http-200-not-a-manifest",
@@ -20,7 +20,7 @@
       "outcome": "failing",
       "failure": "unsupported-format",
       "depthReached": "transport",
-      "latencyMs": 6,
+      "latencyMs": 5,
       "requests": 1
     },
     {
@@ -38,26 +38,26 @@
       "outcome": "failing",
       "failure": "invalid-manifest",
       "depthReached": "manifest",
-      "latencyMs": 4,
+      "latencyMs": 3,
       "requests": 1
     },
     {
       "case": "missing-segments",
       "expect": "missing-segments",
-      "outcome": "degraded",
-      "failure": null,
+      "outcome": "failing",
+      "failure": "missing-segments",
       "depthReached": "playlist",
-      "latencyMs": 4,
-      "requests": 1
+      "latencyMs": 8,
+      "requests": 3
     },
     {
       "case": "segments-forbidden",
       "expect": "segments-forbidden",
-      "outcome": "degraded",
-      "failure": null,
+      "outcome": "failing",
+      "failure": "segments-forbidden",
       "depthReached": "playlist",
-      "latencyMs": 3,
-      "requests": 1
+      "latencyMs": 7,
+      "requests": 3
     },
     {
       "case": "http-404",
@@ -65,7 +65,7 @@
       "outcome": "failing",
       "failure": "http-404",
       "depthReached": "transport",
-      "latencyMs": 3,
+      "latencyMs": 2,
       "requests": 1
     },
     {
@@ -74,7 +74,7 @@
       "outcome": "failing",
       "failure": "http-403",
       "depthReached": "transport",
-      "latencyMs": 3,
+      "latencyMs": 2,
       "requests": 1
     },
     {
@@ -83,7 +83,7 @@
       "outcome": "failing",
       "failure": "http-451",
       "depthReached": "transport",
-      "latencyMs": 3,
+      "latencyMs": 2,
       "requests": 1
     },
     {
@@ -110,7 +110,7 @@
       "outcome": "failing",
       "failure": "timeout",
       "depthReached": "transport",
-      "latencyMs": 15005,
+      "latencyMs": 15015,
       "requests": 1
     },
     {
@@ -128,7 +128,7 @@
       "outcome": "failing",
       "failure": "redirect-unsafe",
       "depthReached": "transport",
-      "latencyMs": 17,
+      "latencyMs": 15,
       "requests": 6
     }
   ]

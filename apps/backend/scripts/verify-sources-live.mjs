@@ -356,12 +356,21 @@ async function runFixtureMode() {
     await server.close();
   }
 
+  /*
+   * A case passes when its EXPECTED token appears where that token belongs: for
+   * the healthy case the expectation is an outcome, for every other case it is a
+   * failure category. Comparing `failure` for all rows made the healthy row look
+   * like a mismatch (failure is null there BY DESIGN), which would have hidden a
+   * real regression behind a harness bug.
+   */
+  const passed = (item) => (item.expect === 'healthy' ? item.outcome === 'healthy' : item.failure === item.expect);
+
   const report = {
-    ok: results.every((item) => item.failure === item.expect),
+    ok: results.every(passed),
     mode: 'fixture',
     generatedAt: new Date().toISOString(),
     cases: results.length,
-    matched: results.filter((item) => item.failure === item.expect).length,
+    matched: results.filter(passed).length,
     results,
   };
   emit(report);
@@ -457,7 +466,11 @@ function operatorAuthorization(entry) {
     sourceUrl: entry.url,
     providerKind: 'broadcaster_cdn',
     verdict: 'permitted-direct-playback',
-    basis: 'published-terms',
+    // A citable right needs BOTH a quoted clause AND a clause URL (without the URL the
+    // 02C gate answers 'authorization-missing-quote'), and the broadcaster-direct
+    // adapter corroborates direct HLS playback only with a written licence:
+    // published-terms is refused with 'requires-written-licence' (both verified).
+    basis: 'written-licence',
     quotedClause:
       'Published by the vendor as a public HLS test/derivative distribution for player validation; operator-declared posture for the 02D measurement, not a broadcaster rights verdict.',
     clauseUrl: entry.clauseUrl,
