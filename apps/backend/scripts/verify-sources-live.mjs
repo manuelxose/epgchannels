@@ -76,6 +76,10 @@ const egress = async (request) => {
     timeoutMs: request.timeoutMs,
     maxBytes: request.maxBytes,
     ...(request.allowedContentPrefixes ? { allowedContentPrefixes: request.allowedContentPrefixes } : {}),
+    // Forward the bounded prefix read too, so this measurement exercises the
+    // same cap the production runtime passes. Omitting it here would measure a
+    // different system than the one that ships.
+    ...(request.prefixBytes === undefined ? {} : { prefixBytes: request.prefixBytes }),
   });
   return {
     status: response.status,

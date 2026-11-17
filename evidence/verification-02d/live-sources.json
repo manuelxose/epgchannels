@@ -1,7 +1,7 @@
 {
   "ok": true,
   "mode": "live",
-  "generatedAt": "2026-11-17T11:29:12.994Z",
+  "generatedAt": "2026-11-17T11:52:49.754Z",
   "database": "tdt_platform",
   "catalogue": {
     "publishedHlsOrDash": 81,
@@ -15,7 +15,7 @@
       "outcome": "failing",
       "failure": "missing-segments",
       "depthReached": "playlist",
-      "latencyMs": 191,
+      "latencyMs": 1086,
       "egressRequests": 2,
       "uncertainty": {
         "browserNotProbed": false,
@@ -40,7 +40,7 @@
       "outcome": "healthy",
       "failure": null,
       "depthReached": "segments",
-      "latencyMs": 1278,
+      "latencyMs": 470,
       "egressRequests": 6,
       "uncertainty": {
         "browserNotProbed": true,
@@ -65,7 +65,7 @@
       "outcome": "healthy",
       "failure": null,
       "depthReached": "segments",
-      "latencyMs": 2206,
+      "latencyMs": 469,
       "egressRequests": 6,
       "uncertainty": {
         "browserNotProbed": true,
@@ -87,13 +87,13 @@
     {
       "label": "Apple BipBop 16x9 variant ladder",
       "host": "devstreaming-cdn.apple.com",
-      "outcome": "failing",
-      "failure": "response-too-large",
-      "depthReached": "playlist",
-      "latencyMs": 440,
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 430,
       "egressRequests": 6,
       "uncertainty": {
-        "browserNotProbed": false,
+        "browserNotProbed": true,
         "segmentsNotSampled": false,
         "leaseExpired": false,
         "manifestTruncated": false,
