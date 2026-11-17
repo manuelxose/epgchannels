@@ -13,9 +13,12 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
 import {
   apiErrorSchema,
+  channelAvailabilityResponseSchema,
   channelListResponseSchema,
   channelResponseSchema,
   categorySchema,
+  countryListResponseSchema,
+  epgCoverageSchema,
   healthResponseSchema,
   identityMappingSchema,
   playbackResponseSchema,
@@ -23,6 +26,10 @@ import {
   scheduleResponseSchema,
   guiatvChannelSchema,
 } from '@tdt/contracts';
+import {
+  countryRegionsResponseSchema,
+  publicLanguageListResponseSchema,
+} from '../modules/channels/catalogue.aggregates.js';
 import { buildOpenApi } from '../server/openapi.js';
 import type { TestHarness } from '../test/harness.js';
 import { createHarness, resetResponseCache } from '../test/harness.js';
@@ -87,6 +94,7 @@ describe('OpenAPI document', () => {
       if (ADMIN_AND_AUTH.has(path)) continue;
       const concrete = path
         .replace('{slug}', 'la-1')
+        .replace('{code}', 'ES')
         .replace('{id}', '00000000-0000-4000-8000-000000000000');
       const response = await request(harness.app).get(`/api/v1${concrete}`);
       // 200 when data exists, 404 for a missing channel: never 500 or "route missing".
@@ -109,8 +117,14 @@ describe('OpenAPI document', () => {
       '/channels/{slug}',
       '/channels/{slug}/playback',
       '/channels/{slug}/schedule',
+      '/channels/{slug}/epg',
+      '/channels/{slug}/availability',
       '/epg/now',
       '/epg/next',
+      '/epg/channels',
+      '/countries',
+      '/countries/{code}/regions',
+      '/languages',
       '/categories',
       '/regions',
       '/integration/manifest',
@@ -185,6 +199,42 @@ describe('responses satisfy the shared contracts', () => {
     for (const entry of map.body.data) {
       expect(identityMappingSchema.safeParse(entry).success).toBe(true);
     }
+  });
+
+  it('countries, regions and languages (02FG discovery)', async () => {
+    const channel = await publishedPlayableChannel(harness, 'Descubrimiento');
+    await harness.context.database
+      .collection<ChannelDoc>(COLLECTIONS.channels)
+      .updateOne({ _id: channel._id }, { $set: { region: { code: 'MD', name: 'Comunidad de Madrid' } } });
+
+    const countries = await request(harness.app).get('/api/v1/countries').expect(200);
+    expect(countryListResponseSchema.safeParse(countries.body).success).toBe(true);
+
+    const regions = await request(harness.app).get('/api/v1/countries/ES/regions').expect(200);
+    expect(countryRegionsResponseSchema.safeParse(regions.body).success).toBe(true);
+
+    const languages = await request(harness.app).get('/api/v1/languages').expect(200);
+    expect(publicLanguageListResponseSchema.safeParse(languages.body).success).toBe(true);
+  });
+
+  it('channel availability and daily EPG (02FG)', async () => {
+    const channel = await publishedPlayableChannel(harness, 'Disponibilidad');
+    const availability = await request(harness.app)
+      .get(`/api/v1/channels/${channel.slug}/availability`)
+      .expect(200);
+    const parsed = channelAvailabilityResponseSchema.safeParse(availability.body);
+    expect(parsed.success, JSON.stringify(parsed.error?.issues)).toBe(true);
+
+    const epg = await request(harness.app).get(`/api/v1/channels/${channel.slug}/epg?date=2026-01-15`).expect(200);
+    const schedule = scheduleResponseSchema.safeParse(epg.body);
+    expect(schedule.success, JSON.stringify(schedule.error?.issues)).toBe(true);
+  });
+
+  it('EPG coverage (02FG)', async () => {
+    await publishedPlayableChannel(harness, 'Cobertura');
+    const response = await request(harness.app).get('/api/v1/epg/channels').expect(200);
+    const parsed = epgCoverageSchema.safeParse(response.body);
+    expect(parsed.success, JSON.stringify(parsed.error?.issues)).toBe(true);
   });
 
   it('error envelope', async () => {
