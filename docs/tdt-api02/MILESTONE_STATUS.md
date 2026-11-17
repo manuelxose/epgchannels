@@ -7,7 +7,9 @@
 
 # TDT-API-02C — Proveedores oficiales, investigación REA y elegibilidad de reproducción
 
-**Estado global: PASS con limitación declarada** (ver `AUDITORIA-ACEPTACION-02C.md` §6).
+**Estado global: PASS** — con veredicto independiente de aceptación (t9: 8/8 criterios, 2 findings low, ninguno bloqueante) sobre el árbol entregado, y el PR fusionado.
+
+> La limitación declarada al cerrar («no hay veredicto independiente para el árbol final») se cerró DESPUÉS con t9, que re-ejecutó el gate por sí mismo y probó por mutación que los negativos de la API son reales. Se conserva constancia de que la primera auditoría de aceptación fue del capitán.
 
 Última actualización: 2026-11-17 (cierre de 02C).
 
@@ -18,7 +20,9 @@
 | Repositorio | `tdt-api01` (`origin` = `github.com/manuelxose/epgchannels.git`) |
 | SHA base verificado | `bb54ac910d9e105adcd1ad9f30dbc534ecf1b4e0` (`main` == `origin/main`, 02B fusionado) |
 | Rama del milestone | `feat/tdt-api02-c-providers` |
-| HEAD entregado | `80fb91575168f0bf6968d74d9aebe2e5825b0d59` |
+| HEAD del código entregado | `80fb91575168f0bf6968d74d9aebe2e5825b0d59` |
+| PR | **#5** — fusionado |
+| Merge en `origin/main` | `1faa1323430ca763be28d77cf195b2e28f3caa20` (`1faa132`), verificado `main == origin/main` |
 | CI/CD existente | **No** (sin `.github/`) → el merge no dispara ningún despliegue |
 
 ## Alcance
@@ -111,7 +115,7 @@ de lo que decía, y pasaba.** Sólo el resultado HTTP real lo reveló.
 | Repositorio | `tdt-api01` (`origin` = `github.com/manuelxose/epgchannels.git`) |
 | SHA base verificado | `671a42fa226e0ea8995badfee3544b9de0655008` (`main` == `origin/main`, 02A fusionado) |
 | Rama del milestone | `feat/tdt-api02-b-global-catalogue` (fusionada; registro local eliminado) |
-| PR | **#2** — fusionado |
+| PR | **#5** — fusionado |
 | Merge commit en `origin/main` | **`259ad716f5cc6dcddebf4b18c4c26bd848142de5`** (`259ad71`) |
 | CI/CD existente | **No** (sin `.github/`) → el merge no disparó ningún despliegue |
 | Snapshots upstream | `data/snapshots/` **no versionado** (D-014) |
