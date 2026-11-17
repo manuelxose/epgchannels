@@ -148,6 +148,13 @@ Cada categoría mapea a **una** de las causas del eje: `authorization` (sólo `i
 | 2 | DNS y transporte | IPs públicas, puerto estándar, TLS correcto | `ssrf-blocked`, `dns-failure`, `tls-failure` |
 | 3 | HTTP y content-type | 2xx + tipo coherente | `http-*`, `response-too-large`, `redirect-unsafe` |
 | 4 | Manifiesto | `#EXTM3U` en cabecera, URLs relativas resolubles | `invalid-manifest`, `unsupported-format` |
+
+> **Frontera entre `unsupported-format` e `invalid-manifest` (resuelta durante la implementación).**
+> `unsupported-format` = la respuesta **no es una playlist** (content-type fuera del conjunto HLS/DASH):
+> se rechaza en la capa de transporte, antes de parsear nada. `invalid-manifest` = la respuesta **dice
+> ser** una playlist (content-type correcto) y **falla** las comprobaciones de sintaxis. Un `200` con
+> `text/html` es lo primero, no lo segundo. La distinción importa para el operador: «me devuelven una
+> página web en vez de un stream» y «el manifiesto está roto» exigen acciones distintas.
 | 5 | Playlist y segmentos | `#EXT-X-STREAM-INF` o `#EXTINF` + al menos N segmentos muestreados 2xx con tipo media | `missing-segments`, `segments-forbidden` |
 | 6 | Reproducción en navegador | sólo cuando el operador la habilita y el navegador es accesible | `browser-incompatible`, `codec-failure`, `cors-limitation` |
 

@@ -215,8 +215,15 @@ async function createFixtureServer() {
         return send(503, 'text/plain', 'busy');
       case '/oversized/master.m3u8': {
         response.writeHead(200, { 'content-type': 'application/vnd.apple.mpegurl' });
-        // Stream well past any manifest budget without declaring a length.
-        for (let index = 0; index < 64; index += 1) response.write('#EXTINF:6.0,\nseg.ts\n');
+        /*
+         * Must exceed the manifest budget (2 MiB) without declaring a length, so
+         * the incremental counter is what aborts. An earlier version of this
+         * fixture streamed ~1.3 KiB, which is not oversized at all: that case was
+         * "failing" as invalid-manifest because the body was a broken playlist,
+         * not because of its size, so it never exercised the size defence.
+         */
+        const chunk = '#EXTINF:6.0,\nseg.ts\n'.padEnd(128 * 1024, 'A');
+        for (let index = 0; index < 40; index += 1) response.write(chunk);
         return response.end();
       }
       case '/slow/master.m3u8':
@@ -249,7 +256,15 @@ async function createFixtureServer() {
 
 const FIXTURE_MATRIX = [
   { case: 'healthy-hls', path: '/ok/master.m3u8', expect: 'healthy' },
-  { case: 'http-200-not-a-manifest', path: '/ok200-not-a-manifest/master.m3u8', expect: 'invalid-manifest' },
+  /*
+   * A 2xx that is not a playlist is a FORMAT fault, not a syntax fault: the
+   * content-type allow-list rejects it at the transport layer before any
+   * manifest parsing happens, so the truthful category is `unsupported-format`.
+   * `invalid-manifest` is reserved for a body that CLAIMS to be a playlist
+   * (correct content-type) and then fails the syntax checks - see the two
+   * `invalid-manifest` rows below, which serve HLS content-types deliberately.
+   */
+  { case: 'http-200-not-a-manifest', path: '/ok200-not-a-manifest/master.m3u8', expect: 'unsupported-format' },
   { case: 'http-200-empty-playlist', path: '/ok200-empty/master.m3u8', expect: 'invalid-manifest' },
   { case: 'http-200-no-segments', path: '/ok200-no-segments/master.m3u8', expect: 'invalid-manifest' },
   { case: 'missing-segments', path: '/missing-segments/master.m3u8', expect: 'missing-segments' },
@@ -260,7 +275,7 @@ const FIXTURE_MATRIX = [
   { case: 'http-503', path: '/http-503/master.m3u8', expect: 'http-5xx' },
   { case: 'oversized-body', path: '/oversized/master.m3u8', expect: 'response-too-large' },
   { case: 'timeout', path: '/slow/master.m3u8', expect: 'timeout' },
-  { case: 'redirect-to-metadata', path: '/redirect-private/master.m3u8', expect: 'ssrf-blocked' },
+  { case: 'redirect-to-metadata', path: '/redirect-private/master.m3u8', expect: 'redirect-unsafe' },
   { case: 'redirect-loop', path: '/redirect-loop/master.m3u8', expect: 'redirect-unsafe' },
 ];
 

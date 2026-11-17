@@ -1,9 +1,9 @@
 {
   "ok": false,
   "mode": "fixture",
-  "generatedAt": "2026-11-17T10:46:20.116Z",
+  "generatedAt": "2026-11-17T10:48:48.349Z",
   "cases": 14,
-  "matched": 6,
+  "matched": 11,
   "results": [
     {
       "case": "healthy-hls",
@@ -11,16 +11,16 @@
       "outcome": "degraded",
       "failure": null,
       "depthReached": "playlist",
-      "latencyMs": 22,
+      "latencyMs": 25,
       "requests": 1
     },
     {
       "case": "http-200-not-a-manifest",
-      "expect": "invalid-manifest",
+      "expect": "unsupported-format",
       "outcome": "failing",
-      "failure": "unknown-error",
+      "failure": "unsupported-format",
       "depthReached": "transport",
-      "latencyMs": 5,
+      "latencyMs": 6,
       "requests": 1
     },
     {
@@ -47,7 +47,7 @@
       "outcome": "degraded",
       "failure": null,
       "depthReached": "playlist",
-      "latencyMs": 3,
+      "latencyMs": 4,
       "requests": 1
     },
     {
@@ -65,7 +65,7 @@
       "outcome": "failing",
       "failure": "http-404",
       "depthReached": "transport",
-      "latencyMs": 2,
+      "latencyMs": 3,
       "requests": 1
     },
     {
@@ -99,36 +99,36 @@
       "case": "oversized-body",
       "expect": "response-too-large",
       "outcome": "failing",
-      "failure": "invalid-manifest",
-      "depthReached": "manifest",
-      "latencyMs": 3,
+      "failure": "response-too-large",
+      "depthReached": "transport",
+      "latencyMs": 17,
       "requests": 1
     },
     {
       "case": "timeout",
       "expect": "timeout",
       "outcome": "failing",
-      "failure": "response-too-large",
+      "failure": "timeout",
       "depthReached": "transport",
-      "latencyMs": 15008,
+      "latencyMs": 15005,
       "requests": 1
     },
     {
       "case": "redirect-to-metadata",
-      "expect": "ssrf-blocked",
+      "expect": "redirect-unsafe",
       "outcome": "failing",
       "failure": "redirect-unsafe",
       "depthReached": "transport",
-      "latencyMs": 8,
+      "latencyMs": 6,
       "requests": 1
     },
     {
       "case": "redirect-loop",
       "expect": "redirect-unsafe",
       "outcome": "failing",
-      "failure": "response-too-large",
+      "failure": "redirect-unsafe",
       "depthReached": "transport",
-      "latencyMs": 19,
+      "latencyMs": 17,
       "requests": 6
     }
   ]
