@@ -1,8 +1,12 @@
 <section
   #shell
   class="shell"
-  [class.shell--fs]="false"
+  [class.shell--fs]="isFullscreen()"
   aria-label="Reproductor de vídeo"
+  aria-describedby="player-shortcuts"
+  tabindex="-1"
+  data-testid="player-shell"
+  (keydown)="onKeydown($event)"
   (dblclick)="toggleFullscreen()"
 >
   <video
@@ -240,7 +244,7 @@
       @if (snapshot().audioTracks.length > 1) {
         <label class="quality">
           <span class="visually-hidden">Audio</span>
-          <select aria-label="Audio" (change)="onAudio($event)">
+          <select aria-label="Audio" data-control="audio" (change)="onAudio($event)">
             @for (track of snapshot().audioTracks; track track.id) {
               <option [value]="track.id">{{ track.label }}</option>
             }
@@ -248,8 +252,39 @@
         </label>
       }
 
+      <!--
+        Subtitles: only rendered when the source actually carries text tracks,
+        so the control never offers a choice that does nothing. The engines
+        report the available tracks but never the current one, so the value
+        comes from the controller's recorded selection.
+      -->
+      @if (snapshot().subtitleTracks.length > 0) {
+        <label class="quality">
+          <span class="visually-hidden">Subtítulos</span>
+          <select
+            aria-label="Subtítulos"
+            data-control="subtitles"
+            data-testid="subtitle-select"
+            [value]="subtitleValue()"
+            (change)="onSubtitle($event)"
+          >
+            <option value="off">Sin subtítulos</option>
+            @for (track of snapshot().subtitleTracks; track track.id) {
+              <option [value]="track.id">{{ track.label }}</option>
+            }
+          </select>
+        </label>
+      }
+
       @if (canPictureInPicture) {
-        <button type="button" class="ctl" aria-label="Picture in Picture" title="Picture in Picture" (click)="togglePictureInPicture()">
+        <button
+          type="button"
+          class="ctl"
+          aria-label="Picture in Picture"
+          title="Picture in Picture"
+          data-control="pip"
+          (click)="togglePictureInPicture()"
+        >
           <app-icon name="pip" [size]="19" />
         </button>
       }
@@ -272,12 +307,29 @@
         </button>
       }
 
-      <button type="button" class="ctl" aria-label="Pantalla completa" title="Pantalla completa" (click)="toggleFullscreen()">
-        <app-icon name="fullscreen" [size]="19" />
+      <!--
+        Fullscreen: `aria-pressed` and the label follow the REAL fullscreen
+        state, so leaving with Escape keeps the control truthful.
+      -->
+      <button
+        type="button"
+        class="ctl"
+        [attr.aria-label]="isFullscreen() ? 'Salir de pantalla completa' : 'Pantalla completa'"
+        [title]="isFullscreen() ? 'Salir de pantalla completa' : 'Pantalla completa'"
+        [attr.aria-pressed]="isFullscreen()"
+        data-control="fullscreen"
+        data-testid="fullscreen-button"
+        (click)="toggleFullscreen()"
+      >
+        <app-icon [name]="isFullscreen() ? 'fullscreen-exit' : 'fullscreen'" [size]="19" />
       </button>
     </div>
   }
 
+  <p class="visually-hidden" id="player-shortcuts">
+    Atajos del reproductor: K o Espacio para reproducir y pausar, M para silenciar, F para pantalla completa, L para
+    volver al directo, y las flechas arriba y abajo para el volumen cuando el foco está dentro del reproductor.
+  </p>
   <p class="visually-hidden" role="status" aria-live="polite">{{ statusLabel() }} · {{ currentProgramLabel() }}</p>
   <span
     class="state-probe"
