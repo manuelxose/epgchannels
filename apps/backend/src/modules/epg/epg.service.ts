@@ -7,6 +7,7 @@
  * guide: `availability` says why a channel has no schedule.
  */
 import type {
+  EpgCoverageEntry,
   EpgFeedEntry,
   EpgProvenance,
   Programme,
@@ -291,5 +292,124 @@ export class EpgService {
       notices: provenance.attribution ? [provenance.attribution] : [],
       includesThirdPartyData: provenance.attribution !== null,
     });
+  }
+
+  /**
+   * Coverage of the guide across the **published** catalogue (TDT-API-02FG).
+   *
+   * This is the one measurement the public API and the administration console
+   * share. It is a two-query aggregate over all published channels, not a
+   * per-channel loop, so its cost does not grow with the number of round trips.
+   *
+   * A channel is `fresh` when it holds programmes that end after `now` and its
+   * last refresh is inside `staleAfterMs`; `stale` when it holds programmes but
+   * the source has gone quiet; `empty` when mapped but nothing was ever
+   * ingested; `not-mapped` when no guide source is attached. Nothing is
+   * inferred from absence of data: no programme is synthesized.
+   */
+  async coverage(
+    options: { readonly staleAfterMs?: number; readonly now?: Date; readonly lookbackMs?: number } = {},
+  ): Promise<{
+    entries: EpgCoverageEntry[];
+    totals: {
+      channels: number;
+      mapped: number;
+      fresh: number;
+      stale: number;
+      empty: number;
+      notMapped: number;
+    };
+    asOf: string;
+  }> {
+    const now = options.now ?? new Date();
+    const staleAfterMs = options.staleAfterMs ?? 24 * 3_600_000;
+    const lookbackMs = options.lookbackMs ?? 24 * 3_600_000;
+    const staleAfter = new Date(now.getTime() + staleAfterMs);
+
+    const channels = await this.database
+      .collection<ChannelDoc>(COLLECTIONS.channels)
+      .find({ editorialStatus: 'published', mergedInto: null })
+      .sort({ name: 1 })
+      .toArray();
+
+    const sources = await this.database
+      .collection<EpgSourceDoc>(COLLECTIONS.epgSources)
+      .find({})
+      .project<Pick<EpgSourceDoc, '_id' | 'name'>>({ name: 1 })
+      .toArray();
+    const sourceName = new Map(sources.map((source) => [source._id, source.name]));
+
+    // One aggregate for every channel: programme count, latest end and latest
+    // refresh, so the coverage of N channels is still a single round trip.
+    const stats = new Map<string, { count: number; lastEnd: Date | null; lastUpdated: Date | null }>();
+    if (channels.length > 0) {
+      const rows = await this.programmes()
+        .aggregate<{ _id: string; count: number; lastEnd: Date; lastUpdated: Date }>([
+          {
+            $match: {
+              channelId: { $in: channels.map((channel) => channel._id) },
+              end: { $gte: new Date(now.getTime() - lookbackMs) },
+            },
+          },
+          {
+            $group: {
+              _id: '$channelId',
+              count: { $sum: 1 },
+              lastEnd: { $max: '$end' },
+              lastUpdated: { $max: '$updatedAt' },
+            },
+          },
+        ])
+        .toArray();
+      for (const row of rows) {
+        stats.set(row._id, { count: row.count, lastEnd: row.lastEnd, lastUpdated: row.lastUpdated });
+      }
+    }
+
+    const totals = { channels: channels.length, mapped: 0, fresh: 0, stale: 0, empty: 0, notMapped: 0 };
+    const entries: EpgCoverageEntry[] = channels.map((channel) => {
+      const sourceId = channel.epg?.sourceId ?? null;
+      const stat = stats.get(channel._id);
+      const availability = this.availabilityOf(channel);
+      const lastEndMs = stat?.lastEnd?.getTime() ?? null;
+      const lastUpdatedMs = stat?.lastUpdated?.getTime() ?? null;
+      const covered = lastEndMs !== null && lastEndMs > now.getTime();
+      const refreshedInsideWindow = lastUpdatedMs !== null && lastUpdatedMs > now.getTime() - staleAfterMs;
+      let status: EpgCoverageEntry['status'];
+      if (sourceId === null) {
+        status = 'not-mapped';
+        totals.notMapped += 1;
+      } else {
+        totals.mapped += 1;
+        if (!stat || stat.count === 0) {
+          status = 'empty';
+          totals.empty += 1;
+        } else if (covered && refreshedInsideWindow) {
+          status = 'fresh';
+          totals.fresh += 1;
+        } else {
+          status = 'stale';
+          totals.stale += 1;
+        }
+      }
+      return {
+        channelId: channel._id,
+        slug: channel.slug,
+        name: channel.name,
+        country: channel.country,
+        language: channel.languageTag,
+        timezone: channel.timezone,
+        mapped: sourceId !== null,
+        sourceId,
+        sourceName: sourceId === null ? null : (sourceName.get(sourceId) ?? null),
+        status,
+        availability: status === 'fresh' || status === 'stale' ? 'available' : availability,
+        programmes: stat?.count ?? 0,
+        lastProgrammeEnd: stat?.lastEnd?.toISOString() ?? null,
+        staleAfter: sourceId === null ? null : staleAfter.toISOString(),
+      };
+    });
+
+    return { entries, totals, asOf: now.toISOString() };
   }
 }
