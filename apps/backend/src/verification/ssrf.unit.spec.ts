@@ -16,10 +16,14 @@
  *
  * No real DNS is ever consulted: every call supplies `deps.lookup`.
  */
+import http from 'node:http';
+import https from 'node:https';
+import net from 'node:net';
 import { describe, expect, it } from 'vitest';
 import { classifyIpv4, classifyIpv6, isPublicAddress, isReservedHostname } from '../infrastructure/ip-classification.js';
 import {
   EgressFailure,
+  pinnedLookup,
   safeFetch,
   type EgressFailureCode,
   type EgressLookup,
@@ -697,6 +701,213 @@ describe('SSRF-LIMITS: size, time and content-type', () => {
       expect(failure.code).toBe('connection-failed');
       expect(failure.detail?.['reason']).toBe('aborted');
       expect(fixture.counters.requests).toBe(0);
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Regressions found by the captain against the REAL network. Every test above
+  // injects `deps.lookup`, which is exactly why none of them could see these:
+  // the broken code was the `lookup` handed to node:http(s), not our resolver.
+  // ---------------------------------------------------------------------------
+
+  it('reports an oversized undeclared-length body as response-too-large, never as a truncated body', async () => {
+    // 4 MiB streamed with no content-length over a 64 KiB limit — the validator's
+    // manifest path would otherwise parse a truncated playlist and call it
+    // `invalid-manifest`. The transport must own the verdict.
+    await withFixture({ '/huge': { streamBytes: 4 * 1024 * 1024, contentType: 'application/x-mpegurl' } }, async (fixture) => {
+      const startedAt = Date.now();
+      const failure = await expectCode(
+        safeFetch(request({ url: fixture.url('/huge'), maxBytes: 64 * 1024, allowLoopbackForTests: true }), {
+          lookup: lookupOf({}),
+        }),
+        'response-too-large',
+      );
+      expect(failure.detail?.['reason']).toBeUndefined(); // not a 'stream-closed' fallback
+      expect(failure.detail?.['bytes']).toBeGreaterThan(64 * 1024);
+      // The read is aborted at the limit, not after downloading everything.
+      expect(Date.now() - startedAt).toBeLessThan(1_500);
+    });
+  });
+
+  it('answers an error status with an HTML body instead of filtering it (status is the signal)', async () => {
+    // 404/403/451/503 pages are text/html; refusing them hides the status the
+    // caller classifies by. Each must come back as a plain response with ok:false.
+    const routes = {
+      '/404': { status: 404, contentType: 'text/html', body: '<h1>not found</h1>' },
+      '/403': { status: 403, contentType: 'text/html', body: '<h1>forbidden</h1>' },
+      '/451': { status: 451, contentType: 'text/html', body: '<h1>unavailable for legal reasons</h1>' },
+      '/503': { status: 503, contentType: 'text/html', body: '<h1>unavailable</h1>' },
+    } as const;
+    await withFixture(routes, async (fixture) => {
+      for (const [path, expected] of [
+        ['/404', 404],
+        ['/403', 403],
+        ['/451', 451],
+        ['/503', 503],
+      ] as const) {
+        const result = await safeFetch(
+          request({
+            url: fixture.url(path),
+            allowLoopbackForTests: true,
+            allowedContentPrefixes: ['application/vnd.apple.mpegurl', 'application/x-mpegurl'],
+          }),
+          { lookup: lookupOf({}) },
+        );
+        expect(result.status, path).toBe(expected);
+        expect(result.ok, path).toBe(false);
+        expect(result.contentType, path).toBe('text/html');
+        expect(result.body, path).toContain('<h1>');
+      }
+    });
+  });
+
+  it('reports a hung server as timeout after the declared budget, never as size or body failure', async () => {
+    // The /slow shape from the captain's matrix: connection accepted, no bytes.
+    await withFixture({ '/slow': { hang: true } }, async (fixture) => {
+      const startedAt = Date.now();
+      const failure = await expectCode(
+        safeFetch(
+          request({
+            url: fixture.url('/slow'),
+            timeoutMs: 400,
+            maxBytes: 1024,
+            allowLoopbackForTests: true,
+            allowedContentPrefixes: ['application/x-mpegurl'],
+          }),
+          { lookup: lookupOf({}) },
+        ),
+        'timeout',
+      );
+      const elapsed = Date.now() - startedAt;
+      expect(failure.code).toBe('timeout');
+      expect(failure.detail?.['timeoutMs']).toBe(400);
+      expect(elapsed).toBeGreaterThanOrEqual(350);
+      expect(elapsed).toBeLessThan(2_000);
+    });
+  });
+});
+
+describe('SSRF-LOOKUP: the pin answers both of Node lookup conventions', () => {
+  type CallbackArgs = [unknown, unknown, unknown?];
+  const call = (
+    pinned: string | null,
+    options: { all?: boolean },
+  ): Promise<CallbackArgs> =>
+    new Promise((resolve) => {
+      const lookup = pinnedLookup(pinned);
+      lookup('example.test', options, (...args: unknown[]) => resolve(args as CallbackArgs));
+    });
+
+  it('answers the `all: true` form (what Node 20+ autoSelectFamily asks) with an array', async () => {
+    const [error, addresses, _family] = await call('93.184.216.34', { all: true });
+    expect(error).toBeNull();
+    expect(Array.isArray(addresses)).toBe(true);
+    expect(addresses).toEqual([{ address: '93.184.216.34', family: 4 }]);
+  });
+
+  it('answers the single-address form with a string and a family', async () => {
+    const [error, address, family] = await call('93.184.216.34', {});
+    expect(error).toBeNull();
+    expect(address).toBe('93.184.216.34');
+    expect(family).toBe(4);
+  });
+
+  it('answers the `all: true` form for a pinned IPv6 address with family 6', async () => {
+    const [error, addresses] = await call('2606:4700:4700::1111', { all: true });
+    expect(error).toBeNull();
+    expect(addresses).toEqual([{ address: '2606:4700:4700::1111', family: 6 }]);
+  });
+
+  it('fails closed when nothing was validated (dns-rebind, no address handed to Node)', async () => {
+    const [error, address] = await call(null, { all: true });
+    expect(error).toBeInstanceOf(EgressFailure);
+    expect((error as EgressFailure).code).toBe('dns-rebind');
+    expect(address).toBeNull();
+  });
+
+  it('pins a REAL node:net connection through the `all: true` convention', async () => {
+    // The real path, with no injected resolver anywhere: Node's own connection
+    // machinery calls our lookup and must connect with the array answer.
+    await withFixture({ '/ok': { status: 200, body: 'ok' } }, async (fixture) => {
+      const socket = await new Promise<net.Socket>((resolve, reject) => {
+        const s = net.connect({ host: 'pinned.invalid', port: fixture.port, lookup: pinnedLookup('127.0.0.1') as never });
+        s.once('connect', () => resolve(s));
+        s.once('error', reject);
+        setTimeout(() => reject(new Error('connect timed out')), 3_000);
+      });
+      expect(socket.remoteAddress).toBeDefined();
+      socket.destroy();
+      // The connection reached the fixture even though the hostname is not resolvable.
+      expect(fixture.counters.requests).toBe(0);
+    });
+  });
+
+  it('pins a REAL node:http request through the agent path (autoSelectFamily on)', async () => {
+    // End-to-end over node:http with our lookup only: this is the exact code
+    // the old string-only callback broke with ERR_INVALID_IP_ADDRESS.
+    await withFixture({ '/ok': { status: 200, contentType: 'text/plain', body: 'pinned' } }, async (fixture) => {
+      const body = await new Promise<string>((resolve, reject) => {
+        const req = http.request(
+          {
+            host: 'pinned.invalid',
+            port: fixture.port,
+            path: '/ok',
+            agent: false,
+            lookup: pinnedLookup('127.0.0.1') as never,
+          },
+          (res) => {
+            const chunks: Buffer[] = [];
+            res.on('data', (chunk: Buffer) => chunks.push(chunk));
+            res.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+          },
+        );
+        req.once('error', reject);
+        req.end();
+      });
+      expect(body).toBe('pinned');
+      expect(fixture.counters.requests).toBe(1);
+      expect(fixture.received[0]?.url).toBe('/ok');
+    });
+  });
+
+  it('the pin reaches a REAL tls handshake (https) instead of ERR_INVALID_IP_ADDRESS', async () => {
+    // No certificate work is needed: the handshake must reach the TLS layer
+    // (which then fails on its own terms). The old callback never got that far:
+    // Node threw "Invalid IP address: undefined" before sending a ClientHello.
+    await withFixture({}, async (fixture) => {
+      const error = await new Promise<Error>((resolve) => {
+        const req = https.request(
+          {
+            host: 'pinned.invalid',
+            port: fixture.port, // speaks plain HTTP: TLS handshake must fail there
+            agent: false,
+            lookup: pinnedLookup('127.0.0.1') as never,
+            servername: 'pinned.invalid',
+          },
+          () => resolve(new Error('unexpected TLS success')),
+        );
+        req.once('error', (e: NodeJS.ErrnoException) => resolve(e));
+        req.end();
+      });
+      const code = (error as NodeJS.ErrnoException).code ?? '';
+      expect(code).not.toBe('ERR_INVALID_IP_ADDRESS');
+      expect(code).not.toMatch(/EAI_AGAIN|ENOTFOUND/);
+      // Proof the bytes reached the fixture: the TCP connection was accepted.
+      expect(fixture.counters.sockets).toBe(1);
+    });
+  });
+
+  it('safeFetch with NO injected resolver still refuses reserved names and fetches through the pin', async () => {
+    // deps.lookup omitted entirely: the real dns.promises.lookup path runs. A
+    // reserved name is refused before any socket; a loopback literal needs the
+    // explicit test flag and then travels the real node:http + pinnedLookup path.
+    await expectCode(safeFetch(request({ url: 'http://localhost:9/never' })), 'host-blocked');
+    await withFixture({ '/ok': { status: 200, body: 'direct' } }, async (fixture) => {
+      const result = await safeFetch(request({ url: fixture.url('/ok'), allowLoopbackForTests: true }));
+      expect(result.status).toBe(200);
+      expect(result.body).toBe('direct');
+      expect(result.resolvedAddresses).toEqual(['127.0.0.1']);
+      expect(result.redirects).toBe(0);
     });
   });
 });
