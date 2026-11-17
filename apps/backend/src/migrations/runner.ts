@@ -19,6 +19,7 @@ import { buildSourceSnapshotProvenanceMigration } from './005-source-snapshot-pr
 import { buildIncrementalDedupMigration } from './006-incremental-dedup.js';
 import { buildCandidateNaturalKeyMigration } from './007-candidate-natural-key.js';
 import { buildVerificationIndexesMigration } from './008-verification-indexes.js';
+import { buildEpgInternationalMigration } from './009-epg-international.js';
 
 interface LedgerEntry {
   _id: string;
@@ -82,6 +83,7 @@ export function buildMigrations(database: DatabaseHandle): Migration[] {
     buildIncrementalDedupMigration(database),
     buildCandidateNaturalKeyMigration(database),
     buildVerificationIndexesMigration(database),
+    buildEpgInternationalMigration(database),
   ];
 }
 

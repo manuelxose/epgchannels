@@ -29,6 +29,8 @@ export const COLLECTIONS = {
   sourceAuthorization: 'source_authorization',
   sourceHealth: 'source_health',
   epgMappings: 'epg_mappings',
+  /** TDT-API-02FG: one row per synchronisation run of one guide source. */
+  epgSyncRuns: 'epg_sync_runs',
   reconciliationReview: 'reconciliation_review',
   ingestionRuns: 'ingestion_runs',
   /*

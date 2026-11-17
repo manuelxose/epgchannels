@@ -20,6 +20,7 @@ import type { DatabaseHandle } from '../../infrastructure/mongo.js';
 import { COLLECTIONS } from '../../infrastructure/mongo.js';
 import type { ChannelDoc, EpgSourceDoc, ProgrammeDoc } from '../../infrastructure/schema.js';
 import { channelRef } from '../playback/playback.service.js';
+import { findDuplicatePairs, normaliseTitle, windowsOverlap } from './epg.dedup.js';
 
 export interface NormalisedProgramme {
   readonly title: string;
@@ -29,6 +30,17 @@ export interface NormalisedProgramme {
   readonly start: Date;
   readonly end: Date;
   readonly externalKey: string;
+  /** Zone of the upstream reading (contract §4.1). Defaults to `UTC`. */
+  readonly timezone?: string;
+  /** Upstream wall clock before normalisation, for audit. Defaults to `start`. */
+  readonly originalStart?: Date;
+}
+
+/** What one channel's upsert changed, for the run record. */
+export interface UpsertOutcome {
+  readonly written: number;
+  readonly rejected: number;
+  readonly duplicates: number;
 }
 
 export function toProgramme(doc: ProgrammeDoc): Programme {
@@ -100,16 +112,26 @@ export class EpgService {
     return this.database.collection<ProgrammeDoc>(COLLECTIONS.programmes);
   }
 
-  /** Replaces the guide window of one source for one channel. Idempotent. */
+  /**
+   * Replaces the guide window of one source for one channel. Idempotent.
+   *
+   * After the bulk write the channel's window is scanned once for duplicates
+   * (same channel, overlapping window, same normalised title) and for staleness
+   * against what the source currently promises. Duplicates are **marked** —
+   * `duplicateOf` points at the winner — never deleted, so an operator can audit
+   * or reverse the decision.
+   */
   async upsertChannelGuide(
     channelId: string,
     sourceId: string,
     events: readonly NormalisedProgramme[],
-  ): Promise<{ written: number; rejected: number }> {
+    options: { readonly now?: Date; readonly sourceTimezone?: string | null } = {},
+  ): Promise<UpsertOutcome> {
     const { programmes, rejected } = normaliseProgrammes(events);
     if (programmes.length === 0) {
-      return { written: 0, rejected };
+      return { written: 0, rejected, duplicates: 0 };
     }
+    const now = options.now ?? new Date();
     const bulk = programmes.map((event) => ({
       updateOne: {
         filter: { channelId, externalKey: event.externalKey },
@@ -122,21 +144,97 @@ export class EpgService {
             start: event.start,
             end: event.end,
             sourceId,
-            updatedAt: new Date(),
+            timezone: event.timezone ?? options.sourceTimezone ?? 'UTC',
+            originalStart: event.originalStart ?? event.start,
+            updatedAt: now,
           },
           $setOnInsert: {
             _id: randomUUID(),
             channelId,
             externalKey: event.externalKey,
             editedAt: null,
-            createdAt: new Date(),
+            duplicateOf: null,
+            createdAt: now,
           },
         },
         upsert: true,
       },
     }));
     const result = await this.programmes().bulkWrite(bulk, { ordered: false });
-    return { written: result.upsertedCount + result.modifiedCount, rejected };
+    const duplicates = await this.reclassifyChannel(channelId, now);
+    return { written: result.upsertedCount + result.modifiedCount, rejected, duplicates };
+  }
+
+  /**
+   * Recomputes `duplicateOf` and `stale` for one channel's whole guide.
+   *
+   * One read of the channel's window, one pure classification, one bulk write:
+   * the cost is bounded by the guide size, not by the number of emissions
+   * compared. Returns how many emissions are currently marked as duplicates.
+   */
+  async reclassifyChannel(channelId: string, now = new Date()): Promise<number> {
+    const docs = await this.programmes()
+      .find({ channelId }, { projection: { _id: 1, title: 1, start: 1, end: 1, sourceId: 1, duplicateOf: 1 } })
+      .sort({ start: 1 })
+      .toArray();
+    if (docs.length === 0) return 0;
+    const lastEnd = docs.reduce((max, doc) => (doc.end.getTime() > max ? doc.end.getTime() : max), 0);
+    const { duplicates } = findDuplicatePairs(
+      docs.map((doc) => ({ id: doc._id, title: doc.title, start: doc.start, end: doc.end })),
+    );
+    const operations = docs.map((doc) => {
+      const winner = duplicates.get(doc._id) ?? null;
+      // Stale: nothing of the guide reaches the present any more.
+      const stale = doc.end.getTime() <= now.getTime() && lastEnd > now.getTime();
+      return {
+        updateOne: {
+          filter: { _id: doc._id },
+          update: { $set: { duplicateOf: winner, stale } },
+        },
+      };
+    });
+    await this.programmes().bulkWrite(operations, { ordered: false });
+    return duplicates.size;
+  }
+
+  /**
+   * Duplicates of one channel, as (duplicate, winner) pairs. Read-only view for
+   * the administration surface; nothing is merged here.
+   */
+  async duplicatesOf(channelId: string): Promise<{ id: string; duplicateOf: string }[]> {
+    const docs = await this.programmes()
+      .find({ channelId, duplicateOf: { $ne: null } }, { projection: { _id: 1, duplicateOf: 1 } })
+      .toArray();
+    return docs
+      .filter((doc): doc is ProgrammeDoc & { duplicateOf: string } => typeof doc.duplicateOf === 'string')
+      .map((doc) => ({ id: doc._id, duplicateOf: doc.duplicateOf }));
+  }
+
+  /**
+   * Whether an emission would be a duplicate of something already stored.
+   *
+   * Used by the ingestion pre-check so an incremental run can count duplicates
+   * it refused to write without reading the whole channel back.
+   */
+  async findStoredDuplicate(
+    channelId: string,
+    title: string,
+    start: Date,
+    end: Date,
+  ): Promise<string | null> {
+    const candidates = await this.programmes()
+      .find(
+        { channelId, start: { $lt: end }, end: { $gt: start } },
+        { projection: { _id: 1, title: 1, start: 1, end: 1 } },
+      )
+      .limit(50)
+      .toArray();
+    const wanted = normaliseTitle(title);
+    for (const candidate of candidates) {
+      if (normaliseTitle(candidate.title) !== wanted) continue;
+      if (windowsOverlap(start, end, candidate.start, candidate.end)) return candidate._id;
+    }
+    return null;
   }
 
   /**
@@ -198,10 +296,17 @@ export class EpgService {
   ): Promise<ScheduleResponse> {
     const to = new Date(from.getTime() + hours * 3_600_000);
     const availability = this.availabilityOf(channel);
+    // A duplicate keeps its row but is not shown: the winner represents the
+    // broadcast. Rows without the field predate dedup and are shown.
     const docs =
       channel.epg?.sourceId !== null && channel.epg?.sourceId !== undefined
         ? await this.programmes()
-            .find({ channelId: channel._id, end: { $gt: from }, start: { $lt: to } })
+            .find({
+              channelId: channel._id,
+              end: { $gt: from },
+              start: { $lt: to },
+              duplicateOf: { $in: [null] },
+            })
             .sort({ start: 1 })
             .toArray()
         : [];
@@ -229,7 +334,12 @@ export class EpgService {
     const windowStart = new Date(at.getTime() - 12 * 3_600_000);
     const windowEnd = new Date(at.getTime() + 48 * 3_600_000);
     const docs = await this.programmes()
-      .find({ channelId: { $in: ids }, end: { $gt: windowStart }, start: { $lt: windowEnd } })
+      .find({
+        channelId: { $in: ids },
+        end: { $gt: windowStart },
+        start: { $lt: windowEnd },
+        duplicateOf: { $in: [null] },
+      })
       .sort({ start: 1 })
       .toArray();
     const byChannel = new Map<string, ProgrammeDoc[]>();
@@ -349,6 +459,7 @@ export class EpgService {
             $match: {
               channelId: { $in: channels.map((channel) => channel._id) },
               end: { $gte: new Date(now.getTime() - lookbackMs) },
+              duplicateOf: { $in: [null] },
             },
           },
           {
