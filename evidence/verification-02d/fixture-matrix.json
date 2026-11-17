@@ -1,7 +1,7 @@
 {
   "ok": false,
   "mode": "fixture",
-  "generatedAt": "2026-11-17T10:34:28.813Z",
+  "generatedAt": "2026-11-17T10:46:20.116Z",
   "cases": 14,
   "matched": 6,
   "results": [
@@ -11,7 +11,7 @@
       "outcome": "degraded",
       "failure": null,
       "depthReached": "playlist",
-      "latencyMs": 24,
+      "latencyMs": 22,
       "requests": 1
     },
     {
@@ -20,7 +20,7 @@
       "outcome": "failing",
       "failure": "unknown-error",
       "depthReached": "transport",
-      "latencyMs": 6,
+      "latencyMs": 5,
       "requests": 1
     },
     {
@@ -47,7 +47,7 @@
       "outcome": "degraded",
       "failure": null,
       "depthReached": "playlist",
-      "latencyMs": 4,
+      "latencyMs": 3,
       "requests": 1
     },
     {
@@ -65,7 +65,7 @@
       "outcome": "failing",
       "failure": "http-404",
       "depthReached": "transport",
-      "latencyMs": 4,
+      "latencyMs": 2,
       "requests": 1
     },
     {
@@ -92,7 +92,7 @@
       "outcome": "failing",
       "failure": "http-5xx",
       "depthReached": "transport",
-      "latencyMs": 2,
+      "latencyMs": 3,
       "requests": 1
     },
     {
@@ -110,7 +110,7 @@
       "outcome": "failing",
       "failure": "response-too-large",
       "depthReached": "transport",
-      "latencyMs": 15010,
+      "latencyMs": 15008,
       "requests": 1
     },
     {
@@ -119,7 +119,7 @@
       "outcome": "failing",
       "failure": "redirect-unsafe",
       "depthReached": "transport",
-      "latencyMs": 5,
+      "latencyMs": 8,
       "requests": 1
     },
     {
@@ -128,7 +128,7 @@
       "outcome": "failing",
       "failure": "response-too-large",
       "depthReached": "transport",
-      "latencyMs": 10,
+      "latencyMs": 19,
       "requests": 6
     }
   ]
