@@ -41,6 +41,11 @@ import {
 } from './schemas.js';
 import { epgDayQuerySchema } from '../modules/channels/local-day.js';
 import {
+  adminIdentityInputSchema,
+  adminMergeInputSchema,
+  epgMappingInputSchema,
+} from '@tdt/contracts';
+import {
   countryRegionEntrySchema,
   countryRegionsResponseSchema,
   publicLanguageListResponseSchema,
@@ -64,6 +69,26 @@ export interface OpenApiDocument {
 const errorResponse = (description: string) => ({
   description,
   content: { 'application/json': { schema: { $ref: '#/components/schemas/ApiError' } } },
+});
+
+/**
+ * One authenticated operations route (TDT-API-02FG).
+ *
+ * The console answers a typed body or the shared error envelope, so every new
+ * route is described once here instead of repeating four identical blocks.
+ * `writes` adds the request-required 400 and the 403 a write can be refused with.
+ */
+const adminOperation = (operationId: string, summary: string, writes = false) => ({
+  tags: ['Administración'],
+  operationId,
+  summary,
+  security: [{ adminSession: [] }],
+  responses: {
+    '200': { ...json({ type: 'object', additionalProperties: true }, 'Operación completada.'), headers: commonHeaders },
+    ...(writes ? { '400': errorResponse('Datos no válidos.'), '403': errorResponse('La sesión no tiene el rol requerido.') } : {}),
+    '401': errorResponse('Sesión requerida.'),
+    '503': errorResponse('La capacidad no está disponible en este proceso.'),
+  },
 });
 
 const json = (schema: unknown, description: string) => ({
@@ -146,6 +171,10 @@ export function buildOpenApi(baseUrl: string): OpenApiDocument {
     EpgCoverageResponse: zodToJsonSchema(epgCoverageSchema),
     EpgDayQuery: zodToJsonSchema(epgDayQuerySchema),
     PublicChannelListQuery: zodToJsonSchema(publicChannelListQuerySchema),
+    // 02FG administration console request bodies.
+    AdminIdentityInput: zodToJsonSchema(adminIdentityInputSchema),
+    AdminMergeInput: zodToJsonSchema(adminMergeInputSchema),
+    EpgMappingInput: zodToJsonSchema(epgMappingInputSchema),
   };
 
   return {
@@ -601,6 +630,143 @@ export function buildOpenApi(baseUrl: string): OpenApiDocument {
             '200': { ...json({ type: 'object', additionalProperties: true }, 'Proveedores.') },
           },
         },
+      },
+      /*
+       * TDT-API-02FG operations console. Every payload is the published contract
+       * (`@tdt/contracts` admin-operations / epg-operations); nothing here carries
+       * a stream URL, a provider secret or an authorization clause, so the
+       * published schema cannot describe a leak.
+       */
+      '/admin/overview': {
+        get: adminOperation('adminOverview', 'Resumen operativo del catálogo, fuentes, EPG y trabajos'),
+      },
+      '/admin/catalogue': {
+        get: {
+          ...adminOperation('adminCatalogue', 'Banco de trabajo del catálogo (incluye borradores y en revisión)'),
+          parameters: [
+            { name: 'page', in: 'query', schema: { type: 'integer', minimum: 1, default: 1 } },
+            { name: 'pageSize', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 100, default: 50 } },
+            { name: 'q', in: 'query', schema: { type: 'string', maxLength: 120 } },
+            { name: 'country', in: 'query', schema: { type: 'string', minLength: 2, maxLength: 3 } },
+            { name: 'language', in: 'query', schema: { type: 'string' } },
+            { name: 'category', in: 'query', schema: { type: 'string' } },
+            { name: 'status', in: 'query', schema: { type: 'string', enum: ['draft', 'review', 'published', 'withdrawn'] } },
+          ],
+        },
+      },
+      '/admin/catalogue/{id}': {
+        get: {
+          ...adminOperation('adminCatalogueDetail', 'Ficha de identidad, fuentes candidatas y duplicados de un canal'),
+          parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } }],
+        },
+      },
+      '/admin/catalogue/{id}/identity': {
+        post: {
+          ...adminOperation('adminEditIdentity', 'Edición auditada de la identidad canónica', true),
+          parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } }],
+          requestBody: {
+            required: true,
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/AdminIdentityInput' } } },
+          },
+        },
+      },
+      '/admin/duplicates': {
+        get: adminOperation('adminDuplicates', 'Grupos de canales duplicados detectados'),
+      },
+      '/admin/duplicates/merge': {
+        post: {
+          ...adminOperation('adminMergeDuplicates', 'Fusiona dos canales conservando historial y auditoría', true),
+          requestBody: {
+            required: true,
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/AdminMergeInput' } } },
+          },
+        },
+      },
+      '/admin/sources/health': {
+        get: {
+          ...adminOperation('adminSourceHealth', 'Salud, elegibilidad y clase de fallo por fuente'),
+          parameters: [
+            { name: 'page', in: 'query', schema: { type: 'integer', minimum: 1, default: 1 } },
+            { name: 'pageSize', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 200, default: 50 } },
+            { name: 'channelId', in: 'query', schema: { type: 'string', format: 'uuid' } },
+            { name: 'provider', in: 'query', schema: { type: 'string' } },
+            { name: 'failureClass', in: 'query', schema: { type: 'string' } },
+          ],
+        },
+      },
+      '/admin/sources/{id}/history': {
+        get: {
+          ...adminOperation('adminSourceHistory', 'Historial de verificaciones de una fuente'),
+          parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } }],
+        },
+      },
+      '/admin/sources/{id}/assign': {
+        post: {
+          ...adminOperation('adminAssignSource', 'Asigna una fuente existente a un canal', true),
+          parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } }],
+        },
+      },
+      '/admin/sources/{id}/remove': {
+        post: {
+          ...adminOperation('adminRemoveSource', 'Retira una fuente de un canal con motivo', true),
+          parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } }],
+        },
+      },
+      '/admin/epg/coverage': {
+        get: {
+          ...adminOperation('adminEpgCoverage', 'Cobertura de la guía por canal, conflictos de mapeo y totales'),
+          parameters: [
+            { name: 'country', in: 'query', schema: { type: 'string', minLength: 2, maxLength: 3 } },
+            {
+              name: 'status',
+              in: 'query',
+              schema: { type: 'string', enum: ['fresh', 'stale', 'empty', 'not-mapped'] },
+            },
+          ],
+        },
+      },
+      '/admin/epg/mappings': {
+        get: adminOperation('adminEpgMappings', 'Mapeos canal↔fuente de guía con estado y conflictos'),
+        post: {
+          ...adminOperation('adminEpgMappingCreate', 'Alta manual de un mapeo de guía (confirmado por el operador)', true),
+          requestBody: {
+            required: true,
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/EpgMappingInput' } } },
+          },
+        },
+      },
+      '/admin/epg/mappings/{id}/confirm': {
+        post: { ...adminOperation('adminEpgMappingConfirm', 'Confirma un mapeo propuesto', true) },
+      },
+      '/admin/epg/mappings/{id}/reject': {
+        post: { ...adminOperation('adminEpgMappingReject', 'Rechaza un mapeo (tombstone, no borra datos)', true) },
+      },
+      '/admin/epg/ingestion-runs': {
+        get: adminOperation('adminEpgIngestionRuns', 'Ejecuciones de ingesta de guía, con fallos clasificados'),
+      },
+      '/admin/epg/ingest': {
+        post: { ...adminOperation('adminEpgIngest', 'Lanza la ingesta de una fuente de guía ahora', true) },
+      },
+      '/admin/operations/jobs': {
+        get: adminOperation('adminOperationsJobs', 'Trabajos en segundo plano con estado real y pausa'),
+      },
+      '/admin/operations/jobs/{name}/pause': {
+        post: {
+          ...adminOperation('adminPauseJob', 'Pausa un trabajo registrado en este proceso', true),
+          parameters: [{ name: 'name', in: 'path', required: true, schema: { type: 'string' } }],
+        },
+      },
+      '/admin/operations/jobs/{name}/resume': {
+        post: {
+          ...adminOperation('adminResumeJob', 'Reanuda un trabajo pausado', true),
+          parameters: [{ name: 'name', in: 'path', required: true, schema: { type: 'string' } }],
+        },
+      },
+      '/admin/operations/errors': {
+        get: adminOperation('adminOperationsErrors', 'Errores operativos agregados por componente'),
+      },
+      '/admin/operations/metrics': {
+        get: adminOperation('adminOperationsMetrics', 'Métricas de peticiones y de reproducción del proceso'),
       },
     },
     components: {
