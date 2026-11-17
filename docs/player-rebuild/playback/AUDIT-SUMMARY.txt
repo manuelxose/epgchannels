@@ -1,0 +1,30 @@
+Audit: C:\Users\Admin\Documents\workspace\streaming\tdt-player-rebuild\artifacts\playback\FULL-PLAYBACK-AUDIT.json
+Generated: 2026-11-14T18:26:08.847Z  |  snapshot: f1ceaef3f9ffd313ÔÇª
+Channels: 768 (complete catalogue: true)
+
+| Verdict | Channels |
+| --- | ---: |
+| PARITY_PASS | 318 |
+| EXTERNAL_ONLY | 249 |
+| EVENT_ONLY | 87 |
+| OUR_PLAYER_FAIL | 63 |
+| RIGHTS_BLOCKED | 35 |
+| GEO_RESTRICTED | 13 |
+| MISCLASSIFIED | 2 |
+| UNVERIFIED | 1 |
+
+PARITY_PASS evidence: 318/318 decoded frames; media time advanced min 1.59s / median 10.04s; sizes 1920x1080=179, 1280x720=111, 640x360=6, 960x540=6, 1024x576=3, 720x576=2, 720x404=2, 2560x1440=2, 854x480=2, 768x576=1, 2276x1080=1, 864x480=1, 228x128=1, 1600x900=1
+
+OUR_PLAYER_FAIL causes (from the servers' own answers):
+- 25 ┬À CORS (pol├¡tica del CDN, sin cabeceras)
+- 21 ┬À HTTP 404
+- 5 ┬À Sin reproducci├│n sin error del navegador (estado UI loading; el emisor sirve el manifiesto y no entrega una emisi├│n reproducible)
+- 4 ┬À DNS: el dominio no resuelve
+- 4 ┬À HTTP 400
+- 3 ┬À HTTP 403
+- 1 ┬À Error de conexi├│n/TLS
+
+Channels needing a human read:
+- MISCLASSIFIED: Noroeste TV (tags: NONAV,REFC1)
+- MISCLASSIFIED: Canal Parlament (tags: EVT)
+- UNVERIFIED: tvA (tags: NONAV)

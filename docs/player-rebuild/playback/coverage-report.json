@@ -1,0 +1,2882 @@
+{
+  "schema": "playback/coverage-report/1",
+  "generatedAt": "2026-11-13T15:25:44.599Z",
+  "snapshot": {
+    "path": "tv.json",
+    "sha256": "f1ceaef3f9ffd31303ea1360ff629d2d5a190e3f2db93e2fce67634a43a50aeb",
+    "updated": 1793918983,
+    "updatedIso": "2026-11-05T22:49:43.000Z",
+    "dataDirOrigin": "<repo>/../reference/data"
+  },
+  "counts": {
+    "channels": 768,
+    "options": 855,
+    "countries": 2,
+    "categories": 33,
+    "withOnlineEmission": 659,
+    "withoutOnlineEmission": 109,
+    "noem": 7,
+    "geo": 44,
+    "evt": 130,
+    "reg": 24,
+    "emb": 232,
+    "noNav": 24,
+    "autoDiscover": 125,
+    "requiresUserAgent": 29,
+    "requiresReferer": 28,
+    "formatsByOption": [
+      {
+        "key": "m3u8",
+        "count": 573
+      },
+      {
+        "key": "youtube",
+        "count": 215
+      },
+      {
+        "key": "stream",
+        "count": 67
+      }
+    ],
+    "urlFormatsByOption": [
+      {
+        "key": "hls",
+        "count": 574
+      },
+      {
+        "key": "other",
+        "count": 281
+      }
+    ],
+    "channelsByFormat": [
+      {
+        "format": "m3u8",
+        "channels": 435
+      },
+      {
+        "format": "mpd",
+        "channels": 0
+      },
+      {
+        "format": "stream",
+        "channels": 65
+      },
+      {
+        "format": "youtube",
+        "channels": 202
+      },
+      {
+        "format": "iframe",
+        "channels": 0
+      }
+    ],
+    "channelsByTag": [
+      {
+        "key": "EMB",
+        "count": 232
+      },
+      {
+        "key": "EVT",
+        "count": 130
+      },
+      {
+        "key": "EXTA",
+        "count": 102
+      },
+      {
+        "key": "GEO",
+        "count": 44
+      },
+      {
+        "key": "NONAV",
+        "count": 24
+      },
+      {
+        "key": "REG",
+        "count": 24
+      },
+      {
+        "key": "UAG",
+        "count": 24
+      },
+      {
+        "key": "EXTB",
+        "count": 23
+      },
+      {
+        "key": "REFI1",
+        "count": 19
+      },
+      {
+        "key": "NOEM",
+        "count": 7
+      },
+      {
+        "key": "REF",
+        "count": 7
+      },
+      {
+        "key": "UAGB",
+        "count": 5
+      },
+      {
+        "key": "REFC1",
+        "count": 2
+      }
+    ],
+    "optionCountDistribution": [
+      {
+        "key": "1",
+        "count": 530
+      },
+      {
+        "key": "0",
+        "count": 109
+      },
+      {
+        "key": "2",
+        "count": 96
+      },
+      {
+        "key": "3",
+        "count": 19
+      },
+      {
+        "key": "4",
+        "count": 8
+      },
+      {
+        "key": "9",
+        "count": 2
+      },
+      {
+        "key": "5",
+        "count": 1
+      },
+      {
+        "key": "6",
+        "count": 1
+      },
+      {
+        "key": "7",
+        "count": 1
+      },
+      {
+        "key": "8",
+        "count": 1
+      }
+    ],
+    "geo2Values": [
+      {
+        "key": "null",
+        "count": 816
+      },
+      {
+        "key": "CAT",
+        "count": 20
+      },
+      {
+        "key": "SP",
+        "count": 19
+      }
+    ],
+    "resValues": [
+      {
+        "key": "null",
+        "count": 842
+      },
+      {
+        "key": "HD",
+        "count": 7
+      },
+      {
+        "key": "SD",
+        "count": 6
+      }
+    ],
+    "langValues": [
+      {
+        "key": "null",
+        "count": 738
+      },
+      {
+        "key": "EN",
+        "count": 56
+      },
+      {
+        "key": "IT",
+        "count": 20
+      },
+      {
+        "key": "AR",
+        "count": 11
+      },
+      {
+        "key": "PT",
+        "count": 10
+      },
+      {
+        "key": "DE",
+        "count": 8
+      },
+      {
+        "key": "FR",
+        "count": 7
+      },
+      {
+        "key": "PL",
+        "count": 3
+      },
+      {
+        "key": "NL",
+        "count": 1
+      },
+      {
+        "key": "RO",
+        "count": 1
+      }
+    ],
+    "hosts": [
+      {
+        "key": "www.youtube.com",
+        "count": 215
+      },
+      {
+        "key": "ztnr.rtve.es",
+        "count": 32
+      },
+      {
+        "key": "player.twitch.tv",
+        "count": 26
+      },
+      {
+        "key": "rtvelivestream.rtve.es",
+        "count": 24
+      },
+      {
+        "key": "directes-tv-cat.3catdirectes.cat",
+        "count": 19
+      },
+      {
+        "key": "stream-us-east-1.getpublica.com",
+        "count": 18
+      },
+      {
+        "key": "liveingesta318.cdnmedia.tv",
+        "count": 16
+      },
+      {
+        "key": "streaming004.gestec-video.com",
+        "count": 16
+      },
+      {
+        "key": "directes-tv-es.3catdirectes.cat",
+        "count": 12
+      },
+      {
+        "key": "cloudvideo.servers10.com",
+        "count": 10
+      },
+      {
+        "key": "geo.dailymotion.com",
+        "count": 10
+      },
+      {
+        "key": "dd782ed59e2a4e86aabf6fc508674b59.msvdn.net",
+        "count": 9
+      },
+      {
+        "key": "senadolive.akamaized.net",
+        "count": 8
+      },
+      {
+        "key": "cdn1.etbon.eus",
+        "count": 7
+      },
+      {
+        "key": "cl-2.backend.energeek.cl",
+        "count": 6
+      },
+      {
+        "key": "congresodirecto.akamaized.net",
+        "count": 6
+      },
+      {
+        "key": "laxarxames.cat",
+        "count": 6
+      },
+      {
+        "key": "stream.ads.ottera.tv",
+        "count": 6
+      },
+      {
+        "key": "cdn-uw2-prod.tsv2.amagi.tv",
+        "count": 5
+      },
+      {
+        "key": "ingest1-video.streaming-pro.com",
+        "count": 5
+      },
+      {
+        "key": "liveingesta118.cdnmedia.tv",
+        "count": 5
+      },
+      {
+        "key": "snrt.player.easybroadcast.io",
+        "count": 5
+      },
+      {
+        "key": "streamer.zapitv.com",
+        "count": 5
+      },
+      {
+        "key": "5f71743aa95e4.streamlock.net",
+        "count": 4
+      },
+      {
+        "key": "directes-tv-int.3catdirectes.cat",
+        "count": 4
+      },
+      {
+        "key": "directo.ccyl.es",
+        "count": 4
+      },
+      {
+        "key": "fast-tailor.3catdirectes.cat",
+        "count": 4
+      },
+      {
+        "key": "ingest2-video.streaming-pro.com",
+        "count": 4
+      },
+      {
+        "key": "live.emitstream.com",
+        "count": 4
+      },
+      {
+        "key": "mbit1.worldcast.tv",
+        "count": 4
+      },
+      {
+        "key": "redirector.rudo.video",
+        "count": 4
+      },
+      {
+        "key": "streamingtvi.gestec-video.com",
+        "count": 4
+      },
+      {
+        "key": "www.bloomberg.com",
+        "count": 4
+      },
+      {
+        "key": "5940924978228.streamlock.net",
+        "count": 3
+      },
+      {
+        "key": "broadcasting.parlamentodenavarra.es",
+        "count": 3
+      },
+      {
+        "key": "canadaremar2.todostreaming.es",
+        "count": 3
+      },
+      {
+        "key": "cdn-canalextremadura.watchity.net",
+        "count": 3
+      },
+      {
+        "key": "cdn.live.easybroadcast.io",
+        "count": 3
+      },
+      {
+        "key": "cdn3.wowza.com",
+        "count": 3
+      },
+      {
+        "key": "cdnapisec.kaltura.com",
+        "count": 3
+      },
+      {
+        "key": "globallive.tdm.com.mo",
+        "count": 3
+      },
+      {
+        "key": "m2b2.worldcast.tv",
+        "count": 3
+      },
+      {
+        "key": "mdstrm.com",
+        "count": 3
+      },
+      {
+        "key": "multimedia.eitb.eus",
+        "count": 3
+      },
+      {
+        "key": "ocko-live.ssl.cdn.cra.cz",
+        "count": 3
+      },
+      {
+        "key": "origin-001.streamup.eu",
+        "count": 3
+      },
+      {
+        "key": "rtvelivestream-rtveplayplus.rtve.es",
+        "count": 3
+      },
+      {
+        "key": "s.emisoras.tv",
+        "count": 3
+      },
+      {
+        "key": "stream2.parlamentodeandalucia.es",
+        "count": 3
+      },
+      {
+        "key": "streamtv2.elitecomunicacion.cloud",
+        "count": 3
+      },
+      {
+        "key": "www.reduno.com.bo",
+        "count": 3
+      },
+      {
+        "key": "1601580044.rsc.cdn77.org",
+        "count": 2
+      },
+      {
+        "key": "3abn.bozztv.com",
+        "count": 2
+      },
+      {
+        "key": "4c4b867c89244861ac216426883d1ad0.msvdn.net",
+        "count": 2
+      },
+      {
+        "key": "5924d3ad0efcf.streamlock.net",
+        "count": 2
+      },
+      {
+        "key": "5caf24a595d94.streamlock.net",
+        "count": 2
+      },
+      {
+        "key": "avantstreaming.es",
+        "count": 2
+      },
+      {
+        "key": "bideoak.legebiltzarra.eus",
+        "count": 2
+      },
+      {
+        "key": "broadcast1.radioponiente.org",
+        "count": 2
+      },
+      {
+        "key": "cdnlivevlc.codev8.net",
+        "count": 2
+      },
+      {
+        "key": "cloud2.streaminglivehd.com",
+        "count": 2
+      },
+      {
+        "key": "d2hrvno5bw6tg2.cloudfront.net",
+        "count": 2
+      },
+      {
+        "key": "english-livebkali.cgtn.com",
+        "count": 2
+      },
+      {
+        "key": "especial7tv.gestec-video.com",
+        "count": 2
+      },
+      {
+        "key": "eu1.servers10.com",
+        "count": 2
+      },
+      {
+        "key": "hz1.teleport.cc",
+        "count": 2
+      },
+      {
+        "key": "install.akctvcontrol.com",
+        "count": 2
+      },
+      {
+        "key": "live-edge-par-1.cdn.enetres.net",
+        "count": 2
+      },
+      {
+        "key": "live.kh.malimarcdn.com",
+        "count": 2
+      },
+      {
+        "key": "m1b2.worldcast.tv",
+        "count": 2
+      },
+      {
+        "key": "media.parlamento-larioja.org",
+        "count": 2
+      },
+      {
+        "key": "nimble.tuyapro.es",
+        "count": 2
+      },
+      {
+        "key": "ondacadiztv.es",
+        "count": 2
+      },
+      {
+        "key": "play.cdn.enetres.net",
+        "count": 2
+      },
+      {
+        "key": "player.cetelmon.tv",
+        "count": 2
+      },
+      {
+        "key": "rbmn-live.akamaized.net",
+        "count": 2
+      },
+      {
+        "key": "rmtv.akamaized.net",
+        "count": 2
+      },
+      {
+        "key": "servidor.islahostingla.com",
+        "count": 2
+      },
+      {
+        "key": "stream.4fun.tv",
+        "count": 2
+      },
+      {
+        "key": "stream.castr.com",
+        "count": 2
+      },
+      {
+        "key": "streaming.cloud.innovasur.es",
+        "count": 2
+      },
+      {
+        "key": "streamlov.alsolnet.com",
+        "count": 2
+      },
+      {
+        "key": "ventdelnord.tv",
+        "count": 2
+      },
+      {
+        "key": "video3.lhdserver.es",
+        "count": 2
+      },
+      {
+        "key": "videoserver.tmcreativos.com",
+        "count": 2
+      },
+      {
+        "key": "www.laxarxames.cat",
+        "count": 2
+      },
+      {
+        "key": "1211313014.rsc.cdn77.org",
+        "count": 1
+      },
+      {
+        "key": "16escalones-live2.flumotion.com",
+        "count": 1
+      },
+      {
+        "key": "1826200335.rsc.cdn77.org",
+        "count": 1
+      },
+      {
+        "key": "183.bozztv.com",
+        "count": 1
+      },
+      {
+        "key": "217.182.77.27",
+        "count": 1
+      },
+      {
+        "key": "2d006483e2aa43fe812f7b464cb2916d.mediatailor.us-east-1.amazonaws.com",
+        "count": 1
+      },
+      {
+        "key": "30a-tv.com",
+        "count": 1
+      },
+      {
+        "key": "585b674743bbb.streamlock.net",
+        "count": 1
+      },
+      {
+        "key": "59d39900ebfb8.streamlock.net",
+        "count": 1
+      },
+      {
+        "key": "59ec5453559f0.streamlock.net",
+        "count": 1
+      },
+      {
+        "key": "59ef525c24caa.streamlock.net",
+        "count": 1
+      },
+      {
+        "key": "5c0956165db0b.streamlock.net",
+        "count": 1
+      },
+      {
+        "key": "5ca9af4645e15.streamlock.net",
+        "count": 1
+      },
+      {
+        "key": "5ce9406b73c33.streamlock.net",
+        "count": 1
+      },
+      {
+        "key": "5d776b1861da1.streamlock.net",
+        "count": 1
+      },
+      {
+        "key": "8f4cbe9fa8d44aa3bfd4283527a9effd.mediatailor.us-east-2.amazonaws.com",
+        "count": 1
+      },
+      {
+        "key": "9laloma.tv",
+        "count": 1
+      },
+      {
+        "key": "abc-news-dmd-streams-1.akamaized.net",
+        "count": 1
+      },
+      {
+        "key": "abr.de1se01.v2beat.live",
+        "count": 1
+      },
+      {
+        "key": "aka-live1050.delivery.roku.com",
+        "count": 1
+      },
+      {
+        "key": "amaru.dyndns.org",
+        "count": 1
+      },
+      {
+        "key": "amdlive-ch01-g-ctnd-com.akamaized.net",
+        "count": 1
+      },
+      {
+        "key": "amg01076-lightningintern-gbnews-samsunguk-0lu52.amagi.tv",
+        "count": 1
+      },
+      {
+        "key": "amg01218-amg01218c6-amgplt0915.playout.now3.amagi.tv",
+        "count": 1
+      },
+      {
+        "key": "amg17560-fcb-amg17560c2-samsung-es-9803.playouts.now.amagi.tv",
+        "count": 1
+      },
+      {
+        "key": "amg17560-fcb-amg17560c3-lg-es-11383.playouts.now.amagi.tv",
+        "count": 1
+      },
+      {
+        "key": "b01c02nl.mediatriple.net",
+        "count": 1
+      },
+      {
+        "key": "bdc8100df748400cabc7e133824c8ceb.mediatailor.us-east-2.amazonaws.com",
+        "count": 1
+      },
+      {
+        "key": "best-str.umn.cdn.united.cloud",
+        "count": 1
+      },
+      {
+        "key": "bit.controlstreams.com",
+        "count": 1
+      },
+      {
+        "key": "bitcdn-kronehit.bitmovin.com",
+        "count": 1
+      },
+      {
+        "key": "bradmax.com",
+        "count": 1
+      },
+      {
+        "key": "buzzrota-ono.amagi.tv",
+        "count": 1
+      },
+      {
+        "key": "canal2000.berkano-systems.net",
+        "count": 1
+      },
+      {
+        "key": "canalcoin.garjim.es",
+        "count": 1
+      },
+      {
+        "key": "canalmalaga-tv-live.flumotion.com",
+        "count": 1
+      },
+      {
+        "key": "cbsn-us.cbsnstream.cbsnews.com",
+        "count": 1
+      },
+      {
+        "key": "cdn.teveo.cu",
+        "count": 1
+      },
+      {
+        "key": "cdnlive.myspirit.tv",
+        "count": 1
+      },
+      {
+        "key": "classicarts.akamaized.net",
+        "count": 1
+      },
+      {
+        "key": "cloud.fastchannel.es",
+        "count": 1
+      },
+      {
+        "key": "cloud.streamingconnect.tv",
+        "count": 1
+      },
+      {
+        "key": "cloudtv.provideo.es",
+        "count": 1
+      },
+      {
+        "key": "cls.alcarria.tv",
+        "count": 1
+      },
+      {
+        "key": "common01.todostreaming.es",
+        "count": 1
+      },
+      {
+        "key": "content.uplynk.com",
+        "count": 1
+      },
+      {
+        "key": "copaco.desdeparaguay.net",
+        "count": 1
+      },
+      {
+        "key": "cope-religion-video.flumotion.com",
+        "count": 1
+      },
+      {
+        "key": "crmlive.redctnet.es",
+        "count": 1
+      },
+      {
+        "key": "crtvg-europa.flumotion.cloud",
+        "count": 1
+      },
+      {
+        "key": "crtvg-events1.flumotion.cloud",
+        "count": 1
+      },
+      {
+        "key": "crtvg-events2.flumotion.cloud",
+        "count": 1
+      },
+      {
+        "key": "crtvg-events3.flumotion.cloud",
+        "count": 1
+      },
+      {
+        "key": "crtvg-events4.flumotion.cloud",
+        "count": 1
+      },
+      {
+        "key": "crtvg-infantil-schlive.flumotion.cloud",
+        "count": 1
+      },
+      {
+        "key": "crtvg-mirarg-schlive.flumotion.cloud",
+        "count": 1
+      },
+      {
+        "key": "crtvg-tvg2.flumotion.cloud",
+        "count": 1
+      },
+      {
+        "key": "crtvg-universo-castelao-schlive.flumotion.cloud",
+        "count": 1
+      },
+      {
+        "key": "crtvg-xabarinr1-schlive.flumotion.cloud",
+        "count": 1
+      },
+      {
+        "key": "crtvg-xabarinr2-schlive.flumotion.cloud",
+        "count": 1
+      },
+      {
+        "key": "crtvg-xabarinr3-schlive.flumotion.cloud",
+        "count": 1
+      },
+      {
+        "key": "d12e4o88jd8gex.cloudfront.net",
+        "count": 1
+      },
+      {
+        "key": "d16pwlnz9msuji.cloudfront.net",
+        "count": 1
+      },
+      {
+        "key": "d1chghleocc9sm.cloudfront.net",
+        "count": 1
+      },
+      {
+        "key": "d1oyt3v08gcy18.cloudfront.net",
+        "count": 1
+      },
+      {
+        "key": "d2e1asnsl7br7b.cloudfront.net",
+        "count": 1
+      },
+      {
+        "key": "d2epgk1fomaa1g.cloudfront.net",
+        "count": 1
+      },
+      {
+        "key": "d2ferbiwcx1539.cloudfront.net",
+        "count": 1
+      },
+      {
+        "key": "d2glyu450vvghm.cloudfront.net",
+        "count": 1
+      },
+      {
+        "key": "d2jiqiw4g5lj5k.cloudfront.net",
+        "count": 1
+      },
+      {
+        "key": "d2q93scm3qt8zp.cloudfront.net",
+        "count": 1
+      },
+      {
+        "key": "d2ymuyhevki1a1.cloudfront.net",
+        "count": 1
+      },
+      {
+        "key": "daserste-live.ard-mcdn.de",
+        "count": 1
+      },
+      {
+        "key": "dfk2a268yviz9.cloudfront.net",
+        "count": 1
+      },
+      {
+        "key": "directes-tv-int-dev.3catdirectes.cat",
+        "count": 1
+      },
+      {
+        "key": "directes3-tv-cat.3catdirectes.cat",
+        "count": 1
+      },
+      {
+        "key": "directes3-tv-int.3catdirectes.cat",
+        "count": 1
+      },
+      {
+        "key": "directo.tuwebtv.es",
+        "count": 1
+      },
+      {
+        "key": "directo.tvferrol.es",
+        "count": 1
+      },
+      {
+        "key": "dqco14bu26p3z.cloudfront.net",
+        "count": 1
+      },
+      {
+        "key": "ds2c506obo7m8.cloudfront.net",
+        "count": 1
+      },
+      {
+        "key": "dsdhx5k1zli7y.cloudfront.net",
+        "count": 1
+      },
+      {
+        "key": "dwamdstream102.akamaized.net",
+        "count": 1
+      },
+      {
+        "key": "dwamdstream104.akamaized.net",
+        "count": 1
+      },
+      {
+        "key": "edge-nodo-002.streaming.hitcloser.net",
+        "count": 1
+      },
+      {
+        "key": "edge.xn--tbnespaa-j3a.es",
+        "count": 1
+      },
+      {
+        "key": "elche7tv.gestec-video.com",
+        "count": 1
+      },
+      {
+        "key": "eu.live.skyfolk.mk",
+        "count": 1
+      },
+      {
+        "key": "euronews-live-spa-es.fast.rakuten.tv",
+        "count": 1
+      },
+      {
+        "key": "event.watchity.com",
+        "count": 1
+      },
+      {
+        "key": "fastly.live.brightcove.com",
+        "count": 1
+      },
+      {
+        "key": "feeds.intoday.in",
+        "count": 1
+      },
+      {
+        "key": "flu-01.hucame.es",
+        "count": 1
+      },
+      {
+        "key": "fox-foxnewsnow-samsungus.amagi.tv",
+        "count": 1
+      },
+      {
+        "key": "ftv1.b-cdn.net",
+        "count": 1
+      },
+      {
+        "key": "g0.ipcamlive.com",
+        "count": 1
+      },
+      {
+        "key": "hls.livecdn.io",
+        "count": 1
+      },
+      {
+        "key": "hola-play-2108fd06-86d4-44e8-9867-c35b4895a1c1-es.fast.rakuten.tv",
+        "count": 1
+      },
+      {
+        "key": "hr-live.ard-mcdn.de",
+        "count": 1
+      },
+      {
+        "key": "indiatodaylive.akamaized.net",
+        "count": 1
+      },
+      {
+        "key": "interalmeria.tv",
+        "count": 1
+      },
+      {
+        "key": "k20.usastreams.com",
+        "count": 1
+      },
+      {
+        "key": "laregionlive.flumotion.cloud",
+        "count": 1
+      },
+      {
+        "key": "lbgo.bozztv.com",
+        "count": 1
+      },
+      {
+        "key": "limited12.todostreaming.es",
+        "count": 1
+      },
+      {
+        "key": "limited2.todostreaming.es",
+        "count": 1
+      },
+      {
+        "key": "limited31.todostreaming.es",
+        "count": 1
+      },
+      {
+        "key": "limited43.todostreaming.es",
+        "count": 1
+      },
+      {
+        "key": "limited44.todostreaming.es",
+        "count": 1
+      },
+      {
+        "key": "live-24-canalsur.interactvty.pro",
+        "count": 1
+      },
+      {
+        "key": "live-cdn-stream-euw1.bfmtv.bct.nextradiotv.com",
+        "count": 1
+      },
+      {
+        "key": "live-hls-web-aja.getaj.net",
+        "count": 1
+      },
+      {
+        "key": "live-hls-web-aje-gcp.thehlive.com",
+        "count": 1
+      },
+      {
+        "key": "live.alarabiya.net",
+        "count": 1
+      },
+      {
+        "key": "live.atlanticotelevision.com",
+        "count": 1
+      },
+      {
+        "key": "live.enfoque.media",
+        "count": 1
+      },
+      {
+        "key": "live.gideo.video",
+        "count": 1
+      },
+      {
+        "key": "live.iplanay.gob.mx",
+        "count": 1
+      },
+      {
+        "key": "live.lancelot.tv",
+        "count": 1
+      },
+      {
+        "key": "live.presstv.ir",
+        "count": 1
+      },
+      {
+        "key": "livecdn.enlace.plus",
+        "count": 1
+      },
+      {
+        "key": "livesg1.rtva.hiway.media",
+        "count": 1
+      },
+      {
+        "key": "livetv.powerapp.com.tr",
+        "count": 1
+      },
+      {
+        "key": "luna-4-video.mediaserver.digital",
+        "count": 1
+      },
+      {
+        "key": "mblesmain01.telesur.ultrabase.net",
+        "count": 1
+      },
+      {
+        "key": "mcdn.br.de",
+        "count": 1
+      },
+      {
+        "key": "media-tyo.hls.nhkworld.jp",
+        "count": 1
+      },
+      {
+        "key": "media2.streambrothers.com",
+        "count": 1
+      },
+      {
+        "key": "mts1.iptv-playoutcenter.de",
+        "count": 1
+      },
+      {
+        "key": "ndrint.akamaized.net",
+        "count": 1
+      },
+      {
+        "key": "ndtv24x7elemarchana.akamaized.net",
+        "count": 1
+      },
+      {
+        "key": "negociostv-negociostv-samsunges.amagi.tv",
+        "count": 1
+      },
+      {
+        "key": "newscript.gestec-video.com",
+        "count": 1
+      },
+      {
+        "key": "nlb1-live.emitstream.com",
+        "count": 1
+      },
+      {
+        "key": "nmx1ota.akamaized.net",
+        "count": 1
+      },
+      {
+        "key": "nmxlive.akamaized.net",
+        "count": 1
+      },
+      {
+        "key": "nrvideo1.newradio.it",
+        "count": 1
+      },
+      {
+        "key": "ott.tv5monde.com",
+        "count": 1
+      },
+      {
+        "key": "panel.tvstream.cl",
+        "count": 1
+      },
+      {
+        "key": "partneta.cdn.mgmlcdn.com",
+        "count": 1
+      },
+      {
+        "key": "pgalicia-live.akamaized.net",
+        "count": 1
+      },
+      {
+        "key": "play.agenciastreaming.com",
+        "count": 1
+      },
+      {
+        "key": "play.turesportmedia.com",
+        "count": 1
+      },
+      {
+        "key": "player-tvcultura.stream.uol.com.br",
+        "count": 1
+      },
+      {
+        "key": "player.earthtv.com",
+        "count": 1
+      },
+      {
+        "key": "player.kick.com",
+        "count": 1
+      },
+      {
+        "key": "player.tegotv.com",
+        "count": 1
+      },
+      {
+        "key": "player.telebilbao.es",
+        "count": 1
+      },
+      {
+        "key": "player.viloud.tv",
+        "count": 1
+      },
+      {
+        "key": "polonia.tvp.pl",
+        "count": 1
+      },
+      {
+        "key": "pub01.dav.tcscdn.net",
+        "count": 1
+      },
+      {
+        "key": "pubads.g.doubleclick.net",
+        "count": 1
+      },
+      {
+        "key": "radioitaliatv.akamaized.net",
+        "count": 1
+      },
+      {
+        "key": "rferl-ingest.akamaized.net",
+        "count": 1
+      },
+      {
+        "key": "rpn.bozztv.com",
+        "count": 1
+      },
+      {
+        "key": "rtcg-live-open.morescreens.com",
+        "count": 1
+      },
+      {
+        "key": "rtva-channel22.flumotion.cloud",
+        "count": 1
+      },
+      {
+        "key": "rtva-channel42.flumotion.cloud",
+        "count": 1
+      },
+      {
+        "key": "rtvclive.flumotion.cloud",
+        "count": 1
+      },
+      {
+        "key": "rudo.video",
+        "count": 1
+      },
+      {
+        "key": "ruv-web-live.akamaized.net",
+        "count": 1
+      },
+      {
+        "key": "scl.edge.grupoz.cl",
+        "count": 1
+      },
+      {
+        "key": "secure3.todostreaming.es",
+        "count": 1
+      },
+      {
+        "key": "secure5.todostreaming.es",
+        "count": 1
+      },
+      {
+        "key": "server80.servistreaming.com",
+        "count": 1
+      },
+      {
+        "key": "sis-global.prod.samsungtv.plus",
+        "count": 1
+      },
+      {
+        "key": "srfs.akamaized.net",
+        "count": 1
+      },
+      {
+        "key": "stream.burrianateve.com",
+        "count": 1
+      },
+      {
+        "key": "stream.cmctv.hr",
+        "count": 1
+      },
+      {
+        "key": "stream.estecanaltv.com",
+        "count": 1
+      },
+      {
+        "key": "stream.hch.hn",
+        "count": 1
+      },
+      {
+        "key": "stream.maestrat.tv",
+        "count": 1
+      },
+      {
+        "key": "stream.mediawork.cz",
+        "count": 1
+      },
+      {
+        "key": "stream.ontvmx.com",
+        "count": 1
+      },
+      {
+        "key": "stream.oromar.tv",
+        "count": 1
+      },
+      {
+        "key": "stream.qmusic.nl",
+        "count": 1
+      },
+      {
+        "key": "stream.rdstv.radio",
+        "count": 1
+      },
+      {
+        "key": "stream1.parlamentodeandalucia.es",
+        "count": 1
+      },
+      {
+        "key": "stream1.sersat.com",
+        "count": 1
+      },
+      {
+        "key": "streaming-1.eltorotv.com",
+        "count": 1
+      },
+      {
+        "key": "streaming.28kanala.eus",
+        "count": 1
+      },
+      {
+        "key": "streaming.gitb.eus",
+        "count": 1
+      },
+      {
+        "key": "streaming.mediacast.pro",
+        "count": 1
+      },
+      {
+        "key": "streaming.proceso.info",
+        "count": 1
+      },
+      {
+        "key": "streaming.rtvc.gov.co",
+        "count": 1
+      },
+      {
+        "key": "streaming.rtvmarbella.tv",
+        "count": 1
+      },
+      {
+        "key": "streaming.ukt.eus",
+        "count": 1
+      },
+      {
+        "key": "streaming005.gestec-video.com",
+        "count": 1
+      },
+      {
+        "key": "streaming007.gestec-video.com",
+        "count": 1
+      },
+      {
+        "key": "streaming01.gestec-video.com",
+        "count": 1
+      },
+      {
+        "key": "streamserver3.seneca.tv",
+        "count": 1
+      },
+      {
+        "key": "streamtv.mediasector.es",
+        "count": 1
+      },
+      {
+        "key": "streamvideol1.luxnet.ua",
+        "count": 1
+      },
+      {
+        "key": "streamwipr.pr",
+        "count": 1
+      },
+      {
+        "key": "tagesschau.akamaized.net",
+        "count": 1
+      },
+      {
+        "key": "tef.servertv.online",
+        "count": 1
+      },
+      {
+        "key": "telegranada.es",
+        "count": 1
+      },
+      {
+        "key": "tringliveviz.akamaized.net",
+        "count": 1
+      },
+      {
+        "key": "tv-trthaber.medya.trt.com.tr",
+        "count": 1
+      },
+      {
+        "key": "tv-trtworld.medya.trt.com.tr",
+        "count": 1
+      },
+      {
+        "key": "tv.mediacp.eu",
+        "count": 1
+      },
+      {
+        "key": "tv.nrg91.gr",
+        "count": 1
+      },
+      {
+        "key": "tvdirecto.teleelx.es",
+        "count": 1
+      },
+      {
+        "key": "valldeuxo.gestec-video.com",
+        "count": 1
+      },
+      {
+        "key": "vidartv2.todostreaming.es",
+        "count": 1
+      },
+      {
+        "key": "video-eu1.streamerr.co",
+        "count": 1
+      },
+      {
+        "key": "video.dataserv.cc",
+        "count": 1
+      },
+      {
+        "key": "video.telemotril.com",
+        "count": 1
+      },
+      {
+        "key": "video.telesafor.com",
+        "count": 1
+      },
+      {
+        "key": "videos.canal56.com",
+        "count": 1
+      },
+      {
+        "key": "vivo.canaloncelive.tv",
+        "count": 1
+      },
+      {
+        "key": "wdrfsww247.akamaized.net",
+        "count": 1
+      },
+      {
+        "key": "wmserver.jgpa.es",
+        "count": 1
+      },
+      {
+        "key": "www.7riojaplay.tv",
+        "count": 1
+      },
+      {
+        "key": "www.lightcast.com",
+        "count": 1
+      },
+      {
+        "key": "www.natvplay.es",
+        "count": 1
+      },
+      {
+        "key": "www.rte.ie",
+        "count": 1
+      },
+      {
+        "key": "xuntalive.akamaized.net",
+        "count": 1
+      },
+      {
+        "key": "zuzenean.goienamedia.eus",
+        "count": 1
+      },
+      {
+        "key": "zuzenean.oizmendi.eus",
+        "count": 1
+      }
+    ]
+  },
+  "cataloguePage": {
+    "cards": 768,
+    "declared": 768,
+    "matchedBySlug": 550,
+    "matchedByName": 218,
+    "ambiguous": [
+      {
+        "name": "La 7",
+        "slug": "La7",
+        "candidates": [
+          "La 7",
+          "La 7+"
+        ],
+        "resolved": "La 7"
+      }
+    ],
+    "pageOnly": [],
+    "statusCounts": [
+      {
+        "key": "evt",
+        "count": 130
+      },
+      {
+        "key": "geo",
+        "count": 44
+      },
+      {
+        "key": "reg",
+        "count": 24
+      },
+      {
+        "key": "noem",
+        "count": 7
+      }
+    ],
+    "platformCounts": [
+      {
+        "key": "Navegador",
+        "count": 632
+      },
+      {
+        "key": "Android",
+        "count": 534
+      },
+      {
+        "key": "iOS",
+        "count": 534
+      },
+      {
+        "key": "M3U/M3U8",
+        "count": 437
+      }
+    ]
+  },
+  "lists": {
+    "tv.m3u8": {
+      "available": true,
+      "header": "#EXTM3U @LaQuay https://github.com/LaQuay/TDTChannels",
+      "entries": 573,
+      "distinctUrls": 573,
+      "urlFormat": [
+        {
+          "format": "hls",
+          "count": 572
+        },
+        {
+          "format": "other",
+          "count": 1
+        }
+      ],
+      "channelsCovered": 435,
+      "channelsNotListed": 333,
+      "urlsNotInSnapshot": 0,
+      "urlsNotInSnapshotSample": [],
+      "entriesWithoutTitle": 0,
+      "groupsDeclared": 30
+    },
+    "tv_mpd.m3u8": {
+      "available": true,
+      "header": "#EXTM3U @LaQuay https://github.com/LaQuay/TDTChannels",
+      "entries": 573,
+      "distinctUrls": 573,
+      "urlFormat": [
+        {
+          "format": "hls",
+          "count": 572
+        },
+        {
+          "format": "other",
+          "count": 1
+        }
+      ],
+      "channelsCovered": 435,
+      "channelsNotListed": 333,
+      "urlsNotInSnapshot": 0,
+      "urlsNotInSnapshotSample": [],
+      "entriesWithoutTitle": 0,
+      "groupsDeclared": 30
+    },
+    "identicalEngines": true
+  },
+  "live": {
+    "available": true,
+    "updated": 1793918983,
+    "sameUpdated": true,
+    "channels": 768,
+    "options": 855,
+    "sameCounts": true
+  },
+  "failures": [],
+  "categories": [
+    {
+      "country": "International",
+      "category": "Int. América",
+      "channels": 95,
+      "options": 92,
+      "noem": 0,
+      "geo": 0,
+      "evt": 0,
+      "reg": 0
+    },
+    {
+      "country": "Spain",
+      "category": "Andalucía",
+      "channels": 87,
+      "options": 101,
+      "noem": 0,
+      "geo": 0,
+      "evt": 7,
+      "reg": 0
+    },
+    {
+      "country": "International",
+      "category": "Musicales",
+      "channels": 61,
+      "options": 71,
+      "noem": 0,
+      "geo": 0,
+      "evt": 0,
+      "reg": 0
+    },
+    {
+      "country": "International",
+      "category": "Int. Europa",
+      "channels": 58,
+      "options": 58,
+      "noem": 0,
+      "geo": 3,
+      "evt": 0,
+      "reg": 1
+    },
+    {
+      "country": "Spain",
+      "category": "Cataluña",
+      "channels": 57,
+      "options": 68,
+      "noem": 0,
+      "geo": 17,
+      "evt": 6,
+      "reg": 13
+    },
+    {
+      "country": "Spain",
+      "category": "Deportivos",
+      "channels": 36,
+      "options": 39,
+      "noem": 0,
+      "geo": 4,
+      "evt": 24,
+      "reg": 6
+    },
+    {
+      "country": "Spain",
+      "category": "C. Valenciana",
+      "channels": 33,
+      "options": 36,
+      "noem": 0,
+      "geo": 0,
+      "evt": 3,
+      "reg": 0
+    },
+    {
+      "country": "International",
+      "category": "Int. Asia",
+      "channels": 28,
+      "options": 33,
+      "noem": 0,
+      "geo": 1,
+      "evt": 0,
+      "reg": 0
+    },
+    {
+      "country": "Spain",
+      "category": "Eventuales",
+      "channels": 23,
+      "options": 48,
+      "noem": 0,
+      "geo": 1,
+      "evt": 9,
+      "reg": 0
+    },
+    {
+      "country": "Spain",
+      "category": "País Vasco",
+      "channels": 23,
+      "options": 19,
+      "noem": 0,
+      "geo": 1,
+      "evt": 4,
+      "reg": 0
+    },
+    {
+      "country": "Spain",
+      "category": "Canarias",
+      "channels": 22,
+      "options": 24,
+      "noem": 0,
+      "geo": 3,
+      "evt": 4,
+      "reg": 0
+    },
+    {
+      "country": "Spain",
+      "category": "Castilla y León",
+      "channels": 19,
+      "options": 11,
+      "noem": 0,
+      "geo": 0,
+      "evt": 6,
+      "reg": 0
+    },
+    {
+      "country": "Spain",
+      "category": "Generalistas",
+      "channels": 19,
+      "options": 10,
+      "noem": 7,
+      "geo": 9,
+      "evt": 2,
+      "reg": 0
+    },
+    {
+      "country": "Spain",
+      "category": "Informativos",
+      "channels": 18,
+      "options": 30,
+      "noem": 0,
+      "geo": 2,
+      "evt": 9,
+      "reg": 0
+    },
+    {
+      "country": "International",
+      "category": "Religiosos",
+      "channels": 17,
+      "options": 22,
+      "noem": 0,
+      "geo": 0,
+      "evt": 1,
+      "reg": 0
+    },
+    {
+      "country": "Spain",
+      "category": "Galicia",
+      "channels": 17,
+      "options": 22,
+      "noem": 0,
+      "geo": 0,
+      "evt": 4,
+      "reg": 0
+    },
+    {
+      "country": "Spain",
+      "category": "Infantiles",
+      "channels": 17,
+      "options": 26,
+      "noem": 0,
+      "geo": 3,
+      "evt": 3,
+      "reg": 0
+    },
+    {
+      "country": "International",
+      "category": "Deportivos Int.",
+      "channels": 15,
+      "options": 13,
+      "noem": 0,
+      "geo": 0,
+      "evt": 7,
+      "reg": 0
+    },
+    {
+      "country": "International",
+      "category": "Int. Otros",
+      "channels": 15,
+      "options": 18,
+      "noem": 0,
+      "geo": 0,
+      "evt": 0,
+      "reg": 0
+    },
+    {
+      "country": "Spain",
+      "category": "Castilla-La Mancha",
+      "channels": 14,
+      "options": 13,
+      "noem": 0,
+      "geo": 0,
+      "evt": 3,
+      "reg": 1
+    },
+    {
+      "country": "International",
+      "category": "Int. África",
+      "channels": 13,
+      "options": 14,
+      "noem": 0,
+      "geo": 0,
+      "evt": 0,
+      "reg": 0
+    },
+    {
+      "country": "Spain",
+      "category": "C. de Madrid",
+      "channels": 13,
+      "options": 10,
+      "noem": 0,
+      "geo": 0,
+      "evt": 4,
+      "reg": 0
+    },
+    {
+      "country": "Spain",
+      "category": "Streaming",
+      "channels": 13,
+      "options": 26,
+      "noem": 0,
+      "geo": 0,
+      "evt": 13,
+      "reg": 0
+    },
+    {
+      "country": "Spain",
+      "category": "Aragón",
+      "channels": 9,
+      "options": 6,
+      "noem": 0,
+      "geo": 0,
+      "evt": 4,
+      "reg": 3
+    },
+    {
+      "country": "Spain",
+      "category": "Cantabria",
+      "channels": 8,
+      "options": 9,
+      "noem": 0,
+      "geo": 0,
+      "evt": 3,
+      "reg": 0
+    },
+    {
+      "country": "Spain",
+      "category": "R. de Murcia",
+      "channels": 8,
+      "options": 7,
+      "noem": 0,
+      "geo": 0,
+      "evt": 2,
+      "reg": 0
+    },
+    {
+      "country": "Spain",
+      "category": "Extremadura",
+      "channels": 7,
+      "options": 7,
+      "noem": 0,
+      "geo": 0,
+      "evt": 2,
+      "reg": 0
+    },
+    {
+      "country": "Spain",
+      "category": "Illes Balears",
+      "channels": 6,
+      "options": 5,
+      "noem": 0,
+      "geo": 0,
+      "evt": 2,
+      "reg": 0
+    },
+    {
+      "country": "Spain",
+      "category": "La Rioja",
+      "channels": 5,
+      "options": 6,
+      "noem": 0,
+      "geo": 0,
+      "evt": 2,
+      "reg": 0
+    },
+    {
+      "country": "Spain",
+      "category": "C. Foral de Navarra",
+      "channels": 4,
+      "options": 6,
+      "noem": 0,
+      "geo": 0,
+      "evt": 2,
+      "reg": 0
+    },
+    {
+      "country": "Spain",
+      "category": "Ceuta",
+      "channels": 3,
+      "options": 1,
+      "noem": 0,
+      "geo": 0,
+      "evt": 2,
+      "reg": 0
+    },
+    {
+      "country": "Spain",
+      "category": "P. de Asturias",
+      "channels": 3,
+      "options": 2,
+      "noem": 0,
+      "geo": 0,
+      "evt": 2,
+      "reg": 0
+    },
+    {
+      "country": "Spain",
+      "category": "Melilla",
+      "channels": 2,
+      "options": 2,
+      "noem": 0,
+      "geo": 0,
+      "evt": 0,
+      "reg": 0
+    }
+  ],
+  "tagSemantics": [
+    {
+      "tag": "GEO",
+      "meaning": "Geobloqueo regional o territorial (etiqueta del enlace) / bloqueo regional en Info"
+    },
+    {
+      "tag": "GEOCAT",
+      "meaning": "Emisión limitada a Cataluña (etiqueta del enlace)"
+    },
+    {
+      "tag": "ES, EN, FR, ...",
+      "meaning": "Idioma principal de la emisión, código ISO 639-1 (etiqueta del enlace)"
+    },
+    {
+      "tag": "SD / HD / UHD",
+      "meaning": "Calidad específica cuando existen enlaces diferenciados (etiqueta del enlace)"
+    },
+    {
+      "tag": "1, 2, 3, ...",
+      "meaning": "Varias opciones oficiales de una misma emisión (etiqueta del enlace)"
+    },
+    {
+      "tag": "NOEM",
+      "meaning": "El canal no dispone de emisión online; se incluye por indexación, información o EPG"
+    },
+    {
+      "tag": "REG",
+      "meaning": "Requiere registro gratuito en la plataforma oficial"
+    },
+    {
+      "tag": "EXTA",
+      "meaning": "La plataforma buscará la emisión oficial a partir del enlace de la columna Web"
+    },
+    {
+      "tag": "EXTB",
+      "meaning": "La plataforma buscará la emisión oficial a partir del enlace de la columna M3U8"
+    },
+    {
+      "tag": "EMB",
+      "meaning": "Emisión embebida desde una plataforma oficial externa (YouTube, Twitch, ...)"
+    },
+    {
+      "tag": "UAG / UAGB",
+      "meaning": "Requiere User-Agent compatible con navegador"
+    },
+    {
+      "tag": "REF / REFI1 / REFG1 / REFC1",
+      "meaning": "Requiere cabecera Referer de la plataforma"
+    },
+    {
+      "tag": "EVT",
+      "meaning": "La emisión opera de forma intermitente o eventual"
+    },
+    {
+      "tag": "NONAV",
+      "meaning": "La emisión no funciona correctamente en navegadores web"
+    }
+  ],
+  "televisionMd": {
+    "source": {
+      "path": "C:\\Users\\Admin\\Documents\\workspace\\streaming\\reference\\TDTChannels\\TELEVISION.md",
+      "origin": "<repo>/../reference/TDTChannels",
+      "bytes": 204079,
+      "sha256": "29b7de0fdb8ba0430be5624d0bc8c6e8e4f8dce5f91fa70e245aa5a3c263a026"
+    },
+    "rows": 721,
+    "links": 806
+  },
+  "channelsWithoutOnlineEmission": [
+    {
+      "index": 3,
+      "name": "Cuatro",
+      "category": "Generalistas",
+      "tags": [
+        "EXTA",
+        "GEO"
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Telecinco",
+      "category": "Generalistas",
+      "tags": [
+        "EXTA",
+        "GEO"
+      ]
+    },
+    {
+      "index": 6,
+      "name": "FDF",
+      "category": "Generalistas",
+      "tags": [
+        "EXTA",
+        "GEO"
+      ]
+    },
+    {
+      "index": 7,
+      "name": "Energy",
+      "category": "Generalistas",
+      "tags": [
+        "EXTA",
+        "GEO"
+      ]
+    },
+    {
+      "index": 8,
+      "name": "Divinity",
+      "category": "Generalistas",
+      "tags": [
+        "EXTA",
+        "GEO"
+      ]
+    },
+    {
+      "index": 9,
+      "name": "Be Mad",
+      "category": "Generalistas",
+      "tags": [
+        "EXTA",
+        "GEO"
+      ]
+    },
+    {
+      "index": 10,
+      "name": "DMAX",
+      "category": "Generalistas",
+      "tags": [
+        "NOEM"
+      ]
+    },
+    {
+      "index": 13,
+      "name": "VEO7",
+      "category": "Generalistas",
+      "tags": [
+        "NOEM"
+      ]
+    },
+    {
+      "index": 14,
+      "name": "Squirrel",
+      "category": "Generalistas",
+      "tags": [
+        "NOEM"
+      ]
+    },
+    {
+      "index": 15,
+      "name": "Squirrel2",
+      "category": "Generalistas",
+      "tags": [
+        "NOEM"
+      ]
+    },
+    {
+      "index": 16,
+      "name": "Ten",
+      "category": "Generalistas",
+      "tags": [
+        "NOEM"
+      ]
+    },
+    {
+      "index": 17,
+      "name": "DKISS",
+      "category": "Generalistas",
+      "tags": [
+        "NOEM"
+      ]
+    },
+    {
+      "index": 18,
+      "name": "BOM Cine",
+      "category": "Generalistas",
+      "tags": [
+        "NOEM"
+      ]
+    },
+    {
+      "index": 42,
+      "name": "Aragón Deporte 1",
+      "category": "Deportivos",
+      "tags": [
+        "EXTA",
+        "REG",
+        "EVT"
+      ]
+    },
+    {
+      "index": 43,
+      "name": "Aragón Deporte 2",
+      "category": "Deportivos",
+      "tags": [
+        "EXTA",
+        "REG",
+        "EVT"
+      ]
+    },
+    {
+      "index": 44,
+      "name": "Aragón Deporte 3",
+      "category": "Deportivos",
+      "tags": [
+        "EXTA",
+        "REG",
+        "EVT"
+      ]
+    },
+    {
+      "index": 45,
+      "name": "Aragón Deporte 4",
+      "category": "Deportivos",
+      "tags": [
+        "EXTA",
+        "REG",
+        "EVT"
+      ]
+    },
+    {
+      "index": 51,
+      "name": "Sevilla FC+",
+      "category": "Deportivos",
+      "tags": [
+        "REG"
+      ]
+    },
+    {
+      "index": 52,
+      "name": "Betis TV",
+      "category": "Deportivos",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 57,
+      "name": "Villarreal CF TV",
+      "category": "Deportivos",
+      "tags": [
+        "REG"
+      ]
+    },
+    {
+      "index": 74,
+      "name": "Boing",
+      "category": "Infantiles",
+      "tags": [
+        "EXTA",
+        "GEO"
+      ]
+    },
+    {
+      "index": 93,
+      "name": "mtmad 24h",
+      "category": "Eventuales",
+      "tags": [
+        "EXTA",
+        "GEO"
+      ]
+    },
+    {
+      "index": 103,
+      "name": "Comedia (Mediaset Infinity)",
+      "category": "Eventuales",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 104,
+      "name": "En la calle (Mediaset Infinity)",
+      "category": "Eventuales",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 105,
+      "name": "Top Series (Mediaset Infinity)",
+      "category": "Eventuales",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 106,
+      "name": "Viajes (Mediaset Infinity)",
+      "category": "Eventuales",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 107,
+      "name": "Eventos (Mediaset Infinity)",
+      "category": "Eventuales",
+      "tags": [
+        "EXTA",
+        "EVT"
+      ]
+    },
+    {
+      "index": 108,
+      "name": "Eventos 2 (Mediaset Infinity)",
+      "category": "Eventuales",
+      "tags": [
+        "EXTA",
+        "EVT"
+      ]
+    },
+    {
+      "index": 177,
+      "name": "Uvitel TV",
+      "category": "Andalucía",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 201,
+      "name": "MIRA TV",
+      "category": "Andalucía",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 214,
+      "name": "Aragón TV",
+      "category": "Aragón",
+      "tags": [
+        "EXTA",
+        "REG"
+      ]
+    },
+    {
+      "index": 215,
+      "name": "Aragón Noticias Accesible",
+      "category": "Aragón",
+      "tags": [
+        "EXTA",
+        "REG"
+      ]
+    },
+    {
+      "index": 216,
+      "name": "El Tiempo en Aragón (AragonPlay)",
+      "category": "Aragón",
+      "tags": [
+        "EXTA",
+        "REG"
+      ]
+    },
+    {
+      "index": 258,
+      "name": "CanalImagen Almansa",
+      "category": "Castilla-La Mancha",
+      "tags": [
+        "EXTA",
+        "REF"
+      ]
+    },
+    {
+      "index": 266,
+      "name": "Gobierno de Castilla-La Mancha",
+      "category": "Castilla-La Mancha",
+      "tags": [
+        "EVT",
+        "EXTA"
+      ]
+    },
+    {
+      "index": 267,
+      "name": "La 7 (CyLTV)",
+      "category": "Castilla y León",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 268,
+      "name": "La 8 Ávila",
+      "category": "Castilla y León",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 269,
+      "name": "La 8 Bierzo",
+      "category": "Castilla y León",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 270,
+      "name": "La 8 Burgos",
+      "category": "Castilla y León",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 271,
+      "name": "La 8 León",
+      "category": "Castilla y León",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 272,
+      "name": "La 8 Palencia",
+      "category": "Castilla y León",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 273,
+      "name": "La 8 Salamanca",
+      "category": "Castilla y León",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 274,
+      "name": "La 8 Segovia",
+      "category": "Castilla y León",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 275,
+      "name": "La 8 Soria",
+      "category": "Castilla y León",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 276,
+      "name": "La 8 Valladolid",
+      "category": "Castilla y León",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 277,
+      "name": "La 8 Zamora",
+      "category": "Castilla y León",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 316,
+      "name": "La Xarxa",
+      "category": "Cataluña",
+      "tags": [
+        "REG"
+      ]
+    },
+    {
+      "index": 317,
+      "name": "Olot Televisió",
+      "category": "Cataluña",
+      "tags": [
+        "EXTA",
+        "REG"
+      ]
+    },
+    {
+      "index": 330,
+      "name": "TVGirona",
+      "category": "Cataluña",
+      "tags": [
+        "EXTA",
+        "REG"
+      ]
+    },
+    {
+      "index": 335,
+      "name": "Banyoles Televisió",
+      "category": "Cataluña",
+      "tags": [
+        "EXTA",
+        "REG"
+      ]
+    },
+    {
+      "index": 337,
+      "name": "TV del Ripollès",
+      "category": "Cataluña",
+      "tags": [
+        "EXTA",
+        "REG"
+      ]
+    },
+    {
+      "index": 341,
+      "name": "Canal Parlament",
+      "category": "Cataluña",
+      "tags": [
+        "EVT"
+      ]
+    },
+    {
+      "index": 343,
+      "name": "Ceuta TV",
+      "category": "Ceuta",
+      "tags": [
+        "EVT"
+      ]
+    },
+    {
+      "index": 344,
+      "name": "RTVCE",
+      "category": "Ceuta",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 346,
+      "name": "Telemadrid",
+      "category": "C. de Madrid",
+      "tags": [
+        "EXTA",
+        "EVT"
+      ]
+    },
+    {
+      "index": 347,
+      "name": "LaOtra",
+      "category": "C. de Madrid",
+      "tags": [
+        "EXTA",
+        "EVT"
+      ]
+    },
+    {
+      "index": 352,
+      "name": "Onda Madrid 101.3",
+      "category": "C. de Madrid",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 423,
+      "name": "Fibwi TV",
+      "category": "Illes Balears",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 439,
+      "name": "El Conquistador (ETB On)",
+      "category": "País Vasco",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 440,
+      "name": "Herri Txiki (ETB On)",
+      "category": "País Vasco",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 441,
+      "name": "Vaya Semanita (ETB On)",
+      "category": "País Vasco",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 442,
+      "name": "Euskal Herriko Bertsolari Txapelketa (ETB On)",
+      "category": "País Vasco",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 455,
+      "name": "Eusko Jaurlaritza",
+      "category": "País Vasco",
+      "tags": [
+        "EVT",
+        "EXTA"
+      ]
+    },
+    {
+      "index": 456,
+      "name": "TPA7",
+      "category": "P. de Asturias",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 459,
+      "name": "La 7",
+      "category": "R. de Murcia",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 460,
+      "name": "La 7+",
+      "category": "R. de Murcia",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 471,
+      "name": "Aragón TV Internacional",
+      "category": "Int. Europa",
+      "tags": [
+        "EXTA",
+        "REG"
+      ]
+    },
+    {
+      "index": 476,
+      "name": "GBC Gibraltar",
+      "category": "Int. Europa",
+      "tags": []
+    },
+    {
+      "index": 485,
+      "name": "Rai News 24 Italia",
+      "category": "Int. Europa",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 498,
+      "name": "RTP Internacional Portugal",
+      "category": "Int. Europa",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 499,
+      "name": "RTP 1 Portugal",
+      "category": "Int. Europa",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 500,
+      "name": "RTP 2 Portugal",
+      "category": "Int. Europa",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 501,
+      "name": "RTP Notícias Portugal",
+      "category": "Int. Europa",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 502,
+      "name": "RTP Madeira Portugal",
+      "category": "Int. Europa",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 503,
+      "name": "RTP Açores Portugal",
+      "category": "Int. Europa",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 504,
+      "name": "CNN Portugal",
+      "category": "Int. Europa",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 505,
+      "name": "Porto Canal Portugal",
+      "category": "Int. Europa",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 509,
+      "name": "Televixin Malta",
+      "category": "Int. Europa",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 510,
+      "name": "Televixin Malta Sport",
+      "category": "Int. Europa",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 513,
+      "name": "NOW TV Turquía",
+      "category": "Int. Europa",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 514,
+      "name": "STAR TV Turquía",
+      "category": "Int. Europa",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 523,
+      "name": "Kanal Freedom Ucrania",
+      "category": "Int. Europa",
+      "tags": [
+        "EXTA",
+        "REF"
+      ]
+    },
+    {
+      "index": 547,
+      "name": "N+ México",
+      "category": "Int. América",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 548,
+      "name": "N+ Foro México",
+      "category": "Int. América",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 575,
+      "name": "TV Perú",
+      "category": "Int. América",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 576,
+      "name": "TV Perú Noticias",
+      "category": "Int. América",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 577,
+      "name": "Canal IPe Perú",
+      "category": "Int. América",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 585,
+      "name": "Canal Antigua Guatemala",
+      "category": "Int. América",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 596,
+      "name": "CDN 37 República Dominicana",
+      "category": "Int. América",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 597,
+      "name": "Telemicro República Dominicana",
+      "category": "Int. América",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 598,
+      "name": "Color Visión República Dominicana",
+      "category": "Int. América",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 602,
+      "name": "ABC TV Paraguay",
+      "category": "Int. América",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 603,
+      "name": "LaTele Paraguay",
+      "category": "Int. América",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 604,
+      "name": "Telefuturo Paraguay",
+      "category": "Int. América",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 605,
+      "name": "Unicanal Paraguay",
+      "category": "Int. América",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 606,
+      "name": "Noticias NPY Paraguay",
+      "category": "Int. América",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 607,
+      "name": "Nicavisión TV Nicaragua",
+      "category": "Int. América",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 615,
+      "name": "SBT Interior Brasil",
+      "category": "Int. América",
+      "tags": [
+        "EXTA",
+        "UAG"
+      ]
+    },
+    {
+      "index": 621,
+      "name": "CGTN Español China",
+      "category": "Int. Asia",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 626,
+      "name": "Nippon News TV Japón",
+      "category": "Int. Asia",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 658,
+      "name": "RTP África",
+      "category": "Int. África",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 662,
+      "name": "United Nations TV",
+      "category": "Int. Otros",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 676,
+      "name": "Olympic Channel",
+      "category": "Deportivos Int.",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 688,
+      "name": "Best Cable Sports Perú",
+      "category": "Deportivos Int.",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 728,
+      "name": "Rock TV Rumanía",
+      "category": "Musicales",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 732,
+      "name": "RU.TV Rusia",
+      "category": "Musicales",
+      "tags": [
+        "EXTA",
+        "UAG"
+      ]
+    },
+    {
+      "index": 736,
+      "name": "Top Latino TV Perú",
+      "category": "Musicales",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 763,
+      "name": "ESNE USA",
+      "category": "Religiosos",
+      "tags": [
+        "EXTA"
+      ]
+    },
+    {
+      "index": 764,
+      "name": "CBN USA",
+      "category": "Religiosos",
+      "tags": [
+        "EXTA"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1521 @@
+{
+  "schema": "playback/independent-verification/1",
+  "generatedAt": "2026-11-14T18:44:26.826Z",
+  "method": [
+    "No audit output is trusted as evidence: only its channel NAMES seed the sample.",
+    "The LIVE tdtchannels.com catalogue is loaded and every channel is opened by URL.",
+    "Playback is judged from decoded frames plus advancing media time in a real browser.",
+    "Route stubs are disabled; only the catalogue bytes are seeded same-origin (no CORS upstream)."
+  ],
+  "environment": {
+    "node": "v24.18.0",
+    "baseUrl": "http://127.0.0.1:4400",
+    "liveCatalogueChannels": 768,
+    "sampleSize": 60
+  },
+  "counts": {
+    "tested": 68,
+    "auditPassConfirmed": 60,
+    "excludedHonest": 0,
+    "disagreements": 0
+  },
+  "disagreements": [],
+  "results": [
+    {
+      "name": "La 1",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Generalistas · SpainLa 1 Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1280,
+        "videoHeight": 720,
+        "advancedSeconds": 10.04,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED"
+      ]
+    },
+    {
+      "name": "24h",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Informativos · Spain24h Ver en directo Sitio oficial EmisiónEmisión 1Emisión 2Emisión 3",
+        "kind": "live",
+        "videoWidth": 1280,
+        "videoHeight": 720,
+        "advancedSeconds": 10.05,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "El País",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Informativos · SpainEl País Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.02,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Top Barça",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Deportivos · SpainTop Barça Ver en directo Sitio oficial EmisiónEmisión 1Emisión 2",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.21,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "EnerGeek Fan",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Infantiles · SpainEnerGeek Fan Ver en directo Sitio oficial EmisiónEmisión 1Emisión 2",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 55.25,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Cuéntame (RTVE)",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Eventuales · SpainCuéntame (RTVE) Ver en directo Sitio oficial EmisiónEmisión 1Emisión 2",
+        "kind": "live",
+        "videoWidth": 1280,
+        "videoHeight": 720,
+        "advancedSeconds": 10.25,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Al cielo con ella (RTVE)",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Eventuales · SpainAl cielo con ella (RTVE) Ver en directo Sitio oficial EmisiónEmisión 1Emisión 2",
+        "kind": "live",
+        "videoWidth": 1280,
+        "videoHeight": 720,
+        "advancedSeconds": 10.05,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Canal Sur Más Noticias",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Andalucía · SpainCanal Sur Más Noticias Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1280,
+        "videoHeight": 720,
+        "advancedSeconds": 10.02,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "7TV Jaén",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Andalucía · Spain7TV Jaén Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.03,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "7TV Campo de Gibraltar",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Andalucía · Spain7TV Campo de Gibraltar Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.01,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Almería 24h TV",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Andalucía · SpainAlmería 24h TV Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.25,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Tuya La Janda TV",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Andalucía · SpainTuya La Janda TV Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1280,
+        "videoHeight": 720,
+        "advancedSeconds": 10.01,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Marbella TV",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Andalucía · SpainMarbella TV Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.01,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Canal Málaga",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Andalucía · SpainCanal Málaga Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1280,
+        "videoHeight": 720,
+        "advancedSeconds": 10.04,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Canal San Roque",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Andalucía · SpainCanal San Roque Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.03,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Fuengirola TV",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Andalucía · SpainFuengirola TV Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1280,
+        "videoHeight": 720,
+        "advancedSeconds": 10.06,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "TVM Córdoba",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Andalucía · SpainTVM Córdoba Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.23,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "TV Canaria (RTVC)",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Canarias · SpainTV Canaria (RTVC) Ver en directo Sitio oficial EmisiónEmisión 1Emisión 2",
+        "kind": "live",
+        "videoWidth": 1280,
+        "videoHeight": 720,
+        "advancedSeconds": 10.25,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Mírame TV",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Canarias · SpainMírame TV Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 1.01,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Fuerteventura TV",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Canarias · SpainFuerteventura TV Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.05,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "De Laredu Lin TV",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Cantabria · SpainDe Laredu Lin TV Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 640,
+        "videoHeight": 360,
+        "advancedSeconds": 10.06,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Guada TV Media",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Castilla-La Mancha · SpainGuada TV Media Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1280,
+        "videoHeight": 720,
+        "advancedSeconds": 111.67,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "TV3",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Cataluña · SpainTV3 Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.08,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "3Cat Vinagreta",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Cataluña · Spain3Cat Vinagreta Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.05,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Bon Dia TV",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Cataluña · SpainBon Dia TV Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.05,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Canal 4 TV Catalunya",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Cataluña · SpainCanal 4 TV Catalunya Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 9.81,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Canal Taronja Osona i Moianés",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Cataluña · SpainCanal Taronja Osona i Moianés Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.05,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Déjate de Historias TV",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "C. de Madrid · SpainDéjate de Historias TV Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.05,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "À Punt",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "C. Valenciana · SpainÀ Punt Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.22,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Tele Safor",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "C. Valenciana · SpainTele Safor Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1280,
+        "videoHeight": 720,
+        "advancedSeconds": 10.01,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Ciudades Del Ocio TV",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "C. Valenciana · SpainCiudades Del Ocio TV Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1280,
+        "videoHeight": 720,
+        "advancedSeconds": 10.03,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Semos asina (Canal Extremadura)",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Extremadura · SpainSemos asina (Canal Extremadura) Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1280,
+        "videoHeight": 720,
+        "advancedSeconds": 10.01,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "TVG Mociñ@s",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Galicia · SpainTVG Mociñ@s Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 9.99,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Anove TV",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Galicia · SpainAnove TV Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1280,
+        "videoHeight": 720,
+        "advancedSeconds": 10.23,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "ETB 1 On",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "País Vasco · SpainETB 1 On Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.26,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Hamaika TV",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "País Vasco · SpainHamaika TV Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.03,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "28 Kanala",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "País Vasco · Spain28 Kanala Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.03,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Arabí TV",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "R. de Murcia · SpainArabí TV Ver en directo Sitio oficial EmisiónEmisión 1Emisión 2",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.03,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "CNN Internacional",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Int. Europa · InternationalCNN Internacional Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1280,
+        "videoHeight": 720,
+        "advancedSeconds": 10.02,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to XMLHttpRequest at 'https://ds2c506obo7m8.cloudfront.net/index_3_14991168.ts?m=1706610823' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: The 'Access-Control-Allow-Origi"
+      ]
+    },
+    {
+      "name": "DW Alemania",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Int. Europa · InternationalDW Alemania Ver en directo Sitio oficial EmisiónEmisión 1Emisión 2",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.05,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "BR Bayerischer Alemania",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Int. Europa · InternationalBR Bayerischer Alemania Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.25,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "TRT World Turquía",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Int. Europa · InternationalTRT World Turquía Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 2560,
+        "videoHeight": 1440,
+        "advancedSeconds": 10.02,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Current Time TV",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Int. Europa · InternationalCurrent Time TV Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.07,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "WeatherNation USA",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Int. América · InternationalWeatherNation USA Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1280,
+        "videoHeight": 720,
+        "advancedSeconds": 51.75,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Estrella TV USA",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Int. América · InternationalEstrella TV USA Ver en directo Sitio oficial EmisiónEmisión 1Emisión 2Emisión 3",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.18,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Señal Colombia",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Int. América · InternationalSeñal Colombia Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1280,
+        "videoHeight": 720,
+        "advancedSeconds": 10.23,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "TeleSUR Venezuela",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Int. América · InternationalTeleSUR Venezuela Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 22,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Canal 11 Honduras",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Int. América · InternationalCanal 11 Honduras Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 19.91,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Al Jazeera Catar",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Int. Asia · InternationalAl Jazeera Catar Ver en directo Sitio oficial EmisiónEmisión 1Emisión 2",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.25,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Aaj Tak India",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Int. Asia · InternationalAaj Tak India Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1280,
+        "videoHeight": 720,
+        "advancedSeconds": 50.74,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Oman TV",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Int. Asia · InternationalOman TV Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.02,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Bloomberg Originals",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Int. Otros · InternationalBloomberg Originals Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 7.39,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Classic Arts Showcase",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Int. Otros · InternationalClassic Arts Showcase Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1280,
+        "videoHeight": 720,
+        "advancedSeconds": 10.25,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Garage TV Argentina",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Deportivos Int. · InternationalGarage TV Argentina Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 720,
+        "videoHeight": 404,
+        "advancedSeconds": 27.43,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Molahits TV España",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Musicales · InternationalMolahits TV España Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1600,
+        "videoHeight": 900,
+        "advancedSeconds": 1777.07,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Radio Italia TV",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Musicales · InternationalRadio Italia TV Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1024,
+        "videoHeight": 576,
+        "advancedSeconds": 10.05,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "RTL 102.5 Disco Italia",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Musicales · InternationalRTL 102.5 Disco Italia Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.05,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "RDS Social TV Italia",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Musicales · InternationalRDS Social TV Italia Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.03,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Kronehit Austria",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Musicales · InternationalKronehit Austria Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1920,
+        "videoHeight": 1080,
+        "advancedSeconds": 10.25,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Retro Music TV Chequia",
+      "auditVerdict": "PARITY_PASS",
+      "liveCatalogue": true,
+      "independent": "PLAYS",
+      "observed": {
+        "hasVideo": true,
+        "header": "Musicales · InternationalRetro Music TV Chequia Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 1024,
+        "videoHeight": 576,
+        "advancedSeconds": 10.01,
+        "paused": false,
+        "uiStatus": "playing",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Pequeradio TV",
+      "auditVerdict": "OUR_PLAYER_FAIL",
+      "liveCatalogue": true,
+      "independent": "DOES_NOT_PLAY",
+      "observed": {
+        "hasVideo": true,
+        "header": "Infantiles · SpainPequeradio TV Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 0,
+        "videoHeight": 0,
+        "advancedSeconds": 0,
+        "paused": true,
+        "uiStatus": "external",
+        "engine": "none"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: net::ERR_NAME_NOT_RESOLVED"
+      ]
+    },
+    {
+      "name": "Congreso de los Diputados",
+      "auditVerdict": "OUR_PLAYER_FAIL",
+      "liveCatalogue": true,
+      "independent": "DOES_NOT_PLAY",
+      "observed": {
+        "hasVideo": true,
+        "header": "Eventuales · SpainCongreso de los Diputados Ver en directo Sitio oficial EmisiónEmisión 1Emisión 2Emisión 3Emisión 4Emisión 5",
+        "kind": "live",
+        "videoWidth": 0,
+        "videoHeight": 0,
+        "advancedSeconds": 0,
+        "paused": false,
+        "uiStatus": "loading",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Senado",
+      "auditVerdict": "OUR_PLAYER_FAIL",
+      "liveCatalogue": true,
+      "independent": "DOES_NOT_PLAY",
+      "observed": {
+        "hasVideo": true,
+        "header": "Eventuales · SpainSenado Ver en directo Sitio oficial EmisiónEmisión 1Emisión 2Emisión 3Emisión 4Emisión 5Emisión 6Emisión 7Emisión 8",
+        "kind": "live",
+        "videoWidth": 0,
+        "videoHeight": 0,
+        "advancedSeconds": 0,
+        "paused": false,
+        "uiStatus": "loading",
+        "engine": "hls"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "7TV Almería",
+      "auditVerdict": "OUR_PLAYER_FAIL",
+      "liveCatalogue": true,
+      "independent": "DOES_NOT_PLAY",
+      "observed": {
+        "hasVideo": true,
+        "header": "Andalucía · Spain7TV Almería Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 0,
+        "videoHeight": 0,
+        "advancedSeconds": 0,
+        "paused": true,
+        "uiStatus": "external",
+        "engine": "none"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to XMLHttpRequest at 'https://streaming004.gestec-video.com/hls/7TVALMERIA.m3u8' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is "
+      ]
+    },
+    {
+      "name": "7TV Granada",
+      "auditVerdict": "OUR_PLAYER_FAIL",
+      "liveCatalogue": true,
+      "independent": "DOES_NOT_PLAY",
+      "observed": {
+        "hasVideo": true,
+        "header": "Andalucía · Spain7TV Granada Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 0,
+        "videoHeight": 0,
+        "advancedSeconds": 0,
+        "paused": true,
+        "uiStatus": "external",
+        "engine": "none"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to XMLHttpRequest at 'https://streaming004.gestec-video.com/hls/7TVGRANADA.m3u8' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is "
+      ]
+    },
+    {
+      "name": "Teleonuba",
+      "auditVerdict": "OUR_PLAYER_FAIL",
+      "liveCatalogue": true,
+      "independent": "DOES_NOT_PLAY",
+      "observed": {
+        "hasVideo": true,
+        "header": "Andalucía · SpainTeleonuba Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 0,
+        "videoHeight": 0,
+        "advancedSeconds": 0,
+        "paused": true,
+        "uiStatus": "external",
+        "engine": "none"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "name": "Televisión Alhaurín",
+      "auditVerdict": "OUR_PLAYER_FAIL",
+      "liveCatalogue": true,
+      "independent": "DOES_NOT_PLAY",
+      "observed": {
+        "hasVideo": true,
+        "header": "Andalucía · SpainTelevisión Alhaurín Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 0,
+        "videoHeight": 0,
+        "advancedSeconds": 0,
+        "paused": true,
+        "uiStatus": "external",
+        "engine": "none"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: the server responded with a status of 400 ()"
+      ]
+    },
+    {
+      "name": "9 La Loma TV",
+      "auditVerdict": "OUR_PLAYER_FAIL",
+      "liveCatalogue": true,
+      "independent": "DOES_NOT_PLAY",
+      "observed": {
+        "hasVideo": true,
+        "header": "Andalucía · Spain9 La Loma TV Ver en directo Sitio oficial",
+        "kind": "live",
+        "videoWidth": 0,
+        "videoHeight": 0,
+        "advancedSeconds": 0,
+        "paused": true,
+        "uiStatus": "external",
+        "engine": "none"
+      },
+      "consoleErrors": [
+        "Access to fetch at 'https://www.tdtchannels.com/epg/TV.json' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested re",
+        "Failed to load resource: net::ERR_FAILED",
+        "Access to XMLHttpRequest at 'https://9laloma.tv/live.m3u8' from origin 'http://127.0.0.1:4400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested reso"
+      ]
+    }
+  ]
+}
