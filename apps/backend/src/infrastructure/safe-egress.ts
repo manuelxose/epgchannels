@@ -429,13 +429,66 @@ interface HopOptions {
   readonly wasAbortedByCaller: () => boolean;
 }
 
-/** Failure for a stream that closed without a complete body. */
-function closeError(options: HopOptions, code: EgressFailureCode, message: string): EgressFailure {
+/**
+ * Failure for a stream that closed before its body completed.
+ *
+ * Most often that close is ours: the size counter called `destroy()` on the
+ * response, so the socket errors before any `end` event. In that case the
+ * decision we already made is the true verdict — a synchronously-resolved
+ * `response-too-large` — never a generic "stream closed" that a caller could
+ * re-label as a truncated/invalid body.
+ */
+function closeError(
+  options: HopOptions,
+  code: EgressFailureCode,
+  message: string,
+  decided: EgressFailure | null,
+): EgressFailure {
+  if (decided !== null) return decided;
   if (options.wasTimedOut()) {
     return new EgressFailure('timeout', `Egress exceeded ${options.timeoutMs} ms`, { timeoutMs: options.timeoutMs });
   }
   if (options.wasAbortedByCaller()) return abortError(false, options.timeoutMs);
   return new EgressFailure(code, message, { reason: 'stream-closed' });
+}
+
+/** `lookup` as `node:http`/`node:tls` invoke it (the callback overloads we must answer). */
+export type NodeLookupOptions = { readonly all?: boolean | undefined };
+type NodeLookupCallback = (
+  error: Error | null,
+  address: string | readonly { address: string; family: number }[] | null,
+  family?: number,
+) => void;
+
+/**
+ * The pin: a `lookup` for `node:http(s)` that answers ONLY the validated address.
+ *
+ * Node calls a custom `lookup` in **two** conventions and the callback shape
+ * differs between them:
+ *
+ *  - `options.all !== true` → `callback(err, addressString, family)`
+ *  - `options.all === true` → `callback(err, [{ address, family }, …])`
+ *
+ * Node 20+ enables `autoSelectFamily`, so the http(s) agent normally asks in the
+ * `all: true` form. Answering the string form to an `all: true` request makes
+ * Node read `.address` of a string and fail every connection with
+ * `ERR_INVALID_INVALID_IP_ADDRESS` — for *every* real HTTPS host. Both forms are
+ * therefore answered explicitly, and both are asserted by the unit suite —
+ * including over the real `net`/`tls` stack rather than only through `deps.lookup`.
+ */
+export function pinnedLookup(pinned: string | null): (hostname: string, options: NodeLookupOptions, callback: NodeLookupCallback) => void {
+  return (_hostname, options, callback) => {
+    if (pinned === null) {
+      callback(new EgressFailure('dns-rebind', 'No validated address to pin'), null);
+      return;
+    }
+    const family = pinned.includes(':') ? 6 : 4;
+    if (options?.all === true) {
+      callback(null, [{ address: pinned, family }], family);
+      return;
+    }
+    callback(null, pinned, family);
+  };
 }
 
 function performHop(hop: ValidatedHop, options: HopOptions): Promise<RawResult> {
@@ -482,21 +535,23 @@ function performHop(hop: ValidatedHop, options: HopOptions): Promise<RawResult> 
           'user-agent': options.userAgent,
         },
         agent: false,
-        // The pin: the only address this socket may connect to.
-        lookup: (_hostname, _lookupOptions, callback) => {
-          if (pinned === null) {
-            callback(new EgressFailure('dns-rebind', 'No validated address to pin'), undefined as never);
-            return;
-          }
-          callback(null, pinned, pinned.includes(':') ? 6 : 4);
-        },
+        // The pin: the only address this socket may connect to. Answers both of
+        // Node's lookup callback conventions (see `pinnedLookup`).
+        lookup: pinnedLookup(pinned) as never,
         ...(hop.url.protocol === 'https:' ? { servername: hop.host } : {}),
       },
       (response: IncomingMessage) => {
-        // Anti-rebinding check at the socket: the connected peer must be the
-        // address we validated, not anything a second resolution produced.
-        /** Decides the failure first, then tears the socket down. */
+        /** Records the verdict we are about to deliver (see `closeError`). */
+        let decided: EgressFailure | null = null;
+        /**
+         * Decides the failure first, then tears the socket down, and resolves the
+         * promise SYNCHRONOUSLY with that verdict. `abortWith` is always called
+         * from a socket/stream callback, so `finish` runs synchronously: the
+         * deliberate-destroy errors that follow can never replace the verdict
+         * with a generic one (or let a truncated body reach the caller).
+         */
         const abortWith = (error: EgressFailure): void => {
+          decided = error;
           pendingError = error;
           response.destroy();
           request.destroy();
@@ -533,7 +588,14 @@ function performHop(hop: ValidatedHop, options: HopOptions): Promise<RawResult> 
           return;
         }
         const contentType = headerValue(headers, 'content-type');
-        if (!contentTypeAllowed(contentType, options.allowedContentPrefixes)) {
+        const responseStatus = response.statusCode ?? 0;
+        const is2xx = responseStatus >= 200 && responseStatus < 300;
+        // The content-type allow-list is a *body trust* rule for the payload the
+        // caller asked for. An error status (404/403/451/503) usually carries
+        // text/html, and its meaning is the status, not the body: refusing it
+        // here would erase the only signal a caller can classify by. Only 2xx
+        // payloads are filtered.
+        if (is2xx && !contentTypeAllowed(contentType, options.allowedContentPrefixes)) {
           abortWith(
             new EgressFailure('content-type-not-allowed', `Content-Type "${contentType ?? ''}" is not allowed`, {
               host: hop.host,
@@ -576,11 +638,11 @@ function performHop(hop: ValidatedHop, options: HopOptions): Promise<RawResult> 
         });
         response.on('error', (error) => {
           if (settled) return;
-          finish(closeError(options, 'connection-failed', error.message));
+          finish(closeError(options, 'connection-failed', error.message, decided));
         });
         response.on('aborted', () => {
           if (settled) return;
-          finish(closeError(options, 'connection-failed', 'Response aborted before completion'));
+          finish(closeError(options, 'connection-failed', 'Response aborted before completion', decided));
         });
       },
     );
@@ -593,9 +655,10 @@ function performHop(hop: ValidatedHop, options: HopOptions): Promise<RawResult> 
     });
     request.on('error', (error: NodeJS.ErrnoException) => {
       if (settled) return;
-      // An in-flight abort keeps whatever definite verdict we already have
-      // (e.g. the body was too large); only an otherwise-unexplained close is
-      // attributed to the abort.
+      // A deliberate teardown after a verdict (`response-too-large`, refused
+      // content-type, peer mismatch) surfaces here as ECONNRESET/aborted, in no
+      // fixed order relative to the response events. The verdict we decided is
+      // the truth, so it wins over any generic close.
       if (pendingError !== null) {
         finish(pendingError);
         return;
