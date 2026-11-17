@@ -77,31 +77,43 @@ salida 0: es un desconocido honesto, ni un pase ni un fallo. Ese camino está de
 ## 2-bis. Verificación real del motor sobre las fuentes públicas (posterior a §2)
 
 Ejecutado con el motor de 02D (no con el comprobador de navegador) contra las mismas cuatro
-distribuciones, tras corregir cuatro defectos que sólo aparecieron al ejecutar:
+distribuciones, tras corregir los defectos que sólo aparecieron al ejecutar:
 
 | Fuente | Resultado del motor | ¿Es verdad? |
 |---|---|---|
 | `test-streams.mux.dev/x36xhzz/x36xhzz.m3u8` | **`healthy` @ profundidad `segments`**, 6 peticiones | **sí** — maestro → variante → segmentos 200 |
 | `devstreaming-cdn.apple.com/…/img_bipbop_adv_example_ts/master.m3u8` | **`healthy` @ profundidad `segments`**, 6 peticiones | **sí** |
-| `devstreaming-cdn.apple.com/…/bipbop_16x9/bipbop_16x9_variant.m3u8` | `failing` / `response-too-large` | **sí** — medido: su primer segmento declara **59 366 640** bytes |
+| `devstreaming-cdn.apple.com/…/bipbop_16x9/bipbop_16x9_variant.m3u8` | **`healthy` @ profundidad `segments`**, 6 peticiones | **sí** — su segmento es media real `video/MP2T` (ver corrección) |
 | `cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8` | `failing` / `missing-segments` | **sí** — medido: su única variante responde **404** |
 
-Las dos filas «failing» **no son defectos del motor**: son la realidad del origen, medida
-independientemente por el capitán (variante 404; segmento de 59 MB). Que el motor las distinga de las
-sanas, con categorías distintas y en la profundidad donde obtuvo la evidencia, es el resultado buscado.
+**Tres de cuatro sanas; la cuarta rota en el origen.** La fila Akamai no es un defecto del motor: es la
+realidad de ese origen, medida de forma independiente (variante 404). Que el motor distinga las sanas de
+la rota, con categorías distintas y en la profundidad donde obtuvo la evidencia, es el resultado buscado.
 
-**Antes de estas correcciones las cuatro fallaban**, y fallaban con la categoría equivocada: un
-directo HD sano se reportaba `missing-segments` por un presupuesto de tamaño mal aplicado. Ese es el
-valor de haber ejecutado en vez de leer: cuatro defectos reales, ninguno visible con la suite en verde.
+### Corrección sobre `bipbop_16x9` (documentada porque me equivoqué al interpretarla)
 
-### Limitación que queda abierta (declarada)
+En una medición anterior clasifiqué esta fuente como `response-too-large` y la traté como «genuinamente
+irreparable por política», porque su segmento declara **59 366 640** bytes. **Eso era incorrecto.** Al
+leer sólo un prefijo, el contenido resulta ser media válida:
 
-El segmento de BipBop 16x9 declara 59 MB. Para **muestrear** (leer sólo 64 KiB y cortar) hace falta una
-capacidad de lectura de prefijo en `safeFetch` que hoy no existe: la capa de egreso rechaza por
-`content-length` declarado **antes de leer un byte**. Por eso, hoy, el ancho de banda por segmento
-muestreado está acotado por el **techo de 4 MiB**, no por los 64 KiB de muestreo. La corrección de
-contrato está registrada como t14 (propiedad de `ssrf-engineer`). Hasta que exista, esta cifra se
-reporta tal cual, sin presentarla como si ya fuera 64 KiB.
+```
+SAMPLE bytes 65536 truncated true ct video/MP2T
+FULL download bytes refused ct -
+```
+
+El segmento **es un segmento real y reproducible**; lo que lo rechazaba era un **presupuesto de tamaño**,
+no un defecto de contenido. Es decir: la política de tamaño estaba declarando no-reproducible una fuente
+sana. Con el muestreo por prefijo, el motor ahora la acierta. Corregir esto valía la pena: era el mismo
+error conceptual que el resto de la ronda — culpar al contenido de una decisión de política.
+
+### Semántica de tamaño que queda (decisión del capitán, opción (a))
+
+`SEGMENT_MAX_BYTES` (4 MiB) es **tolerancia de longitud declarada**, no un filtro de admisión. Con la
+lectura por prefijo, un segmento enorme que **se sirve bien** se reporta sano **porque sólo se muestrea**
+(64 KiB por segmento). Consecuencia declarada sin adornos: el veredicto «saludable» significa que el
+manifiesto, la variante y los segmentos muestreados se recuperan y son del tipo correcto — **no**
+significa «cualquier tamaño es aceptable». El ancho de banda por muestra sí está acotado (medido:
+1 544 984 B sin tope → **65 536 B** con tope, 23× menos).
 
 ## 5. Lo que este documento NO afirma
 
