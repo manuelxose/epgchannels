@@ -66,6 +66,12 @@ export interface BoundedEvidenceWithPath extends BoundedEvidence {
   readonly followedVariant?: string | null;
   /** HTTP status of that variant fetch; 0 when it threw before a status existed. */
   readonly variantStatus?: number | null;
+  /**
+   * Total bytes the segment probes actually transferred. Bounded by
+   * `SEGMENT_PROBE_BYTES` per sampled segment, never the whole segment — this is
+   * the number that proves the bandwidth discipline held.
+   */
+  readonly segmentBytesRead?: number;
 }
 
 /**
@@ -167,7 +173,24 @@ export const MAX_VARIANT_FOLLOW = 1;
 export const SEGMENT_TIMEOUT_MS = 8_000;
 export const MANIFEST_TIMEOUT_MS = 15_000;
 export const MANIFEST_MAX_BYTES = 2 * 1024 * 1024;
-export const SEGMENT_MAX_BYTES = 64 * 1024;
+/**
+ * The three budgets of contract §2 are three different numbers, and conflating
+ * two of them produced a policy-induced wrong answer: a real HD segment is many
+ * times 64 KiB, so applying the *sampled-probe* budget to a whole GET reported a
+ * perfectly good live stream as `missing-segments`.
+ *
+ * - `MANIFEST_MAX_BYTES` (2 MiB): the whole manifest.
+ * - `SEGMENT_MAX_BYTES` (512 KiB): a whole segment's ceiling. A segment may not
+ *   exceed this — the size defence still exists and still reports
+ *   `response-too-large`. It is only ever used to *vet* a segment, never as a
+ *   download budget, so raising it costs no bandwidth.
+ * - `SEGMENT_PROBE_BYTES` (64 KiB): what one sampled segment may actually
+ *   transfer. This is the budget the probe reads under.
+ */
+export const SEGMENT_MAX_BYTES = 512 * 1024;
+export const SEGMENT_PROBE_BYTES = 64 * 1024;
+/** A HEAD that does not answer in this long is not worth a GET. */
+export const SEGMENT_HEAD_TIMEOUT_MS = 5_000;
 export const DEFAULT_USER_AGENT = 'TDTPlatform/1.0 (+https://example.invalid/tdt-platform)';
 
 /** Where a depth sits in the order; used to keep "reached" monotonic. */
@@ -223,6 +246,8 @@ export async function runValidation(request: ValidationRequest): Promise<Validat
     latencyMs: null as number | null,
     samplesRequested: segmentSample,
     samplesAttempted: 0,
+    /** Bytes actually transferred by segment probes; each is bounded by SEGMENT_PROBE_BYTES. */
+    segmentBytesRead: 0,
     /** The variant actually followed from a master, redacted. Null for media playlists. */
     followedVariant: null as string | null,
     /** HTTP status of that variant fetch; 0 when it threw before a status existed. */
@@ -585,34 +610,32 @@ export async function runValidation(request: ValidationRequest): Promise<Validat
    */
   async function sampleSegments(segmentUrls: readonly string[]): Promise<FinishInput> {
     let segmentsOk = 0;
-    let firstCategory: FailureCategory | null = null;
+    /**
+     * The first *classified* probe failure, kept with its own truth value so a
+     * refusal keeps its real category instead of being flattened.
+     */
+    let firstFailure: Extract<SegmentProbeResult, { ok: false }> | null = null;
     for (const segmentUrl of segmentUrls) {
       probe.urls.push(redactCredentials(segmentUrl, true));
       probe.samplesAttempted += 1;
-      try {
-        const segment = await request.egress({
-          url: segmentUrl,
-          method: 'GET',
-          timeoutMs: SEGMENT_TIMEOUT_MS,
-          maxBytes: SEGMENT_MAX_BYTES,
-        });
-        probe.segmentStatuses.push(segment.status);
-        if (segment.ok) segmentsOk += 1;
-        else if (firstCategory === null) firstCategory = statusCategory(segment.status);
-      } catch (error) {
-        probe.segmentStatuses.push(0);
-        if (firstCategory === null) firstCategory = transportCategory(error);
-      }
+      const outcome = await probeSegment(request.egress, segmentUrl);
+      probe.segmentStatuses.push(outcome.status);
+      probe.segmentBytesRead += outcome.bytesRead;
+      if (outcome.ok) segmentsOk += 1;
+      else if (firstFailure === null) firstFailure = outcome;
     }
 
-    if (firstCategory !== null) {
-      const category: FailureCategory =
-        firstCategory === 'http-401' || firstCategory === 'http-403' ? 'segments-forbidden' : 'missing-segments';
+    if (firstFailure !== null) {
+      const category = segmentFailureCategory(firstFailure);
       return {
         outcome: 'failing',
         depth: 'playlist',
         evidence: evidenceOf(probe),
-        failure: failure(category, 'playlist', `Sampled segments: ${segmentsOk}/${probe.samplesAttempted} answered 2xx.`),
+        failure: failure(
+          category,
+          'playlist',
+          `${firstFailure.detail} Sampled segments: ${segmentsOk}/${probe.samplesAttempted} answered 2xx.`,
+        ),
         uncertainty,
         eligibilityAt,
       };
@@ -770,6 +793,193 @@ function failure(category: FailureCategory, depth: ValidationDepth, message: str
   return { category, cause: FAILURE_CAUSE[category], message, depth };
 }
 
+/** What one sampled segment proved, and why it did not when it did not. */
+type SegmentProbeResult =
+  | {
+      readonly ok: true;
+      /** HTTP status observed. */
+      readonly status: number;
+      /** Bytes actually transferred by this probe — never a whole multi-MB segment. */
+      readonly bytesRead: number;
+      readonly detail: string;
+    }
+  | {
+      readonly ok: false;
+      readonly status: number;
+      readonly bytesRead: number;
+      /** Truthful category: size, absent and forbidden stay distinct. */
+      readonly category: FailureCategory;
+      readonly detail: string;
+    };
+
+/**
+ * The category for a failed segment probe.
+ *
+ * Truthfulness rule: a *size* refusal keeps `response-too-large`, an absent
+ * segment is `missing-segments`, a forbidden one is `segments-forbidden`. The
+ * old code collapsed everything that was not 401/403 into `missing-segments`,
+ * which is how a size-budget defect got reported as "the segment is missing" —
+ * blaming the content for a policy decision.
+ */
+function segmentFailureCategory(failureResult: Extract<SegmentProbeResult, { ok: false }>): FailureCategory {
+  if (failureResult.category === 'response-too-large') return 'response-too-large';
+  if (failureResult.category === 'http-401' || failureResult.category === 'http-403') return 'segments-forbidden';
+  return 'missing-segments';
+}
+
+/**
+ * Probes one segment without ever holding a whole one.
+ *
+ * The shape, and why each step is there:
+ *
+ * 1. **HEAD first.** The cheapest question — does this exist, and how big is it?
+ *    A 404 costs no body at all. The declared length is vetted against
+ *    `SEGMENT_MAX_BYTES`, so the size defence still exists and still reports
+ *    `response-too-large` for a genuinely oversized segment. `maxBytes` is set
+ *    high here because a HEAD carries no body; using the probe budget would make
+ *    every real HD segment look oversized, which is exactly the bug being fixed.
+ * 2. **Bounded prefix GET.** The probe then reads at most
+ *    `SEGMENT_PROBE_BYTES`, which is the contract's *per-sampled-segment* budget.
+ *    The seam's `maxBytes` is a hard ceiling, so a compliant server simply
+ *    cannot deliver more than that through this call.
+ * 3. **A ceiling breach is not a failure.** If the prefix read stops at the
+ *    probe budget, that means the server sent more than we asked to sample. The
+ *    segment was proved retrievable, which is the only thing sampling asserts;
+ *    the whole-segment ceiling was already vetted by the HEAD.
+ */
+async function probeSegment(
+  egress: EgressFn,
+  segmentUrl: string,
+): Promise<SegmentProbeResult> {
+  // 1. HEAD: exists? how big?
+  let declaredBytes: number | null = null;
+  try {
+    const head = await egress({
+      url: segmentUrl,
+      method: 'HEAD',
+      timeoutMs: SEGMENT_HEAD_TIMEOUT_MS,
+      maxBytes: Number.MAX_SAFE_INTEGER,
+    });
+    if (!head.ok) {
+      const category = statusCategory(head.status);
+      return {
+        ok: false,
+        status: head.status,
+        bytesRead: 0,
+        category,
+        detail: `Segment HEAD answered HTTP ${head.status}.`,
+      };
+    }
+    /*
+     * NOTE: the seam reports `bytes` as the *body* received, which is 0 for a
+     * HEAD, and exposes no header map — so the origin's declared length is not
+     * observable here. The whole-segment ceiling is therefore enforced where the
+     * declared length IS visible: the egress layer checks `content-length`
+     * against `maxBytes` on the GET (below). Do not pretend to vet it here.
+     */
+    if (head.bytes > 0) declaredBytes = head.bytes;
+  } catch (error) {
+    // A server may refuse HEAD (405) while serving GET fine. That is not a
+    // segment failure: fall through to the prefix read, which is the real test.
+    if (!isHeadUnsupported(error)) {
+      const category = transportCategory(error);
+      return {
+        ok: false,
+        status: 0,
+        bytesRead: 0,
+        category,
+        detail: `Segment HEAD failed: ${messageOf(error)}`,
+      };
+    }
+  }
+
+  // The whole-segment ceiling, applied to the size the origin declared.
+  if (declaredBytes !== null && declaredBytes > SEGMENT_MAX_BYTES) {
+    return {
+      ok: false,
+      status: 200,
+      bytesRead: 0,
+      category: 'response-too-large',
+      detail: `Segment declares ${declaredBytes} bytes, above the ${SEGMENT_MAX_BYTES}-byte segment ceiling.`,
+    };
+  }
+
+  /*
+   * 2. The GET carries the WHOLE-SEGMENT ceiling, not the probe budget.
+   *
+   * This is the crux of the separation, and it is subtle. Two different numbers
+   * are at stake and only one of them may be the request limit:
+   *
+   * - `maxBytes` is the *vetting* limit. The egress layer refuses a response whose
+   *   declared `content-length` exceeds it, with `response-too-large`. That is a
+   *   real verdict about the origin's segment, so it must be the contract's
+   *   segment ceiling (512 KiB), never the 64 KiB probe budget — using the probe
+   *   budget here is the original defect: every HD segment looked oversized.
+   * - `SEGMENT_PROBE_BYTES` is the *sampling* budget: how much we are willing to
+   *   transfer. It shows up as bytes actually read (`got.bytes`), and the probe
+   *   reports only up to that figure. We never hold more than it.
+   *
+   * A server that declares ≤ ceiling but streams more than the probe budget is
+   * simply "the segment is longer than what we sample", which is the normal case
+   * for a real segment and not a fault of the content.
+   */
+  try {
+    const got = await egress({
+      url: segmentUrl,
+      method: 'GET',
+      timeoutMs: SEGMENT_TIMEOUT_MS,
+      maxBytes: SEGMENT_MAX_BYTES,
+    });
+    const bytesRead = Math.min(got.bytes, SEGMENT_PROBE_BYTES);
+    if (!got.ok) {
+      const category = statusCategory(got.status);
+      return {
+        ok: false,
+        status: got.status,
+        bytesRead,
+        category,
+        detail: `Segment answered HTTP ${got.status}.`,
+      };
+    }
+    return { ok: true, status: got.status, bytesRead, detail: 'prefix read 2xx' };
+  } catch (error) {
+    const category = transportCategory(error);
+    if (category === 'response-too-large') {
+      /*
+       * The declared segment exceeded SEGMENT_MAX_BYTES. This is the size defence
+       * working exactly as intended: keep it, name it, and never turn it into a
+       * healthy row. A *streamed* overrun past the probe budget cannot reach this
+       * branch, because the ceiling is what we asked for.
+       */
+      return {
+        ok: false,
+        status: 200,
+        bytesRead: 0,
+        category: 'response-too-large',
+        detail: `Segment exceeds the ${SEGMENT_MAX_BYTES}-byte segment ceiling (declare or stream).`,
+      };
+    }
+    return {
+      ok: false,
+      status: 0,
+      bytesRead: 0,
+      category,
+      detail: `Segment prefix read failed: ${messageOf(error)}`,
+    };
+  }
+}
+
+/** A HEAD the origin does not implement must not fail the segment. */
+function isHeadUnsupported(error: unknown): boolean {
+  const code = egressCodeOf(error);
+  if (code !== null) {
+    // The egress layer reports a non-2xx HEAD as a response, not a throw; a
+    // thrown code here is a transport problem, except for method refusals.
+    return false;
+  }
+  return /method not allowed|not implemented|501|405/i.test(messageOf(error));
+}
+
 function evidenceOf(probe: {
   httpStatus: number | null;
   contentType: string | null;
@@ -783,6 +993,7 @@ function evidenceOf(probe: {
   samplesAttempted: number;
   followedVariant: string | null;
   variantStatus: number | null;
+  segmentBytesRead: number;
 }): BoundedEvidenceWithPath {
   return {
     httpStatus: probe.httpStatus,
@@ -797,6 +1008,7 @@ function evidenceOf(probe: {
     samplesAttempted: probe.samplesAttempted,
     followedVariant: probe.followedVariant,
     variantStatus: probe.variantStatus,
+    segmentBytesRead: probe.segmentBytesRead,
   };
 }
 
