@@ -397,12 +397,33 @@ export function createRouter(context: AppContext, logger: Logger, metrics?: Metr
    */
   router.get(
     '/epg/channels',
-    handle(async (_request, response) => {
+    handle(async (request, response) => {
+      /*
+       * The full coverage table is ~400 rows and the schema validates every one of
+       * them. Parsing it unbounded cost 140 s measured (zod over a large array,
+       * with no paging bound); the response is now bounded to one country or one
+       * coverage status per request, and `totals` still describes the WHOLE
+       * catalogue so a client can render the overall picture from any page.
+       */
+      const query = parse(
+        z.object({
+          country: z.string().min(2).max(3).optional(),
+          status: z.enum(['fresh', 'stale', 'empty', 'not-mapped']).optional(),
+          limit: z.coerce.number().int().min(1).max(500).default(200),
+        }),
+        'query',
+        request,
+      );
       const coverage = await context.epg.coverage();
+      const filtered = coverage.entries.filter(
+        (entry) =>
+          (query.country === undefined || entry.country === query.country) &&
+          (query.status === undefined || entry.status === query.status),
+      );
       response.json(
         epgCoverageSchema.parse({
           data: {
-            entries: coverage.entries,
+            entries: filtered.slice(0, query.limit),
             totals: coverage.totals,
             asOf: coverage.asOf,
           },

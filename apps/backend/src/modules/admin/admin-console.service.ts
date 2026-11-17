@@ -835,15 +835,30 @@ export class AdminConsoleService {
     return { entries, totals: coverage.totals, conflicts, asOf: coverage.asOf };
   }
 
-  /** Channels whose only guide is the legacy alias (`aliases.namespace='epg'`). */
+  /**
+   * Channels whose only guide is the legacy alias (`aliases.namespace='epg'`).
+   *
+   * Measured 2026-11-17: the previous version fetched every matching channel and
+   * filtered in Node. `/admin/overview` and `/admin/epg/coverage` are polled by
+   * the console, so the count is now computed by the database — one aggregation,
+   * no documents transferred.
+   */
   async legacyAliasMappedCount(): Promise<number> {
-    const rows = await this.channels()
-      .find(
-        { editorialStatus: 'published', mergedInto: null, 'aliases.namespace': 'epg' },
-        { projection: { _id: 1, epg: 1 } },
-      )
+    const [row] = await this.channels()
+      .aggregate<{ count: number }>([
+        {
+          $match: {
+            editorialStatus: 'published',
+            mergedInto: null,
+            'aliases.namespace': 'epg',
+          },
+        },
+        /* `null` and a missing `epg` block both mean "no canonical source". */
+        { $match: { $or: [{ epg: null }, { 'epg.sourceId': null }] } },
+        { $count: 'count' },
+      ])
       .toArray();
-    return rows.filter((channel) => (channel.epg?.sourceId ?? null) === null).length;
+    return row?.count ?? 0;
   }
 
   /** How many upstream ids are claimed by more than one confirmed mapping. */

@@ -1,0 +1,126 @@
+{
+  "schemaVersion": "tdt-02fg-gate/1",
+  "generatedAt": "2026-11-17T18:24:04.994Z",
+  "commit": "c50124ba55eb6b9c87d310f6147247e54f1e9a0e",
+  "branch": "feat/tdt-api02-fg-final-integration",
+  "stages": [
+    {
+      "id": "build",
+      "argv": "npm run build",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 15243,
+      "ok": true,
+      "summary": "npm notice run tdt-platform@1.0.0 build\nnpm notice run npm run build -w @tdt/contracts && npm run build -w @tdt/api-client && npm run build -w @tdt/backend\nnpm notice run @tdt/contracts@1.0.0 build\nnpm notice run tsc -p tsconfig.json\nnpm notice run @tdt/api-client@1.0.0 build\nnpm notice run tsc -p tsconfig.json\nnpm notice run @tdt/backend@1.0.0 build\nnpm notice run tsc -p tsconfig.build.json",
+      "outputTail": null
+    },
+    {
+      "id": "typecheck",
+      "argv": "npm run typecheck",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 14774,
+      "ok": true,
+      "summary": "…\nnpm notice run npm run typecheck -w @tdt/contracts && npm run typecheck -w @tdt/api-client && npm run typecheck -w @tdt/backend\nnpm notice run @tdt/contracts@1.0.0 typecheck\nnpm notice run tsc -p tsconfig.json --noEmit\nnpm notice run @tdt/api-client@1.0.0 typecheck\nnpm notice run tsc -p tsconfig.json --noEmit\nnpm notice run @tdt/backend@1.0.0 typecheck\nnpm notice run tsc -p tsconfig.json --noEmit",
+      "outputTail": null
+    },
+    {
+      "id": "unit",
+      "argv": "npm run test:unit",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 28888,
+      "ok": true,
+      "summary": "Test Files  25 passed (25) | Tests  625 passed (625)",
+      "outputTail": null
+    },
+    {
+      "id": "integration",
+      "argv": "npm run test:integration",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 34015,
+      "ok": true,
+      "summary": "Test Files  17 passed (17) | Tests  254 passed (254)",
+      "outputTail": null
+    },
+    {
+      "id": "ingestion",
+      "argv": "node apps/backend/scripts/ingestion-scenario.mjs",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 11847,
+      "ok": true,
+      "summary": "PASS idempotent-rerun 101.7ms {\"newChannelIds\":0,\"newCandidateIds\":0,\"runs\":2,\"countsIdentical\":true} | PASS run-rollback 298ms {\"removed\":4,\"runStatus\":\"rolled-back\",\"unknownRunRemoved\":0} | PASS migration-rollback 3658.5ms {\"rollbackExitCode\":0,\"secondRollbackExitCode\":1,\"reapplyExitCode\":0} | SUMMARY 9/9 passed in 4412ms (peakRssMiB 79.39)",
+      "outputTail": null
+    },
+    {
+      "id": "independence",
+      "argv": "npm run test:independence",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 9752,
+      "ok": true,
+      "summary": "Test Files  1 passed (1) | Tests  15 passed (15)",
+      "outputTail": null
+    },
+    {
+      "id": "client",
+      "argv": "npm run test -w @tdt/api-client",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 4101,
+      "ok": true,
+      "summary": "Test Files  2 passed (2) | Tests  24 passed (24)",
+      "outputTail": null
+    },
+    {
+      "id": "frontend-build",
+      "argv": "npm --prefix apps/frontend run build",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 14384,
+      "ok": true,
+      "summary": "… -                          |   1.86 kB |               856 bytes\n...and 5 more lazy chunks files. Use \"--verbose\" to show all the files.\n\nApplication bundle generation complete. [10.899 seconds] - 2026-11-17T18:23:29.548Z\n\nOutput location: C:\\Users\\Admin\\Documents\\workspace\\streaming\\tdt-api01\\apps\\frontend\\dist\\tdt-player-rebuild\n\n\nnpm notice run @tdt/frontend@1.0.0 build\nnpm notice run ng build",
+      "outputTail": null
+    },
+    {
+      "id": "frontend-unit",
+      "argv": "npm --prefix apps/frontend run test",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 26190,
+      "ok": true,
+      "summary": "Test Files  22 passed (22) | Tests  379 passed (379)",
+      "outputTail": null
+    },
+    {
+      "id": "openapi",
+      "argv": "npm run openapi:export",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 1396,
+      "ok": true,
+      "summary": "{\n  \"command\": \"openapi:export\",\n  \"out\": \"C:\\\\Users\\\\Admin\\\\Documents\\\\workspace\\\\streaming\\\\tdt-api01\\\\openapi\\\\openapi.json\",\n  \"openapi\": \"3.1.0\",\n  \"paths\": 25,\n  \"schemas\": 40\n}\n\nnpm notice run tdt-platform@1.0.0 openapi:export\nnpm notice run node apps/backend/dist/scripts/export-openapi.js",
+      "outputTail": null
+    },
+    {
+      "id": "migrations",
+      "argv": "npm run migrate -- status",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 7541,
+      "ok": true,
+      "summary": "…    \"004-catalogue-identity\",\n    \"005-source-snapshot-provenance\",\n    \"006-incremental-dedup\",\n    \"007-candidate-natural-key\",\n    \"008-verification-indexes\",\n    \"009-epg-international\"\n  ],\n  \"alreadyApplied\": [\n    \"001-indexes\",\n    \"002-epg-editorial-source\"\n  ],\n  \"pendingAfter\": []\n}\n\nnpm notice run tdt-platform@1.0.0 migrate\nnpm notice run node apps/backend/dist/migrations/run.js status",
+      "outputTail": null
+    }
+  ],
+  "failed": 0,
+  "verdict": "PASS",
+  "browser": {
+    "verdict": "PASS",
+    "generatedAt": "2026-11-17T18:30:27.288Z",
+    "failed": 0,
+    "checks": 36
+  }
+}
