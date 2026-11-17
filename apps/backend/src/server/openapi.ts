@@ -30,7 +30,22 @@ import {
   createSourceInputSchema,
   updateChannelInputSchema,
   updateSourceInputSchema,
+  // TDT-API-02FG shared contracts (published in the milestone base).
+  countryEntrySchema,
+  countryListResponseSchema,
+  languageEntrySchema,
+  channelAvailabilitySchema,
+  channelAvailabilityResponseSchema,
+  epgCoverageEntrySchema,
+  epgCoverageSchema,
 } from './schemas.js';
+import { epgDayQuerySchema } from '../modules/channels/local-day.js';
+import {
+  countryRegionEntrySchema,
+  countryRegionsResponseSchema,
+  publicLanguageListResponseSchema,
+} from '../modules/channels/catalogue.aggregates.js';
+import { publicChannelListQuerySchema } from '../modules/channels/public-filters.js';
 
 export interface OpenApiDocument {
   openapi: string;
@@ -118,6 +133,19 @@ export function buildOpenApi(baseUrl: string): OpenApiDocument {
     UpdateSourceInput: zodToJsonSchema(updateSourceInputSchema),
     ChannelListQuery: zodToJsonSchema(channelListQuerySchema),
     AuditListQuery: zodToJsonSchema(auditListQuerySchema),
+    // ---------------------------------------------------------------- 02FG
+    CountryEntry: zodToJsonSchema(countryEntrySchema),
+    CountryListResponse: zodToJsonSchema(countryListResponseSchema),
+    CountryRegionEntry: zodToJsonSchema(countryRegionEntrySchema),
+    CountryRegionsResponse: zodToJsonSchema(countryRegionsResponseSchema),
+    LanguageEntry: zodToJsonSchema(languageEntrySchema),
+    LanguageListResponse: zodToJsonSchema(publicLanguageListResponseSchema),
+    ChannelAvailability: zodToJsonSchema(channelAvailabilitySchema),
+    ChannelAvailabilityResponse: zodToJsonSchema(channelAvailabilityResponseSchema),
+    EpgCoverageEntry: zodToJsonSchema(epgCoverageEntrySchema),
+    EpgCoverageResponse: zodToJsonSchema(epgCoverageSchema),
+    EpgDayQuery: zodToJsonSchema(epgDayQuerySchema),
+    PublicChannelListQuery: zodToJsonSchema(publicChannelListQuerySchema),
   };
 
   return {
@@ -155,17 +183,85 @@ export function buildOpenApi(baseUrl: string): OpenApiDocument {
           },
         },
       },
+      '/countries': {
+        get: {
+          tags: ['Catálogo'],
+          operationId: 'listCountries',
+          summary: 'Países del catálogo con recuentos',
+          description:
+            'Un registro por país con canales publicados. `code` es el código ISO 3166-1 alpha-2, o `INT` para ' +
+            'el agregado internacional documentado (`international: true`). Los recuentos se calculan con una ' +
+            'agregación de MongoDB sobre el catálogo publicado: nunca se carga la colección en memoria.',
+          responses: {
+            '200': {
+              ...json({ $ref: '#/components/schemas/CountryListResponse' }, 'Países con recuentos.'),
+              headers: commonHeaders,
+            },
+          },
+        },
+      },
+      '/countries/{code}/regions': {
+        get: {
+          tags: ['Catálogo'],
+          operationId: 'listCountryRegions',
+          summary: 'Regiones de un país con recuentos',
+          description:
+            'Regiones con al menos un canal publicado. Las filas suman `country.channelCount`: los canales sin ' +
+            'región asignada se agrupan en la fila `INTL`, marcada `aggregate: true`, que un cliente nunca debe ' +
+            'ofrecer como valor de filtro.',
+          parameters: [
+            {
+              name: 'code',
+              in: 'path',
+              required: true,
+              schema: { type: 'string', pattern: '^(?:[A-Z]{2}|INT)$' },
+              description: 'Código ISO 3166-1 alpha-2, o `INT`. No distingue mayúsculas.',
+              example: 'ES',
+            },
+          ],
+          responses: {
+            '200': {
+              ...json({ $ref: '#/components/schemas/CountryRegionsResponse' }, 'Regiones del país.'),
+              headers: commonHeaders,
+            },
+            '404': errorResponse('El país no tiene canales publicados.'),
+          },
+        },
+      },
+      '/languages': {
+        get: {
+          tags: ['Catálogo'],
+          operationId: 'listLanguages',
+          summary: 'Idiomas del catálogo con recuentos',
+          description:
+            'Una fila por etiqueta de idioma tal como la declara el catálogo. Además de etiquetas BCP-47 (`es`, `ca`) ' +
+            'aparece `multi`, el marcador del catálogo para canales que emiten en varios idiomas; no es una etiqueta ' +
+            'BCP-47 y se publica con ese mismo nombre para no inventar un idioma.',
+          responses: {
+            '200': {
+              ...json({ $ref: '#/components/schemas/LanguageListResponse' }, 'Idiomas con recuentos.'),
+              headers: commonHeaders,
+            },
+          },
+        },
+      },
       '/channels': {
         get: {
           tags: ['Catálogo'],
           operationId: 'listChannels',
           summary: 'Lista paginada de canales',
+          description:
+            'Filtros combinables sobre el catálogo publicado. `country` acepta un código ISO 3166-1 alpha-2 o el ' +
+            'agregado `INT`, y `language` acepta una etiqueta BCP-47 o `multi`: son los valores que el catálogo ' +
+            'almacena realmente. Con `playable=true` la página se obtiene recorriendo candidatos en orden y ' +
+            'deteniéndose al completar la ventana; `pagination.total` es entonces el total exacto si el recorrido ' +
+            'terminó, y una cota inferior (ventana + 1) si se detuvo antes, siempre coherente con `hasNext`.',
           parameters: [
             { name: 'page', in: 'query', schema: { type: 'integer', minimum: 1, default: 1 } },
             { name: 'pageSize', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 100, default: 24 } },
-            { name: 'q', in: 'query', schema: { type: 'string' }, description: 'Búsqueda sin acentos sobre nombre y alias.' },
-            { name: 'country', in: 'query', schema: { type: 'string', pattern: '^[A-Z]{2}$' } },
-            { name: 'region', in: 'query', schema: { type: 'string' }, description: 'Código ISO 3166-2:ES sin prefijo.' },
+            { name: 'q', in: 'query', schema: { type: 'string' }, description: 'Búsqueda sin acentos sobre nombre y alias.', example: 'aragon' },
+            { name: 'country', in: 'query', schema: { type: 'string', pattern: '^(?:[A-Z]{2}|INT)$' }, description: 'Código ISO 3166-1 alpha-2, o `INT`.', example: 'ES' },
+            { name: 'region', in: 'query', schema: { type: 'string' }, description: 'Código ISO 3166-2:ES sin prefijo.', example: 'MD' },
             {
               name: 'category',
               in: 'query',
@@ -178,7 +274,7 @@ export function buildOpenApi(baseUrl: string): OpenApiDocument {
                 ],
               },
             },
-            { name: 'language', in: 'query', schema: { type: 'string' } },
+            { name: 'language', in: 'query', schema: { type: 'string', pattern: '^(?:[a-z]{2,3}(?:-[A-Z]{2})?|multi)$' }, description: 'Etiqueta BCP-47 en minúsculas, o `multi`.', example: 'es' },
             { name: 'playable', in: 'query', schema: { type: 'boolean' }, description: 'Solo canales con fuente autorizada reproducible.' },
             { name: 'sort', in: 'query', schema: { type: 'string', enum: ['name', 'name-desc', 'updated', 'relevance'], default: 'name' } },
           ],
@@ -229,6 +325,80 @@ export function buildOpenApi(baseUrl: string): OpenApiDocument {
           responses: {
             '200': { ...json({ $ref: '#/components/schemas/ScheduleResponse' }, 'Programación del canal.'), headers: commonHeaders },
             '404': errorResponse('Canal no encontrado.'),
+          },
+        },
+      },
+      '/channels/{slug}/epg': {
+        get: {
+          tags: ['Programación'],
+          operationId: 'getChannelEpgDay',
+          summary: 'Parrilla diaria completa de un canal',
+          description:
+            'Una jornada completa en la zona horaria del canal. `date` nombra un día local (23, 24 o 25 horas ' +
+            'según el cambio de hora); `from` + `hours` nombra una ventana explícita en UTC. Un canal sin guía ' +
+            'responde `not-mapped` y un día sin programas `empty`: nunca se inventa programación.',
+          parameters: [
+            { name: 'slug', in: 'path', required: true, schema: { type: 'string' }, example: 'la-1' },
+            {
+              name: 'date',
+              in: 'query',
+              schema: { type: 'string', pattern: '^\\d{4}-\\d{2}-\\d{2}$' },
+              description: 'Fecha local `AAAA-MM-DD`. Incompatible con `from`.',
+              example: '2026-11-16',
+            },
+            {
+              name: 'timezone',
+              in: 'query',
+              schema: { type: 'string' },
+              description: 'Zona IANA para interpretar `date`. Por defecto, la del canal.',
+              example: 'Europe/Madrid',
+            },
+            {
+              name: 'from',
+              in: 'query',
+              schema: { type: 'string', format: 'date-time' },
+              description: 'Instante inicial ISO-8601. Incompatible con `date`.',
+              example: '2026-11-16T00:00:00Z',
+            },
+            { name: 'hours', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 72, default: 24 }, description: 'Horas desde `from`; se ignora con `date`.' },
+          ],
+          responses: {
+            '200': { ...json({ $ref: '#/components/schemas/ScheduleResponse' }, 'Jornada del canal.'), headers: commonHeaders },
+            '400': errorResponse('Fecha, zona o ventana no válidas, o `date` y `from` a la vez.'),
+            '404': errorResponse('Canal no encontrado.'),
+          },
+        },
+      },
+      '/channels/{slug}/availability': {
+        get: {
+          tags: ['Reproducción'],
+          operationId: 'getChannelAvailability',
+          summary: 'Disponibilidad pública agregada',
+          description:
+            'Autorización primero: el resultado se deriva del mismo descriptor que reproduce el reproductor y se ' +
+            'reduce a hechos booleanos y recuentos. Nunca incluye una URL de emisión, un identificador de fuente, ' +
+            'el nombre de un proveedor, credenciales ni cláusulas de licencia. `epg` procede de la única medida de ' +
+            'cobertura compartida (`EpgService.coverage()`).',
+          parameters: [{ name: 'slug', in: 'path', required: true, schema: { type: 'string' }, example: 'la-1' }],
+          responses: {
+            '200': {
+              ...json({ $ref: '#/components/schemas/ChannelAvailabilityResponse' }, 'Disponibilidad agregada.'),
+              headers: commonHeaders,
+            },
+            '404': errorResponse('Canal no encontrado.'),
+          },
+        },
+      },
+      '/epg/channels': {
+        get: {
+          tags: ['Programación'],
+          operationId: 'listEpgCoverage',
+          summary: 'Cobertura de la guía por canal',
+          description:
+            'Una entrada por canal publicado con su estado (`fresh`, `stale`, `empty`, `not-mapped`) y los totales. ' +
+            'Es la misma medida que usan `/channels/{slug}/availability` y la consola de administración.',
+          responses: {
+            '200': { ...json({ $ref: '#/components/schemas/EpgCoverageResponse' }, 'Cobertura de la guía.'), headers: commonHeaders },
           },
         },
       },

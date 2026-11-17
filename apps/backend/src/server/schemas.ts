@@ -32,6 +32,16 @@ export {
   updateChannelInputSchema,
   updateSourceInputSchema,
   verifySourceResultSchema,
+  // TDT-API-02FG: shared discovery and EPG-operational contracts.
+  countryEntrySchema,
+  countryListResponseSchema,
+  languageEntrySchema,
+  languageListResponseSchema,
+  channelAvailabilitySchema,
+  channelAvailabilityResponseSchema,
+  epgCoverageStatusSchema,
+  epgCoverageEntrySchema,
+  epgCoverageSchema,
 } from '@tdt/contracts';
 
 export const apiVersion = 'v1' as const;

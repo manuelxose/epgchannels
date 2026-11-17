@@ -12,6 +12,7 @@ import { COLLECTIONS } from '../../infrastructure/mongo.js';
 import type { ChannelDoc, PlaybackSourceDoc } from '../../infrastructure/schema.js';
 import { normalizeForSearch, searchText } from '../../shared/search.js';
 import { compareSources, decidePublication, engineFor, isSourceHealthy } from '../playback/publication-policy.js';
+import { PUBLIC_CHANNEL_MATCH, escapeRegex, scanPlayableWindow } from './catalogue.aggregates.js';
 
 export const THIRD_PARTY_ATTRIBUTION =
   'Metadatos de referencia: proyecto TDTChannels (github.com/LaQuay/TDTChannels), licencia Apache-2.0. ' +
@@ -119,10 +120,6 @@ export interface ChannelFilter {
   readonly sort: 'name' | 'name-desc' | 'updated' | 'relevance';
 }
 
-function escapeRegex(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
 export class ChannelsService {
   constructor(private readonly database: DatabaseHandle) {}
 
@@ -130,9 +127,15 @@ export class ChannelsService {
     return this.database.collection<ChannelDoc>(COLLECTIONS.channels);
   }
 
-  /** Mongo filter for a list query. Only published channels are public. */
+  /**
+   * Mongo filter for a list query. Only published channels are public.
+   *
+   * The published predicate comes from `PUBLIC_CHANNEL_MATCH` so the listing and
+   * the catalogue counts (countries, regions, languages) are filtered by exactly
+   * the same rule.
+   */
   buildFilter(filter: ChannelFilter): Record<string, unknown> {
-    const clauses: Record<string, unknown>[] = [{ editorialStatus: 'published' }, { mergedInto: null }];
+    const clauses: Record<string, unknown>[] = [{ ...PUBLIC_CHANNEL_MATCH }];
     if (filter.country) clauses.push({ country: filter.country });
     if (filter.region) clauses.push({ 'region.code': filter.region });
     if (filter.category) clauses.push({ category: filter.category });
@@ -200,9 +203,15 @@ export class ChannelsService {
   }
 
   /**
-   * `playable=true` pages over the subset with an in-app authorised source. It
-   * scans the (bounded, indexed) filtered catalogue, keeps the page window and
-   * never loads sources one request at a time.
+   * `playable=true` pages over the subset with an in-app authorised source.
+   *
+   * Playback status is derived, not stored, so this cannot be a plain `$match`.
+   * Instead of loading the whole filtered catalogue (which is what a full scan
+   * did), it streams candidate ids in the requested order through a bounded scan
+   * and stops once the requested window plus one is known: a first-page request
+   * costs one bounded pass even on a large catalogue. Health and authorization
+   * are still decided by the same `statusesFor` the descriptor uses, so the page
+   * a consumer sees here matches what `/channels/:slug/playback` says.
    */
   private async listPlayable(
     filter: ChannelFilter,
@@ -211,17 +220,42 @@ export class ChannelsService {
     playback: import('../playback/playback.service.js').PlaybackService,
   ): Promise<import('@tdt/contracts').ChannelListResponse> {
     const mongoFilter = this.buildFilter(filter);
-    const docs = await this.channels().find(mongoFilter).sort(this.sortSpec(filter.sort)).toArray();
-    const statuses = await playback.statusesFor(docs);
-    const playable = docs.filter((doc) => statuses.get(doc._id) === 'available');
-    const total = playable.length;
-    const start = (page - 1) * pageSize;
-    const window = playable.slice(start, start + pageSize);
+    const candidates = this.channels()
+      .find(mongoFilter, { projection: { _id: 1 } })
+      .sort(this.sortSpec(filter.sort))
+      .batchSize(500);
+    const window = await scanPlayableWindow(this.database, playback, candidates, page, pageSize);
+    const docs = window.pageIds.length > 0
+      ? await this.channels().find({ _id: { $in: [...window.pageIds] } }).toArray()
+      : [];
+    const byId = new Map(docs.map((doc) => [doc._id, doc]));
+    const ordered = window.pageIds
+      .map((id) => byId.get(id))
+      .filter((doc): doc is ChannelDoc => doc !== undefined);
+    const statuses = await playback.statusesFor(ordered);
+    /*
+     * The envelope is derived from ONE number so it can never contradict itself.
+     *
+     * `playableSeen` is exact when the sweep reached the end of the candidates.
+     * When it stopped early it counted exactly this window plus one further
+     * playable channel, so it is a truthful lower bound — "at least this many" —
+     * which is what makes `hasNext` true and `pageCount` at least `page + 1`.
+     * Reporting a smaller `total` while claiming `hasNext` was the inconsistency
+     * this fixes.
+     */
+    const total = window.playableSeen;
     const pageCount = pageSize > 0 ? Math.ceil(total / pageSize) : 0;
     return {
-      data: window.map((doc) => toChannelList(doc, statuses.get(doc._id) ?? 'unavailable')),
-      pagination: { page, pageSize, total, pageCount, hasNext: page < pageCount, hasPrevious: page > 1 },
-      attribution: attributionFor(window),
+      data: ordered.map((doc) => toChannelList(doc, statuses.get(doc._id) ?? 'unavailable')),
+      pagination: {
+        page,
+        pageSize,
+        total,
+        pageCount,
+        hasNext: page < pageCount,
+        hasPrevious: page > 1,
+      },
+      attribution: attributionFor(ordered),
     };
   }
 
