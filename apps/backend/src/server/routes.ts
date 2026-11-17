@@ -953,7 +953,12 @@ export function createRouter(context: AppContext, logger: Logger, metrics?: Metr
       epg: context.epg,
       egressOptions: context.egressOptions,
       playback: context.playback,
-      ingestion: context.epgIngestion,
+      ingestion: {
+        runSource: (sourceId, egress, triggeredBy) =>
+          context.epgIngestion.runSource(sourceId, egress, triggeredBy),
+        /* The canonical `epg_sync_runs` history, read through its owning service. */
+        syncRuns: context.epgIngestion.syncRuns,
+      },
       metrics: async () =>
         collectAdminMetrics({
           /*

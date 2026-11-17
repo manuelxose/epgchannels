@@ -121,15 +121,39 @@ export const adminCatalogueResponseSchema = z.object({
   }),
 });
 
-export const adminIdentityInputSchema = z.object({
-  name: z.string().min(1).max(160).optional(),
-  shortName: z.string().min(1).max(40).optional(),
-  country: countryCodeSchema.or(z.literal('INT')).optional(),
-  language: localeCodeSchema.optional(),
-  category: channelCategorySchema.optional(),
-  regionCode: z.string().min(1).max(16).nullable().optional(),
-  reason: z.string().min(3).max(400),
-});
+/** The identity columns an edit may carry. */
+export const ADMIN_IDENTITY_FIELDS = [
+  'name',
+  'shortName',
+  'country',
+  'language',
+  'category',
+  'regionCode',
+] as const;
+
+/**
+ * An identity edit must carry at least one identity field: a reason alone is not
+ * an edit, and auditing one would record a change that never happened. Whether
+ * the value actually differs needs the stored channel, so that half of the rule
+ * is enforced where the current document is known (409 conflict, no write).
+ */
+export const adminIdentityInputSchema = z
+  .object({
+    name: z.string().min(1).max(160).optional(),
+    shortName: z.string().min(1).max(40).optional(),
+    country: countryCodeSchema.or(z.literal('INT')).optional(),
+    language: localeCodeSchema.optional(),
+    category: channelCategorySchema.optional(),
+    regionCode: z.string().min(1).max(16).nullable().optional(),
+    reason: z.string().min(3).max(400),
+  })
+  .refine(
+    (input) => ADMIN_IDENTITY_FIELDS.some((field) => input[field] !== undefined),
+    {
+      message: 'La edición debe incluir al menos un campo de identidad.',
+      path: ['reason'],
+    },
+  );
 export type AdminIdentityInput = z.infer<typeof adminIdentityInputSchema>;
 
 export const adminChannelDetailSchema = z.object({

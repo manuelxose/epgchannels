@@ -120,6 +120,7 @@ beforeEach(async () => {
     COLLECTIONS.jobRuns,
     COLLECTIONS.epgSources,
     COLLECTIONS.programmes,
+    COLLECTIONS.epgSyncRuns,
   ] as const) {
     await db.collection(name).deleteMany({});
   }
@@ -325,21 +326,53 @@ suite('identity edit', () => {
       .expect(400);
   });
 
-  it('records an audit entry even when the edit carries no identity change', async () => {
+  it('refuses a reason-only edit without writing or auditing it', async () => {
     /*
-     * The shared `adminIdentityInputSchema` requires a reason and validates the
-     * fields, but has no non-empty refinement, so a reason-only edit is accepted
-     * and audited. Asserting the real behaviour (rather than inventing a rule the
-     * contract does not state) keeps this test honest; tightening the schema is a
-     * captain-level contract change.
+     * TDT-API-02FG closeout: a reason is not an edit. The schema now demands at
+     * least one identity field, and the route refuses an edit that would leave
+     * every column as it already is. Auditing such a request would record a
+     * change that never happened, so nothing is written either.
      */
     const channel = await createChannel('Sin Cambios');
-    const response = await request(harness.app)
+    await request(harness.app)
       .post(`/api/v1/admin/catalogue/${channel.id}/identity`)
       .set(auth())
       .send({ reason: 'motivo suficiente' })
+      .expect(400);
+
+    const stored = await harness.context.database
+      .collection<ChannelDoc>(COLLECTIONS.channels)
+      .findOne({ _id: channel.id });
+    expect(stored?.name).toBe('Sin Cambios');
+    const audits = await harness.context.database
+      .collection<AuditDoc>(COLLECTIONS.audits)
+      .find({ entityId: channel.id, action: 'channel.update' })
+      .toArray();
+    expect(audits).toHaveLength(0);
+  });
+
+  it('refuses an edit that repeats the stored value with 409 and keeps the record untouched', async () => {
+    const channel = await createChannel('Igual Nombre');
+    await request(harness.app)
+      .post(`/api/v1/admin/catalogue/${channel.id}/identity`)
+      .set(auth())
+      .send({ name: 'Igual Nombre', reason: 'mismo valor a propósito' })
+      .expect(409);
+    const audits = await harness.context.database
+      .collection<AuditDoc>(COLLECTIONS.audits)
+      .find({ entityId: channel.id, action: 'channel.update' })
+      .toArray();
+    expect(audits).toHaveLength(0);
+  });
+
+  it('accepts and audits a real identity change', async () => {
+    const channel = await createChannel('Antes del Cambio');
+    const response = await request(harness.app)
+      .post(`/api/v1/admin/catalogue/${channel.id}/identity`)
+      .set(auth())
+      .send({ name: 'Después del Cambio', reason: 'nombre corregido' })
       .expect(200);
-    expect(response.body.data.id).toBe(channel.id);
+    expect(response.body.data.name).toBe('Después del Cambio');
     const audits = await harness.context.database
       .collection<AuditDoc>(COLLECTIONS.audits)
       .find({ entityId: channel.id, action: 'channel.update' })
@@ -573,14 +606,23 @@ suite('epg', () => {
       createdAt: new Date(),
       updatedAt: new Date(),
     } as never);
-    await harness.context.database.collection(COLLECTIONS.jobRuns).insertOne({
+    /*
+     * The canonical history: one row in `epg_sync_runs`, which is what the
+     * ingestion service writes through `EpgSyncRunService`. The classified error
+     * (never the raw provider message) is what the view is allowed to carry.
+     */
+    await harness.context.database.collection(COLLECTIONS.epgSyncRuns).insertOne({
       _id: 'run-1',
-      job: 'epg:Guía de prueba',
-      status: 'failed',
+      sourceId: 'guide-1',
       startedAt: new Date('2026-11-17T09:00:00Z'),
       finishedAt: new Date('2026-11-17T09:01:00Z'),
-      message: 'fetch failed for https://guide.example.test/guide.xml?token=HIDDEN',
-      details: { sourceId: 'guide-1', triggeredBy: 'scheduled' },
+      status: 'failed',
+      programmes: 0,
+      channelsMatched: 0,
+      rejected: 0,
+      duplicates: 0,
+      error: 'fetch-failed',
+      trigger: 'scheduled',
     } as never);
 
     const response = await request(harness.app)

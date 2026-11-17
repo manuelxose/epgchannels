@@ -40,7 +40,6 @@ import type {
   AdminSourceHealthRow,
   AdminSourceFailureClass,
   EpgCoverageEntry,
-  EpgSyncRun,
   Pagination,
 } from '@tdt/contracts';
 import {
@@ -929,60 +928,6 @@ export class AdminConsoleService {
     };
   }
 
-  /**
-   * Guide ingestion runs, read from the rows the ingestion service already writes.
-   *
-   * The ingestion module records every run in `job_runs` with the prefix `epg:`
-   * and the per-source outcome in `epg_sources`. Those two are the measured facts;
-   * the `epg_sync_runs` collection the contract reserves does not exist in this
-   * base, so this method reports the runs that actually happened instead of an
-   * empty collection that would look like "no failures".
-   */
-  async ingestionRuns(filter: {
-    sourceId?: string | undefined;
-    status?: string | undefined;
-    failuresOnly?: boolean | undefined;
-    limit?: number | undefined;
-  }): Promise<EpgSyncRun[]> {
-    const sources = await this.database.collection<EpgSourceDoc>(COLLECTIONS.epgSources).find({}).toArray();
-    const sourceByJob = new Map(sources.map((source) => [`epg:${source.name}`, source]));
-    const jobFilter: Record<string, unknown> = { job: { $regex: '^epg:' } };
-    if (filter.status) jobFilter['status'] = filter.status;
-    const rows = await this.database
-      .collection<JobRunDoc>(COLLECTIONS.jobRuns)
-      .find(jobFilter)
-      .sort({ startedAt: -1 })
-      .limit(filter.limit ?? 100)
-      .toArray();
-    const out: EpgSyncRun[] = [];
-    for (const row of rows) {
-      const source = sourceByJob.get(row.job) ?? null;
-      if (filter.sourceId !== undefined && source?._id !== filter.sourceId) continue;
-      if (filter.failuresOnly === true && row.status !== 'failed') continue;
-      /* The source captures as a pointer: used only for the id, never echoed. */
-      const captured = row.details['sourceId'];
-      out.push({
-        id: row._id,
-        sourceId: (source?._id ?? (typeof captured === 'string' ? captured : null)) as EpgSyncRun['sourceId'],
-        sourceName: source?.name ?? null,
-        startedAt: row.startedAt.toISOString(),
-        finishedAt: row.finishedAt.toISOString(),
-        status: row.status === 'ok' ? 'ok' : 'failed',
-        trigger: triggerOf(row),
-        programmes: typeof row.details['programmes'] === 'number' ? row.details['programmes'] : 0,
-        channelsMatched: typeof row.details['channelsMatched'] === 'number' ? row.details['channelsMatched'] : 0,
-        rejected: typeof row.details['rejected'] === 'number' ? row.details['rejected'] : 0,
-        duplicates: typeof row.details['duplicates'] === 'number' ? row.details['duplicates'] : 0,
-        /*
-         * The classification of a failure, never the message: an ingestion error
-         * can quote an upstream URL or a provider's text.
-         */
-        error: row.status === 'failed' ? classifyIngestError(row.message) : null,
-      });
-    }
-    return out;
-  }
-
   /* ------------------------------------------------------------ metrics */
 
   async metrics(input: {
@@ -1076,14 +1021,6 @@ function toRecordedCheck(row: CheckRunDoc): RecordedCheck | null {
     failure: category === null ? null : { category },
     observedAt: finished,
   };
-}
-
-/** Where a run came from, from the recorded trigger when present. */
-function triggerOf(row: JobRunDoc): EpgSyncRun['trigger'] {
-  const value = row.details['triggeredBy'];
-  if (typeof value === 'string' && value.startsWith('manual')) return 'manual';
-  if (typeof value === 'string' && value === 'incremental') return 'incremental';
-  return 'scheduled';
 }
 
 /**

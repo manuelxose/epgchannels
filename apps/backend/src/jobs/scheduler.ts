@@ -10,6 +10,7 @@ import type { AppContext } from '../server/context.js';
 import { COLLECTIONS } from '../infrastructure/mongo.js';
 import type { JobRunDoc, PlaybackSourceDoc } from '../infrastructure/schema.js';
 import { runResolutionJob } from './youtube-resolution.js';
+import { createEpgRefreshJob } from './epg-refresh.js';
 import { clearScheduledJobs, registerScheduledJobs } from './job-control.js';
 
 type Job = { readonly name: string; readonly run: () => Promise<void> };
@@ -18,13 +19,19 @@ let timers: NodeJS.Timeout[] = [];
 const running = new Set<string>();
 
 export function startJobs(config: Config, context: AppContext): void {
-  const epgJob: Job = {
-    name: 'epg-refresh',
-    run: async () => {
-      const results = await context.epgIngestion.runAll(context.egressOptions);
-      context.logger.info({ sources: results.length, results }, 'epg refresh finished');
-    },
-  };
+  /*
+   * TDT-API-02FG: `epg-refresh` plans per source (`planRuns`/`shouldRetry`) and
+   * re-reads the operator pause before every source. Its body lives in
+   * `jobs/epg-refresh.ts` so the round is testable without a timer; the pause in
+   * `run()` below still guards the whole job for the timer and HTTP paths alike.
+   */
+  const epgJob = createEpgRefreshJob({
+    database: context.database,
+    ingestion: context.epgIngestion,
+    control: context.jobControl,
+    egress: context.egressOptions,
+    logger: context.logger,
+  });
 
   const verifyJob: Job = {
     name: 'source-verification',
