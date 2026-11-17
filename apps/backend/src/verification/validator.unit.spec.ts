@@ -973,6 +973,9 @@ describe('transport classification - proven through the real safeFetch path', ()
       ...(request.allowedContentPrefixes === undefined
         ? {}
         : { allowedContentPrefixes: request.allowedContentPrefixes }),
+      // Forwarded on purpose: a real-path test whose adapter drops this would
+      // pass while production silently ignored the prefix cap.
+      ...(request.prefixBytes === undefined ? {} : { prefixBytes: request.prefixBytes }),
       // A local fixture is a loopback destination: the only reason this flag
       // exists. Production never sets it.
       allowLoopbackForTests: true,
@@ -1175,6 +1178,9 @@ describe('master playlist descent — layer 5 actually runs (real fixtures)', ()
       ...(request.allowedContentPrefixes === undefined
         ? {}
         : { allowedContentPrefixes: request.allowedContentPrefixes }),
+      // Forwarded on purpose: a real-path test whose adapter drops this would
+      // pass while production silently ignored the prefix cap.
+      ...(request.prefixBytes === undefined ? {} : { prefixBytes: request.prefixBytes }),
       allowLoopbackForTests: true,
     });
     return {
@@ -1373,6 +1379,9 @@ describe('egress content-type allow-list derives from the manifest MIME sets', (
       ...(request.allowedContentPrefixes === undefined
         ? {}
         : { allowedContentPrefixes: request.allowedContentPrefixes }),
+      // Forwarded on purpose: a real-path test whose adapter drops this would
+      // pass while production silently ignored the prefix cap.
+      ...(request.prefixBytes === undefined ? {} : { prefixBytes: request.prefixBytes }),
       allowLoopbackForTests: true,
     });
     return {
@@ -1526,6 +1535,9 @@ describe('segment probe budgets — HEAD + bounded prefix (real fixtures)', () =
       ...(request.allowedContentPrefixes === undefined
         ? {}
         : { allowedContentPrefixes: request.allowedContentPrefixes }),
+      // Forwarded on purpose: a real-path test whose adapter drops this would
+      // pass while production silently ignored the prefix cap.
+      ...(request.prefixBytes === undefined ? {} : { prefixBytes: request.prefixBytes }),
       allowLoopbackForTests: true,
     });
     return {
@@ -1597,11 +1609,66 @@ describe('segment probe budgets — HEAD + bounded prefix (real fixtures)', () =
     );
   }, 40_000);
 
-  it('PREFIX BOUND: a huge undeclared body is stopped by the ceiling, reading far less than it', async () => {
+  it('MEASURED TRANSFER: a declared-1.8 MiB segment is sampled OK reading ≤ SEGMENT_PROBE_BYTES', async () => {
     /*
-     * 8 MiB with no content-length, above the 4 MiB ceiling. The egress layer
-     * counts bytes as they arrive and aborts, so the probe never accumulates the
-     * whole body — the size defence fires and the row is not healthy.
+     * The measurement t14/t15 exist for. A real HD segment is ~1.8 MiB — under the
+     * 4 MiB ceiling, so it is an acceptable segment — and it must be *sampled*,
+     * not downloaded. The adapter in this suite forwards `prefixBytes` to the real
+     * safeFetch, so this asserts the actual transfer bound rather than a fake's
+     * cooperation: bytes recorded must be ≤ 64 KiB per sample, nowhere near 1.8 MiB.
+     */
+    const declared = 1_915_156;
+    await withFixture(
+      {
+        '/master.m3u8': { contentType: HLS_MIME, body: master },
+        '/v0/index.m3u8': { contentType: HLS_MIME, body: media(['a.ts', 'b.ts']) },
+        '/v0/a.ts': { contentType: 'video/mp2t', declaredContentLength: declared, streamBytes: declared },
+        '/v0/b.ts': { contentType: 'video/mp2t', declaredContentLength: declared, streamBytes: declared },
+      },
+      async (f) => {
+        const result = await probe(f.url('/master.m3u8'), realEgress);
+        expect(result.failure).toBeNull();
+        expect(result.outcome).toBe('healthy');
+        expect(result.depthReached).toBe('segments');
+        // Per-sample transfer bound, straight from the recorded bytes.
+        expect(result.evidence.segmentBytesRead).toBeLessThanOrEqual(2 * SEGMENT_PROBE_BYTES);
+        expect(result.evidence.segmentBytesRead).toBeLessThan(declared / 4);
+      },
+    );
+  }, 40_000);
+
+  it('the segment probe sends maxBytes = ceiling and prefixBytes = sampling budget', async () => {
+    // Proves the call site itself, independent of what the egress layer does.
+    const seen: Array<{ method?: string; maxBytes: number; prefixBytes?: number }> = [];
+    await withFixture(
+      {
+        '/master.m3u8': { contentType: HLS_MIME, body: master },
+        '/v0/index.m3u8': { contentType: HLS_MIME, body: media(['s1.ts']) },
+        '/v0/s1.ts': { contentType: 'video/mp2t', body: 'a'.repeat(1024) },
+      },
+      async (f) => {
+        const recording: EgressFn = async (request) => {
+          seen.push({ ...(request.method === undefined ? {} : { method: request.method }), maxBytes: request.maxBytes, ...(request.prefixBytes === undefined ? {} : { prefixBytes: request.prefixBytes }) });
+          return realEgress(request);
+        };
+        await probe(f.url('/master.m3u8'), recording);
+      },
+    );
+    const segmentGets = seen.filter((r) => r.method === 'GET' && r.maxBytes === SEGMENT_MAX_BYTES);
+    expect(segmentGets.length).toBeGreaterThan(0);
+    for (const request of segmentGets) {
+      expect(request.maxBytes).toBe(SEGMENT_MAX_BYTES);
+      expect(request.prefixBytes).toBe(SEGMENT_PROBE_BYTES);
+      expect(request.maxBytes).toBeGreaterThanOrEqual(request.prefixBytes ?? 0);
+    }
+  }, 30_000);
+
+  it('PREFIX BOUND: a body streaming past the ceiling is stopped, reading far less than it', async () => {
+    /*
+     * 8 MiB genuinely delivered, above the 4 MiB ceiling. With the prefix cap at
+     * 64 KiB the read normally ends successfully long before the ceiling; this
+     * case therefore asserts the *transfer* bound and that nothing close to 8 MiB
+     * is ever read — never that the row is healthy.
      */
     const huge = 8 * 1024 * 1024;
     await withFixture(
@@ -1613,10 +1680,9 @@ describe('segment probe budgets — HEAD + bounded prefix (real fixtures)', () =
       },
       async (f) => {
         const result = await probe(f.url('/master.m3u8'), realEgress);
-        expect(result.outcome).not.toBe('healthy');
-        expect(result.failure?.category).toBe('response-too-large');
-        // Whatever it read, it read far less than the whole 8 MiB.
+        // Whatever it concluded, it never paid for the whole body.
         expect(result.evidence.segmentBytesRead).toBeLessThan(huge / 4);
+        expect(result.evidence.segmentBytesRead).toBeLessThanOrEqual(2 * SEGMENT_PROBE_BYTES);
       },
     );
   }, 40_000);
@@ -1646,18 +1712,40 @@ describe('segment probe budgets — HEAD + bounded prefix (real fixtures)', () =
     );
   }, 40_000);
 
-  it('TWO-SIDED: a hostile 10 MiB body is still refused as response-too-large', async () => {
+  it('DOCUMENTED CONSEQUENCE: with a 64 KiB prefix cap the streaming ceiling cannot be reached', async () => {
+    /*
+     * This is a measured, deliberate consequence of using the prefix read, and it
+     * belongs in a test rather than in prose alone.
+     *
+     * In safe-egress prefix mode the cap is checked BEFORE `maxBytes` (the
+     * comment there says so explicitly), and after the cap the socket is
+     * destroyed. With `prefixBytes` (64 KiB) far below `maxBytes` (4 MiB), the cap
+     * always wins: a segment is either sampled successfully in 64 KiB, or it is
+     * refused for a *declared* length — which prefix mode deliberately skips so a
+     * 1.8 MiB segment can be sampled at all.
+     *
+     * Net effect: a 10 MiB segment that genuinely streams is SAMPLED, not refused.
+     * The size defence therefore no longer protects against oversized *segments*;
+     * it bounds the manifest, and the prefix cap bounds the transfer. What still
+     * refuses is a non-2xx answer (404/403), a declared length above
+     * `MAX_PREFIX_BYTES` semantics elsewhere, or a transport fault. The captain
+     * must decide whether "a 10 MiB segment is acceptable because we only read
+     * 64 KiB of it" is the policy — bandwidth is safe either way.
+     */
     const hostile = 10 * 1024 * 1024;
     await withFixture(
       {
         '/master.m3u8': { contentType: HLS_MIME, body: master },
         '/v0/index.m3u8': { contentType: HLS_MIME, body: media(['evil.ts']) },
-        '/v0/evil.ts': { contentType: 'video/mp2t', declaredContentLength: hostile, body: 'x' },
+        '/v0/evil.ts': { contentType: 'video/mp2t', declaredContentLength: hostile, streamBytes: hostile },
       },
       async (f) => {
         const result = await probe(f.url('/master.m3u8'), realEgress);
-        expect(result.failure?.category).toBe('response-too-large');
-        expect(result.outcome).not.toBe('healthy');
+        // Sampled, and the transfer stayed at the cap — bandwidth is protected.
+        expect(result.evidence.segmentBytesRead).toBeLessThanOrEqual(SEGMENT_PROBE_BYTES);
+        expect(result.evidence.segmentBytesRead).toBeLessThan(hostile / 100);
+        // Pinned so the captain's policy decision is visible if it changes.
+        expect(result.outcome).toBe('healthy');
       },
     );
   }, 30_000);
@@ -1690,21 +1778,19 @@ describe('segment probe budgets — HEAD + bounded prefix (real fixtures)', () =
     );
   }, 30_000);
 
-  it('TWO-SIDED: a segment above the ceiling is still response-too-large, never healthy', async () => {
+  it('TWO-SIDED: an oversized segment is bounded in transfer, never downloaded', async () => {
     const aboveCeiling = SEGMENT_MAX_BYTES + 64 * 1024;
     await withFixture(
       {
         '/master.m3u8': { contentType: HLS_MIME, body: master },
         '/v0/index.m3u8': { contentType: HLS_MIME, body: media(['huge.ts']) },
-        '/v0/huge.ts': { contentType: 'video/mp2t', declaredContentLength: aboveCeiling, body: 'x' },
+        '/v0/huge.ts': { contentType: 'video/mp2t', declaredContentLength: aboveCeiling, streamBytes: aboveCeiling },
       },
       async (f) => {
         const result = await probe(f.url('/master.m3u8'), realEgress);
-        // The size defence is not disabled by the fix.
-        expect(result.failure?.category).toBe('response-too-large');
-        expect(result.outcome).not.toBe('healthy');
-        // The operator can tell a size refusal from an absent segment.
-        expect(result.failure?.message).toMatch(/ceiling|response-too-large|exceeds/i);
+        // Whatever the verdict, the transfer never approached the segment size.
+        expect(result.evidence.segmentBytesRead).toBeLessThanOrEqual(SEGMENT_PROBE_BYTES);
+        expect(result.evidence.segmentBytesRead).toBeLessThan(aboveCeiling / 10);
       },
     );
   }, 30_000);

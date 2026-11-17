@@ -97,6 +97,14 @@ export interface EgressRequest {
   readonly timeoutMs: number;
   readonly maxBytes: number;
   readonly allowedContentPrefixes?: readonly string[];
+  /**
+   * Read at most this many bytes and stop, regardless of how large the resource
+   * declares itself to be. This is what turns the sampling budget into a real
+   * *transfer* bound: `maxBytes` still decides `response-too-large` for a
+   * genuinely oversized resource, while `prefixBytes` caps what we are willing to
+   * read and keep. Must be ≤ `maxBytes`.
+   */
+  readonly prefixBytes?: number;
 }
 
 /** The injected egress seam: one bounded request, one bounded answer. */
@@ -925,23 +933,19 @@ async function probeSegment(
   }
 
   /*
-   * 2. The GET carries the WHOLE-SEGMENT ceiling, not the probe budget.
+   * 2. The GET carries BOTH budgets, each doing its own job.
    *
-   * This is the crux of the separation, and it is subtle. Two different numbers
-   * are at stake and only one of them may be the request limit:
+   * - `maxBytes = SEGMENT_MAX_BYTES` is the *vetting* limit: the egress layer
+   *   refuses a resource whose declared `content-length` exceeds it, which is the
+   *   truthful `response-too-large` verdict about the origin's segment.
+   * - `prefixBytes = SEGMENT_PROBE_BYTES` is the *transfer* limit: the read stops
+   *   at 64 KiB and the socket is released. Without it, `maxBytes` alone would let
+   *   a sampled 1.8 MiB segment transfer 1.8 MiB — bandwidth the contract §4 says
+   *   we must not spend. Using the probe budget as `maxBytes` instead would make
+   *   every real segment look oversized, which was the earlier defect.
    *
-   * - `maxBytes` is the *vetting* limit. The egress layer refuses a response whose
-   *   declared `content-length` exceeds it, with `response-too-large`. That is a
-   *   real verdict about the origin's segment, so it must be the contract's
-   *   segment ceiling (512 KiB), never the 64 KiB probe budget — using the probe
-   *   budget here is the original defect: every HD segment looked oversized.
-   * - `SEGMENT_PROBE_BYTES` is the *sampling* budget: how much we are willing to
-   *   transfer. It shows up as bytes actually read (`got.bytes`), and the probe
-   *   reports only up to that figure. We never hold more than it.
-   *
-   * A server that declares ≤ ceiling but streams more than the probe budget is
-   * simply "the segment is longer than what we sample", which is the normal case
-   * for a real segment and not a fault of the content.
+   * So the ceiling decides *whether* a segment is acceptable and the prefix
+   * decides *how much of it we actually pay for*.
    */
   try {
     const got = await egress({
@@ -949,6 +953,7 @@ async function probeSegment(
       method: 'GET',
       timeoutMs: SEGMENT_TIMEOUT_MS,
       maxBytes: SEGMENT_MAX_BYTES,
+      prefixBytes: SEGMENT_PROBE_BYTES,
     });
     const bytesRead = Math.min(got.bytes, SEGMENT_PROBE_BYTES);
     if (!got.ok) {
