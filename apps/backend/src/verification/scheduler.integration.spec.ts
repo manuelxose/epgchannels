@@ -21,7 +21,8 @@ import type { AuditDoc } from '../infrastructure/schema.js';
 import { VerificationMetrics } from './metrics.js';
 import { MongoQueue, RedisQueue, checkId } from './queue.js';
 import type { ValidationRequest, ValidationResult } from './scheduler.js';
-import { BoundedSemaphore, VerificationScheduler } from './scheduler.js';
+import { BoundedSemaphore, VerificationScheduler, decisionFailureCode } from './scheduler.js';
+import { failureCodeOfEgressCode, isPermanentFailure } from './types.js';
 import { VerificationControls } from './controls.js';
 import { claimCheck, healthCollections } from './health.repository.js';
 import type { SourceHealthDoc } from './types.js';
@@ -221,6 +222,33 @@ const notFound = (): ValidationResult => ({
   failure: { code: 'http-404', httpStatus: 404, detail: 'gone' },
 });
 
+/**
+ * A failure reported the way the PRODUCTION path reports a transport failure:
+ * RETURNED as `transportError`, never thrown — and with NO `failure.code` AND a
+ * non-category `outcome`, so `transportError` is the only channel that can
+ * classify it.
+ *
+ * `runtime.ts` catches `EgressFailure` from `safeFetch` and puts its code in
+ * `EgressResponse.transportError`, because t2's `EgressFn` seam returns a
+ * response; `thrown` is therefore never set in production.
+ *
+ * The `outcome` is deliberately `'unknown'` rather than `'timeout'`: a
+ * `'timeout'` outcome is itself a retryable *category*, so an implementation
+ * that ignores `transportError` would still get the right answer by accident.
+ * Using a non-category outcome makes these fixtures prove the transport channel
+ * specifically — and each one fails against the pre-t13 code, which is how the
+ * defect was confirmed rather than assumed.
+ */
+const transportFailure = (code: string): ValidationResult => ({
+  outcome: 'unknown',
+  depth: 'transport',
+  egressRequests: 1,
+  transportError: code,
+});
+
+/** Alias kept for readability at the call sites. */
+const bareTransportFailure = transportFailure;
+
 /** Makes a source due right now, as a passing interval or a resume would. */
 async function makeDue(sourceId: string): Promise<void> {
   await healthCollection().updateOne(
@@ -350,6 +378,91 @@ describe.skipIf(skip)('verification scheduler (real MongoDB)', () => {
     expect(counts.retries).toBe(0);
     const row = (await checksCollection().findOne({})) as unknown as { failure: { category: string } };
     expect(row.failure.category).toBe('http-404');
+  });
+
+  it('retries a RETURNED transport timeout up to the cap', async () => {
+    // The production shape: `transportError: 'timeout'`, never thrown.
+    await plantSources([{ host: 'returned-timeout.test.invalid' }]);
+    const validator = new FakeValidator(0, () => bareTransportFailure('timeout'));
+    const { scheduler } = makeScheduler(validator, { maxAttempts: 3, concurrency: 1, perHostConcurrency: 1 });
+
+    const counts = await scheduler.runRound(new Date());
+
+    // Entered the validator exactly the cap, then stopped.
+    expect(validator.requests).toHaveLength(3);
+    expect(validator.requests.map((request) => request.attempt)).toEqual([1, 2, 3]);
+    expect(counts.failed).toBe(1);
+    expect(counts.retries).toBe(2);
+    const row = (await checksCollection().findOne({})) as unknown as { failure: { category: string } };
+    expect(row.failure.category).toBe('timeout');
+  });
+
+  it('attempts a RETURNED private-address refusal EXACTLY once', async () => {
+    /*
+     * The security-relevant direction: an SSRF refusal returned by the egress
+     * layer must not be repeated. Before t13 this passed only because the second
+     * veto saw a permanent *category*; the count here is the load-bearing part.
+     */
+    await plantSources([{ host: 'private.test.invalid' }]);
+    const validator = new FakeValidator(0, () => bareTransportFailure('private-address'));
+    const { scheduler } = makeScheduler(validator, { maxAttempts: 3, concurrency: 1, perHostConcurrency: 1 });
+
+    const counts = await scheduler.runRound(new Date());
+
+    expect(validator.requests).toHaveLength(1);
+    expect(counts.failed).toBe(1);
+    expect(counts.retries).toBe(0);
+    const row = (await checksCollection().findOne({})) as unknown as { failure: { category: string } };
+    expect(row.failure.category).toBe('ssrf-blocked');
+  });
+
+  it('keeps breaker accounting consistent with a returned transport failure', async () => {
+    const [source] = await plantSources([{ host: 'returned-breaker.test.invalid' }]);
+    const validator = new FakeValidator(0, () => bareTransportFailure('timeout'));
+    const { scheduler } = makeScheduler(validator, {
+      maxAttempts: 1,
+      concurrency: 1,
+      perHostConcurrency: 1,
+      breakers: { threshold: 3, baseWindowMs: 1_000, maxWindowMs: 60_000 },
+    });
+
+    // One round (one attempt at cap 1) must not open the circuit by itself.
+    await scheduler.runRound(new Date());
+    expect(scheduler.breakers.get('source', source!.id).state).toBe('closed');
+    expect(validator.requests).toHaveLength(1);
+
+    // It counts, though: three rounds reach the threshold and open it.
+    await makeDue(source!.id);
+    await scheduler.runRound(new Date(Date.now() + 100));
+    await makeDue(source!.id);
+    await scheduler.runRound(new Date(Date.now() + 200));
+    expect(scheduler.breakers.get('source', source!.id).state).toBe('open');
+
+    // And the open circuit still refuses to enter the validator.
+    await makeDue(source!.id);
+    const blocked = await scheduler.runRound(new Date(Date.now() + 300));
+    expect(validator.requests).toHaveLength(3);
+    expect(blocked.planned).toBe(0);
+  });
+
+  it('does not let a returned policy refusal open the circuit', async () => {
+    const [source] = await plantSources([{ host: 'returned-refusal.test.invalid' }]);
+    const validator = new FakeValidator(0, () => bareTransportFailure('private-address'));
+    const { scheduler } = makeScheduler(validator, {
+      maxAttempts: 1,
+      concurrency: 1,
+      perHostConcurrency: 1,
+      breakers: { threshold: 2, baseWindowMs: 1_000, maxWindowMs: 60_000 },
+    });
+
+    for (let round = 0; round < 4; round += 1) {
+      await makeDue(source!.id);
+      await scheduler.runRound(new Date(Date.now() + round * 100));
+    }
+
+    // Four refusals sent zero requests to that host, so the host is not blamed.
+    expect(validator.requests).toHaveLength(4);
+    expect(scheduler.breakers.get('source', source!.id).state).toBe('closed');
   });
 
   it('asks for HEAD-before-GET, never segment sampling first, never browser depth', async () => {
@@ -724,6 +837,65 @@ describe.skipIf(skip)('verification scheduler (real MongoDB)', () => {
     expect(text).not.toContain('secret-cdn');
     expect(text).not.toContain('https://');
     expect(text).not.toContain('.m3u8');
+  });
+});
+
+/*
+ * The retry decision, at the unit level, over the PRODUCTION channel.
+ *
+ * These are the tests that fail against the defect t13 fixes: before it, a
+ * transport code returned in `transportError` reached neither the retry veto nor
+ * the breaker, because only `result.thrown` was consulted and that is never set
+ * by `runtime.ts`.
+ */
+describe('transport retryability: one channel (pure)', () => {
+  it('classifies a RETURNED transient transport error as retryable', () => {
+    for (const code of ['timeout', 'dns-failure', 'tls-failure', 'connection-failed']) {
+      const result = bareTransportFailure(code);
+      const category = decisionFailureCode(result);
+      // The same two functions the scheduler's loop and breaker branch call.
+      expect(isPermanentFailure(category)).toBe(false);
+      expect(failureCodeOfEgressCode(code)).toBe(category);
+    }
+  });
+
+  it('classifies a RETURNED permanent refusal as permanent', () => {
+    for (const code of ['private-address', 'host-blocked', 'dns-rebind', 'credential-in-url', 'redirect-unsafe', 'response-too-large']) {
+      const result = bareTransportFailure(code);
+      const category = decisionFailureCode(result);
+      expect(isPermanentFailure(category)).toBe(true);
+    }
+  });
+
+  it('maps the egress vocabulary onto the contract exactly once', () => {
+    // Retryable side.
+    expect(failureCodeOfEgressCode('timeout')).toBe('timeout');
+    expect(failureCodeOfEgressCode('dns-failure')).toBe('dns-failure');
+    expect(failureCodeOfEgressCode('tls-failure')).toBe('tls-failure');
+    expect(failureCodeOfEgressCode('connection-failed')).toBe('connection-refused');
+    // Permanent side.
+    expect(failureCodeOfEgressCode('private-address')).toBe('ssrf-blocked');
+    expect(failureCodeOfEgressCode('host-blocked')).toBe('ssrf-blocked');
+    expect(failureCodeOfEgressCode('dns-rebind')).toBe('ssrf-blocked');
+    expect(failureCodeOfEgressCode('credential-in-url')).toBe('ineligible');
+    expect(failureCodeOfEgressCode('redirect-unsafe')).toBe('redirect-unsafe');
+    expect(failureCodeOfEgressCode('too-many-redirects')).toBe('redirect-unsafe');
+    expect(failureCodeOfEgressCode('response-too-large')).toBe('response-too-large');
+    // Unknown fails closed.
+    expect(failureCodeOfEgressCode('something-new')).toBe('unknown-error');
+    expect(isPermanentFailure(failureCodeOfEgressCode('something-new'))).toBe(true);
+  });
+
+  it('prefers an explicit failure.code, and never disagrees with itself', () => {
+    // A named category wins over the transport code...
+    expect(decisionFailureCode(timeoutResult())).toBe('timeout');
+    expect(decisionFailureCode({ outcome: 'http-404', failure: { code: 'http-404' } })).toBe('http-404');
+    // ...and a transport error is used when there is no named category.
+    expect(decisionFailureCode({ outcome: 'timeout', transportError: 'private-address' })).toBe('ssrf-blocked');
+    // A bare failure outcome is still a category.
+    expect(decisionFailureCode({ outcome: 'timeout' })).toBe('timeout');
+    // Unknown shapes fail closed.
+    expect(decisionFailureCode({ outcome: 'timeout', transportError: null })).toBe('timeout');
   });
 });
 

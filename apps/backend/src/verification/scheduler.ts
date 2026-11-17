@@ -39,12 +39,7 @@ import type { Collection } from 'mongodb';
 import { COLLECTIONS } from '../infrastructure/mongo.js';
 import type { DatabaseHandle } from '../infrastructure/mongo.js';
 import type { Logger } from '../infrastructure/logging.js';
-import {
-  countsTowardBreakerOnThrow,
-  egressCodeOf,
-  failureCodeOfThrown,
-  isRetryableThrown,
-} from './egress-classification.js';
+import { egressCodeOf, failureCodeOfThrownError } from './egress-classification.js';
 import type { VerificationMetrics } from './metrics.js';
 import { hostOf } from './metrics.js';
 import type { QueueBackend, QueueItem } from './queue.js';
@@ -66,6 +61,7 @@ import {
   VERIFICATION_COLLECTIONS,
   countsTowardBreaker,
   failureCause,
+  failureCodeOfEgressCode,
   isCheckOutcomeCode,
   isFailureCode,
   isPermanentFailure,
@@ -206,6 +202,16 @@ export interface ValidationResult {
   readonly egressRequests?: number;
   /** Structured failure detail when the validator knows more than the outcome. */
   readonly failure?: ValidatorFailure;
+  /**
+   * The egress code a transport failure arrived with, when the validator reports
+   * one instead of throwing (`EgressResponse.transportError`).
+   *
+   * This is where the production path carries a transport failure: t2's
+   * `EgressFn` seam returns a response, so `runtime.ts` catches `EgressFailure`
+   * and puts its code here. `decisionFailureCode` folds it into the contract
+   * vocabulary, so it is decided by the same policy as every other failure.
+   */
+  readonly transportError?: string | null;
   readonly segmentsSampled?: boolean;
   readonly uncertainty?: Partial<Uncertainty>;
   readonly evidence?: {
@@ -215,7 +221,10 @@ export interface ValidationResult {
   };
   /** Set by the scheduler when the validator threw instead of answering. */
   readonly thrown?: boolean;
-  /** The thrown value, kept so the retry classifier can read its egress code. */
+  /**
+   * The thrown value. Only ever read by `decisionFailureCode`, which converts it
+   * to a category through the same door a returned `transportError` uses.
+   */
   readonly thrownError?: unknown;
 }
 
@@ -224,6 +233,30 @@ export interface ValidationExecutor {
 }
 
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * THE retry/breaker decision input: the one place a validator result becomes a
+ * failure category.
+ *
+ * Precedence, highest first:
+ * 1. an explicit `failure.code` — the validator already named the category;
+ * 2. `transportError` — the production path for an egress refusal (returned, not thrown);
+ * 3. the thrown value, if the validator threw instead of returning;
+ * 4. the outcome itself, when it is a failure category.
+ *
+ * Everything downstream — `isPermanentFailure`, `countsTowardBreaker`,
+ * `failureCause` — takes this single category, so one egress code cannot be
+ * classified two ways depending on whether it arrived by return or by throw.
+ */
+export function decisionFailureCode(result: ValidationResult): FailureCode {
+  if (result.failure?.code !== undefined) return result.failure.code;
+  const transport = result.transportError;
+  if (transport !== undefined && transport !== null && transport !== '') {
+    return failureCodeOfEgressCode(transport);
+  }
+  if (result.thrown === true) return failureCodeOfThrownError(result.thrownError);
+  return asFailureCode(result.outcome) ?? 'unknown-error';
+}
 
 /** Row state a validated outcome settles into. `aborted` never became a run. */
 export function terminalStateOf(outcome: ValidationOutcome): 'done' | 'failed' | 'skipped' {
@@ -881,16 +914,17 @@ export class VerificationScheduler {
 
       const isFailure = result.outcome !== 'healthy' && result.outcome !== 'degraded' && result.outcome !== 'aborted';
       if (!isFailure) break;
-      const failureCode: FailureCode = asFailureCode(result.outcome) ?? result.failure?.code ?? 'unknown-error';
       /*
-       * Two independent vetoes, both fail-closed:
-       * 1. `thrown` — the validator threw an egress failure. Only the four
-       *    retryable egress codes earn another attempt; a refusal (SSRF,
-       *    credential-in-url, redirect-unsafe…) is never repeated, because a
-       *    retried refusal is one request too many against a host we declined.
-       * 2. `isPermanentFailure` — a permanent outcome code from the vocabulary.
+       * ONE decision, from ONE channel. `decisionFailureCode` folds every way a
+       * validator can report a failure — a named `failure.code`, a returned
+       * `transportError`, a thrown error, or a bare failure outcome — into a
+       * single contract category. `isPermanentFailure` then decides, over the
+       * vocabulary `failures.ts` defines once. A transient transport failure
+       * (`timeout`, `dns-failure`, `tls-failure`, `connection-failed`) is
+       * retryable however it arrived; a refusal (`private-address`,
+       * `credential-in-url`, `redirect-unsafe`, `response-too-large`) never is.
        */
-      if (result.thrown === true && !isRetryableThrown(result.thrownError)) break;
+      const failureCode: FailureCode = decisionFailureCode(result);
       if (isPermanentFailure(failureCode)) break;
       if (attempt >= this.maxAttempts) break;
       this.metrics?.retryTotal(failureCode === 'timeout' ? 'timeout' : 'transient');
@@ -900,8 +934,10 @@ export class VerificationScheduler {
 
     const latencyMs = Math.round(performance.now() - startedAt);
     const outcome = lastResult.outcome;
-    const code: FailureCode =
-      asFailureCode(outcome) ?? lastResult.failure?.code ?? 'unknown-error';
+    // Same single channel as the retry decision above: the terminal row records
+    // the category that the policy actually acted on, including a returned
+    // `transportError`, rather than re-deriving it differently.
+    const code: FailureCode = decisionFailureCode(lastResult);
     const terminal = terminalStateOf(outcome);
 
     /*
@@ -962,13 +998,14 @@ export class VerificationScheduler {
     if (terminal === 'failed') {
       this.metrics?.failureTotal(failureCause(code));
       /*
-       * A thrown policy refusal (SSRF block, credential-in-url) describes our
-       * rules, not the destination: it sent no request, so it must not open the
-       * circuit for a shared host. An answered permanent failure does count.
+       * Breaker accounting uses the SAME category the retry decision used. A
+       * policy refusal (SSRF block, ineligible source) describes our rules and
+       * sent no request, so it must not open the circuit for a shared host; a
+       * failure the destination caused does count. A transient transport failure
+       * counts once — a single attempt must not open a circuit, and after the
+       * retry cap it represents several real failed contacts.
        */
-      const blamesDestination =
-        lastResult.thrown === true ? countsTowardBreakerOnThrow(lastResult.thrownError) : countsTowardBreaker(code);
-      if (blamesDestination) {
+      if (countsTowardBreaker(code)) {
         /*
          * Stamped with the ROUND's instant, not the wall clock: the planner
          * decides admissibility with `now`, so the breaker's window must be
@@ -1029,12 +1066,14 @@ export class VerificationScheduler {
     } catch (error) {
       /*
        * A validator that throws is either an egress refusal (an `EgressFailure`
-       * with a closed code) or a control-plane bug. Both are recorded as a
-       * terminal failure — a check must not sit `running` forever — but only a
-       * *retryable* thrown failure is ever attempted again (see the loop in
-       * `runOne`, which uses `isRetryableThrown`).
+       * with a closed code) or a control-plane bug. The thrown value is turned
+       * into a contract category HERE and stored as `failure.code`, so from the
+       * caller's point of view a throw is just another way of reporting a
+       * failure: `decisionFailureCode` reads that same field and the single
+       * retry/breaker policy decides. Nothing downstream needs to know whether
+       * the code arrived by return or by throw.
        */
-      const thrown = failureCodeOfThrown(error);
+      const thrown = failureCodeOfThrownError(error);
       this.logger?.warn(
         { sourceId: source.sourceId, attempt, code: egressCodeOf(error), failure: thrown },
         'validator threw; recorded as a failure',

@@ -83,6 +83,47 @@ export function countsTowardBreaker(code: FailureCode): boolean {
   return !POLICY_REFUSALS.has(code);
 }
 
+/**
+ * The egress codes `safeFetch` refuses with, mapped onto the contract vocabulary.
+ *
+ * `safeFetch` (t1) is the real egress on the production path. It reports a
+ * refusal either as a thrown `EgressFailure` or, through t2's `EgressFn` seam,
+ * as `EgressResponse.transportError`; both are the same closed code set, so both
+ * must land in the same failure category before any retry decision is taken.
+ * A code not listed here is mapped to `unknown-error`, which is permanent.
+ */
+const FAILURE_OF_EGRESS_CODE: Readonly<Record<string, FailureCode>> = {
+  // Retryable: the transient side may be ours or the network's.
+  timeout: 'timeout',
+  'dns-failure': 'dns-failure',
+  'connection-failed': 'connection-refused',
+  'tls-failure': 'tls-failure',
+  // Permanent refusals: waiting cannot change the answer.
+  'host-blocked': 'ssrf-blocked',
+  'private-address': 'ssrf-blocked',
+  'dns-rebind': 'ssrf-blocked',
+  'redirect-unsafe': 'redirect-unsafe',
+  'too-many-redirects': 'redirect-unsafe',
+  'response-too-large': 'response-too-large',
+  'credential-in-url': 'ineligible',
+  'invalid-url': 'ineligible',
+  'scheme-not-allowed': 'unsupported-format',
+  'content-type-not-allowed': 'unsupported-format',
+};
+
+/**
+ * The failure category of an egress code such as `EgressResponse.transportError`.
+ *
+ * This is the single door from t1's egress vocabulary into the contract's, used
+ * by the scheduler for *both* a thrown `EgressFailure` and a returned
+ * `transportError`, so one egress code can never be classified two ways
+ * depending on whether it arrived by throw or by return.
+ */
+export function failureCodeOfEgressCode(code: string | null | undefined): FailureCode {
+  if (code === null || code === undefined) return 'unknown-error';
+  return FAILURE_OF_EGRESS_CODE[code] ?? 'unknown-error';
+}
+
 const DEPTH_ORDER: readonly ValidationDepth[] = [
   'eligibility',
   'dns',
