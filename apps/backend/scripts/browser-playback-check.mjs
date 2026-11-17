@@ -244,6 +244,21 @@ function classifyFetchError(error) {
 }
 
 /**
+ * The first integer after a tag's colon, or null when there is none.
+ *
+ * `parseManifestFacts` below has always called this for `#EXT-X-MEDIA-SEQUENCE`
+ * and `#EXT-X-TARGETDURATION`, but the function was never defined: any media
+ * playlist that actually declares either tag threw `ReferenceError:
+ * leadingInt is not defined` and aborted the whole run. The 02D test streams
+ * happened not to declare them, so it went unnoticed until a real catalogue
+ * playlist was measured.
+ */
+function leadingInt(line) {
+  const match = /:(\d+)/.exec(line);
+  return match === null ? null : Number(match[1]);
+}
+
+/**
  * Structured facts of an HLS playlist: counts and whether it is a master. The
  * playlist text itself is never returned or persisted.
  */
