@@ -21,6 +21,8 @@ import {
 } from './schemas.js';
 import type { Logger } from '../infrastructure/logging.js';
 import type { AppContext } from './context.js';
+import type { Metrics } from './middleware.js';
+import { collectAdminMetrics } from '../modules/admin/admin-metrics.js';
 import { AppError } from './errors.js';
 import { ChannelsService, attributionFor, toChannel } from '../modules/channels/channels.service.js';
 import { buildDescriptor, sourceIssues } from '../modules/playback/playback.service.js';
@@ -30,6 +32,11 @@ import type { ChannelDoc, EpgSourceDoc, JobRunDoc, PlaybackSourceDoc } from '../
 import { COLLECTIONS } from '../infrastructure/mongo.js';
 import { CATEGORY_LABELS, CATEGORY_ORDER, SPAIN_REGIONS } from '../shared/taxonomy.js';
 import { createVerificationAdminRouter } from '../modules/admin/verification.admin.js';
+/*
+ * TDT-API-02FG integration: public discovery (t6) and the operations console
+ * (t7A) both extend this router. The import block is the merge of the two
+ * branches; neither side's symbols are dropped.
+ */
 import {
   CountryAggregates,
   LanguageAggregates,
@@ -44,6 +51,10 @@ import {
   channelAvailabilityResponseSchema,
   epgCoverageSchema,
 } from '@tdt/contracts';
+import { AdminConsoleService } from '../modules/admin/admin-console.service.js';
+import { createAdminConsoleRouter } from '../modules/admin/admin-console.router.js';
+import { MergedMetrics, emptyMetricsView } from '../modules/admin/admin-metrics.js';
+import type { Actor } from '../modules/admin/editorial.service.js';
 
 const uuid = z.string().uuid();
 const slugParam = z.string().min(1).max(120);
@@ -102,7 +113,7 @@ async function adminChannelPayload(context: AppContext, channel: ChannelDoc) {
   };
 }
 
-export function createRouter(context: AppContext, logger: Logger): Router {
+export function createRouter(context: AppContext, logger: Logger, metrics?: Metrics): Router {
   const router = Router();
   const channels = new ChannelsService(context.database);
 
@@ -897,6 +908,47 @@ export function createRouter(context: AppContext, logger: Logger): Router {
       );
       const created = await context.epg.createEditorialProgramme(input, `manual:${actorOf(request).id}`);
       response.status(201).json({ data: created });
+    }),
+  );
+
+  /*
+   * TDT-API-02FG console: overview, catalogue workbench, identity, duplicates,
+   * source health/history/assign/remove, EPG coverage/mappings/runs and the
+   * operations view. Registered BEFORE the 02D verification router so its own
+   * `/verification/*` paths stay untouched — the console adds no path that
+   * collides with them.
+   *
+   * The guard is passed in, not assumed: the factory refuses to serve a route it
+   * cannot protect. Ingestion and job control additionally require `admin`.
+   */
+  router.use(
+    '/admin',
+    createAdminConsoleRouter({
+      database: context.database,
+      console: new AdminConsoleService(context.database),
+      editorial: context.editorial,
+      sources: context.sources,
+      jobControl: context.jobControl,
+      epg: context.epg,
+      egressOptions: context.egressOptions,
+      playback: context.playback,
+      ingestion: context.epgIngestion,
+      metrics: async () =>
+        collectAdminMetrics({
+          /*
+           * The context's registry, which is the one `PlaybackService` counts into.
+           * The `metrics` argument from `createApp` is the HTTP registry that
+           * `/metrics` renders; both are consulted so the console reports real
+           * traffic and real playback instead of whichever half it happened to see.
+           */
+          metrics: new MergedMetrics(context.metrics, metrics ?? emptyMetricsView()),
+          databaseLatencyMs: await context.database.ping().catch(() => null),
+          cacheEnabled: context.cache.enabled,
+          windowSeconds: Math.max(1, Math.round(process.uptime())),
+        }),
+      logger,
+      requireEditor,
+      requireAdmin,
     }),
   );
 

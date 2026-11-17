@@ -103,7 +103,7 @@ export function createApp(config: Config, context: AppContext): AppBundle {
     cache.middleware(),
     invalidateOnWrite(cache),
     etagJson,
-    createRouter(context, context.logger),
+    createRouter(context, context.logger, metrics),
   );
 
   // A version-less path is a mistake, not a redirect: consumers must pin v1.
