@@ -51,16 +51,40 @@ export type ManifestParse =
       readonly truncated: boolean;
     };
 
-/** MIME types we accept as HLS / DASH declarations. */
-const HLS_MIME = new Set([
+/**
+ * MIME types we accept as HLS / DASH declarations.
+ *
+ * **These arrays are the single source of truth.** They feed three consumers that
+ * must never disagree: `isHlsMime`/`isDashMime` (what this parser will accept) and
+ * the egress content-type allow-list in `validator.ts` (what the request will even
+ * hand back). Those lists drifting apart is a real, measured defect: the egress
+ * layer rejected `audio/mpegurl` — a type the parser accepts and the public mux
+ * test stream actually serves — so a good stream was reported `unsupported-format`
+ * before it was ever parsed. Derive, never re-type.
+ */
+export const HLS_MIME_TYPES: readonly string[] = [
   'application/vnd.apple.mpegurl',
   'application/x-mpegurl',
   'audio/mpegurl',
   'audio/x-mpegurl',
   'application/mpegurl',
   'vnd.apple.mpegurl',
-]);
-const DASH_MIME = new Set(['application/dash+xml', 'application/dash-patch+xml']);
+];
+export const DASH_MIME_TYPES: readonly string[] = ['application/dash+xml', 'application/dash-patch+xml'];
+
+const HLS_MIME: ReadonlySet<string> = new Set(HLS_MIME_TYPES);
+const DASH_MIME: ReadonlySet<string> = new Set(DASH_MIME_TYPES);
+
+/**
+ * The egress allow-list for a declared playback format, built from the sets above.
+ *
+ * An HLS check accepts the DASH types too, because the contract lets a source
+ * declare `hls` and be served an MPD: refusing it at the transport layer would
+ * turn a format mismatch the parser can still describe into a blanket refusal.
+ */
+export function manifestContentTypeAllowList(declared: 'hls' | 'dash'): readonly string[] {
+  return declared === 'dash' ? DASH_MIME_TYPES : [...HLS_MIME_TYPES, ...DASH_MIME_TYPES];
+}
 
 function mimeOf(contentType: string | null): string {
   if (contentType === null) return '';

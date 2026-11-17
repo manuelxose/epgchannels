@@ -26,7 +26,14 @@ import {
   type FailureCategory,
 } from './failures.js';
 import { HEALTH_COLLECTIONS, isTerminalCheckState, type FailureCause } from './health.schema.js';
-import { MAX_MANIFEST_PARSE_BYTES, parseManifest, samplePlaylistUris } from './manifest.js';
+import {
+  DASH_MIME_TYPES,
+  HLS_MIME_TYPES,
+  MAX_MANIFEST_PARSE_BYTES,
+  manifestContentTypeAllowList,
+  parseManifest,
+  samplePlaylistUris,
+} from './manifest.js';
 import {
   runValidation,
   statusCategory,
@@ -1337,6 +1344,158 @@ describe('master playlist descent — layer 5 actually runs (real fixtures)', ()
         expect(result.depthReached).toBe('segments');
         expect(result.evidence.followedVariant).toBeNull();
         expect(calls).toHaveLength(3);
+      },
+    );
+  }, 30_000);
+});
+
+/**
+ * The egress content-type allow-list and the parser must agree.
+ *
+ * The measured defect: the mux test stream serves `audio/mpegurl`, which
+ * `manifest.ts` accepts but the hardcoded egress allow-list did not — so a good
+ * public stream was reported `unsupported-format` before it was ever parsed.
+ * Both now derive from the same exported arrays, and these tests enumerate them
+ * so a future addition to one place cannot silently miss the other.
+ */
+describe('egress content-type allow-list derives from the manifest MIME sets', () => {
+  /** Adapts the real egress executor to the validator's injected seam. */
+  const realEgress: EgressFn = async (request) => {
+    const response = await safeFetch({
+      url: request.url,
+      ...(request.method === undefined ? {} : { method: request.method }),
+      timeoutMs: request.timeoutMs,
+      maxBytes: request.maxBytes,
+      ...(request.allowedContentPrefixes === undefined
+        ? {}
+        : { allowedContentPrefixes: request.allowedContentPrefixes }),
+      allowLoopbackForTests: true,
+    });
+    return {
+      status: response.status,
+      ok: response.ok,
+      contentType: response.contentType,
+      bytes: response.bytes,
+      body: response.body,
+      finalUrl: response.finalUrl,
+      latencyMs: response.latencyMs,
+    };
+  };
+
+  function probe(url: string, egress: EgressFn) {
+    return runValidation({
+      source: source({ url }),
+      authorization: authorization({ sourceUrl: url }),
+      registry: createDefaultAdapterRegistry(),
+      egress,
+      now: NOW,
+      dns: async () => ({ host: '127.0.0.1', addresses: [{ address: '127.0.0.1', family: 4 }] }),
+    });
+  }
+
+  async function withFixture<T>(
+    routes: Parameters<typeof startHttpFixture>[0],
+    body: (f: HttpFixture) => Promise<T>,
+  ): Promise<T> {
+    const fixture = await startHttpFixture(routes);
+    try {
+      return await body(fixture);
+    } finally {
+      await fixture.close();
+    }
+  }
+
+  it('the allow-list is built from the exported sets, not a third hand-copied list', () => {
+    const hls = manifestContentTypeAllowList('hls');
+    for (const type of HLS_MIME_TYPES) expect(hls).toContain(type);
+    for (const type of DASH_MIME_TYPES) expect(hls).toContain(type);
+    const dash = manifestContentTypeAllowList('dash');
+    for (const type of DASH_MIME_TYPES) expect(dash).toContain(type);
+    // No silent widening: every entry traces back to a manifest set.
+    for (const type of hls) expect([...HLS_MIME_TYPES, ...DASH_MIME_TYPES]).toContain(type);
+  });
+
+  /** Segment routes that complete `MEDIA_PLAYLIST`, so MIME acceptance is what is tested. */
+  const MEDIA_SEGMENT_ROUTES = {
+    '/m3u8/segment-1.ts': { contentType: 'video/mp2t', body: 'A' },
+    '/segment-1.ts': { contentType: 'video/mp2t', body: 'A' },
+    '/segment-2.ts': { contentType: 'video/mp2t', body: 'B' },
+    '/segment-3.ts': { contentType: 'video/mp2t', body: 'C' },
+    '/v0/segment-1.ts': { contentType: 'video/mp2t', body: 'A' },
+    '/v0/segment-2.ts': { contentType: 'video/mp2t', body: 'B' },
+    '/v0/segment-3.ts': { contentType: 'video/mp2t', body: 'C' },
+  } as const;
+
+  it('ENUMERATES every HLS MIME type: each is accepted on the manifest path', async () => {
+    for (const mimeType of HLS_MIME_TYPES) {
+      await withFixture(
+        { '/m.m3u8': { contentType: mimeType, body: MEDIA_PLAYLIST }, ...MEDIA_SEGMENT_ROUTES },
+        async (f) => {
+          const result = await probe(f.url('/m.m3u8'), realEgress);
+          // Reaching the manifest layer means the egress allow-list let it through.
+          expect(`${mimeType} -> ${result.failure?.category ?? 'accepted'}`).toBe(`${mimeType} -> accepted`);
+          expect(result.evidence.manifest).not.toBeNull();
+        },
+      );
+    }
+  }, 60_000);
+
+  it('ENUMERATES every HLS MIME type: each is accepted on the followed-variant path', async () => {
+    const master = [
+      '#EXTM3U',
+      '#EXT-X-STREAM-INF:BANDWIDTH=800000',
+      'v0/index.m3u8',
+      '',
+    ].join('\n');
+    for (const mimeType of HLS_MIME_TYPES) {
+      await withFixture(
+        {
+          '/master.m3u8': { contentType: HLS_MIME, body: master },
+          '/v0/index.m3u8': { contentType: mimeType, body: MEDIA_PLAYLIST },
+          ...MEDIA_SEGMENT_ROUTES,
+        },
+        async (f) => {
+          const result = await probe(f.url('/master.m3u8'), realEgress);
+          // The variant was fetched and its segments sampled, so the variant
+          // fetch's allow-list accepted this type.
+          expect(`${mimeType} -> ${result.evidence.variantStatus}`).toBe(`${mimeType} -> 200`);
+          expect(result.evidence.samplesAttempted).toBeGreaterThan(0);
+        },
+      );
+    }
+  }, 60_000);
+
+  it('REGRESSION: a manifest served as audio/mpegurl reaches the manifest layer', async () => {
+    await withFixture(
+      { '/mux.m3u8': { status: 200, contentType: 'audio/mpegurl', body: MEDIA_PLAYLIST }, ...MEDIA_SEGMENT_ROUTES },
+      async (f) => {
+        const result = await probe(f.url('/mux.m3u8'), realEgress);
+        expect(result.failure).toBeNull();
+        expect(result.evidence.manifest?.format).toBe('hls-media');
+        expect(result.depthReached).not.toBe('transport');
+      },
+    );
+  }, 30_000);
+
+  it('TWO-SIDED: a 200 text/html is still refused as unsupported-format at transport', async () => {
+    await withFixture(
+      { '/page.m3u8': { status: 200, contentType: 'text/html; charset=utf-8', body: '<!doctype html><html></html>' } },
+      async (f) => {
+        const result = await probe(f.url('/page.m3u8'), realEgress);
+        expect(result.failure?.category).toBe('unsupported-format');
+        expect(result.depthReached).toBe('transport');
+        expect(result.outcome).toBe('failing');
+      },
+    );
+  }, 30_000);
+
+  it('TWO-SIDED: an unrelated binary type is still refused at transport', async () => {
+    await withFixture(
+      { '/x.m3u8': { status: 200, contentType: 'video/mp4', body: 'not a playlist' } },
+      async (f) => {
+        const result = await probe(f.url('/x.m3u8'), realEgress);
+        expect(result.failure?.category).toBe('unsupported-format');
+        expect(result.depthReached).toBe('transport');
       },
     );
   }, 30_000);
