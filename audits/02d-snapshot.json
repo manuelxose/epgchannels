@@ -1,8 +1,8 @@
 {
   "schemaVersion": "engine-04-evidence/1",
   "kind": "snapshot",
-  "runId": "snapshot-mwkmvzcu-c00003f4",
-  "at": "2026-11-17T11:53:32.094Z",
+  "runId": "snapshot-mwknsufl-c00003f4",
+  "at": "2026-11-17T12:19:05.361Z",
   "repository": {
     "worktreePath": "C:/Users/Admin/Documents/workspace/streaming/tdt-api01",
     "toplevel": "C:/Users/Admin/Documents/workspace/streaming/tdt-api01",
@@ -15,8 +15,8 @@
     "path": "C:/Users/Admin/Documents/workspace/streaming/tdt-api01",
     "relativeToWorkspace": null,
     "branch": "feat/tdt-api02-d-stream-health",
-    "headCommit": "9063dbace324b544edf5a522d575680ff74db3db",
-    "treeObjectId": "ab80a0d6e9cf2e309645c1631116ee662bba1a29",
+    "headCommit": "54e90c1e2440d1244772a249647c3cf22c5d8a82",
+    "treeObjectId": "ffe56d9fc3a7382409de5ddfb1a2c5347ec94bd6",
     "baselineCommit": null,
     "dirty": false
   },
@@ -1060,9 +1060,9 @@
     {
       "path": "apps/backend/src/verification/runtime.ts",
       "present": true,
-      "sha256": "e8b7d7e98602447dcc17ae8fe049e6ce159374a1883590c488dd8f26a6b338a4",
-      "size": 10214,
-      "mtimeMs": 1794916305734.8833
+      "sha256": "118e4d483bd8793439a078a2e5e0d96993226c68a31e30183100fe33aacdc7bb",
+      "size": 10995,
+      "mtimeMs": 1794917905191.5017
     },
     {
       "path": "apps/backend/src/verification/scheduler.integration.spec.ts",
@@ -1095,9 +1095,9 @@
     {
       "path": "apps/backend/src/verification/validator.ts",
       "present": true,
-      "sha256": "5c5f3a35ff0b77f86ca7cc533b8762eb91176c1e524ced4af1ccbde70a69fc2d",
-      "size": 42943,
-      "mtimeMs": 1794916299294.058
+      "sha256": "05f11806443cbcb868326bce5355e2e5c600c807c719f395357738cd00f0e5cb",
+      "size": 43519,
+      "mtimeMs": 1794916611407.8833
     },
     {
       "path": "apps/backend/src/verification/validator.unit.spec.ts",
@@ -2325,6 +2325,20 @@
       "mtimeMs": 1794573504910.848
     },
     {
+      "path": "audits/02d-snapshot.json",
+      "present": true,
+      "sha256": "8f2fd008fe6df04ee5947e405c76c72bff4a3663a45662385e3eb40f1975c6e0",
+      "size": 377032,
+      "mtimeMs": 1794916412102.3206
+    },
+    {
+      "path": "audits/02d-verify.json",
+      "present": true,
+      "sha256": "938ff41fbe88551237d6101bfe21c3924b1b47e4db0dba69e222e3ad6ac5cfcb",
+      "size": 427241,
+      "mtimeMs": 1794916446029.9124
+    },
+    {
       "path": "audits/catalogue-import-report.json",
       "present": true,
       "sha256": "19a7c8d3f187ef392ac8546044697685ef35e5c055fdbc88652a68c6ee1bf513",
@@ -2495,9 +2509,9 @@
     {
       "path": "docs/tdt-api02/MODULE-CONTRACT-02D.md",
       "present": true,
-      "sha256": "a03e976e3c930edf676d5b13e5ccb42d0092f251d73dcebc08c615bf01e645bf",
-      "size": 18470,
-      "mtimeMs": 1794914084312.0247
+      "sha256": "ae0f794c6e0e9583ba0eabac2000b551f59468dbf495ca2d8edac23b9fcbb838",
+      "size": 18937,
+      "mtimeMs": 1794917879257.4138
     },
     {
       "path": "docs/tdt-api02/MUTACION-SSRF-02D.md",
@@ -2691,716 +2705,716 @@
     {
       "path": "infra/.data/mongo/_mdb_catalog.wt",
       "present": true,
-      "sha256": "67001f8de7f04839155536c823f358777907845508b109be9c48a8f2e1f4ba2a",
-      "size": 151552,
-      "mtimeMs": 1794916246471.4722
+      "sha256": "36e2a9a35e791e9b718b78d3238c2f2e4fef47d3268263ffd8ff340be8a1d208",
+      "size": 155648,
+      "mtimeMs": 1794917457431.483
     },
     {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3dbcd08a2d3d70e81f43_log",
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc43c771f86028c8033993_log",
       "present": true,
-      "sha256": "a986acfa0bb0435c03d83ae75fce5268edb5efbcc7350cfc2c082833ecbef7de",
+      "sha256": "da8f2558047e8f4d94c891b4b14fa999e9c230d4ec0feeb50fba9bc86dc51fe9",
       "size": 4460,
-      "mtimeMs": 1794915770897.2417
+      "mtimeMs": 1794917319464.8042
     },
     {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3dc2d2882a689680dbb8_log",
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc43cd2851767a8f89a163_log",
       "present": true,
-      "sha256": "240c115c994427d251b83400e23c67d0e0cbdc4eea42fba592f8bb551f1308ad",
+      "sha256": "41dc5c26fef2937af8777aeee0042e08b68edb0e3501dc9ed91c13187ed64199",
       "size": 4460,
-      "mtimeMs": 1794915777075.2573
+      "mtimeMs": 1794917325666.147
     },
     {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3dc7eab67cb9785b032c_log",
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc43d69f149a30e5abd875_log",
       "present": true,
-      "sha256": "bf9c0bad5ffd5991d8f7c7ecf6c6adb3e9938491583f51ed9868e61a032cf53b",
+      "sha256": "2f00d80602e7c82b4894efd462181e50a96dda115af655add53dbf7b5e5ff0ef",
       "size": 4460,
-      "mtimeMs": 1794915783260.6882
+      "mtimeMs": 1794917332478.9287
     },
     {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3dcd17edf4eec53b9a96_log",
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc43ddd3660db3b95904d6_log",
       "present": true,
-      "sha256": "140e234d07005c53637a5f637d39b78213c6725cd99b9ca2d0df5efe9c551e9f",
-      "size": 4460,
-      "mtimeMs": 1794915789446.1663
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3dd6d43807ced3143861_log",
-      "present": true,
-      "sha256": "cde3c7ae73e9431f754be9569f63ee1b7c49bd153d7324777a6247532ce0e988",
-      "size": 4460,
-      "mtimeMs": 1794915795694.6763
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3ddbbccd82d44b93f2bd_log",
-      "present": true,
-      "sha256": "eedd3ff6b0b04b47758024a4826afe7b7f34569d770be3096ddf04a2625a347a",
-      "size": 4460,
-      "mtimeMs": 1794915801885.4238
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3de12bc20da918b9b09c_log",
-      "present": true,
-      "sha256": "bb82c9fff00b4ecf22a9b3171a9ae92003b0b2b6338ecb315f416068c4d27bbd",
-      "size": 4460,
-      "mtimeMs": 1794915808072.7837
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3de7ae7137812bac45d0_log",
-      "present": true,
-      "sha256": "9fe8e36424981f5d56dd14ce7a89f8acad21f07a08b465ac59a428825b497366",
-      "size": 4460,
-      "mtimeMs": 1794915814263.2512
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3dec81308a2ced2c43a6_log",
-      "present": true,
-      "sha256": "e53f31a7c73c5598b5fc360d6cee414b0a588dcc7c2a7980cbacc4b0c3564e5b",
-      "size": 4460,
-      "mtimeMs": 1794915820436.5542
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3df2a42a90e1dc22613e_log",
-      "present": true,
-      "sha256": "6726478f278d3280c22281e281e9d00f2247ab2c469472384aa981cde4be814d",
-      "size": 4460,
-      "mtimeMs": 1794915826583.5198
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3dfb6fda9f3dddca73f7_log",
-      "present": true,
-      "sha256": "135aa530921bc1eec428c6e8e95658f63a380db5a5733f9d07eb5b528ec9a1d9",
-      "size": 4460,
-      "mtimeMs": 1794915832784.1643
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e0032899f8794e3e8da_log",
-      "present": true,
-      "sha256": "b27fc0fda4cedec18cb92900162deff2c89b3dcad0f1e019d52755a513536f29",
+      "sha256": "55deaba2b036f8ffec43d36d3f2094f58fd54a7a7267547374b436addc4e9d03",
       "size": 4461,
-      "mtimeMs": 1794915839051.7285
+      "mtimeMs": 1794917340981.728
     },
     {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e067bfed43f3ba4a314_log",
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc43e4f21a2456ccccb7e1_log",
       "present": true,
-      "sha256": "c78454ae11171a276d92b951325a48f67bdf4955c2112a38bf070753ffdaaf71",
-      "size": 4460,
-      "mtimeMs": 1794915845253.0312
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e0b35bc92beaa81ba79_log",
-      "present": true,
-      "sha256": "3faa6fd3bda73bbb69c4b6d83ecbff9713003d971be46e09275a7c77210afd21",
-      "size": 4460,
-      "mtimeMs": 1794915851444.7512
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e11ce1eb12c7ec6f0e4_log",
-      "present": true,
-      "sha256": "6bb3ada9792784bd3ff94244911bb71a36759814bdb0e4035cb55bed191c8197",
-      "size": 4460,
-      "mtimeMs": 1794915857786.1624
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e1af661f62f891dbc6f_log",
-      "present": true,
-      "sha256": "3fdd980e03045050b11c0fb3de614c6b1d35602c35dae24913baffb42d94f8e7",
-      "size": 4460,
-      "mtimeMs": 1794915863940.9924
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e1ffbd010e1ddeb2f0f_log",
-      "present": true,
-      "sha256": "2edf0ead7ebd806e0a45039b827a5ad6c6a5985baf1bf8e03ea8d8d1b90dfebd",
-      "size": 4460,
-      "mtimeMs": 1794915870139.115
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e2549ddeca3e8215995_log",
-      "present": true,
-      "sha256": "87987f041095bae126fdcaa641528e1061da34bd07d4dfd5cad6d88dc91ac007",
+      "sha256": "ac1d1823d21e1ff667daa772e8d56791725d08b3e21e891eea1090547f52ff8a",
       "size": 4461,
-      "mtimeMs": 1794915876365.9722
+      "mtimeMs": 1794917348886.3623
     },
     {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e2b54a5152df1591bca_log",
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc43ebe2e467e1fdf45af6_log",
       "present": true,
-      "sha256": "4e9c8a6e31be804f2e21b1ec25f4a743303c0edf8007891908c030142ce69db0",
+      "sha256": "96d8a83203bbc77da0f2ac5d13955c1db19f71a9d20be931871555d29a5b0ab6",
+      "size": 3456,
+      "mtimeMs": 1794917356838.9192
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc43f527582e844106b97e_log",
+      "present": true,
+      "sha256": "582b8d40ce5b38ebedc6be6f6bdefe2595128fe57c2286a324973d6ac0474732",
+      "size": 4459,
+      "mtimeMs": 1794917363139.238
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc43fbd3eaaf6aa042298d_log",
+      "present": true,
+      "sha256": "27cdc9d5d55b674c78ed2b638bfd701acdf25ec0006359eb41b4b5df20208ca1",
+      "size": 4459,
+      "mtimeMs": 1794917369670.558
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc440184655127f98b54cc_log",
+      "present": true,
+      "sha256": "ab1d8acab6b5abaafa4896307649c671eb4337d64e3e429ce42c8354c5f955c5",
+      "size": 4459,
+      "mtimeMs": 1794917376318.2573
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc440833f82d147d41e382_log",
+      "present": true,
+      "sha256": "4d4734e4bd36936bd4337de6b9437487bc33850aed3687c2836ae098c1781fe7",
       "size": 4460,
-      "mtimeMs": 1794915882852.06
+      "mtimeMs": 1794917384470.901
     },
     {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e31c0be528b8cab0013_log",
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc440e778d231b0ab8995e_log",
       "present": true,
-      "sha256": "8e52e9c407343a3f90b4bdb4df9c39b3f76e2782b0d7ff1b30f609c9432398fc",
+      "sha256": "fa8fd2d19bb2d8f3b846ee48103f669d7273a1113ee448b684832192248c5208",
       "size": 4460,
-      "mtimeMs": 1794915889040.0725
+      "mtimeMs": 1794917391508.893
     },
     {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e39e22fef30816bb406_log",
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc441882c57bcde8a71fcf_log",
       "present": true,
-      "sha256": "8155b8f075558797e254a0992dfb597e22c413c8f8cfba19e3585aa00e747102",
+      "sha256": "fd737af428f2cdfc89fa32829f2ed0774e3397774c0c2d2b601613f7eac062a0",
+      "size": 4459,
+      "mtimeMs": 1794917398029.7834
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc441e2a49be515b69dd65_log",
+      "present": true,
+      "sha256": "3ead7ab10f4c1b6fb2d602af8eb467b30a525b413697b350a1eba4a5367f2c22",
       "size": 4460,
-      "mtimeMs": 1794915895212.0764
+      "mtimeMs": 1794917404399.6936
     },
     {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e3f4928e622b72b28c2_log",
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc4423e3777423c360b8a2_log",
       "present": true,
-      "sha256": "0a3c283b92b1aa4bd3a22b8b432aadfa0faedf1ad79779d7a22d5893ac6412d5",
-      "size": 4460,
-      "mtimeMs": 1794915901402.4116
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e45b13268412b323b52_log",
-      "present": true,
-      "sha256": "ed9b7269d8d376ad19da48a9887511cd23d4d59a2a78294e919b43a3183bf597",
+      "sha256": "a1c624395c354975a4107f332c535b0f16313f3d5e48d76d0b5234bb0cc473a7",
       "size": 4461,
-      "mtimeMs": 1794915907853.6985
+      "mtimeMs": 1794917410727.924
     },
     {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e4ac5eea257190f429f_log",
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc44298d4721336b8211db_log",
       "present": true,
-      "sha256": "fc67a3491ea97f30ba19d7edc00abff6c21c2d94ae83f9dd2b488695b0d6a7a6",
+      "sha256": "b4542747b1e5ce4fe20edb6392af480a7e56367599259278b9d2290153bcaaa3",
       "size": 4460,
-      "mtimeMs": 1794915914218.073
+      "mtimeMs": 1794917417045.642
     },
     {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e506c48616f2b0e300f_log",
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc442f71fcfedddd2aabc5_log",
       "present": true,
-      "sha256": "314d395eb66c5a237f9cf800f8262ed226419cb3632a13e5069a8d31b0b54038",
+      "sha256": "17521b91de8ce5495e43eeb01a8bf8cc8923b1bf19e20d836e341bc822c14348",
+      "size": 4460,
+      "mtimeMs": 1794917423395.1465
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc44384d3d019489d0c057_log",
+      "present": true,
+      "sha256": "6eaa40028100a6b7f15fb3f9f36b440cb5feb0b1776808390365e00764924cc5",
+      "size": 4460,
+      "mtimeMs": 1794917429653.9795
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc443efa55b9ea1318a2d4_log",
+      "present": true,
+      "sha256": "ad8e41e93bc756012d22ce530e259519136a1cbf4415b42d549db17c795c66b0",
+      "size": 4460,
+      "mtimeMs": 1794917435923.3008
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc44435629449f79f7db05_log",
+      "present": true,
+      "sha256": "c9c7dc56209484284c51778a2cee64baccfa805d75152a8119448d9f8372cef9",
+      "size": 4460,
+      "mtimeMs": 1794917442148.429
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc444935427023c50541aa_log",
+      "present": true,
+      "sha256": "b3e5f9c3900d6c76efe337d60b816aaa98668a79fee62b14b7a313c47d110ebd",
+      "size": 4460,
+      "mtimeMs": 1794917448345.8704
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc444eee7b8c5135488273_log",
+      "present": true,
+      "sha256": "410aa267ffa247637e504f92b3ad6e902069536c47c932dde193f93b1efd9879",
+      "size": 4460,
+      "mtimeMs": 1794917454523.5637
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc445488113817358c3453_log",
+      "present": true,
+      "sha256": "00dae37dd8d30343a5f206f188b91a1d26a1126c7f00cee0cbbc76bdb4b28417",
+      "size": 4460,
+      "mtimeMs": 1794917460700.6826
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc445df087ab74c580c29b_log",
+      "present": true,
+      "sha256": "5ba60e6c7c3f87f07f96b55b413a9a5c9249fe8ffe8676363ebf1f935100db9b",
+      "size": 4460,
+      "mtimeMs": 1794917466860.8533
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc4462cde1fe4a023df8af_log",
+      "present": true,
+      "sha256": "774c65caf8c0bd5e1c31e15333e223efea386bbaf649fd08d6e2d3f60b914400",
+      "size": 4460,
+      "mtimeMs": 1794917473046.3074
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc44688de272173c000abd_log",
+      "present": true,
+      "sha256": "f090a6bc5f812f231ed5f7ce3a312da0eebc77b0475af80c79f67fd3f59e1106",
+      "size": 4460,
+      "mtimeMs": 1794917479346.7256
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc446e2b335f2f48c92f8c_log",
+      "present": true,
+      "sha256": "f324eef105f696f63351c798ab5bc6613420270f2bbcc39ca4a764356414440f",
+      "size": 4460,
+      "mtimeMs": 1794917485542.15
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc4473e315566172b86dd0_log",
+      "present": true,
+      "sha256": "d46d132b13ac6964298116806962dad18e267a4ba9794535e9c384e2e992df8d",
+      "size": 4460,
+      "mtimeMs": 1794917491717.6873
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc447ca8e103d62b6ec1cc_log",
+      "present": true,
+      "sha256": "708d36859620249de28f5e53850b9bad97d5fd74e7f28c8b8e215e2addc4a5b4",
+      "size": 4460,
+      "mtimeMs": 1794917497930.523
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc4482f9d9ebcc27f66d11_log",
+      "present": true,
+      "sha256": "c56849917f7cee5704b57444099d8a4debc5f5d1a3e68e7cb647e06b64f425f4",
+      "size": 4460,
+      "mtimeMs": 1794917504095.6304
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc448792d0bdfbecee2846_log",
+      "present": true,
+      "sha256": "46d6db6fd23c138e527ce0bf355e796f058c319ceef0c49e91f9382f43190621",
+      "size": 4460,
+      "mtimeMs": 1794917510262.7246
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc448d0d30954d8e3d9e7a_log",
+      "present": true,
+      "sha256": "5bf7307bf9363a571dc7660cf08a28a6d26ea0552c7fcbb1e41779ab5e45c649",
+      "size": 4460,
+      "mtimeMs": 1794917516429.4688
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc4492a29fa8166b1de6a1_log",
+      "present": true,
+      "sha256": "308eb94d72a98fc4fe7f31b2cc108644a8f471cf59eb37a6ec3c79e5894ce936",
+      "size": 4460,
+      "mtimeMs": 1794917522592.3232
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc44984154cd1d97983752_log",
+      "present": true,
+      "sha256": "7f27af92efb243125de4a7331c293b00a829f2de2cb30d018ff59df7c97f9b24",
+      "size": 4460,
+      "mtimeMs": 1794917528791.83
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc44a1a8e0ba60b4c9cdb8_log",
+      "present": true,
+      "sha256": "712268a406b7c0ac56617134f28fb711e28ad122c36d4e800b9b5857a4697527",
+      "size": 4460,
+      "mtimeMs": 1794917535046.7534
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc44a652fbb1e52cc4ad94_log",
+      "present": true,
+      "sha256": "85e9e1adb1125bd7ecc9ee87f8bbd4f333812b839851650485c7254ea07a25ff",
+      "size": 4460,
+      "mtimeMs": 1794917541298.7993
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc44ac6a6ede2e9ad02d7d_log",
+      "present": true,
+      "sha256": "19069df77d96789c907e1e5ac3a71ee7d9946519078101b1eae068992da05f98",
+      "size": 4460,
+      "mtimeMs": 1794917547485.382
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc44b260885e4089f8e3eb_log",
+      "present": true,
+      "sha256": "c8a0d2b218f551ceab38dc754b52f5decdcd672223a20117d09935605e5a7cfb",
+      "size": 4460,
+      "mtimeMs": 1794917553673.8215
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc44b738ba7d244b57f79c_log",
+      "present": true,
+      "sha256": "fbb35676c5bd8b30d0aee117cf3d2dd001e74055997c7d6f732c3f2743e16d50",
+      "size": 4460,
+      "mtimeMs": 1794917559867.33
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc44c0af140cc39e5ed42e_log",
+      "present": true,
+      "sha256": "601eb5a374d8575e3af8734e24d5d82a061fdf924946872c6d4e4f6ebc388123",
+      "size": 4460,
+      "mtimeMs": 1794917566072.9353
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc44c6e4ef1819e48ca67f_log",
+      "present": true,
+      "sha256": "c4e94997c063a48ed0257c2b820049a5089c645546b36843d2fd289b6eef6dea",
+      "size": 4460,
+      "mtimeMs": 1794917572246.2776
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc44cb553e1a17bb51a2ef_log",
+      "present": true,
+      "sha256": "a38f3d4957be86ed51ac8176a477696ac3b5f91094580d76ca235eca8cd53e4d",
+      "size": 4460,
+      "mtimeMs": 1794917578450.8098
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc44d1fe4a70450ec7fa64_log",
+      "present": true,
+      "sha256": "8bcffc2b1236e05544bc7467681c2929b50ebd996ef27f5db2fe90ac32f95a4d",
+      "size": 4460,
+      "mtimeMs": 1794917584622.594
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc44d639c11d41c8c2247e_log",
+      "present": true,
+      "sha256": "face3e08b2db054e75fb2c1a818c5f216295cf82be89952fb69312335652879a",
+      "size": 4460,
+      "mtimeMs": 1794917590823.1682
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc44df6618213f3dd2181b_log",
+      "present": true,
+      "sha256": "52486c92e7c1b846a4ce9e0c5bdd2fd865225f98b58706e7adb13ed08068ad48",
+      "size": 4460,
+      "mtimeMs": 1794917596993.8923
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc44e58f59d4e4b741d37c_log",
+      "present": true,
+      "sha256": "b38dca1f790759a8bda65222cae2e904a6c5b94de33c81d23557d6a29b1e429e",
+      "size": 4460,
+      "mtimeMs": 1794917603205.4824
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc44ea7a377c8ae6d6b70e_log",
+      "present": true,
+      "sha256": "c29d1ec5f32494e9eb46e71d4bbfc1de63055bd9b607bf53e2699daeb74ed772",
+      "size": 4460,
+      "mtimeMs": 1794917609470.7212
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc44f0451200560a1d07c8_log",
+      "present": true,
+      "sha256": "f28cf353d49cec429e64053a41db4c1b6d24a6af286fe42a3589355467e2f29e",
+      "size": 4460,
+      "mtimeMs": 1794917615646.5168
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc44f607254e109d31f46a_log",
+      "present": true,
+      "sha256": "6256ba6f4c94d1eae5d4307c591ef8f2d4321d3529b965e9f2f5eeb23584af53",
+      "size": 4460,
+      "mtimeMs": 1794917621832.9387
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc44fb0c42d25150649ec7_log",
+      "present": true,
+      "sha256": "191ac2883321207b1fd932c8e3d8d5ed66ab28d2da310b207ea42ccce16c5cd0",
+      "size": 4460,
+      "mtimeMs": 1794917628022.4016
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc45049be26019c06a6454_log",
+      "present": true,
+      "sha256": "958bc89f5b9efbbebc0541548ffbc1b814c3ca02ed08b8cec48f1a9d63f50ea7",
+      "size": 4460,
+      "mtimeMs": 1794917634195.7195
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc450ac410f6a1e3f2ec3f_log",
+      "present": true,
+      "sha256": "fe8b2e171ef71608c77c282c293828de4b35af1a04d98407c24adcfadf3a73e7",
+      "size": 4460,
+      "mtimeMs": 1794917640370.8396
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc450f0e682c0426024f22_log",
+      "present": true,
+      "sha256": "56897e9f1d78283a1d249eaa80cfea91d731e483a8c11421e9fc14b1ed8275c2",
+      "size": 4460,
+      "mtimeMs": 1794917646618.5964
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc4515c61af79f661b0e36_log",
+      "present": true,
+      "sha256": "37423c32aa70ad1b9582e7d2bbaf402b57f741d48417ad940af5c34aa06d45f2",
+      "size": 4460,
+      "mtimeMs": 1794917652884.0088
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc451a46e0bde2635bee40_log",
+      "present": true,
+      "sha256": "740f0c7a924b2ffc8db23f99a5b9707c74314f99ccf7b2f470be07e68381fa47",
+      "size": 4460,
+      "mtimeMs": 1794917659139.209
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc45230d86ea9cfe410b40_log",
+      "present": true,
+      "sha256": "100ad116338b4400fc54553130600f08696c515b3432ec9500074399d78d2dc1",
+      "size": 4460,
+      "mtimeMs": 1794917665369.8972
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc452927384106432c490b_log",
+      "present": true,
+      "sha256": "5b3b258e05a6329c85391d8bb5e5b8ee6f6cde0f15640a6e2ccf250ab34e8020",
+      "size": 4460,
+      "mtimeMs": 1794917671600.0942
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc452fb4753e8558590f43_log",
+      "present": true,
+      "sha256": "351678b36c4f8c2acd16ae1d0b286fed3ba81510a05c41ca897aa2e469b1c51d",
+      "size": 4460,
+      "mtimeMs": 1794917677816.1328
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc453433acf3409a145bfb_log",
+      "present": true,
+      "sha256": "fb1f1030154b0c03b74c1b2707540bdaf4803a8bb13bbac8c69bdeb35527bc43",
+      "size": 4460,
+      "mtimeMs": 1794917684073.1233
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc453adc6ee6aa5f2312dd_log",
+      "present": true,
+      "sha256": "fb3d7fad9fc53085d9108c4e06182b6e36e860e3dc7660f48be5ec0a011d54bd",
+      "size": 4460,
+      "mtimeMs": 1794917690431.787
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc4543ab9fdce9ee3a9404_log",
+      "present": true,
+      "sha256": "f0cce2377bee12657ba45120e477f03487f41299f503670d8066519abb42f7d4",
+      "size": 4460,
+      "mtimeMs": 1794917696800.0176
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc4549e2b8d5d3a796f975_log",
+      "present": true,
+      "sha256": "6ba9e23eaf6a6d49e777fea670a2f567a41593e1bc7a79eaddb4ebe8ff039239",
+      "size": 4460,
+      "mtimeMs": 1794917703165.8318
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc454e47e63a8c8da5f18f_log",
+      "present": true,
+      "sha256": "c8856ff75bf94cd0ff4d73715b1f562c34f458d8f39119cc84c5d0156ba11215",
+      "size": 4460,
+      "mtimeMs": 1794917709756.92
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc4554a5acec906d436c0f_log",
+      "present": true,
+      "sha256": "b5da058231850d90c4eb3acc68fc375e5fd0515579db8893d23ebaf6dd015faa",
+      "size": 4460,
+      "mtimeMs": 1794917715971.3857
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc455a9cfece91cbe5593e_log",
+      "present": true,
+      "sha256": "004320626c58b91cac8a9c0077e5efdcc1712241f1c832410c9fcbb0b13c40ca",
+      "size": 4460,
+      "mtimeMs": 1794917722271.421
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc456336081945178c23f5_log",
+      "present": true,
+      "sha256": "16d52d3aeff69925bfbb732d9005b68d199149fead3f987fd6e891e3d6cb4c03",
+      "size": 4460,
+      "mtimeMs": 1794917729108.6377
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc456927e0788aa1061f57_log",
+      "present": true,
+      "sha256": "22b7a138c1ea314f3ba20cb60744d550f71a81b2c3da44e358145977e3b08703",
+      "size": 4460,
+      "mtimeMs": 1794917735288.596
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc456f519da5e0620c20a0_log",
+      "present": true,
+      "sha256": "7b2db8b7cfc6c38cde5e841a56cd678fbf6c972c40f5ea6ba23f024ffc686f35",
+      "size": 4460,
+      "mtimeMs": 1794917741523.3625
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc4574d12977a6964375f5_log",
+      "present": true,
+      "sha256": "b0533893bfc2be5f83466c7ea7329b3a5ce477696cf81dd9afb0afce53781292",
+      "size": 4460,
+      "mtimeMs": 1794917747744.1646
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc457aeb6a0bcc015c87e3_log",
+      "present": true,
+      "sha256": "58726dbad9584873346c1e05ccc6e0c2cdf8709053bb29df871faa397ba81042",
+      "size": 4460,
+      "mtimeMs": 1794917753946.8125
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc457f53682ec753ec96d6_log",
+      "present": true,
+      "sha256": "89437a9d54d8de271b19a4b92a0e30cbefc57a7269f841526450ea6efd4c17a6",
+      "size": 4460,
+      "mtimeMs": 1794917760123.8164
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc4588902949ac3242a03c_log",
+      "present": true,
+      "sha256": "b3c2268a53957da56bcdefe1a80c9106d274cd63a0fad63602e737cda8d0bf6f",
+      "size": 4460,
+      "mtimeMs": 1794917766378.4817
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc458eb4672fe04939b068_log",
+      "present": true,
+      "sha256": "99220cf28c110e19b48e38b9ef816963420708e1513f3a9daa85bfb9eea447ca",
+      "size": 4460,
+      "mtimeMs": 1794917772667.3691
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc4594c5f97a1f6f4a8930_log",
+      "present": true,
+      "sha256": "95850c20bd3aabb8b0f13b004ad2a988705ac1fd6c2d474f4c3abb2a79239eb9",
+      "size": 4460,
+      "mtimeMs": 1794917778903.4216
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc4599ee606b7abcb99368_log",
+      "present": true,
+      "sha256": "d63e41959b8b1d95b68582771d0c08d53fc4a5d288f97e8c303e6ac97ad08e15",
+      "size": 4460,
+      "mtimeMs": 1794917785194.2974
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc459f6e09101066a04b26_log",
+      "present": true,
+      "sha256": "df0a1ac94a30e2e77b1d17e70978a5bb8d63496e4afe16812911d19f2569df4c",
+      "size": 4460,
+      "mtimeMs": 1794917791410.3953
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc45a87667945bff910e19_log",
+      "present": true,
+      "sha256": "4fe9f5c9ded30d36829aaa14f479c09e4e2691fc2fe70fe281e6622f8a44a2da",
+      "size": 4460,
+      "mtimeMs": 1794917797637.416
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc45ad8322d96034205cc0_log",
+      "present": true,
+      "sha256": "02eb411d6d0c7c21ef77b1e81637464c9f2b93f2129337282b7c5c06d2c2406b",
+      "size": 4460,
+      "mtimeMs": 1794917803877.2278
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc45b31c91656c5b82eb30_log",
+      "present": true,
+      "sha256": "cf0101547f1c1ee2bacb0d9a3105dc89caec5c2ef3569eac4daad86c1bc0e1b4",
+      "size": 4460,
+      "mtimeMs": 1794917810122.2363
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc45b902ef4ded9a6d8009_log",
+      "present": true,
+      "sha256": "2e7865b0c302dd6df5abcc776c856629fd94d382b2d087245fb65908637ba6f1",
+      "size": 4460,
+      "mtimeMs": 1794917816311.718
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc45bee18f831a56747f6a_log",
+      "present": true,
+      "sha256": "ca6328cce4afd7fbbb90d2cd37915dc311d738ff8f2a6e99718941d7d522275f",
+      "size": 4460,
+      "mtimeMs": 1794917822521.2246
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc45c4642439c4b1d0e58c_log",
+      "present": true,
+      "sha256": "43ba6d2de2076fefd324c136b577b2b53f5ac49d238c10b057994d0645d4330f",
+      "size": 4460,
+      "mtimeMs": 1794917828714.1084
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc45cd12c8b70fea34c427_log",
+      "present": true,
+      "sha256": "081c20e033a55648968f311eec99e868119a15d8ec715c3d4148f7bb36bbf6d5",
+      "size": 4460,
+      "mtimeMs": 1794917834963.343
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc45d2a9a5fd4baf5bec52_log",
+      "present": true,
+      "sha256": "a098375704e381c127b9a22eb618343036fd4eee8d16dade385a87f646c61323",
+      "size": 4460,
+      "mtimeMs": 1794917841263.3037
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc45d846f6d1dacf8dc643_log",
+      "present": true,
+      "sha256": "ff53f52e052910cad42c9c0c8eaa53d44ef76242d8933bb68642673a77acfb4a",
+      "size": 4460,
+      "mtimeMs": 1794917847515.9397
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc45de0e1316d6eaf5db80_log",
+      "present": true,
+      "sha256": "6ae0f8015ef9825cdc6e0d7a53498adbc49a607447dd1da7fd48ce4cdab0b5ba",
+      "size": 4460,
+      "mtimeMs": 1794917853835.5232
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc45e30bf8c95fcf77eb55_log",
+      "present": true,
+      "sha256": "9d7f6341e320534f34d97eeb48c7159bfca19ec78aab9a2040cd8c552e15a412",
       "size": 4456,
-      "mtimeMs": 1794915920603.9265
+      "mtimeMs": 1794917860247.4849
     },
     {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e5670583a0572262bce_log",
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc45e486858657c34cf9d0_log",
       "present": true,
-      "sha256": "d479a72b9b94bbfb8818225cf4bc5510d629da125761f4c51d248b1db695dae8",
+      "sha256": "c9fdc8b0526396f4112bcc63c051397440167943aafd4df6b9076fcddbc73a77",
+      "size": 5670,
+      "mtimeMs": 1794917861245.1619
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc45ed8638a2c61f9b7772_log",
+      "present": true,
+      "sha256": "09e18d6b4af98a786f3ba30c72345e2f4e37439372ef62fd25c74eb6bab69ce8",
       "size": 4460,
-      "mtimeMs": 1794915926825.2146
+      "mtimeMs": 1794917866811.4885
     },
     {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e5fbd772f178d998ef4_log",
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc45f25121302a65efdcd6_log",
       "present": true,
-      "sha256": "9378c94201b58d8382346342cf21f36c79b61e6b8e859cde35da05fc4bebdbf1",
+      "sha256": "dac950f79d69d90d94909daa9b0491fdef67c81316965e35b89adca495b2a0f8",
+      "size": 4460,
+      "mtimeMs": 1794917873177.2654
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc45f81988acfbf83f8601_log",
+      "present": true,
+      "sha256": "f94822d35d9a76aa83d5c4d8fea025e2a685a4ce272711647b7f3d2316b4ceeb",
+      "size": 4460,
+      "mtimeMs": 1794917879389.5103
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc45fe95d49f2e16536038_log",
+      "present": true,
+      "sha256": "897afd4c692625c0d61d562633b60c229f80833ed6fb8d04a6cc75f708345b90",
+      "size": 4460,
+      "mtimeMs": 1794917885600.6611
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc46035e589d0f1e1e1dcf_log",
+      "present": true,
+      "sha256": "d7786c5c4097a8c3642b7c3fbe73d75b48141db931af8e9293f40b24331a06b5",
+      "size": 4460,
+      "mtimeMs": 1794917891958.6924
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc460c4cf5c02c8943b9f8_log",
+      "present": true,
+      "sha256": "4229940fa6307bfc4feff74da657c2efcf712ada2cd1a24b0e2f7480b7ca6bc6",
+      "size": 4452,
+      "mtimeMs": 1794917898166.5857
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc46128586440369354df2_log",
+      "present": true,
+      "sha256": "d2f3c9bb02362200ee2891fa83c86b02874da759bd36d773ad3b640effb208a6",
       "size": 4461,
-      "mtimeMs": 1794915933072.8816
+      "mtimeMs": 1794917905378.1643
     },
     {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e6416b938a13d5f869f_log",
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc4618321028a72cc5d354_log",
       "present": true,
-      "sha256": "546d9a116359d121eee3fb9a70aea1dc501613731be207e09e95e7fe053631c6",
+      "sha256": "7e2a93588c6d5ea5ba18c84b2e8a334052d290d45b1590ad856157a3cf67b87e",
       "size": 4460,
-      "mtimeMs": 1794915939352.3103
+      "mtimeMs": 1794917911583.389
     },
     {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e6ac82abd20326747c3_log",
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc461ea3b087826ebb90cf_log",
       "present": true,
-      "sha256": "e108c6cb4e65cec2bf74ab518f9ef9ed71f2fc0f260a6cfb5f37d83a56ada479",
+      "sha256": "04c7db71aa1e4330e8ec0985a67f2311d62faabb54a30207145f6f9115216105",
+      "size": 3456,
+      "mtimeMs": 1794917917810.4768
+    },
+    {
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc462427c74845a9b730a2_log",
+      "present": true,
+      "sha256": "15679ce4d1b582a61450e71f9f5f7a53bcc68d3d3b4a74168871d9a7051bdfdb",
       "size": 4460,
-      "mtimeMs": 1794915945552.6047
+      "mtimeMs": 1794917924241.0212
     },
     {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e70f194d6bc92097327_log",
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc462d6c3b5ad1d87eb344_log",
       "present": true,
-      "sha256": "26edb824fa9a8f96985f17d87fef852f6478d6e8d89433ff634ab274c6cd1afb",
-      "size": 4460,
-      "mtimeMs": 1794915951917.5535
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e756c8d7fb2eebb1144_log",
-      "present": true,
-      "sha256": "754d69fcbcf703e419cd2ddb258dea09184259942cbc7d2b04d6491db8945a83",
-      "size": 4460,
-      "mtimeMs": 1794915958271.6892
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e7f10a61ea35d90b628_log",
-      "present": true,
-      "sha256": "9842c241e6767a1af623652afa2263d58b20748ac4225999857a3449f7a4480e",
-      "size": 4460,
-      "mtimeMs": 1794915964929.3481
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e84ecbac1bacac377fb_log",
-      "present": true,
-      "sha256": "71aeb0d235fa942711d775a33c4113a1128c9908db77344c61ac18d6b349287f",
-      "size": 4460,
-      "mtimeMs": 1794915971160.3145
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e8aa1d2b40ce0fa38ff_log",
-      "present": true,
-      "sha256": "6a09400d6c7617910b464b11e78f55a7c6b69c8b519c1b0f2ca357fe39f371da",
-      "size": 4460,
-      "mtimeMs": 1794915977380.9795
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e90e8ae9db4cc99cd29_log",
-      "present": true,
-      "sha256": "e02eb8a6fd7a103888db1355fdf0bea1cd9e840b2e5d58d26c88940d52538cb1",
-      "size": 4460,
-      "mtimeMs": 1794915983648.0088
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e9552f264c5048f6475_log",
-      "present": true,
-      "sha256": "022df45de7e2f99aedfe32685d92a8422c5c5079a4cb478dd3b4fbb774330f7d",
-      "size": 4460,
-      "mtimeMs": 1794915989872.7593
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3e9e84b074e4e693daf3_log",
-      "present": true,
-      "sha256": "bfc7d09a5d7ed571d0765ab9df1d6414529496baf049de08591de24e7e58573b",
-      "size": 4461,
-      "mtimeMs": 1794915996089.611
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3ea4ee6bf4f1be195ab5_log",
-      "present": true,
-      "sha256": "ff17b4b4b9f566df748964521be0ef74107e44491b6484b0ceab63e8ab2a0d49",
-      "size": 4460,
-      "mtimeMs": 1794916002652.2712
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3eaa98918029af937391_log",
-      "present": true,
-      "sha256": "c3de1f67be3d03cf49edb6463136eda1fc10c700f910b2319d94b79316c42085",
-      "size": 4460,
-      "mtimeMs": 1794916008895.422
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3eaf033e0db6f136470f_log",
-      "present": true,
-      "sha256": "070538b92851fc1efc2cc20a736eb9ac34d0dcf691b6202ec42c3baa471c9801",
-      "size": 4460,
-      "mtimeMs": 1794916015158.9397
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3eb560c8871dad3ac1fa_log",
-      "present": true,
-      "sha256": "7875ed96e6dd446dfb195db0078a882250f5d21211502e48d2921674edc0b0e5",
-      "size": 4460,
-      "mtimeMs": 1794916021579.4143
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3ebef27593898b4616e0_log",
-      "present": true,
-      "sha256": "24930ba55d7db52ec74c00d89d0cd3772a54c773f3b572de9173906864164448",
-      "size": 4460,
-      "mtimeMs": 1794916027868.6526
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3ec431baa3eec60df9f0_log",
-      "present": true,
-      "sha256": "2b587986f2baf9b6fbd1cc514b20ca6a8a3c1678e6f74485b54fe12910072f3b",
-      "size": 4460,
-      "mtimeMs": 1794916034186.1492
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3ec916790d82419099de_log",
-      "present": true,
-      "sha256": "3e101973b6a61650ed78875e3497e1086e3e66a1f016ce079207f746a3f081f0",
-      "size": 4460,
-      "mtimeMs": 1794916040440.6328
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3ecf7ebaa7d68be37821_log",
-      "present": true,
-      "sha256": "ef43f8962354551117c5d716e72b9b3594cee0880e14b55082fcb3e64218605d",
-      "size": 4460,
-      "mtimeMs": 1794916046690.5244
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3ed5f01a677ffc118b92_log",
-      "present": true,
-      "sha256": "84c0083d9f3fa98e7fdcf246774ae27e7bff3f29ae35e9deb53c9bc693b9d14d",
-      "size": 4460,
-      "mtimeMs": 1794916053072.8105
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3edac1b3f420d60e3f6c_log",
-      "present": true,
-      "sha256": "0d6ed1f71c185a12c30be152fdd0814a27be3bf663795d05081c36d18ab04530",
-      "size": 4460,
-      "mtimeMs": 1794916059314.8523
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3ee6edcc912bb62b2ac1_log",
-      "present": true,
-      "sha256": "9bdced727754c25ac43606f32bebe7791f3ac36505ce7fd6ca6bc4307b59ddb4",
-      "size": 4461,
-      "mtimeMs": 1794916069445.201
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3eeddcef48635845a077_log",
-      "present": true,
-      "sha256": "6d6308c33c91fbb2aedb983394388a1460301b7a8cea9e1eb361b446a35145f7",
-      "size": 4461,
-      "mtimeMs": 1794916076694.3538
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3ef56f3e4822287b1e25_log",
-      "present": true,
-      "sha256": "9f5245ed8309f6dfb219c05bb18a08f131583f87d184113bab9d831e381015d4",
-      "size": 4460,
-      "mtimeMs": 1794916086077.7266
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3efcfe46bff4edd0fbaa_log",
-      "present": true,
-      "sha256": "c15acae0588795590d9de88e119f84fe65f1e7c65dbc2f50386501bf37af805c",
-      "size": 4460,
-      "mtimeMs": 1794916093293.1682
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3f0708a97a31e1e4eff9_log",
-      "present": true,
-      "sha256": "5e6bc3574cf7e4347c517c1419589a1ea4ece8899366b09962da4111ba514c4d",
-      "size": 4461,
-      "mtimeMs": 1794916102858.7559
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3f0f2c2d02f16f6d075e_log",
-      "present": true,
-      "sha256": "43cceee5cc87b24f2d595e9961ed9957e5e2758745f629f502ea30ac6f7f29d2",
-      "size": 4461,
-      "mtimeMs": 1794916111215.8206
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3f16b0f754cb28d86d04_log",
-      "present": true,
-      "sha256": "d987d659f640ce33ebf7dae2690f69f20b1b254006f52ba813e19de6b72d2b1a",
-      "size": 4460,
-      "mtimeMs": 1794916117646.255
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3f1c9e15e83dd7912336_log",
-      "present": true,
-      "sha256": "7374b4dce56641ff8edf62a390095f1866f088370d78c9c4cd36bd7f093f3489",
-      "size": 4460,
-      "mtimeMs": 1794916124199.5168
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3f25be228ae53978d8f2_log",
-      "present": true,
-      "sha256": "b8e0d1437be331ce3726faffddcc17e58fbd05d9946ecffe8cc8306a13a3b0de",
+      "sha256": "0105e7ded831f2b5ee3e082fe3f4eaf97038ce6b605098194ed2ba224386b17c",
       "size": 4459,
-      "mtimeMs": 1794916130783.3335
+      "mtimeMs": 1794917930467.6802
     },
     {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3f2b2f5f87af7c79f401_log",
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc4632931a8abf8ddbfda1_log",
       "present": true,
-      "sha256": "38dcafb9240399bcc2994b90785cd9037ce6c0cb634daeeacef6624cff1a798f",
-      "size": 4459,
-      "mtimeMs": 1794916137106.7446
+      "sha256": "336128caaedf606bdcc5ba3c30963f07781a519101f99c8938de80fa10907714",
+      "size": 3456,
+      "mtimeMs": 1794917936725.1199
     },
     {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3f30acd1cb9ccf085bc7_log",
+      "path": "infra/.data/mongo/.mongodb/mongosh/6afc463856e947c4d98f527f_log",
       "present": true,
-      "sha256": "505dca6946cdf0dea2a71dd880dbe3be475f84afa083b116c6cb194b22c67331",
+      "sha256": "e9828eb934ed143dbb7496c51d20c80d2e3757358278dca12cda7188858184c2",
       "size": 4460,
-      "mtimeMs": 1794916143417.9648
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3f36e1334ce4f0534f50_log",
-      "present": true,
-      "sha256": "89e876182cce63c4552eb52d55f1e2d96d6433dfd99272477ae48a26e0e9733d",
-      "size": 4460,
-      "mtimeMs": 1794916149714.7063
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3f3c83ad7c53b43fb56f_log",
-      "present": true,
-      "sha256": "ecc7fd6889e7ea85d5836b4c19029ebf985934a01a6822c1bfe9d4df86032ce5",
-      "size": 4459,
-      "mtimeMs": 1794916155948.412
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3f41b4ea8e309eead221_log",
-      "present": true,
-      "sha256": "f7c64f32a295ca54dc736579cdf1795c4b0a80bfe3dcfe8ad8d7e339ae73e732",
-      "size": 4461,
-      "mtimeMs": 1794916162243.683
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3f4a1dc6387d67306a2f_log",
-      "present": true,
-      "sha256": "6bdfe3587fd39887fb6f43dbab94a8bc3902520900ed2f0e2ed38906fddeaca3",
-      "size": 4456,
-      "mtimeMs": 1794916168593.1084
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3f50d3d3e8ba62ed712f_log",
-      "present": true,
-      "sha256": "6ed5a0ae43a5b571de043c11d1e78a72f985a25b959111b79caeee625f0042b8",
-      "size": 4459,
-      "mtimeMs": 1794916175052.1372
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3f56d0b45069ba3798e9_log",
-      "present": true,
-      "sha256": "f0b5905835f060c209b9a2ed98872ed606bf8eb998bb0b68abf4a5b5302cea11",
-      "size": 4460,
-      "mtimeMs": 1794916181339.6753
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3f5b84d1907912cf1561_log",
-      "present": true,
-      "sha256": "2d1af4e78ee356d21a32437ec10180e2e18fffcffb066f1b581378f1ea881825",
-      "size": 4460,
-      "mtimeMs": 1794916187693.9617
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3f614bd6556077d5b1df_log",
-      "present": true,
-      "sha256": "0d187103e86eb8ddb20adb227ed3c4aba4dfa588cbc459c6830eeb5b44279768",
-      "size": 4459,
-      "mtimeMs": 1794916194195.0107
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3f6a309938bdcafb487b_log",
-      "present": true,
-      "sha256": "4b813fb047974cb2dd8c156a626f930d37c5353703b17947734b564772f36c62",
-      "size": 4460,
-      "mtimeMs": 1794916200661.8718
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3f7026378f4a80e78028_log",
-      "present": true,
-      "sha256": "17698315b6d0f8154e7315e15a4786b643cc7dc77f8f23fb3294aa85de39497a",
-      "size": 4460,
-      "mtimeMs": 1794916206912.441
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3f76850ae57f3916d1ab_log",
-      "present": true,
-      "sha256": "f1a9f6ef0d5d944bb4428aafeeb500cd0629caef5937f68486229013a7926195",
-      "size": 4461,
-      "mtimeMs": 1794916213362.617
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3f7cb6e80309df29c14e_log",
-      "present": true,
-      "sha256": "783092f6373cbc0f57b25bdc73663906c71ece236af295bf3bd422c113250d14",
-      "size": 4459,
-      "mtimeMs": 1794916219716.6802
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3f81fc14e8d370d99635_log",
-      "present": true,
-      "sha256": "c10ac6d8a44f751eb7cfc65a8bb7cd00dab307fe3f8f7eb2da34afd2feeb2693",
-      "size": 4460,
-      "mtimeMs": 1794916226077.014
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3f8a35a95a556fcab121_log",
-      "present": true,
-      "sha256": "8298a1aebb23a4e99abd559911ee7bec6d1725f995708f68e8da5cd2de5333e1",
-      "size": 4460,
-      "mtimeMs": 1794916232320.197
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3f90e5722f3b34b74dd0_log",
-      "present": true,
-      "sha256": "b150cedeaaac855266637fb69c32f430261a40dd91b134b85151554b0ef1bd40",
-      "size": 4460,
-      "mtimeMs": 1794916238547.2195
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3f959f3944df9a2190b9_log",
-      "present": true,
-      "sha256": "1668279f88e099615ccda676ba8725efeb63ce2bee80144e9e5102a791dcc9e7",
-      "size": 4460,
-      "mtimeMs": 1794916244777.9563
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3f9befa023f0bced0624_log",
-      "present": true,
-      "sha256": "9c81bb13bc4d72499cff52b70d31a31ecba05433919de44f4a0ed74e2367237f",
-      "size": 4460,
-      "mtimeMs": 1794916251025.89
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3fa13e7a287dcd1f018d_log",
-      "present": true,
-      "sha256": "1ea6547a64de983842dba2346381a04209d14ac16bc247c3ab23a60512b6c043",
-      "size": 4460,
-      "mtimeMs": 1794916257381.6567
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3faaaa7daae950f8b954_log",
-      "present": true,
-      "sha256": "0e64e3cbf0f945b33e885e3224783b4a97a535a5e74ad2c60500f0429ad046ea",
-      "size": 4460,
-      "mtimeMs": 1794916263755.0657
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3faf1bc5a5b496e15e7e_log",
-      "present": true,
-      "sha256": "06bfd30b00c03394e1776a4bbeb2eefea1ccb86025eb7218721f46d2646e4a4a",
-      "size": 4460,
-      "mtimeMs": 1794916269983.9202
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3fb57460b315b184165e_log",
-      "present": true,
-      "sha256": "b4136b2aed820e0c235b400ef18ec8ba2605cde25833b12c32c9c3f924a3be71",
-      "size": 4460,
-      "mtimeMs": 1794916276283.9146
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3fbb62af9984c949dcea_log",
-      "present": true,
-      "sha256": "8444a15cf1307879d9edf14660e27d18f4c7fdd31cc7b82a6608cfa4bec1f9c3",
-      "size": 4460,
-      "mtimeMs": 1794916282581.1226
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3fc0f743573e35ddc4ab_log",
-      "present": true,
-      "sha256": "97d08640896d0b0d1e4ce427c4dfd71f9453db1402259a2e316425e16cd4c639",
-      "size": 4460,
-      "mtimeMs": 1794916288872.2083
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3fc6d351090f55ab8039_log",
-      "present": true,
-      "sha256": "b5fc86e8b75cb1d0ed1df7ca1b7feae31243966f417f7a9ccf4e9eb8d9739fb0",
-      "size": 4460,
-      "mtimeMs": 1794916295187.4612
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3fcf65ec3a72d233fbb5_log",
-      "present": true,
-      "sha256": "39fd28ce4df9a63a6e736611c1d458e74ccaba11c14d8abb476419e4ec3538d5",
-      "size": 4460,
-      "mtimeMs": 1794916301402.7231
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3fd56754393be4baeb31_log",
-      "present": true,
-      "sha256": "a82eb10132464c3d5f9ae7e77a04d452bc5dc2a235c82d96dfaeca5d23bd6707",
-      "size": 4460,
-      "mtimeMs": 1794916307827.2666
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3fdb3c11a4c2e31542f8_log",
-      "present": true,
-      "sha256": "fac7c0320555bd5e77a42e334e39a03933ad420936ccb1394855446f723089e8",
-      "size": 4460,
-      "mtimeMs": 1794916314089.4402
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3fe02a273e97a2809ba7_log",
-      "present": true,
-      "sha256": "33e590a9559bdc5e7ce960395f5ef2a447256e30ef52ea587862e63b28f5fcb0",
-      "size": 4460,
-      "mtimeMs": 1794916320370.9478
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3fe6e9e63dae6ef7cbb1_log",
-      "present": true,
-      "sha256": "c17427656ee701aff069063a1d0bb2ecd818f4664f4fa2eec24bf540e18ee850",
-      "size": 4460,
-      "mtimeMs": 1794916326610.9404
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3fefcabf659fb8bce9ac_log",
-      "present": true,
-      "sha256": "46feae0bd63a47908dc5b512adb2edaf1c665d90b26d5efb54bfc48ad4a5feaa",
-      "size": 4460,
-      "mtimeMs": 1794916332786.1606
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3ff4a4ecaa062d3990c9_log",
-      "present": true,
-      "sha256": "94c9d40c72dc1e004e2a4f71518ccb2a6c29a9dedf86f092cfc7e671c8365505",
-      "size": 4460,
-      "mtimeMs": 1794916338986.83
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3ffa351d146e3ccd49d1_log",
-      "present": true,
-      "sha256": "4abd3d3678c623c586a2abc01fe6ff9ae5e50423dbf3be102f17c5bc07698cf5",
-      "size": 4460,
-      "mtimeMs": 1794916345152.97
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc3fff5c293272dcf59ce3_log",
-      "present": true,
-      "sha256": "0df7e2d2389e0237aefdf417a018450946c45798b94ffc8335c567aab28867ed",
-      "size": 4456,
-      "mtimeMs": 1794916351334.3623
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc4005b9100733b965b86d_log",
-      "present": true,
-      "sha256": "13702381ac554c5299d9a2175c5a4c7f61d8d7a520142b4b22bdfda5fe018165",
-      "size": 4460,
-      "mtimeMs": 1794916357520.8823
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc400e27107f985a99f8f6_log",
-      "present": true,
-      "sha256": "4d9265c803a18767b03fdb1ab2f4e65fe8fc5efd339a5827d941d11ecad6264f",
-      "size": 4460,
-      "mtimeMs": 1794916363703.2488
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc40130bf2a07eb5d8b097_log",
-      "present": true,
-      "sha256": "2351a51ef1da75ce79c821dfd13dffe7ca5318509751d232ebe6f4106ee0fa3b",
-      "size": 4460,
-      "mtimeMs": 1794916369904.7546
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc401994752b30e493bdc0_log",
-      "present": true,
-      "sha256": "4a8a309f62b8844611f99ed28bc5e826e2c774d7b0524a86be16dc94ea8e6742",
-      "size": 4460,
-      "mtimeMs": 1794916376069.6638
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc401f17baa3c28a258634_log",
-      "present": true,
-      "sha256": "3afa163581dabd51c3896a040de680f7360b5bcc6512b07fd537d61bc183eb98",
-      "size": 4460,
-      "mtimeMs": 1794916382318.5105
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc4024af2b237a3c180c8f_log",
-      "present": true,
-      "sha256": "c196114432b34c0687d290ed2e3e8add2607f6f8ec432c9bdcc802bee96c4a03",
-      "size": 4460,
-      "mtimeMs": 1794916388536.4229
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc402ac4cdbfaddf8da7a9_log",
-      "present": true,
-      "sha256": "08a3361e8368bf25fbab6c1de3f4a43fe355de32f2e76267a0bd6eee554a9f92",
-      "size": 4460,
-      "mtimeMs": 1794916394719.0808
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc403308d3367bcba48c53_log",
-      "present": true,
-      "sha256": "bc985ecd5a9eba9b1fcb3ee72a8e146fab72cbad29f9b4a8d3b4d35846580df4",
-      "size": 4460,
-      "mtimeMs": 1794916400942.9055
-    },
-    {
-      "path": "infra/.data/mongo/.mongodb/mongosh/6afc4038945e413ba9f03dc6_log",
-      "present": true,
-      "sha256": "e7879c7badf3a4e38f7150cb5cd70e28f63a89ed12aee06c68fabbc58a98ff94",
-      "size": 4460,
-      "mtimeMs": 1794916407156.3352
+      "mtimeMs": 1794917943017.0884
     },
     {
       "path": "infra/.data/mongo/.mongodb/mongosh/am-unknown.json",
       "present": true,
       "sha256": "185e4b607ace6b1708e08c2f6f6063cbb9e88c6b88340901e1d7e006fc806fdf",
       "size": 37,
-      "mtimeMs": 1794916407153.3298
+      "mtimeMs": 1794917943013.571
     },
     {
       "path": "infra/.data/mongo/.mongodb/mongosh/config",
@@ -4063,9 +4077,9 @@
     {
       "path": "infra/.data/mongo/collection-14--5545905030194270499.wt",
       "present": true,
-      "sha256": "3f5b2dbe08e6ba997511e83ecd6f1370e45171299148ff248a74e1adc0302a34",
-      "size": 419491840,
-      "mtimeMs": 1794916381125.8489
+      "sha256": "f9190bac3696a2f9b2215c68d1527d90a763c64b1623c48343ebbf359f53db26",
+      "size": 420405248,
+      "mtimeMs": 1794917926424.0845
     },
     {
       "path": "infra/.data/mongo/collection-14-6154779548974811960.wt",
@@ -4140,16 +4154,16 @@
     {
       "path": "infra/.data/mongo/collection-19--5545905030194270499.wt",
       "present": true,
-      "sha256": "b9a38ce54a2838e3db8f241feb1bd1dbfc7743e8eba687911db5c126104acb5f",
-      "size": 36864,
-      "mtimeMs": 1794916246463.2886
+      "sha256": "4a5d8d533c42773bc7dd5ac705755cf3ef626aa9d87ac55c8c230b6df167a5b6",
+      "size": 40960,
+      "mtimeMs": 1794917457422.2917
     },
     {
       "path": "infra/.data/mongo/collection-2--5545905030194270499.wt",
       "present": true,
-      "sha256": "e8a3816e2c7e44952a23240046f1bc1975348143afe52ca191f3d257b1cc96bf",
+      "sha256": "da76912d548aa856fc8412de59eca50fc13ae6c29baa990a0232e50ae67518ea",
       "size": 36864,
-      "mtimeMs": 1794916381084.9292
+      "mtimeMs": 1794917926374.9917
     },
     {
       "path": "infra/.data/mongo/collection-20-6154779548974811960.wt",
@@ -4161,9 +4175,9 @@
     {
       "path": "infra/.data/mongo/collection-22--5545905030194270499.wt",
       "present": true,
-      "sha256": "ec25b8b840db22f8a0b4b39a0b3a5c3448847bc6449aa66fbf52c01a844d7127",
-      "size": 53248,
-      "mtimeMs": 1794916246441.8096
+      "sha256": "113a59798aa9b6e65aa08658e5bdce391f9070a3eaa5397048eb8e7290b2ab74",
+      "size": 61440,
+      "mtimeMs": 1794917457414.3845
     },
     {
       "path": "infra/.data/mongo/collection-23-6154779548974811960.wt",
@@ -4175,9 +4189,9 @@
     {
       "path": "infra/.data/mongo/collection-24--5545905030194270499.wt",
       "present": true,
-      "sha256": "a214656d86d4368c0950cd982e1cb0fdbce8b17641171f1ec18888cd74bb8b28",
+      "sha256": "1f1ccd869391c1e508e724d1a4e45e9c11eca8a2b68e9066c835d4f1dbf73f64",
       "size": 32768,
-      "mtimeMs": 1794916381079.4036
+      "mtimeMs": 1794917926368.946
     },
     {
       "path": "infra/.data/mongo/collection-26--5545905030194270499.wt",
@@ -4838,109 +4852,11 @@
       "mtimeMs": 1794857943430.8518
     },
     {
-      "path": "infra/.data/mongo/collection-6900-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916117540.1775
-    },
-    {
-      "path": "infra/.data/mongo/collection-6901-5093677388791603989.wt",
-      "present": true,
-      "sha256": "76ff56592f8d27173ddb4a24b8a1789d7e3db1f672380576aed30bf205c3a578",
-      "size": 24576,
-      "mtimeMs": 1794916179078.323
-    },
-    {
-      "path": "infra/.data/mongo/collection-6902-5093677388791603989.wt",
-      "present": true,
-      "sha256": "375c43822855d3cc4d1a215d2e74c906e3cfbb203bec74e9769012979b7cae33",
-      "size": 24576,
-      "mtimeMs": 1794916179068.9956
-    },
-    {
       "path": "infra/.data/mongo/collection-691-6154779548974811960.wt",
       "present": true,
       "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
       "size": 4096,
       "mtimeMs": 1794857943415.8887
-    },
-    {
-      "path": "infra/.data/mongo/collection-6913-5093677388791603989.wt",
-      "present": true,
-      "sha256": "b97657f33e0c8292a408c1e85ba223190a078fae4b53a02b5e626b168a30ae8f",
-      "size": 20480,
-      "mtimeMs": 1794916179059.3906
-    },
-    {
-      "path": "infra/.data/mongo/collection-6914-5093677388791603989.wt",
-      "present": true,
-      "sha256": "0b81e3ee0ccb9a1340b6d286f3b8c60781558c75a9f7b3a02652b452c9fc68ba",
-      "size": 24576,
-      "mtimeMs": 1794916179057.3037
-    },
-    {
-      "path": "infra/.data/mongo/collection-6920-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916118138.4395
-    },
-    {
-      "path": "infra/.data/mongo/collection-6926-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916118322.911
-    },
-    {
-      "path": "infra/.data/mongo/collection-6929-5093677388791603989.wt",
-      "present": true,
-      "sha256": "085237fb08da7ab4919690df4d3a07d04710e1f8d551bb308177a8e7ad22567e",
-      "size": 20480,
-      "mtimeMs": 1794916179037.1826
-    },
-    {
-      "path": "infra/.data/mongo/collection-6933-5093677388791603989.wt",
-      "present": true,
-      "sha256": "074bd7bfba93f60bb41da3296324961c5ca3d06e695c591186ed2744cbaea77b",
-      "size": 20480,
-      "mtimeMs": 1794916179030.153
-    },
-    {
-      "path": "infra/.data/mongo/collection-6936-5093677388791603989.wt",
-      "present": true,
-      "sha256": "b51601a6f172af05672b142ce5cae18c54465f986f22607146b14a5257514eed",
-      "size": 20480,
-      "mtimeMs": 1794916179024.1028
-    },
-    {
-      "path": "infra/.data/mongo/collection-6940-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916118762.1018
-    },
-    {
-      "path": "infra/.data/mongo/collection-6941-5093677388791603989.wt",
-      "present": true,
-      "sha256": "e67ef6f84c4993e73a6bc36422304ce769642debd4133d8fdadd1aa615cfd041",
-      "size": 20480,
-      "mtimeMs": 1794916179018.3264
-    },
-    {
-      "path": "infra/.data/mongo/collection-6945-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916118881.8914
-    },
-    {
-      "path": "infra/.data/mongo/collection-6948-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916118953.4656
     },
     {
       "path": "infra/.data/mongo/collection-695-6154779548974811960.wt",
@@ -4950,116 +4866,11 @@
       "mtimeMs": 1794857943405.7695
     },
     {
-      "path": "infra/.data/mongo/collection-6951-5093677388791603989.wt",
-      "present": true,
-      "sha256": "b584cd678ffc3950d84e2db4cd4819e4055e637fac3f1be8b6ec7458d6faefa0",
-      "size": 24576,
-      "mtimeMs": 1794916179003.6646
-    },
-    {
-      "path": "infra/.data/mongo/collection-6955-5093677388791603989.wt",
-      "present": true,
-      "sha256": "4b8f5b17a2b65af6cc8f7724593d89af7471a153f2f7d2d45b6d9e89af95e073",
-      "size": 20480,
-      "mtimeMs": 1794916178977.4336
-    },
-    {
-      "path": "infra/.data/mongo/collection-6957-5093677388791603989.wt",
-      "present": true,
-      "sha256": "24d004d1053322024a86377e85e54aa06cf7add10f3849f3296aee186766fa83",
-      "size": 20480,
-      "mtimeMs": 1794916178971.885
-    },
-    {
-      "path": "infra/.data/mongo/collection-6959-5093677388791603989.wt",
-      "present": true,
-      "sha256": "b241f071eeede1571c591f2573e0618ac855ced55284d5ef71b814e8017ebe05",
-      "size": 20480,
-      "mtimeMs": 1794916178966.162
-    },
-    {
-      "path": "infra/.data/mongo/collection-6961-5093677388791603989.wt",
-      "present": true,
-      "sha256": "4cface3f6b18f0bbb98078c2a6920e3d06bfa6b1610f8241f0271c68f2616422",
-      "size": 20480,
-      "mtimeMs": 1794916178958.5244
-    },
-    {
-      "path": "infra/.data/mongo/collection-6963-5093677388791603989.wt",
-      "present": true,
-      "sha256": "02a16f0b8446151b437034c9271dfbb8afbf70ba44568fd01791bf35e9f7237c",
-      "size": 20480,
-      "mtimeMs": 1794916178954.9587
-    },
-    {
-      "path": "infra/.data/mongo/collection-6965-5093677388791603989.wt",
-      "present": true,
-      "sha256": "6567714707a439470fb157a72c0fd1131b780bef180d3a4e695d17a90bdd92ca",
-      "size": 24576,
-      "mtimeMs": 1794916246419.1267
-    },
-    {
-      "path": "infra/.data/mongo/collection-6966-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916217832.049
-    },
-    {
-      "path": "infra/.data/mongo/collection-6968-5093677388791603989.wt",
-      "present": true,
-      "sha256": "eaec1ee41dd8d35e879f020681a2c653d3be27dac185f965b34ec786be59a5b9",
-      "size": 24576,
-      "mtimeMs": 1794916246413.0928
-    },
-    {
-      "path": "infra/.data/mongo/collection-6978-5093677388791603989.wt",
-      "present": true,
-      "sha256": "ebedc6a59eb04f13567fb2622b53276f181ed223c3227f91b2097d52059fa2b0",
-      "size": 20480,
-      "mtimeMs": 1794916246409.086
-    },
-    {
-      "path": "infra/.data/mongo/collection-6979-5093677388791603989.wt",
-      "present": true,
-      "sha256": "c53f60b9ad581a5da72a3f03717fcf7fbc5d5500c98a9612612847fd49530b54",
-      "size": 24576,
-      "mtimeMs": 1794916246407.571
-    },
-    {
       "path": "infra/.data/mongo/collection-698-6154779548974811960.wt",
       "present": true,
       "sha256": "6985297dd36ec8b082aab8f840d891be2694c715af7845af1a214cde620317a3",
       "size": 679936,
       "mtimeMs": 1794858137136.361
-    },
-    {
-      "path": "infra/.data/mongo/collection-6985-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916218231.865
-    },
-    {
-      "path": "infra/.data/mongo/collection-6991-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916218374.3606
-    },
-    {
-      "path": "infra/.data/mongo/collection-6994-5093677388791603989.wt",
-      "present": true,
-      "sha256": "324a6d4f4122f24e346371981e8ef4a4ce66f70a6f2b5b82c3048a38aba9872b",
-      "size": 20480,
-      "mtimeMs": 1794916246393.7363
-    },
-    {
-      "path": "infra/.data/mongo/collection-6998-5093677388791603989.wt",
-      "present": true,
-      "sha256": "d2d584454d4acc36b22e41a4fb2bee76e97740769912009c5ccd84ee20280ddd",
-      "size": 20480,
-      "mtimeMs": 1794916246387.5525
     },
     {
       "path": "infra/.data/mongo/collection-70--5545905030194270499.wt",
@@ -5076,88 +4887,11 @@
       "mtimeMs": 1794857943940.552
     },
     {
-      "path": "infra/.data/mongo/collection-7001-5093677388791603989.wt",
-      "present": true,
-      "sha256": "45eb56a602fdb2ff60e66a5e2bb876da176140eeb5771296434f4b34f691a7a0",
-      "size": 20480,
-      "mtimeMs": 1794916246380.5078
-    },
-    {
-      "path": "infra/.data/mongo/collection-7005-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916218840.4377
-    },
-    {
-      "path": "infra/.data/mongo/collection-7006-5093677388791603989.wt",
-      "present": true,
-      "sha256": "5affc07431aa15c1cb08b809974a261b158a13f2f4b9db723c937590f7b7b828",
-      "size": 20480,
-      "mtimeMs": 1794916246374.9563
-    },
-    {
-      "path": "infra/.data/mongo/collection-7010-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916218960.6235
-    },
-    {
-      "path": "infra/.data/mongo/collection-7013-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916219041.4814
-    },
-    {
-      "path": "infra/.data/mongo/collection-7015-5093677388791603989.wt",
-      "present": true,
-      "sha256": "9799bd0522f13837ff0c3b30d28cf9bb9ae98a295345e02aa2e5b20503f8c9a0",
-      "size": 24576,
-      "mtimeMs": 1794916246366.8923
-    },
-    {
       "path": "infra/.data/mongo/collection-702-6154779548974811960.wt",
       "present": true,
       "sha256": "3ec083d5cbf3fc6a5584bd9e5254cc1d44958e2aed77bd74ae4d06ce01fa995a",
       "size": 20480,
       "mtimeMs": 1794857943395.298
-    },
-    {
-      "path": "infra/.data/mongo/collection-7020-5093677388791603989.wt",
-      "present": true,
-      "sha256": "b8e77d6661d431b6b8ecbe076a9888500fe397558ac445a9b2a5a8c724a864a8",
-      "size": 20480,
-      "mtimeMs": 1794916246361.3855
-    },
-    {
-      "path": "infra/.data/mongo/collection-7022-5093677388791603989.wt",
-      "present": true,
-      "sha256": "fbe3cc0e55599187beda99e005f233c179aaea565a54e9e0f888f81e0d229060",
-      "size": 20480,
-      "mtimeMs": 1794916246358.37
-    },
-    {
-      "path": "infra/.data/mongo/collection-7024-5093677388791603989.wt",
-      "present": true,
-      "sha256": "702f3e8e6b236d19ae900ddff8bcea248fba0e515bbb3e3401c4b5c4247eded1",
-      "size": 20480,
-      "mtimeMs": 1794916246354.1526
-    },
-    {
-      "path": "infra/.data/mongo/collection-7026-5093677388791603989.wt",
-      "present": true,
-      "sha256": "0780646153a0a04df268f5e082f668738dfae23fa4a813fb3fd50e996b8c2d86",
-      "size": 20480,
-      "mtimeMs": 1794916246351.152
-    },
-    {
-      "path": "infra/.data/mongo/collection-7028-5093677388791603989.wt",
-      "present": true,
-      "sha256": "26c59fd99060e2dddbc729f1867d4402bae5f071738e5e83a0da0f504ece1b9e",
-      "size": 20480,
-      "mtimeMs": 1794916246347.6267
     },
     {
       "path": "infra/.data/mongo/collection-7361-6154779548974811960.wt",
@@ -5372,9 +5106,9 @@
     {
       "path": "infra/.data/mongo/collection-89--5545905030194270499.wt",
       "present": true,
-      "sha256": "e6e42c2b1e6b2f8417e72456220955f193a0e1145d8fce27616a019df9329abc",
+      "sha256": "e05050ea143c4dfaf2dcb72dc39fdf32b73e6695591c92cdb497a094c3f26694",
       "size": 69632,
-      "mtimeMs": 1794916179162.0508
+      "mtimeMs": 1794917725210.2722
     },
     {
       "path": "infra/.data/mongo/collection-9-6154779548974811960.wt",
@@ -5498,16 +5232,16 @@
     {
       "path": "infra/.data/mongo/diagnostic.data/metrics.2026-11-17T09-54-34Z-00000",
       "present": true,
-      "sha256": "1c95bebb648ff96880f515fad51402b901afc55ad232808e9b59ee77029000d9",
-      "size": 1346263,
-      "mtimeMs": 1794916252300.0066
+      "sha256": "95f3578c8ad04c8b2faf9b08e4e58a9fffff10696a88a0bcf9f978ae1f536481",
+      "size": 1631393,
+      "mtimeMs": 1794917857816.199
     },
     {
       "path": "infra/.data/mongo/diagnostic.data/metrics.interim",
       "present": true,
-      "sha256": "c239bde0a9fda91657d6f7576c6ee1b473ae23fcf99dc1867e295e49f5b20b6c",
-      "size": 36781,
-      "mtimeMs": 1794916403757.6765
+      "sha256": "5255cf2bb3da071fabbdef6cf0a96f96f34ccb5943d92937125f528419646f0a",
+      "size": 32806,
+      "mtimeMs": 1794917943360.876
     },
     {
       "path": "infra/.data/mongo/index-1--5545905030194270499.wt",
@@ -7185,9 +6919,9 @@
     {
       "path": "infra/.data/mongo/index-20--5545905030194270499.wt",
       "present": true,
-      "sha256": "a1d7f0ecebc9051525439bb863728f2d665795d0a139272bbb03026a16620a88",
+      "sha256": "76278026539349d70680c93fde19419205a0891f8ce085ad515ce973e56ee718",
       "size": 45056,
-      "mtimeMs": 1794916246451.0989
+      "mtimeMs": 1794917457416.3887
     },
     {
       "path": "infra/.data/mongo/index-21--5545905030194270499.wt",
@@ -7213,9 +6947,9 @@
     {
       "path": "infra/.data/mongo/index-23--5545905030194270499.wt",
       "present": true,
-      "sha256": "13776da5f950c5c7694fdedc39e8cc548e46b2c464e4434658a82551a2c5a9ff",
-      "size": 40960,
-      "mtimeMs": 1794916246445.0212
+      "sha256": "8afb2c1005d49f5a776c5d6c5e3a431ba5f56e8dfe82689d322baf9944f9e7f3",
+      "size": 36864,
+      "mtimeMs": 1794917457414.3845
     },
     {
       "path": "infra/.data/mongo/index-24-6154779548974811960.wt",
@@ -7227,9 +6961,9 @@
     {
       "path": "infra/.data/mongo/index-25--5545905030194270499.wt",
       "present": true,
-      "sha256": "068b86f815e8c56b52c755e37bf90a13ad3076ee9db5da55798c9ad8e2ec7ba1",
+      "sha256": "4e828042827f0664e5d116576e604f24cf4746d7e7a09eaecddaaf86601d2d1c",
       "size": 32768,
-      "mtimeMs": 1794916381076.8564
+      "mtimeMs": 1794917926367.3186
     },
     {
       "path": "infra/.data/mongo/index-25-6154779548974811960.wt",
@@ -9101,165 +8835,11 @@
       "mtimeMs": 1794857943418.5063
     },
     {
-      "path": "infra/.data/mongo/index-6903-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916117634.0671
-    },
-    {
-      "path": "infra/.data/mongo/index-6904-5093677388791603989.wt",
-      "present": true,
-      "sha256": "787ccdfe7bb491c252cb404f4a2a99d4194e546150223af6e503447bc29e1156",
-      "size": 20480,
-      "mtimeMs": 1794916179064.9202
-    },
-    {
-      "path": "infra/.data/mongo/index-6905-5093677388791603989.wt",
-      "present": true,
-      "sha256": "81eaa5005ab4c0dae88aa38c1670a4d515c4360ee3acab03ebee2a948521700f",
-      "size": 20480,
-      "mtimeMs": 1794916179062.3997
-    },
-    {
-      "path": "infra/.data/mongo/index-6906-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916117708.5696
-    },
-    {
-      "path": "infra/.data/mongo/index-6907-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916117731.6467
-    },
-    {
-      "path": "infra/.data/mongo/index-6908-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916117762.0984
-    },
-    {
-      "path": "infra/.data/mongo/index-6909-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916117784.1992
-    },
-    {
-      "path": "infra/.data/mongo/index-6910-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916117809.4663
-    },
-    {
-      "path": "infra/.data/mongo/index-6911-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916117833.948
-    },
-    {
-      "path": "infra/.data/mongo/index-6912-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916117861.5256
-    },
-    {
-      "path": "infra/.data/mongo/index-6915-5093677388791603989.wt",
-      "present": true,
-      "sha256": "31149d9653228b68cc6296177e9d32c8ba12fddeb5a5032561a0737d7ab6446b",
-      "size": 20480,
-      "mtimeMs": 1794916179052.2693
-    },
-    {
-      "path": "infra/.data/mongo/index-6916-5093677388791603989.wt",
-      "present": true,
-      "sha256": "41fc4945f3f1eba41905a4c037e3d79c3e20b662b63d3424916406d2556d98d4",
-      "size": 20480,
-      "mtimeMs": 1794916179049.2615
-    },
-    {
-      "path": "infra/.data/mongo/index-6917-5093677388791603989.wt",
-      "present": true,
-      "sha256": "95719777193dcd9b729278fe372f103393e88c4f578ac37f5af6ffcc0c2d2d42",
-      "size": 20480,
-      "mtimeMs": 1794916179047.7456
-    },
-    {
-      "path": "infra/.data/mongo/index-6918-5093677388791603989.wt",
-      "present": true,
-      "sha256": "6764e5d3182680f00cdf107ca600a7181f152f84c87e567821e8b06c56210675",
-      "size": 20480,
-      "mtimeMs": 1794916179044.209
-    },
-    {
-      "path": "infra/.data/mongo/index-6919-5093677388791603989.wt",
-      "present": true,
-      "sha256": "8249a86bc39f43c03c6acd9aeafed616f0f5c860de94be592a49a6705de1b1ca",
-      "size": 20480,
-      "mtimeMs": 1794916179042.2102
-    },
-    {
       "path": "infra/.data/mongo/index-692-6154779548974811960.wt",
       "present": true,
       "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
       "size": 4096,
       "mtimeMs": 1794857943413.7273
-    },
-    {
-      "path": "infra/.data/mongo/index-6921-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916118175.4702
-    },
-    {
-      "path": "infra/.data/mongo/index-6922-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916118213.3076
-    },
-    {
-      "path": "infra/.data/mongo/index-6923-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916118245.171
-    },
-    {
-      "path": "infra/.data/mongo/index-6924-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916118268.2534
-    },
-    {
-      "path": "infra/.data/mongo/index-6925-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916118293.1465
-    },
-    {
-      "path": "infra/.data/mongo/index-6927-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916118345.5447
-    },
-    {
-      "path": "infra/.data/mongo/index-6928-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916118370.1582
     },
     {
       "path": "infra/.data/mongo/index-693-6154779548974811960.wt",
@@ -9269,137 +8849,11 @@
       "mtimeMs": 1794857943410.4004
     },
     {
-      "path": "infra/.data/mongo/index-6930-5093677388791603989.wt",
-      "present": true,
-      "sha256": "49a0dcd6c82c51d83e6c243f51662391bceff89e3be338848e8f77d6bd001ef5",
-      "size": 20480,
-      "mtimeMs": 1794916179035.664
-    },
-    {
-      "path": "infra/.data/mongo/index-6931-5093677388791603989.wt",
-      "present": true,
-      "sha256": "0b77cc26625815b3cc7c765ee35aa4ec8bc3fe8fdff2436f266e0a321e90fb46",
-      "size": 20480,
-      "mtimeMs": 1794916179034.1548
-    },
-    {
-      "path": "infra/.data/mongo/index-6932-5093677388791603989.wt",
-      "present": true,
-      "sha256": "bd58450dc944ab6bc2f5e07f5f671237b17372442a7caf608a92f17289928d3f",
-      "size": 20480,
-      "mtimeMs": 1794916179032.1526
-    },
-    {
-      "path": "infra/.data/mongo/index-6934-5093677388791603989.wt",
-      "present": true,
-      "sha256": "b3d56d74e701e42099089224a228dbe646b709904560c915ef8d7125a3824b60",
-      "size": 20480,
-      "mtimeMs": 1794916179028.6377
-    },
-    {
-      "path": "infra/.data/mongo/index-6935-5093677388791603989.wt",
-      "present": true,
-      "sha256": "8f45c7f1e061fb1f74e36bf69e7e266149d1d5c50b901243343ee96ebeed7c58",
-      "size": 20480,
-      "mtimeMs": 1794916179027.1238
-    },
-    {
-      "path": "infra/.data/mongo/index-6937-5093677388791603989.wt",
-      "present": true,
-      "sha256": "5e8554ef4b6c1bea94adbd938d5803734cf82d5e520745faed91cfc124b340b9",
-      "size": 20480,
-      "mtimeMs": 1794916179023.1
-    },
-    {
-      "path": "infra/.data/mongo/index-6938-5093677388791603989.wt",
-      "present": true,
-      "sha256": "33321aa1f98d835fbaee36efb3d44d469b89ec4319edb9589576e201c6a25178",
-      "size": 20480,
-      "mtimeMs": 1794916179021.0999
-    },
-    {
-      "path": "infra/.data/mongo/index-6939-5093677388791603989.wt",
-      "present": true,
-      "sha256": "99742a05951c5bb93385aa946f7a399ebb608dba9ac6b96bd6ac2f35039cec13",
-      "size": 20480,
-      "mtimeMs": 1794916179019.3354
-    },
-    {
       "path": "infra/.data/mongo/index-694-6154779548974811960.wt",
       "present": true,
       "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
       "size": 4096,
       "mtimeMs": 1794857943407.289
-    },
-    {
-      "path": "infra/.data/mongo/index-6942-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916118806.289
-    },
-    {
-      "path": "infra/.data/mongo/index-6943-5093677388791603989.wt",
-      "present": true,
-      "sha256": "be96a301db92e5a9af2b12e2a817718664144401cbfa86d2f10186aba9a0fd41",
-      "size": 20480,
-      "mtimeMs": 1794916179008.2158
-    },
-    {
-      "path": "infra/.data/mongo/index-6944-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916118851.4033
-    },
-    {
-      "path": "infra/.data/mongo/index-6946-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916118902.3289
-    },
-    {
-      "path": "infra/.data/mongo/index-6947-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916118923.2466
-    },
-    {
-      "path": "infra/.data/mongo/index-6949-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916118973.0664
-    },
-    {
-      "path": "infra/.data/mongo/index-6950-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916118994.4253
-    },
-    {
-      "path": "infra/.data/mongo/index-6953-5093677388791603989.wt",
-      "present": true,
-      "sha256": "d5e4d23ee919e75ed9fb5567d0cf02e9b81b11dc7ffc07fb28d951e7f0512c08",
-      "size": 24576,
-      "mtimeMs": 1794916178981.35
-    },
-    {
-      "path": "infra/.data/mongo/index-6956-5093677388791603989.wt",
-      "present": true,
-      "sha256": "f2ca42c2a8625aa7bec5515a50a6cef1ad0585b32cafe30854821d8392afb29e",
-      "size": 20480,
-      "mtimeMs": 1794916178973.8955
-    },
-    {
-      "path": "infra/.data/mongo/index-6958-5093677388791603989.wt",
-      "present": true,
-      "sha256": "54b2820840aae18afc8eab04e4caa8c07721b1acb3be9f932c02caa03eedd90a",
-      "size": 20480,
-      "mtimeMs": 1794916178970.3733
     },
     {
       "path": "infra/.data/mongo/index-696-6154779548974811960.wt",
@@ -9409,41 +8863,6 @@
       "mtimeMs": 1794857943401.2043
     },
     {
-      "path": "infra/.data/mongo/index-6960-5093677388791603989.wt",
-      "present": true,
-      "sha256": "545c5f449f836787309a3da095b20221c9153785ceee3799ad3b84f22bfdc81c",
-      "size": 20480,
-      "mtimeMs": 1794916178961.0422
-    },
-    {
-      "path": "infra/.data/mongo/index-6962-5093677388791603989.wt",
-      "present": true,
-      "sha256": "c57567a36f96e3b9dc418e6817a1d78ff9cca78c92f42e24573cb52997d3f1ff",
-      "size": 20480,
-      "mtimeMs": 1794916178957.5098
-    },
-    {
-      "path": "infra/.data/mongo/index-6964-5093677388791603989.wt",
-      "present": true,
-      "sha256": "59f0f7e3b1f604416bd732171c46718100987294cbcc0dc2ddc79352fcff1e22",
-      "size": 20480,
-      "mtimeMs": 1794916178949.9583
-    },
-    {
-      "path": "infra/.data/mongo/index-6967-5093677388791603989.wt",
-      "present": true,
-      "sha256": "456f8e0681b7e7b85c99892fda844203ac91a86e8b00db296adf4329af415da2",
-      "size": 20480,
-      "mtimeMs": 1794916246415.094
-    },
-    {
-      "path": "infra/.data/mongo/index-6969-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916217896.0137
-    },
-    {
       "path": "infra/.data/mongo/index-697-6154779548974811960.wt",
       "present": true,
       "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
@@ -9451,179 +8870,11 @@
       "mtimeMs": 1794857943397.4968
     },
     {
-      "path": "infra/.data/mongo/index-6970-5093677388791603989.wt",
-      "present": true,
-      "sha256": "60ffdf0db3840eea4b2a768acad18dd94dc4cb661d1931d3ef2fb9e25b3e2dc6",
-      "size": 20480,
-      "mtimeMs": 1794916246412.0935
-    },
-    {
-      "path": "infra/.data/mongo/index-6971-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916217931.6545
-    },
-    {
-      "path": "infra/.data/mongo/index-6972-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916217953.5776
-    },
-    {
-      "path": "infra/.data/mongo/index-6973-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916217975.1665
-    },
-    {
-      "path": "infra/.data/mongo/index-6974-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916217993.0327
-    },
-    {
-      "path": "infra/.data/mongo/index-6975-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916218008.6433
-    },
-    {
-      "path": "infra/.data/mongo/index-6976-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916218031.3372
-    },
-    {
-      "path": "infra/.data/mongo/index-6977-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916218051.215
-    },
-    {
-      "path": "infra/.data/mongo/index-6980-5093677388791603989.wt",
-      "present": true,
-      "sha256": "4ffd4d008e224f8415f91c2cb2c7deb20a4e4a74279fb9070b0062c94dc1c978",
-      "size": 20480,
-      "mtimeMs": 1794916246403.008
-    },
-    {
-      "path": "infra/.data/mongo/index-6981-5093677388791603989.wt",
-      "present": true,
-      "sha256": "a80a6fcb4a4e7e8229d2fbe94d5a289eeacd869a1706adcf0f857791931f21aa",
-      "size": 20480,
-      "mtimeMs": 1794916246401.9973
-    },
-    {
-      "path": "infra/.data/mongo/index-6982-5093677388791603989.wt",
-      "present": true,
-      "sha256": "15698e64d6477519811bb911f07624f41d27b9e7ad34203b10b5a27cb76c4e10",
-      "size": 20480,
-      "mtimeMs": 1794916246399.2842
-    },
-    {
-      "path": "infra/.data/mongo/index-6983-5093677388791603989.wt",
-      "present": true,
-      "sha256": "fd4164eed3ff85d225e780a770645d56d6fd9410bf5e292ac17f277dd933a26b",
-      "size": 20480,
-      "mtimeMs": 1794916246397.7568
-    },
-    {
-      "path": "infra/.data/mongo/index-6984-5093677388791603989.wt",
-      "present": true,
-      "sha256": "d6757b003b5b65c44f13590776feb49e092758d34470c7749c70b1ff77f58f9d",
-      "size": 20480,
-      "mtimeMs": 1794916246395.7373
-    },
-    {
-      "path": "infra/.data/mongo/index-6986-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916218257.865
-    },
-    {
-      "path": "infra/.data/mongo/index-6987-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916218280.7517
-    },
-    {
-      "path": "infra/.data/mongo/index-6988-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916218301.6782
-    },
-    {
-      "path": "infra/.data/mongo/index-6989-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916218322.9485
-    },
-    {
       "path": "infra/.data/mongo/index-699-6154779548974811960.wt",
       "present": true,
       "sha256": "b3199ae6b66bb40aabd2d188b32dfb616fafdef8a9edd3fe569e64f819f592d5",
       "size": 331776,
       "mtimeMs": 1794858137134.361
-    },
-    {
-      "path": "infra/.data/mongo/index-6990-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916218344
-    },
-    {
-      "path": "infra/.data/mongo/index-6992-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916218399.0068
-    },
-    {
-      "path": "infra/.data/mongo/index-6993-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916218439.4434
-    },
-    {
-      "path": "infra/.data/mongo/index-6995-5093677388791603989.wt",
-      "present": true,
-      "sha256": "602fd5180a985ed07248c015783bb1fa5db576ab72c9af95f1bc35b99290aca1",
-      "size": 20480,
-      "mtimeMs": 1794916246392.728
-    },
-    {
-      "path": "infra/.data/mongo/index-6996-5093677388791603989.wt",
-      "present": true,
-      "sha256": "67634fbb5a0a091f8750e43a79146dbcec8c7c9b93f7a9882fa6f46561c6fbed",
-      "size": 20480,
-      "mtimeMs": 1794916246390.1394
-    },
-    {
-      "path": "infra/.data/mongo/index-6997-5093677388791603989.wt",
-      "present": true,
-      "sha256": "69908084c432d495e2038043a54c41951d4c1a5dbbbabd317c29414a59179768",
-      "size": 20480,
-      "mtimeMs": 1794916246388.6853
-    },
-    {
-      "path": "infra/.data/mongo/index-6999-5093677388791603989.wt",
-      "present": true,
-      "sha256": "01a419eaf64a786afbacee9b3c9e88098ad4aaebf358f87f3bbefed5e4f5aad3",
-      "size": 20480,
-      "mtimeMs": 1794916246385.5083
     },
     {
       "path": "infra/.data/mongo/index-7--5545905030194270499.wt",
@@ -9647,130 +8898,11 @@
       "mtimeMs": 1794858137132.3616
     },
     {
-      "path": "infra/.data/mongo/index-7000-5093677388791603989.wt",
-      "present": true,
-      "sha256": "5bf1b98cedba84849fda74b8729399ed9b956312b3703c0a2d95f2bbda8eaf80",
-      "size": 20480,
-      "mtimeMs": 1794916246383.5088
-    },
-    {
-      "path": "infra/.data/mongo/index-7002-5093677388791603989.wt",
-      "present": true,
-      "sha256": "b86eb794aded390f3a2c1d640cfcf92e03d10b1c3d1a52f707a7cd701125be8c",
-      "size": 20480,
-      "mtimeMs": 1794916246379.502
-    },
-    {
-      "path": "infra/.data/mongo/index-7003-5093677388791603989.wt",
-      "present": true,
-      "sha256": "0e13ab0d8459cd5e80854b79aa15a3a5930aa47752a0c53ec00029b921fd7c75",
-      "size": 20480,
-      "mtimeMs": 1794916246377.9834
-    },
-    {
-      "path": "infra/.data/mongo/index-7004-5093677388791603989.wt",
-      "present": true,
-      "sha256": "4151a4872b3d5576b0f5a25a91f80f7f11134ac34772b3461d63b0f426839b45",
-      "size": 20480,
-      "mtimeMs": 1794916246376.4634
-    },
-    {
-      "path": "infra/.data/mongo/index-7007-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916218881.7368
-    },
-    {
-      "path": "infra/.data/mongo/index-7008-5093677388791603989.wt",
-      "present": true,
-      "sha256": "ebabd375434d46e6b02e8a5f7b8ded4193257e4e6d52fadb16ea1ae8c2457b26",
-      "size": 20480,
-      "mtimeMs": 1794916246369.6963
-    },
-    {
-      "path": "infra/.data/mongo/index-7009-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916218928.4636
-    },
-    {
       "path": "infra/.data/mongo/index-701-6154779548974811960.wt",
       "present": true,
       "sha256": "a8ff1e4de65687cbff2b55d6f06e3feb2a0f90f0079228e9474c8374e5a11a65",
       "size": 360448,
       "mtimeMs": 1794858137130.3616
-    },
-    {
-      "path": "infra/.data/mongo/index-7011-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916218986.6194
-    },
-    {
-      "path": "infra/.data/mongo/index-7012-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916219010.019
-    },
-    {
-      "path": "infra/.data/mongo/index-7014-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916219061.8674
-    },
-    {
-      "path": "infra/.data/mongo/index-7017-5093677388791603989.wt",
-      "present": true,
-      "sha256": "1860b12165fb7ed336ddab9d306ef38e18fcbd36bf695904c497b825f83581dc",
-      "size": 4096,
-      "mtimeMs": 1794916219142.7424
-    },
-    {
-      "path": "infra/.data/mongo/index-7018-5093677388791603989.wt",
-      "present": true,
-      "sha256": "85f4ca78b6c5e0161317e03e794419c2d4a98f6e56eb5cc976cd00c9ff74472a",
-      "size": 24576,
-      "mtimeMs": 1794916246362.3872
-    },
-    {
-      "path": "infra/.data/mongo/index-7021-5093677388791603989.wt",
-      "present": true,
-      "sha256": "3ab8e30f45fd2e07ae7e99ad6b468d79e6cd2cd87e2d96c4b53c771df93c752e",
-      "size": 20480,
-      "mtimeMs": 1794916246359.3784
-    },
-    {
-      "path": "infra/.data/mongo/index-7023-5093677388791603989.wt",
-      "present": true,
-      "sha256": "fe3449423f959c3063946c10a73f2388bf7f68384c18fea648a63b07ba8241de",
-      "size": 20480,
-      "mtimeMs": 1794916246356.6587
-    },
-    {
-      "path": "infra/.data/mongo/index-7025-5093677388791603989.wt",
-      "present": true,
-      "sha256": "557bf4cc70b76bf18fde1ff61b5efd24028e23b4c863fc82398d2c85cbbac958",
-      "size": 20480,
-      "mtimeMs": 1794916246352.153
-    },
-    {
-      "path": "infra/.data/mongo/index-7027-5093677388791603989.wt",
-      "present": true,
-      "sha256": "ae5f570f14542f3d554e5039a57a90c8e1ff977bda6cd60a5a36397f4fe49818",
-      "size": 20480,
-      "mtimeMs": 1794916246349.1458
-    },
-    {
-      "path": "infra/.data/mongo/index-7029-5093677388791603989.wt",
-      "present": true,
-      "sha256": "98d763bf324ce69b2a8faec611c256286e814fbfb033c3dfc25638c576848764",
-      "size": 20480,
-      "mtimeMs": 1794916246344.0762
     },
     {
       "path": "infra/.data/mongo/index-703-6154779548974811960.wt",
@@ -10300,16 +9432,16 @@
     {
       "path": "infra/.data/mongo/index-90--5545905030194270499.wt",
       "present": true,
-      "sha256": "04402748baf5309816f48fc47d3a2463041826d8a99e6e9c75381f1187a3eb83",
-      "size": 139264,
-      "mtimeMs": 1794916179173.3325
+      "sha256": "fea61a64199403cace14279ef8b5ae03dc2793eb7f7e21ea35f67376c796d1ba",
+      "size": 143360,
+      "mtimeMs": 1794917725321.993
     },
     {
       "path": "infra/.data/mongo/index-91--5545905030194270499.wt",
       "present": true,
-      "sha256": "0d1fa887c6a2421cd057c3cf5217a6e8ae23c1b909540943b1f0ae2ba71889cc",
+      "sha256": "784036aec5b7c68d91184c3114ccdae2ab75bbb43a7c796899dd3d5214a56eb0",
       "size": 53248,
-      "mtimeMs": 1794916179151.2363
+      "mtimeMs": 1794917724956.5776
     },
     {
       "path": "infra/.data/mongo/index-92--5545905030194270499.wt",
@@ -10405,9 +9537,9 @@
     {
       "path": "infra/.data/mongo/journal/WiredTigerLog.0000000018",
       "present": true,
-      "sha256": "d97fbb86ae496ba4eae4181310b4083d6a4c2ab584684c0a99ddb71a30233618",
+      "sha256": "5a8b8707f45e62bf00c8d40fbfe7504c898aa2a67b6185fcf1b73508a558605a",
       "size": 104857600,
-      "mtimeMs": 1794916407144.2922
+      "mtimeMs": 1794917940679.6191
     },
     {
       "path": "infra/.data/mongo/journal/WiredTigerPreplog.0000000001",
@@ -10433,9 +9565,9 @@
     {
       "path": "infra/.data/mongo/sizeStorer.wt",
       "present": true,
-      "sha256": "ff143c5f3fdbafa8237a98d5a7823561615513ee92165cdbe021e895b5860381",
-      "size": 61440,
-      "mtimeMs": 1794916381082.9314
+      "sha256": "9b56478f08cbd76a19d8dd7234a1196647e1e191d908290f9d6cf81adef16e29",
+      "size": 53248,
+      "mtimeMs": 1794917926372.9822
     },
     {
       "path": "infra/.data/mongo/storage.bson",
@@ -10461,23 +9593,23 @@
     {
       "path": "infra/.data/mongo/WiredTiger.turtle",
       "present": true,
-      "sha256": "6636ac10ad17ca5c4cbb1bbd8fedd92c29dc8ee39973ae25897d2bb97926b28a",
-      "size": 1491,
-      "mtimeMs": 1794916381162.8909
+      "sha256": "9bbbce8bf876b8c1461888d9c407c190a5877e9619fd00743372b06c5a1b0679",
+      "size": 1492,
+      "mtimeMs": 1794917926472.1697
     },
     {
       "path": "infra/.data/mongo/WiredTiger.wt",
       "present": true,
-      "sha256": "56d4bf09e368f26d5338ad029cad02febff40ffae4d242116c20aeb9b879c40f",
+      "sha256": "90b8da0731987c81a19bc5d4817bd4fab4fe60a53f93985861201bffb49a2cb5",
       "size": 8781824,
-      "mtimeMs": 1794916381156.17
+      "mtimeMs": 1794917926463.9995
     },
     {
       "path": "infra/.data/mongo/WiredTigerHS.wt",
       "present": true,
-      "sha256": "4786c56425e46c9e926e5fdf25fe649100a9b907d20ad4d0773db9ad773ddbb2",
-      "size": 507904,
-      "mtimeMs": 1794916246550.525
+      "sha256": "aad28b3635648aad70c80507072da9be2d5da7ea5b49dba4e961e6634fb1912d",
+      "size": 688128,
+      "mtimeMs": 1794917926426.6062
     },
     {
       "path": "infra/docker-compose.yml",
