@@ -49,6 +49,14 @@ export interface EgressOptions {
    * error types for the pre-existing checks.
    */
   readonly ssrfGuard?: boolean;
+  /*
+   * TDT-API-02FG conditional GET. A guide that has not changed upstream answers
+   * `304 Not Modified` and costs no body; the caller keeps its cached copy. Only
+   * these two validators are ever forwarded, so no arbitrary header can be
+   * injected through configuration.
+   */
+  readonly ifNoneMatch?: string;
+  readonly ifModifiedSince?: string;
 }
 
 export interface EgressResult {
@@ -59,6 +67,15 @@ export interface EgressResult {
   /** Body text, only for GET requests that passed the size limit. */
   readonly body: string | null;
   readonly finalHost: string;
+  /**
+   * Cache validators echoed by the origin, when it sent them. Optional so every
+   * pre-existing caller keeps compiling; a `304` carries them back so the next
+   * request can be conditional again.
+   */
+  readonly headers?: {
+    readonly etag: string | null;
+    readonly lastModified: string | null;
+  };
 }
 
 const DEFAULT_MAX_BYTES = 8 * 1024 * 1024;
@@ -137,6 +154,9 @@ export async function fetchWithPolicy(url: string, options: EgressOptions): Prom
       bytes: guarded.bytes,
       body: guarded.body,
       finalHost: guarded.finalHost,
+      // The guard does not surface response headers; conditional GET through it
+      // keeps its last known validators instead of inventing new ones.
+      headers: { etag: null, lastModified: null },
     };
   }
 
@@ -153,6 +173,8 @@ export async function fetchWithPolicy(url: string, options: EgressOptions): Prom
       headers: {
         accept: '*/*',
         'user-agent': options.userAgent ?? DEFAULT_USER_AGENT,
+        ...(options.ifNoneMatch !== undefined ? { 'if-none-match': options.ifNoneMatch } : {}),
+        ...(options.ifModifiedSince !== undefined ? { 'if-modified-since': options.ifModifiedSince } : {}),
       },
     });
     // A redirect may land on a blocked host: re-check the final origin.
@@ -190,6 +212,10 @@ export async function fetchWithPolicy(url: string, options: EgressOptions): Prom
       bytes,
       body,
       finalHost,
+      headers: {
+        etag: response.headers.get('etag'),
+        lastModified: response.headers.get('last-modified'),
+      },
     };
   } finally {
     clearTimeout(timer);
