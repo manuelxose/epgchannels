@@ -31,7 +31,7 @@ import type {
   VerifySourceResult,
 } from '@tdt/contracts';
 import { REBUILD_CONFIG } from '../config/rebuild-config.token';
-import { normalisePayload } from './json-shape';
+import { normalisePayload, readArray, readMember } from './json-shape';
 
 export interface Pagination {
   readonly page: number;
@@ -40,6 +40,11 @@ export interface Pagination {
   readonly pageCount: number;
   readonly hasNext: boolean;
   readonly hasPrevious: boolean;
+}
+
+/** The envelope of `/admin/epg/coverage`: the body sits under `data`. */
+interface AdminCoverageEnvelope {
+  readonly data?: unknown;
 }
 
 /** `/admin/epg/coverage`: `{data: {entries, totals, conflicts, asOf}}` with attribution. */
@@ -292,8 +297,19 @@ export class AdminApiService {
     return this.request('GET', '/admin/epg-sources', undefined, token);
   }
 
-  epgCoverage(token: string): Promise<EpgCoveragePayload> {
-    return this.request('GET', '/admin/epg/coverage', undefined, token);
+  async epgCoverage(token: string): Promise<EpgCoveragePayload> {
+    /*
+     * The endpoint answers {data: {entries, totals, conflicts, asOf}, attribution},
+     * so callJson keeps the object and the body is read from its data member.
+     */
+    const payload = await this.request<AdminCoverageEnvelope>('GET', '/admin/epg/coverage', undefined, token);
+    const body = readMember(payload, 'data') ?? payload;
+    return {
+      entries: readArray<EpgCoverageEntry>(readMember(body, 'entries')) ?? [],
+      totals: (readMember(body, 'totals') ?? {}) as EpgCoveragePayload['totals'],
+      conflicts: Number(readMember(body, 'conflicts') ?? 0),
+      asOf: String(readMember(body, 'asOf') ?? ''),
+    };
   }
 
   epgMappings(query: { page?: number; pageSize?: number }, token: string): Promise<MappingPage> {

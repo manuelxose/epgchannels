@@ -55,11 +55,20 @@ export function envelopeData(payload: unknown): unknown {
 }
 
 /**
- * Normalises a whole API payload: the envelope is unwrapped, lists become plain
- * arrays and objects become own-property records.
+ * Normalises a whole API payload.
+ *
+ * The envelope is unwrapped **only when `data` is all there is** — the common
+ * `{data: [...]}` form. A payload that also carries `pagination` keeps its
+ * `data` member, because unwrapping it would discard the page descriptor the
+ * catalogue page must display. In both cases every member is copied to an
+ * ordinary value, so no response object reaches a component.
  */
 export function normalisePayload(payload: unknown): unknown {
-  const data = envelopeData(payload);
-  const list = readArray<unknown>(data);
-  return list ?? readObject(data);
+  const keys = ownKeys(payload);
+  const onlyData = keys.length === 1 && keys[0] === 'data';
+  if (onlyData) {
+    const data = readMember(payload, 'data');
+    return readArray<unknown>(data) ?? readObject(data);
+  }
+  return readObject(payload);
 }
