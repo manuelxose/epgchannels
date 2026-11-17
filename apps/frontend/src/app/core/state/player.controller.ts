@@ -49,6 +49,7 @@ export interface PlayerSnapshot {
   readonly currentQuality: number;
   readonly audioTracks: readonly MediaTrack[];
   readonly subtitleTracks: readonly MediaTrack[];
+  readonly subtitleSelection: number | 'off' | undefined;
   readonly error?: PlayerErrorInfo;
   readonly attempts: number;
   /** Sources already failed in this load; never retried automatically. */
@@ -264,6 +265,15 @@ export class PlayerController {
   private readonly currentQualityState = signal(-1);
   private readonly audioState = signal<readonly MediaTrack[]>([]);
   private readonly subtitlesState = signal<readonly MediaTrack[]>([]);
+  /**
+   * The subtitle track the user selected, `'off'` for none, or `undefined`
+   * while nobody has chosen.
+   *
+   * None of the engines reports its *current* text track back (they report only
+   * the available list), so the selection is owned here. That keeps the UI's
+   * `<select>` truthful instead of guessing from track order.
+   */
+  private readonly subtitleSelectionState = signal<number | 'off' | undefined>(undefined);
   private readonly errorState = signal<PlayerErrorInfo | undefined>(undefined);
   private readonly attemptsState = signal(0);
   private readonly failedState = signal<readonly SourceFailureRecord[]>([]);
@@ -296,6 +306,7 @@ export class PlayerController {
     currentQuality: this.currentQualityState(),
     audioTracks: this.audioState(),
     subtitleTracks: this.subtitlesState(),
+    subtitleSelection: this.subtitleSelectionState(),
     error: this.errorState(),
     attempts: this.attemptsState(),
     failedSources: this.failedState(),
@@ -760,6 +771,7 @@ export class PlayerController {
     this.currentQualityState.set(-1);
     this.audioState.set([]);
     this.subtitlesState.set([]);
+    this.subtitleSelectionState.set(undefined);
 
     const onEvent = (event: EngineEvent): void => {
       if (generation !== this.generation) {
@@ -997,6 +1009,14 @@ export class PlayerController {
       case 'tracks':
         this.audioState.set(event.audio);
         this.subtitlesState.set(event.subtitles);
+        // A chosen track that the new source does not carry is dropped, so the
+        // UI never shows a selection that no longer exists.
+        if (typeof this.subtitleSelectionState() === 'number') {
+          const selected = this.subtitleSelectionState() as number;
+          if (!event.subtitles.some((track) => track.id === selected)) {
+            this.subtitleSelectionState.set(undefined);
+          }
+        }
         break;
       case 'can-play':
         this.readyState.set(true);
@@ -1278,7 +1298,15 @@ export class PlayerController {
     this.engine?.setAudioTrack(id);
   }
 
+  /**
+   * Selects a subtitle track, `'off'` to turn subtitles off.
+   *
+   * The selection is recorded here as well as forwarded to the engine, because
+   * no engine reports its current text track back; without it the UI could not
+   * show which track is active.
+   */
   setSubtitleTrack(id: number | 'off'): void {
+    this.subtitleSelectionState.set(id);
     this.engine?.setSubtitleTrack(id);
   }
 
@@ -1326,6 +1354,7 @@ export class PlayerController {
     this.currentQualityState.set(-1);
     this.audioState.set([]);
     this.subtitlesState.set([]);
+    this.subtitleSelectionState.set(undefined);
     this.errorState.set(undefined);
     this.attemptsState.set(0);
     this.failedState.set([]);

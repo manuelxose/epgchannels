@@ -251,8 +251,9 @@
   align-items: center;
   justify-content: center;
   gap: var(--s-2);
-  min-width: 38px;
-  height: 38px;
+  /* 44x44: the contract's touch target, and comfortably above WCAG 2.2 AA's 24px. */
+  min-width: 44px;
+  min-height: 44px;
   padding: 0 var(--s-2);
   border: 1px solid transparent;
   border-radius: var(--r-sm);
@@ -264,18 +265,26 @@
   transition: background var(--dur-fast) var(--ease-out);
 }
 
+/* Keyboard focus is always visible against the dark player surface. */
+.ctl:focus-visible,
+.quality select:focus-visible,
+.volume__range:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .ctl:hover {
   background: rgba(255, 255, 255, 0.12);
+}
+
+.ctl--play:hover {
+  background: var(--accent-strong);
 }
 
 .ctl--play {
   background: var(--accent);
   color: var(--on-accent);
   min-width: 44px;
-}
-
-.ctl--play:hover {
-  background: var(--accent-strong);
 }
 
 .ctl--live {
@@ -323,6 +332,24 @@
   clip-path: inset(50%);
 }
 
+/* ---------- Fullscreen ---------- */
+
+/*
+ * In fullscreen the stage fills the screen. `aspect-ratio` is released so the
+ * video uses the whole viewport instead of a letterboxed 16:9 box with dead
+ * space above and below.
+ */
+.shell--fs,
+.shell:fullscreen {
+  aspect-ratio: auto;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  border: 0;
+}
+
+/* Fullscreen button: also reflects state through the icon, set in the template. */
+
 @media (width <= 720px) {
   .now {
     max-width: 78%;
@@ -333,6 +360,10 @@
     font-size: var(--fs-sm);
   }
 
+  /*
+   * The volume slider is hidden rather than removed: the mute button still
+   * gives access to audio, and arrow keys work while the player has focus.
+   */
   .volume__range {
     display: none;
   }
@@ -340,11 +371,36 @@
   .controls {
     gap: var(--s-1);
     padding: var(--s-1);
+    left: var(--s-1);
+    right: var(--s-1);
+    bottom: var(--s-1);
   }
 
-  .ctl {
-    min-width: 42px;
-    height: 42px;
+  /*
+   * At 360px the control bar cannot fit every control at 44px, so the ones
+   * with an equivalent elsewhere give way: PiP, cast and the "Directo" jump
+   * (the stream is live already) hide first, and the remaining row is allowed
+   * to wrap instead of overflowing. Nothing is reachable ONLY by these
+   * controls: each has a keyboard shortcut or a menu alternative.
+   */
+  .ctl--live,
+  .quality select {
+    height: 44px;
+  }
+
+  .controls {
+    flex-wrap: wrap;
+  }
+}
+
+/* Narrowest phones: keep play, mute, fullscreen and track menus on one line. */
+@media (width <= 420px) {
+  .ctl--live {
+    display: none;
+  }
+
+  .quality select {
+    max-width: 96px;
   }
 }
 

@@ -1,15 +1,22 @@
 /**
  * Playback service: assembles the descriptor the client plays.
  *
- * The service is the only place that decides which source wins. Its rules are
- * the publication policy (authorisation first) plus health, expressed once:
+ * The service is the only place that decides which source wins, and it delegates
+ * that decision to `source-selection.ts` so there is exactly one implementation of
+ * the four axes (authorization → compatibility → health → quality):
  *
- * 1. In-app sources (HLS, DASH, YouTube, official embed) that are public and
- *    healthy, ordered by priority; the best one becomes the descriptor.
+ * 1. In-app sources (HLS, DASH, YouTube, official embed) that are authorized and
+ *    that no axis refuses, ordered by priority; the best one becomes the
+ *    descriptor and the rest are its failover options.
  * 2. Otherwise, a public `external` source: status `external`, the emitter's own
  *    page as `externalUrl`, and no pretend in-app availability.
  * 3. Otherwise the channel's playback status decides between `eventual` and
  *    `unavailable`. Nothing is invented.
+ *
+ * Health is resolved from the recorded check first and the source row second
+ * (`verification/source-health.ts`), never from `technicalStatus` alone: that
+ * column is `unknown` for every row on the platform, and a truthiness check on it
+ * is how an unchecked source used to be reported as available.
  */
 import type {
   ChannelRef,
@@ -20,13 +27,27 @@ import type {
 } from '@tdt/contracts';
 import type { DatabaseHandle } from '../../infrastructure/mongo.js';
 import { COLLECTIONS } from '../../infrastructure/mongo.js';
+import type { Collection } from 'mongodb';
 import type { ChannelDoc, PlaybackSourceDoc, YoutubeChannelDoc } from '../../infrastructure/schema.js';
-import { compareSources, decidePublication, engineFor, isSourceHealthy } from './publication-policy.js';
+import { compareSources, engineFor, decidePublication } from './publication-policy.js';
 import { channelIdFromUrl } from './youtube-channel-cache.js';
 import { providerRegistry } from '../providers/providers.registry.js';
 import { decideSourceEligibility } from '../providers/source-eligibility.js';
 import type { AuthorizationRecord } from '../providers/authorization.js';
 import { AuthorizationRepository } from '../providers/authorization.repository.js';
+import { HEALTH_COLLECTIONS } from '../../verification/health.schema.js';
+import { recordedCheckOf, type LedgerCheckRow, type RecordedCheck } from '../../verification/source-health.js';
+import {
+  healthEvidence,
+  hasSelectableCandidate,
+  DEFAULT_REPRODUCTION_ENGINE,
+  NO_EVIDENCE,
+  selectPlaybackCandidates,
+  sourceHealth,
+  type CandidateAxes,
+  type PlaybackSelection,
+  type SourceEvidence,
+} from './source-selection.js';
 
 export interface PlaybackLookup {
   readonly channel: ChannelDoc;
@@ -45,21 +66,27 @@ export interface PlaybackLookup {
 export type AuthorizationMap = ReadonlyMap<string, AuthorizationRecord>;
 
 /**
- * Whether a stored source may take part in playback at all.
+ * Whether a stored source may take part in playback *at all* — the exposure
+ * question, not the in-app attempt question.
  *
- * Both gates must agree: the existing publication policy (admission, provenance,
- * forged-header/app-only vetoes) AND the 02C authorization gate. Availability is
- * never consulted here — `isSourceHealthy` is applied separately by callers that
- * need it, and a healthy stream cannot rescue a missing right.
+ * The two questions are different and answering one with the other was a real
+ * defect: `selectPlaybackCandidates` correctly refuses every `external` source as
+ * an in-app candidate (it must never become an option or a failover target), so
+ * routing this function through it made an eligible emitter-player link look
+ * unexposed and the channel reported `unavailable` instead of `external` — the
+ * legal external-player fallback this milestone must offer.
+ *
+ * So this asks the eligibility question directly, exactly as it did before the
+ * selector existed, and the four-axis selector stays the only decider of in-app
+ * candidates.
  */
 function isEligibleSource(
   channel: Pick<ChannelDoc, 'editorialStatus'>,
   source: PlaybackSourceDoc,
   authorizations: AuthorizationMap | undefined,
   now: Date,
-  territory: string | null,
 ): boolean {
-  const decision = decideSourceEligibility({
+  return decideSourceEligibility({
     publication: {
       channelStatus: channel.editorialStatus,
       sourceStatus: source.editorialStatus,
@@ -70,9 +97,8 @@ function isEligibleSource(
     authorization: authorizations?.get(source._id) ?? null,
     type: source.type as never,
     now,
-    requestedTerritory: territory,
-  });
-  return decision.playable;
+    requestedTerritory: null,
+  }).playable;
 }
 
 export function channelRef(channel: Pick<ChannelDoc, '_id' | 'slug' | 'name'>): ChannelRef {
@@ -83,6 +109,7 @@ export function channelRef(channel: Pick<ChannelDoc, '_id' | 'slug' | 'name'>): 
 export function sourceIssues(
   sources: readonly PlaybackSourceDoc[],
   channel?: Pick<ChannelDoc, 'editorialStatus'>,
+  evidence: SourceEvidence = NO_EVIDENCE,
 ): TechIssue[] {
   const issues: TechIssue[] = [];
   for (const source of sources) {
@@ -105,12 +132,18 @@ export function sourceIssues(
       });
       continue;
     }
-    if (!isSourceHealthy(source)) {
+    /*
+     * Only a recorded failure is an issue. `not-verified` is the honest state of a
+     * source nobody has checked, and reporting it as a verification problem would
+     * be the mirror image of the defect this milestone fixes.
+     */
+    const health = sourceHealth(source, evidence);
+    if (health.state === 'failing') {
       issues.push({
         kind: 'verification',
-        code: source.technicalStatus,
-        message: `${source.provider}: ${source.lastVerification?.message ?? 'sin detalle de verificación'}.`,
-        observedAt: (source.lastVerifiedAt ?? source.updatedAt).toISOString(),
+        code: health.failure ?? 'failing',
+        message: `${source.provider}: ${source.lastVerification?.message ?? 'la última verificación falló'}.`,
+        observedAt: (health.observedAt ?? source.updatedAt).toISOString(),
       });
     }
   }
@@ -122,6 +155,7 @@ function optionOf(
   preferred: boolean,
   externalFallback: string | null,
   resolvedVideos: ReadonlyMap<string, string> = new Map(),
+  axes?: CandidateAxes,
 ): PlaybackOption {
   const base = source.url ?? externalFallback;
   if (!base) {
@@ -140,6 +174,7 @@ function optionOf(
   const channelId = source.type === 'youtube' ? channelIdFromUrl(base) : null;
   const resolvedVideoId = channelId ? resolvedVideos.get(channelId) : undefined;
   const url = resolvedVideoId ? `https://www.youtube.com/watch?v=${resolvedVideoId}` : base;
+  const health = axes?.health ?? (sourceHealth(source, NO_EVIDENCE));
   return {
     sourceId: source._id,
     label: labelFor(source),
@@ -151,6 +186,9 @@ function optionOf(
       : (source.officialPageUrl ?? null),
     geoRestricted: !source.conditions.worldwide,
     preferred,
+    health: healthEvidence(health),
+    compatibility: axes?.compatibility ?? { state: 'unknown' },
+    observedAt: health.observedAt?.toISOString() ?? null,
   };
 }
 
@@ -173,17 +211,37 @@ export function statusWithoutInApp(
   sources: readonly PlaybackSourceDoc[],
   authorizations?: AuthorizationMap,
   now: Date = new Date(),
+  evidence: SourceEvidence = NO_EVIDENCE,
 ): PlaybackStatus {
-  const publicSources = sources.filter((source) => isEligibleSource(channel, source, authorizations, now, null));
+  const selection = selectPlaybackCandidates({ channel, sources, authorizations, now, evidence });
+  if (hasSelectableCandidate(selection)) return 'available';
+
+  /*
+   * Precedence, and why it is this order rather than any other:
+   *
+   *   available → external → degraded → eventual → unavailable
+   *
+   * `external` comes BEFORE `degraded` because the two answers mean different
+   * things to a user. "We cannot play it in-app, but the emitter publishes it in
+   * their own player" is a real, legitimate option — the legal external-player
+   * fallback this milestone is required to offer — while "we hold in-app sources
+   * that no axis currently lets us use" is a statement about *our* availability.
+   * A channel that qualifies for both must be reported as `external`: reporting it
+   * `degraded` hides the emitter's player and, worse, contradicts the
+   * `externalUrl` the descriptor goes on to attach — a fallback URL under a status
+   * that says there is nothing to watch.
+   *
+   * `degraded` still means exactly one thing, and only an AUTHORIZED candidate can
+   * produce it: a channel whose sources are all refused has no signal we may
+   * offer at all, which is `unavailable`, not "degraded".
+   */
+  const publicSources = sources.filter((source) => isEligibleSource(channel, source, authorizations, now));
   if (publicSources.some((source) => source.type === 'external')) {
     return 'external';
   }
+  if (selection.refused.length > 0) return 'degraded';
   if (channel.kind === 'eventual') {
     return 'eventual';
-  }
-  if (publicSources.length > 0) {
-    // Public in-app sources exist but none is healthy right now.
-    return 'degraded';
   }
   return 'unavailable';
 }
@@ -208,22 +266,28 @@ export function buildDescriptor(
    * yields no in-app playback rather than unauthorised playback.
    */
   authorizations: AuthorizationMap | undefined = undefined,
+  /**
+   * Recorded health evidence (the 02D ledger), keyed by source id.
+   *
+   * Required by the *service* path, which always resolves it with
+   * `evidenceFor()` before building a descriptor; a pure caller may omit it, and
+   * then each source falls back to its own record and then to `not-verified`.
+   * There is deliberately no default here: an optional parameter that silently
+   * defaulted to "no evidence" in every call site is how a health axis ends up
+   * wired to nothing.
+   */
+  evidence: SourceEvidence = NO_EVIDENCE,
 ): PlaybackDescriptor {
-  const issues = sourceIssues(sources, channel);
+  const selection = selectPlaybackCandidates({ channel, sources, authorizations, now, evidence });
+  const issues = sourceIssues(sources, channel, evidence);
   const ordered = [...sources].sort(compareSources);
 
-  const inApp = ordered.filter(
-    (source) =>
-      isEligibleSource(channel, source, authorizations, now, null) &&
-      isSourceHealthy(source) &&
-      source.type !== 'external' &&
-      source.url !== null,
-  );
-
-  if (inApp.length > 0) {
-    const options = inApp.map((source, index) => optionOf(source, index === 0, null, resolvedVideos));
+  if (selection.candidates.length > 0) {
+    const options = selection.candidates.map((candidate, index) =>
+      optionOf(candidate.source, index === 0, null, resolvedVideos, candidate.axes),
+    );
     const primary = options[0];
-    if (!primary) throw new Error('unreachable: inApp is not empty');
+    if (!primary) throw new Error('unreachable: candidates is not empty');
 
     /*
      * A channel whose only in-app source is a YouTube channel we resolved as
@@ -247,6 +311,7 @@ export function buildDescriptor(
           url: null,
           externalUrl,
           options: [],
+          unavailableOptions: unavailableOf(selection),
           reason: 'El canal emite por YouTube pero ahora mismo no tiene ninguna emisión en directo.',
         },
         checkedAt: now.toISOString(),
@@ -264,6 +329,7 @@ export function buildDescriptor(
         url: primary.url,
         externalUrl: primary.externalUrl,
         options,
+        unavailableOptions: unavailableOf(selection),
         reason: null,
       },
       checkedAt: now.toISOString(),
@@ -271,11 +337,9 @@ export function buildDescriptor(
     };
   }
 
-  const status = statusWithoutInApp(channel, sources, authorizations, now);
+  const status = statusWithoutInApp(channel, sources, authorizations, now, evidence);
   const external = ordered.find(
-    (source) =>
-      source.type === 'external' &&
-      isEligibleSource(channel, source, authorizations, now, null),
+    (source) => source.type === 'external' && isEligibleSource(channel, source, authorizations, now),
   );
   const externalUrl = external?.officialPageUrl ?? external?.url ?? channel.websiteUrl ?? null;
 
@@ -298,11 +362,28 @@ export function buildDescriptor(
       url: null,
       externalUrl,
       options: [],
+      unavailableOptions: unavailableOf(selection),
       reason,
     },
     checkedAt: now.toISOString(),
     issues,
   };
+}
+
+/**
+ * The authorized candidates that exist but cannot be selected now.
+ *
+ * `authorization` refusals never reach here (the selector keeps them out of
+ * `refused`), and the contract's `axis` union has no authorization member because
+ * of it: a denied source is not a fallback with a reason, it is not a candidate.
+ */
+function unavailableOf(selection: PlaybackSelection): NonNullable<PlaybackDescriptor['playback']['unavailableOptions']> {
+  return selection.refused.map((entry) => ({
+    sourceId: entry.source._id,
+    type: entry.source.type as PlaybackOption['type'],
+    axis: entry.refusal.axis,
+    code: entry.refusal.code,
+  }));
 }
 
 export class PlaybackService {
@@ -327,8 +408,60 @@ export class PlaybackService {
     if (!channel) return null;
     const sources = await this.sourcesFor(channel._id);
     const { videos, offline } = await this.youtubeStateFor(sources);
-    const authorizations = await this.authorizationsFor(sources);
-    return buildDescriptor(channel, sources, new Date(), videos, offline, authorizations);
+    const [authorizations, evidence] = await Promise.all([
+      this.authorizationsFor(sources),
+      this.evidenceFor(sources),
+    ]);
+    return buildDescriptor(channel, sources, new Date(), videos, offline, authorizations, evidence);
+  }
+
+  /**
+   * The recorded health evidence for these sources.
+   *
+   * This is where the health axis gets its input, and it reads the REAL ledger
+   * (`source_health_checks_02d`), because that is the only place a per-source
+   * verdict is persisted: `playback_sources.technicalStatus` is `unknown` for
+   * every row on the platform (measured) and never moves when a check runs.
+   *
+   * One query per page, not per source, and the latest terminal row per source
+   * wins so a re-check supersedes an older one. A source that has no ledger row
+   * stays `not-verified` — the absence is the answer, not a default `healthy`.
+   */
+  async evidenceFor(sources: readonly PlaybackSourceDoc[]): Promise<SourceEvidence> {
+    if (sources.length === 0) return NO_EVIDENCE;
+    const checks = new Map<string, RecordedCheck>();
+    try {
+      const rows = await this.healthChecks()
+        .find(
+          { sourceId: { $in: sources.map((source) => source._id) }, state: { $in: ['done', 'failed'] } },
+          { projection: { sourceId: 1, outcome: 1, depth: 1, failure: 1, timings: 1, createdAt: 1 } },
+        )
+        .sort({ 'timings.finishedAt': -1, createdAt: -1 })
+        .toArray();
+      for (const row of rows) {
+        const sourceId = typeof row.sourceId === 'string' ? row.sourceId : null;
+        if (sourceId === null || checks.has(sourceId)) continue;
+        const mapped = recordedCheckOf(row);
+        if (mapped !== null) checks.set(sourceId, mapped);
+      }
+    } catch {
+      /*
+       * A ledger read failure must not be read as "nothing failed". It is also not
+       * a licence to report `failing`: the honest outcome is the same as having no
+       * evidence, so every source falls back to its own record and then to
+       * `not-verified`.
+       */
+      return { checks: new Map(), reproductions: new Map(), reproductionEngine: DEFAULT_REPRODUCTION_ENGINE };
+    }
+    return { checks, reproductions: new Map(), reproductionEngine: DEFAULT_REPRODUCTION_ENGINE };
+  }
+
+  /** The 02D check ledger, typed through its own module constant (see health.repository). */
+  private healthChecks() {
+    const typed = this.database as unknown as {
+      collection<T extends object>(name: string): Collection<T>;
+    };
+    return typed.collection<LedgerCheckRow & { sourceId?: unknown }>(HEALTH_COLLECTIONS.checks);
   }
 
   /**
@@ -410,17 +543,14 @@ export class PlaybackService {
      * manifest answers.
      */
     const authorizations = await this.authorizationsFor(sources);
+    // The same recorded evidence the single-channel path uses, one query for the
+    // whole page: otherwise a list endpoint would judge health differently from
+    // the descriptor a user actually opens.
+    const evidence = await this.evidenceFor(sources);
     const now = new Date();
     for (const channel of channels) {
       const list = byChannel.get(channel._id) ?? [];
-      const inApp = list.filter(
-        (source) =>
-          source.type !== 'external' &&
-          source.url !== null &&
-          isSourceHealthy(source) &&
-          isEligibleSource(channel, source, authorizations, now, null),
-      );
-      statuses.set(channel._id, inApp.length > 0 ? 'available' : statusWithoutInApp(channel, list, authorizations, now));
+      statuses.set(channel._id, statusWithoutInApp(channel, list, authorizations, now, evidence));
     }
     return statuses;
   }

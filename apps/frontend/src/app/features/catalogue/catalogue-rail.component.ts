@@ -78,6 +78,14 @@ export class CatalogueRailComponent {
     this.query.setAvailability((event.target as HTMLSelectElement).value as never);
   }
 
+  protected onCountry(event: Event): void {
+    this.query.setCountry((event.target as HTMLSelectElement).value);
+  }
+
+  protected onLanguage(event: Event): void {
+    this.query.setLanguage((event.target as HTMLSelectElement).value);
+  }
+
   protected onFavorite(channelId: string): void {
     const nowFavorite = this.preferences.toggleFavorite(channelId);
     this.favoriteSelectionAnnouncement.set(nowFavorite ? 'Añadido a favoritos' : 'Quitado de favoritos');

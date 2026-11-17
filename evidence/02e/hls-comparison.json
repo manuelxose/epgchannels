@@ -1,0 +1,226 @@
+{
+  "tool": "evidence/02e/hls-comparison.mjs",
+  "generatedAt": "2026-11-17T15:44:42.446Z",
+  "engine": "hls.js (the build shipped in apps/frontend/node_modules)",
+  "note": "The path our app actually uses in Chromium. Chromium's own <video> cannot demux MPEG-TS, so the native check is reported separately and is not our path.",
+  "summary": {
+    "sources": 6,
+    "played": 6,
+    "notPlayed": 0,
+    "verdicts": [
+      "played-via-hlsjs"
+    ]
+  },
+  "results": [
+    {
+      "url": "https://ztnr.rtve.es/ztnr/6108704.m3u8",
+      "host": "ztnr.rtve.es",
+      "manifestMs": 152,
+      "playingMs": 1009,
+      "levels": [
+        {
+          "height": 360,
+          "bitrate": 1155072
+        },
+        {
+          "height": 576,
+          "bitrate": 2025472
+        },
+        {
+          "height": 720,
+          "bitrate": 3012608
+        }
+      ],
+      "level": 2,
+      "currentTimeFirstSample": 5.64,
+      "currentTimeStart": 5.64,
+      "currentTimeEnd": 13.64,
+      "samplesWhileRunning": 9,
+      "advancedSeconds": 8,
+      "videoWidth": 1280,
+      "videoHeight": 720,
+      "mediaErrorCode": null,
+      "fatal": null,
+      "errors": [],
+      "networkFailures": [],
+      "verdict": "played-via-hlsjs"
+    },
+    {
+      "url": "https://rtvelivestream.rtve.es/rtvesec/rne/rne_r4_cam_main_dvr.m3u8",
+      "host": "rtvelivestream.rtve.es",
+      "manifestMs": 83,
+      "playingMs": 2008,
+      "levels": [
+        {
+          "height": 360,
+          "bitrate": 1155072
+        },
+        {
+          "height": 576,
+          "bitrate": 2025472
+        },
+        {
+          "height": 720,
+          "bitrate": 3012608
+        }
+      ],
+      "level": 2,
+      "currentTimeFirstSample": 0,
+      "currentTimeStart": 3585.36,
+      "currentTimeEnd": 3592.35,
+      "samplesWhileRunning": 8,
+      "advancedSeconds": 6.99,
+      "videoWidth": 1280,
+      "videoHeight": 720,
+      "mediaErrorCode": null,
+      "fatal": null,
+      "errors": [],
+      "networkFailures": [],
+      "verdict": "played-via-hlsjs"
+    },
+    {
+      "url": "https://www.bloomberg.com/media-manifest/streams/qt.m3u8",
+      "host": "www.bloomberg.com",
+      "manifestMs": 730,
+      "playingMs": 7021,
+      "levels": [
+        {
+          "height": 272,
+          "bitrate": 400000
+        },
+        {
+          "height": 360,
+          "bitrate": 600000
+        },
+        {
+          "height": 720,
+          "bitrate": 1500000
+        },
+        {
+          "height": 720,
+          "bitrate": 2400000
+        },
+        {
+          "height": 1080,
+          "bitrate": 3000000
+        }
+      ],
+      "level": 2,
+      "currentTimeFirstSample": 0,
+      "currentTimeStart": 33.74,
+      "currentTimeEnd": 35.72,
+      "samplesWhileRunning": 3,
+      "advancedSeconds": 1.98,
+      "videoWidth": 1280,
+      "videoHeight": 720,
+      "mediaErrorCode": null,
+      "fatal": null,
+      "errors": [],
+      "networkFailures": [],
+      "verdict": "played-via-hlsjs"
+    },
+    {
+      "url": "https://cdn1.etbon.eus/meteo/index.m3u8",
+      "host": "cdn1.etbon.eus",
+      "manifestMs": 131,
+      "playingMs": 1009,
+      "levels": [
+        {
+          "height": 360,
+          "bitrate": 671765
+        },
+        {
+          "height": 360,
+          "bitrate": 671796
+        },
+        {
+          "height": 576,
+          "bitrate": 1845096
+        },
+        {
+          "height": 576,
+          "bitrate": 1845131
+        },
+        {
+          "height": 720,
+          "bitrate": 3839792
+        },
+        {
+          "height": 720,
+          "bitrate": 3839822
+        },
+        {
+          "height": 1080,
+          "bitrate": 5951792
+        },
+        {
+          "height": 1080,
+          "bitrate": 5951822
+        }
+      ],
+      "level": 7,
+      "currentTimeFirstSample": 282.34,
+      "currentTimeStart": 282.34,
+      "currentTimeEnd": 290.32,
+      "samplesWhileRunning": 9,
+      "advancedSeconds": 7.98,
+      "videoWidth": 1920,
+      "videoHeight": 1080,
+      "mediaErrorCode": null,
+      "fatal": null,
+      "errors": [],
+      "networkFailures": [],
+      "verdict": "played-via-hlsjs"
+    },
+    {
+      "url": "https://rtvelivestream-rtveplayplus.rtve.es/rtvesec/int/tvei_asia_main_dvr_1080.m3u8",
+      "host": "rtvelivestream-rtveplayplus.rtve.es",
+      "manifestMs": 98,
+      "playingMs": 1009,
+      "levels": [
+        {
+          "height": 0,
+          "bitrate": 0
+        }
+      ],
+      "level": 0,
+      "currentTimeFirstSample": 7185.57,
+      "currentTimeStart": 7185.57,
+      "currentTimeEnd": 7193.57,
+      "samplesWhileRunning": 9,
+      "advancedSeconds": 8,
+      "videoWidth": 1920,
+      "videoHeight": 1080,
+      "mediaErrorCode": null,
+      "fatal": null,
+      "errors": [],
+      "networkFailures": [],
+      "verdict": "played-via-hlsjs"
+    },
+    {
+      "url": "https://streaming-1.eltorotv.com/lb0/eltorotv-streaming-web/index.m3u8",
+      "host": "streaming-1.eltorotv.com",
+      "manifestMs": 221,
+      "playingMs": 1009,
+      "levels": [
+        {
+          "height": 1080,
+          "bitrate": 4960000
+        }
+      ],
+      "level": 0,
+      "currentTimeFirstSample": 6.25,
+      "currentTimeStart": 6.25,
+      "currentTimeEnd": 14.25,
+      "samplesWhileRunning": 9,
+      "advancedSeconds": 8,
+      "videoWidth": 1920,
+      "videoHeight": 1080,
+      "mediaErrorCode": null,
+      "fatal": null,
+      "errors": [],
+      "networkFailures": [],
+      "verdict": "played-via-hlsjs"
+    }
+  ]
+}

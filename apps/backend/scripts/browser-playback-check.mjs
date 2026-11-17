@@ -244,6 +244,21 @@ function classifyFetchError(error) {
 }
 
 /**
+ * The first integer after a tag's colon, or null when there is none.
+ *
+ * `parseManifestFacts` below has always called this for `#EXT-X-MEDIA-SEQUENCE`
+ * and `#EXT-X-TARGETDURATION`, but the function was never defined: any media
+ * playlist that actually declares either tag threw `ReferenceError:
+ * leadingInt is not defined` and aborted the whole run. The 02D test streams
+ * happened not to declare them, so it went unnoticed until a real catalogue
+ * playlist was measured.
+ */
+function leadingInt(line) {
+  const match = /:(\d+)/.exec(line);
+  return match === null ? null : Number(match[1]);
+}
+
+/**
  * Structured facts of an HLS playlist: counts and whether it is a master. The
  * playlist text itself is never returned or persisted.
  */
@@ -764,12 +779,28 @@ async function checkSource(browserState, rawUrl, timeoutMs) {
    * never obtained a manifest there is nothing for the browser to play, so the
    * verdict is `http-unreachable` and the browser's own finding is kept as
    * `browserFinding` — the evidence is not discarded, it is attributed.
+   *
+   * EXCEPT when the browser actually played. An automatic fetch client does not
+   * follow every redirect and does not always report the body a media element
+   * receives, so "axis A saw no manifest" is NOT evidence that playback failed.
+   * Relabelling a `played` observation as `http-unreachable` produced a verdict
+   * that contradicted its own recorded evidence (`readyState` 4, `playing`,
+   * real frame dimensions, `mediaError: null`) and it was reported as "the
+   * browser could not start playback" — which was simply untrue. Playback that
+   * the browser demonstrably performed wins; the axis-A disagreement is kept as
+   * `axisAConcern` so the redirect behaviour is still on the record.
    */
   if (!reachableManifest) {
-    record.axisB.explainedBy = 'axisA-not-a-manifest';
-    record.axisB.browserFinding = classified.verdict;
-    record.axisB.verdict = 'http-unreachable';
-    record.axisB.reason = `axis A did not obtain a manifest (HTTP ${axisA.status ?? 'error'}, ${axisA.startsWithExtM3u ? 'HLS body' : 'not an HLS body'}); the browser could not start playback (observed: ${classified.reason})`;
+    if (classified.verdict === 'played') {
+      record.axisB.axisANeverSawManifest = true;
+      record.axisB.axisAConcern = `axis A saw no manifest (HTTP ${axisA.status ?? 'error'}); the browser played anyway`;
+      record.axisB.reason = `${classified.reason} (axis A saw no manifest: HTTP ${axisA.status ?? 'error'} — the element followed what the fetch client did not)`;
+    } else {
+      record.axisB.explainedBy = 'axisA-not-a-manifest';
+      record.axisB.browserFinding = classified.verdict;
+      record.axisB.verdict = 'http-unreachable';
+      record.axisB.reason = `axis A did not obtain a manifest (HTTP ${axisA.status ?? 'error'}, ${axisA.startsWithExtM3u ? 'HLS body' : 'not an HLS body'}); the browser could not start playback (observed: ${classified.reason})`;
+    }
   }
   return { record, reachableManifest };
 }
