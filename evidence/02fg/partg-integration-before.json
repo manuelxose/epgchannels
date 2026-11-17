@@ -1,0 +1,247 @@
+{
+  "command": "partg-integration-check",
+  "base": "http://127.0.0.1:4400",
+  "measuredAt": "2026-11-17T17:13:56.998Z",
+  "journeys": [
+    {
+      "journey": "catalogue-loads",
+      "ok": true,
+      "evidence": {
+        "tiles": 21,
+        "catalogueMs": 2295,
+        "apiRequests": 27,
+        "requests": [
+          {
+            "path": "/api/v1/channels?page=1&pageSize=100",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels?page=2&pageSize=100",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels?page=3&pageSize=100",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels?page=4&pageSize=100",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels?page=5&pageSize=100",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/categories",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels/plus-24/schedule?hours=24",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels/plus-tdp/schedule?hours=24",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels/1-plus-1-ucrania/schedule?hours=24",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels/101tv-antequera/schedule?hours=24",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels/101tv-costa-del-sol/schedule?hours=24",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels/101tv-cadiz/schedule?hours=24",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels/101tv-granada/schedule?hours=24",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels/101tv-malaga/schedule?hours=24",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels/101tv-malaga-cofrade/schedule?hours=24",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels/101tv-sevilla/schedule?hours=24",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels/101tv-sevilla-cofrade/schedule?hours=24",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels/11-tv-cantabria/schedule?hours=24",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels/22tv-televisio-de-solsona/schedule?hours=24",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels/24h/schedule?hours=24",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels/24h-canarias/schedule?hours=24",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels/24h-catalunya/schedule?hours=24",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels/24h-chile/schedule?hours=24",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels/canal-33/schedule?hours=24",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels/3cat-anime/schedule?hours=24",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels/3cat-cameres-del-temps/schedule?hours=24",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels/3cat-doraemon/schedule?hours=24",
+            "method": "GET"
+          }
+        ]
+      }
+    },
+    {
+      "journey": "channel-select",
+      "ok": true,
+      "evidence": {
+        "navigationTarget": "/television/plus-24",
+        "title": "+24 en directo · TDT Player",
+        "videoElements": 1,
+        "apiRequests": [
+          "/api/v1/channels?page=1&pageSize=100",
+          "/api/v1/channels/plus-24",
+          "/api/v1/channels/plus-24/playback",
+          "/api/v1/channels?page=2&pageSize=100",
+          "/api/v1/channels?page=3&pageSize=100",
+          "/api/v1/channels?page=4&pageSize=100",
+          "/api/v1/channels?page=5&pageSize=100",
+          "/api/v1/categories",
+          "/api/v1/channels/plus-24/schedule?hours=24",
+          "/api/v1/channels/plus-tdp/schedule?hours=24",
+          "/api/v1/channels/1-plus-1-ucrania/schedule?hours=24",
+          "/api/v1/channels/101tv-antequera/schedule?hours=24",
+          "/api/v1/channels/101tv-costa-del-sol/schedule?hours=24",
+          "/api/v1/channels/101tv-cadiz/schedule?hours=24",
+          "/api/v1/channels/101tv-granada/schedule?hours=24",
+          "/api/v1/channels/101tv-malaga/schedule?hours=24",
+          "/api/v1/channels/101tv-malaga-cofrade/schedule?hours=24",
+          "/api/v1/channels/101tv-sevilla/schedule?hours=24",
+          "/api/v1/channels/101tv-sevilla-cofrade/schedule?hours=24",
+          "/api/v1/channels/11-tv-cantabria/schedule?hours=24",
+          "/api/v1/channels/22tv-televisio-de-solsona/schedule?hours=24",
+          "/api/v1/channels/24h/schedule?hours=24",
+          "/api/v1/channels/24h-canarias/schedule?hours=24",
+          "/api/v1/channels/24h-catalunya/schedule?hours=24",
+          "/api/v1/channels/24h-chile/schedule?hours=24",
+          "/api/v1/channels/canal-33/schedule?hours=24",
+          "/api/v1/channels/3cat-anime/schedule?hours=24",
+          "/api/v1/channels/3cat-cameres-del-temps/schedule?hours=24",
+          "/api/v1/channels/3cat-doraemon/schedule?hours=24",
+          "/api/v1/channels/plus-24",
+          "/api/v1/channels/plus-24/playback",
+          "/api/v1/channels/plus-24/schedule?hours=24",
+          "/api/v1/channels/plus-24/schedule?hours=24",
+          "/api/v1/channels/plus-24/schedule?hours=24",
+          "/api/v1/channels/plus-24/schedule?hours=24"
+        ]
+      }
+    },
+    {
+      "journey": "international-navigation",
+      "ok": true,
+      "evidence": {
+        "optionLabel": "INT (118)",
+        "internationalTilesAfterChoosingINT": 22,
+        "apiRequests": []
+      }
+    },
+    {
+      "journey": "country-filter",
+      "ok": true,
+      "evidence": {
+        "esTiles": 22,
+        "allTiles": 22,
+        "note": "ES (294 published) must be a non-empty subset of all (412)"
+      }
+    },
+    {
+      "journey": "search",
+      "ok": true,
+      "evidence": {
+        "query": "la",
+        "tilesBefore": 22,
+        "tilesAfterSearch": 22
+      }
+    },
+    {
+      "journey": "responsive",
+      "ok": true,
+      "evidence": {
+        "viewports": [
+          {
+            "width": 360,
+            "height": 780,
+            "label": "mobile-360",
+            "horizontalOverflowPx": 0
+          },
+          {
+            "width": 768,
+            "height": 1024,
+            "label": "tablet-768",
+            "horizontalOverflowPx": 0
+          },
+          {
+            "width": 1440,
+            "height": 900,
+            "label": "desktop-1440",
+            "horizontalOverflowPx": 0
+          }
+        ]
+      }
+    },
+    {
+      "journey": "error-handling",
+      "ok": true,
+      "evidence": {
+        "apiAborted": "**/api/v1/channels**",
+        "textSample": "Saltar al contenido\nTDTPlayer\nTelevisión\nParrilla\n\nGuía y reproductor para señales que sus emisores publican en abierto.\n\nFiltrar por categoría\nTodas las categorías\nFiltrar por país\nTodos los países\nFiltrar por idioma\nTodos los idiomas\nFiltrar por disponibilidad\nTodas\nReproducibles\nExternas\nSin emis"
+      }
+    },
+    {
+      "journey": "now-next-surface",
+      "ok": true,
+      "evidence": {
+        "hasNow": true,
+        "hasNext": true
+      }
+    }
+  ],
+  "consoleErrors": [],
+  "summary": {
+    "total": 8,
+    "ok": 8,
+    "failed": []
+  }
+}

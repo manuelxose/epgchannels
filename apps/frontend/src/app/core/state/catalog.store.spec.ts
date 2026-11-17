@@ -166,10 +166,30 @@ describe('CatalogStore + CatalogueQuery integration (our API)', () => {
     expect(store.channels()[0].availability).toBe('playable');
     expect(store.channels()[2].availability).toBe('external');
     expect(store.channels()[3].availability).toBe('no-emission');
+    // The catalogue alone issues no guide request: 21 per-channel `/schedule`
+    // calls used to fire on every home visit for a snapshot the home never shows.
+    expect(fetchMock.mock.calls.filter(([input]) => String(input).endsWith('/schedule'))).toHaveLength(0);
 
-    await vi.waitFor(() => expect(store.epgStatus()).toBe('ready'));
+    await store.ensureEpg();
+    expect(store.epgStatus()).toBe('ready');
     expect(store.scheduleFor(store.channelById('la-1'))?.programs).toHaveLength(1);
     expect(store.scheduleFor(store.channelById('la-2'))?.programs).toHaveLength(0);
+  });
+
+  it('joins a guide request already in flight instead of fetching it twice', async () => {
+    const store = TestBed.inject(CatalogStore);
+    await store.ensureCatalog();
+    const scheduleCalls = () =>
+      fetchMock.mock.calls.filter(([input]) => String(input).includes('/schedule')).length;
+    expect(scheduleCalls()).toBe(0);
+
+    // Three callers race on opening a channel (detail effect, loader, clock).
+    // Nothing is cached yet, so only the in-flight guard keeps this at one request.
+    const racers = [store.ensureEpg(['la-1']), store.ensureEpg(['la-1']), store.ensureEpg(['la-1'])];
+    await Promise.all(racers);
+
+    expect(scheduleCalls()).toBe(1);
+    expect(store.epgStatus()).toBe('ready');
   });
 
   it('never falls back to a third-party catalogue: an unreachable API is an error', async () => {
