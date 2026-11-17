@@ -3,107 +3,110 @@
 Documento de traspaso. Se lee **antes** de empezar cualquier trabajo nuevo. Si algo aquí contradice el
 estado real del repositorio, gana el repositorio: actualiza este fichero y dilo.
 
-Última actualización: 2026-11-16 (cierre de 02B).
+Última actualización: 2026-11-17 (cierre de 02C).
 
 ---
 
 ## 0. Leer primero, en este orden
 
 1. `EXECUTION_CONTRACT.md` — reglas obligatorias (Git, agentes, seguridad, REA, tokens, pruebas).
-2. `MILESTONE_STATUS.md` — estado real y qué queda abierto, incluidos los 9 defectos encontrados solo
-   al ejecutar.
-3. `MODULE-CONTRACT-02B.md` — el contrato de módulos que gobierna toda la ingesta.
-4. `EVIDENCIA-INGESTA-02B.md` — las cifras medidas, con su comando de reproducción.
-5. `DECISIONS.md` — D-010 (país), **D-016 (modo demo: las licencias son procedencia, no norma)**,
-   D-012 (sustituida por D-016), D-013 (reconciliación), D-014 (snapshots), D-015
-   (redacción de credenciales).
-6. `ARCHITECTURE.md`, `AUDITORIA-ARQUITECTURA.md`, `INFORME-SEGURIDAD-DERECHOS.md` — el producto
-   previo.
+2. `MILESTONE_STATUS.md` — estado real y lo que queda abierto.
+3. `MODULE-CONTRACT-02C.md` — el contrato del registro de proveedores y del gate de elegibilidad.
+   **Este es el documento que gobierna 02C y sucesores.**
+4. `AUDITORIA-ACEPTACION-02C.md` — la auditoría de aceptación del milestone, con sus limitaciones.
+5. `DECISIONS.md` — **D-017 (autorización separada, falla cerrada)**, **D-018 (`external-link-only`
+   con adaptador propio)**, **D-019 (el operador auto-registra la decisión, nunca la evidencia)**,
+   D-016 (modo demo: licencias son procedencia) y las anteriores.
+6. `RESEARCH_EVIDENCE-02C.md` y `REA-EVIDENCIA-02C.json` — qué se investigó y qué se observó de verdad.
 
 ---
 
-## 1. Estado al entregar 02B
+## 1. Estado al entregar 02C
 
-- Ingesta propia, sin dependencia de runtime de iptv-org, Free-TV ni TDTChannels.
-- Snapshots acotados y versionados (commit SHA + `retrievedAt` + SHA-256 por fichero), fuera de Git.
-- 8 conceptos separados y persistidos: canal canónico, alias, variante, candidato de fuente,
-  procedencia, autorización, salud y mapeo EPG.
-- Reconciliación determinista con puntuación; la incertidumbre va a **revisión manual**, nunca a fusión.
-- Catálogo privado (staging) por defecto; la promoción exige una autorización aprobada y se audita.
-- Migraciones `004`–`007` idempotentes y reversibles; identidades y relaciones existentes preservadas.
-- Ingesta idempotente: re-ejecutar no crea canales ni candidatos nuevos.
+- **Registro de adaptadores de proveedor extensible** por registro (`register()`), con cuatro
+  adaptadores reales: `broadcaster-direct`, `youtube-embed`, `official-embed`, `external-link`.
+- **Autorización persistida aparte de la disponibilidad**: colección `source_authorizations_02c`. Un
+  sondeo HTTP correcto **jamás** crea un derecho; el camino de autorización no tiene cliente de red.
+- **Gate de elegibilidad de 8 reglas, falla cerrada**, aplicado en la ruta pública **y** en el payload
+  de administración, no sólo en una función pura.
+- **Cinco clases exactas**; cada fuente con proveedor/origen, evidencia de descubrimiento, método
+  autorizado, territorio y ámbito, restricciones/atribución, ciclo de vida y caducidad, marcas de
+  validación y autorización, y estado de revisión.
+- **Cita real obligatoria**: `isRealCitation()` exige un URL `http(s)` absoluto; una cadena centinela
+  no vale.
+- Gate completo en verde: build 0 · typecheck 0 · unit 290 · integration 128 · ingestion 9/9 ·
+  independence 15 · client 14.
 
 ## 2. Qué NO se hizo (deliberadamente)
 
-- **No se publicó nada.** Todo el catálogo está en `staging`; `approved` es 0.
-- No se expusieron `identity` ni las nuevas colecciones en `/api/v1` (es trabajo de 02C).
+- **No se investigó LatAm, Europa ni el resto del catálogo internacional.** No se afirma nada sobre
+  ningún emisor fuera de España. Todos quedan `unresolved` y bloqueados.
+- **Ninguna fuente española se declara reproducible.** Cinco operadores están `restricted` con cláusula
+  citada; seis `unresolved`. Eso **es** el resultado, no un fallo.
+- No se expusieron `identity` ni las colecciones nuevas en `/api/v1` como superficie aditiva nueva.
 - No se añadió CI/CD (R3).
-- **MODO DEMO (D-016):** las licencias se registran como procedencia y **no bloquean** la
-  publicación. Free-TV es ingerible y publicable como cualquier otra fuente. Si el producto sale de
-  modo demo, D-012 debe reactivarse antes de publicar nada.
+- SEC-01 (SSRF) y SEC-02 (clave de servicio) siguen abiertos, fuera del alcance de 02C.
 
 ---
 
-## 3. Primer trabajo recomendado: TDT-API-02C
+## 3. Lo más importante para 02D
 
-Por orden de riesgo, no de comodidad.
+### 3.1 Cambio de comportamiento visible para el operador (D-019)
 
-### 3.1 Los 8 332 candidatos en revisión son trabajo de producto, no de ingeniería
+Registrar una fuente **sin** puntero a evidencia de licencia la deja `unresolved` y **no se reproduce**;
+con un puntero real, sí. Afecta a `POST /api/v1/admin/sources`. Es el cambio más consecuente del
+milestone y cualquier documentación de operador debe reflejarlo.
 
-La corrección TDT02B-REV-004 dejó de fusionar automáticamente los candidatos dudosos. Consecuencia:
-son **8 332** (`reconciliation_review`). 02C necesita:
+### 3.2 El patrón de bug que más costó esta ronda
 
-- una herramienta de operador que liste y resuelva la cola por lotes con sus señales
-  (`score`, `signals`, `reason`);
-- resolver un `review` significa o bien **confirmar** `proposedChannelId` (y entonces enlazar de verdad)
-  o bien **crear un canal nuevo** (p. ej. una variante regional con su `identity.variantKey`);
-- registrar quién decidió qué, cuándo y por qué (auditoría como `promoteChannel`).
+Los cinco defectos reales de 02C **no** se encontraron leyendo código:
 
-**No** reutilizar el fallback por clave de identidad para "vaciar la cola": fue precisamente el defecto
-que la revisión independiente encontró.
+| # | Defecto | Cómo apareció |
+|---|---|---|
+| 1 | Clave de terceros en un commit de evidencia | revisión independiente |
+| 2 | El fallback por operador nunca casaba | sonda adversaria contra MongoDB real |
+| 3 | YouTube inalcanzable (sin `hosts`) | sonda adversaria |
+| 4 | La ruta de escritura acuñaba un derecho sin evidencia | revisión independiente del diff |
+| 5 | **Un stream sano sin derecho se servía como `available`** | **auditoría a nivel HTTP** |
 
-### 3.2 Cerrar SEC-02 — clave de servicio GuíaTV no aplicada (high, abierto desde 02A)
+**El defecto 5 es la lección.** `createSource` construye a través del servicio real, que ahora
+auto-registra una decisión permitida. La fixture pedía una postura negativa y el registro permisivo del
+**servicio** sobrevivía: **toda prueba que pedía una postura negativa afirmaba lo contrario de lo que
+decía, y pasaba.** Sólo mirar el **resultado HTTP real** lo reveló.
 
-Sigue abierto: `secretMatches` solo se usa en tests y `serviceKeyEnabled` se anuncia en
-`routes.ts:317` sin middleware que valide `x-api-key`. Middleware en tiempo constante + cerrar las
-rutas cuando la clave no esté configurada.
+Regla para 02D: **toda prueba que pida un estado negativo debe construir ese estado y comprobar el
+resultado observable, no confiar en que un helper lo deje así.** Si un servicio auto-crea el registro
+que la prueba examina, la prueba lo borra explícitamente o no prueba nada.
 
-### 3.3 Cerrar SEC-01 — SSRF (high, abierto desde 02A)
+### 3.3 Disciplina de congelación (petición expresa del revisor independiente)
 
-`infrastructure/egress.ts` resuelve DNS y bloquea rangos, pero **no se ha demostrado con tests
-adversariales** desde 02A. Aceptación: servidor local desechable que pruebe el bloqueo de
-`169.254.169.254`, `127.0.0.1` y RFC1918, y permiso para hosts públicos, con re-chequeo tras
-redirección.
+Esta ronda sufrió un árbol que se movía durante la revisión: el capitán escribió mientras el revisor
+auditaba, se perdió un ciclo entero y estuvo a punto de emitirse un veredicto sobre bytes que ya no
+existían. **Para 02D: confirmar y bloquear el SHA PRIMERO; revisar después.** Los cuatro primeros
+defectos se habrían encontrado igual y con la mitad del trabajo.
 
-### 3.4 Exponer el catálogo global en la API pública
+### 3.4 Añadir un adaptador nuevo
 
-`identity` es aditivo y opcional. Decidir cómo se expone (campo versionado, sin romper `/api/v1`),
-regenerar OpenAPI + SDK y actualizar el cliente. Revisar R2 (`playable=true` full scan) antes de crecer
-el catálogo.
-
-### 3.5 Rendimiento de ingesta como historia, no como deuda
-
-La ingesta tarda 48,2 s para 23 162 entradas. El coste lo pone la reconstrucción del índice en
-calendario de duplicación. Si 02C necesita más velocidad, el camino correcto es **indexar por clave en
-O(1)** (un mapa de vistas pendientes consultado antes del índice de buckets), no rebajar la corrección
-de la reconciliación. Cualquier cambio ahí debe mantener la equivalencia con `reconcileNaive`.
+`new ProviderAdapterRegistry([...])` o `register()`. Un adaptador declara `id`, `types`,
+`providerKinds`, `requiresAuthorization`, `grants`, `method`, `territoryScope`, `attribution` y
+`platform`. No hay `switch` central. Si el tipo de integración no existe, `forType()` devuelve vacío y
+el gate **deniega** (falla cerrado).
 
 ---
 
 ## 4. Trampas conocidas (no volver a descubrirlas)
 
 - **`typecheck` en frío falla.** Ejecuta `build` antes (D-007).
-- **`data/` no está versionado.** Para reproducir cifras: `node data/fetch-snapshots.mjs --upstream all`.
-  El snapshot de iptv-org está **truncado a 400 ficheros** por `MAX_FILES` en esa herramienta.
-- **El bench necesita `TDT_SNAPSHOT_DIR`** si lo ejecutas desde un worktree que no es la raíz del repo.
-- **Un worktree de feature no contiene `pipeline.ts`.** La integración vive en la rama del milestone;
-  t8 falló (correctamente) al intentar reparar allí. Los arreglos cross-scope son del capitán.
-- **MongoDB `dropDatabase()` es asíncrono**: crear en el mismo namespace justo después falla con
-  «database is in the process of being dropped». Por eso `dropDisposable` espera a que desaparezca.
-- **`ingestion-metrics.mjs` distingue dos cifras de idioma**: `channelLanguageCoverage` (autoritativa,
-  del canal) y `languageDeclaredByUpstream` (lo que declara la fuente, que en iptv-org es 0). No las
-  mezcles.
-- **Redis es opcional**; su ausencia no es un fallo.
+- **`data/` no está versionado.** Para reproducir: `node data/fetch-snapshots.mjs --upstream all`.
+- **Mutar el gate para comprobar que un test muerde**: si la mutación no compila, `vitest` usa el `dist/`
+  viejo y el test pasa **falsamente**. Hay que rebuildear entre mutación y ejecución, o la comprobación
+  de mutación no vale nada.
+- **Las capturas crudas de REA no se versionan** (contienen claves de terceros). Sólo el resumen, el
+  índice y los vectores. `.gitignore` lo ignora con glob y hay un test que lo verifica.
+- **`snapshot-real.unit.spec.ts` roza su presupuesto de 15 s** en la suite unitaria; bajo contención ha
+  llegado a 26,9 s. Es preexistente, no de 02C.
+- **La captura de navegador REA funciona**, pero algunos objetivos (RTVE: ~23 s de carga + analítica +
+  consentimiento) agotan la ventana. Registrar `not_observed`, nunca «no se reproduce».
 - **El repo se llama `epgchannels`**, no `tdt-api01` ni `tdt-api02`.
 
 ## 5. Reglas de oro para el siguiente agente
@@ -113,7 +116,7 @@ de la reconciliación. Cualquier cambio ahí debe mantener la equivalencia con `
 3. Nunca fusionar sin tests reales, revisión independiente y comprobación de CI/CD.
 4. Nunca inventar resultados ni afirmar que algo funciona sin exit code real.
 5. Nunca escribir valores de secretos: solo nombres de variables de entorno.
-6. **Toda tarea de revisión nace con `dependencies: [<tarea integradora>]`.** Aprobar un plan no valida
-   su grafo: t6 se despachó sobre un árbol vacío porque no tuvo dependencia.
-7. Un defecto encontrado al ejecutar vale más que diez leídos: los 9 defectos reales de 02B salieron de
-   ejecutar el sistema, no de leerlo.
+6. **Toda tarea de revisión nace con `dependencies: [<tarea integradora>]`.**
+7. **Congela el SHA antes de pedir revisión; no escribas mientras te revisan.**
+8. **Un defecto encontrado al ejecutar vale más que diez leídos**, y un defecto encontrado en el
+   **resultado observable** vale más que diez unitarios.

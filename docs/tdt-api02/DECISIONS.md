@@ -206,3 +206,57 @@ Formato: `D-0NN` · fecha · estado (`ADOPTADA`, `SUSTITUIDA`, `PENDIENTE`).
 - **Consecuencia:** reproducir las cifras del milestone exige recapturar (o pedir el snapshot); el
   `manifest.json` del snapshot usado se adjunta en la evidencia del milestone con su digest.
 
+
+## D-017 — La autorización se persiste aparte de la disponibilidad y falla cerrada
+
+- **Estado:** ADOPTADA (2026-11-17, 02C)
+- **Contexto:** el producto ya distinguía `permission` (¿podemos?) de `technicalStatus` (¿responde
+  hoy?), pero nada impedía que un stream sano y sin derecho se sirviera como reproducible. La misión
+  02C exige que la autorización desconocida **impida** la reproducción pública.
+- **Decisión:**
+  1. La decisión de autorización vive en su propia colección (`source_authorizations_02c`) con su propio
+     vocabulario, **nunca** derivada de un sondeo HTTP. El camino de autorización no importa ningún
+     cliente de red.
+  2. Cinco clases exactas: `permitted-direct-playback`, `permitted-official-embed`,
+     `external-link-only`, `restricted`, `unresolved`.
+  3. Sin registro, `unresolved` o `restricted` ⇒ **sin reproducción**. La ausencia de política
+     publicada **no** es permiso.
+  4. Una clase permisiva exige cita real: `isRealCitation()` requiere un URL `http(s)` absoluto y
+     parseable, además de cláusula citada para `published-terms`. Una cadena centinela (`'n/a'`,
+     `'editorial:registration'`) **no** cuenta.
+  5. Un tipo de origen que no puede autorizar (`shortener`, `cdn`, `catalogue_reference`) nunca
+     produce veredicto permisivo, **aunque** se le adjunte un registro aprobado. Es estructura, no
+     convención.
+- **Relación con D-016:** D-016 sigue gobernando la **admisión** en catálogo (la licencia no veta la
+  entrada). D-017 añade un eje más estricto en la **fuente**: admisible ≠ reproducible.
+- **Consecuencia declarada y visible para el operador:** registrar una fuente **sin** puntero a
+  evidencia de licencia la deja `unresolved` y **no se reproduce**; con un puntero real, sí. Este es el
+  cambio de comportamiento más importante del milestone y afecta a `POST /api/v1/admin/sources`.
+
+## D-018 — `external-link-only` es una clase con adaptador propio, no una excepción del gate
+
+- **Estado:** ADOPTADA (2026-11-17, 02C)
+- **Contexto:** un canal que el emisor sólo publica en su reproductor debe ofrecerse como **enlace**,
+  no como reproducción embebida. La primera implementación hizo un retorno temprano que concedía
+  `playable: true` antes de la corroboración del adaptador; la revisión independiente señaló que eso
+  saltaba las comprobaciones de clase y modalidad.
+- **Decisión:** existe un adaptador real `external-link` (`grants: 'external-link-only'`, método
+  `external-link`). El tipo `grants` del adaptador admite esa clase, y `satisfies()` la acepta
+  explícitamente. Sin retorno temprano.
+- **Consecuencia:** un derecho `external-link-only` sobre una fuente HLS sigue siendo **no**
+  reproducible (clase no concedida), y una fuente externa sin derecho, `unresolved` o `restricted`
+  sigue denegada. Seis tests cubren las combinaciones.
+
+## D-019 — El operador puede auto-registrar la decisión, nunca la evidencia
+
+- **Estado:** ADOPTADA (2026-11-17, 02C)
+- **Contexto:** `POST /api/v1/admin/sources` crea fuentes; sin registrar una decisión, el gate
+  rechazaría la fuente que el operador acaba de aprobar. La revisión independiente demostró que la
+  primera versión acuñaba un derecho permisivo **sin evidencia** (cláusula sintética), lo que permitía
+  publicar una fuente sin licencia.
+- **Decisión:** el registro puede crear la decisión automáticamente, pero **no puede fabricar la
+  evidencia que la hace citable**. Sin puntero a evidencia ⇒ `verdict: 'unresolved'`,
+  `basis: 'none'`, `clauseUrl: null`. El estado de revisión es `pending-review`, distinto de
+  `reviewed`, para que un auditor distinga un derecho auto-registrado de uno investigado.
+- **Consecuencia:** un operador que registra una fuente sin evidencia obtiene una fuente **registrada
+  pero no reproducible**, que es la respuesta honesta.

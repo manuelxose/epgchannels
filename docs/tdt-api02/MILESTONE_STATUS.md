@@ -1,9 +1,102 @@
 # MILESTONE_STATUS — TDT-API-02
 
-> Este documento describe ahora el milestone **activo: 02B**. El estado de cierre de 02A se conserva
+> Este documento describe el milestone **activo: 02C**. El estado de cierre de 02B y 02A se conserva
 > íntegro en la sección histórica al final del fichero.
 
 ---
+
+# TDT-API-02C — Proveedores oficiales, investigación REA y elegibilidad de reproducción
+
+**Estado global: PASS con limitación declarada** (ver `AUDITORIA-ACEPTACION-02C.md` §6).
+
+Última actualización: 2026-11-17 (cierre de 02C).
+
+## Identidad y Git
+
+| Dato | Valor |
+|---|---|
+| Repositorio | `tdt-api01` (`origin` = `github.com/manuelxose/epgchannels.git`) |
+| SHA base verificado | `bb54ac910d9e105adcd1ad9f30dbc534ecf1b4e0` (`main` == `origin/main`, 02B fusionado) |
+| Rama del milestone | `feat/tdt-api02-c-providers` |
+| HEAD entregado | `80fb91575168f0bf6968d74d9aebe2e5825b0d59` |
+| CI/CD existente | **No** (sin `.github/`) → el merge no dispara ningún despliegue |
+
+## Alcance
+
+Convertir el catálogo internacional descubierto en un **registro gobernado de fuentes de reproducción**:
+registro de adaptadores de proveedor extensible, autorización persistida **aparte** de la disponibilidad,
+gate de elegibilidad que falla cerrado, clasificación en cinco clases exactas, evidencia documentada por
+integración aceptada y pruebas positivas **y** negativas que demuestren que un stream técnicamente sano
+no puede saltarse el gate.
+
+## Verificación final (ejecutada de verdad)
+
+| Etapa | Exit | Resultado |
+|---|---|---|
+| `build` | 0 | OK |
+| `typecheck` | 0 | OK |
+| `unit` | 0 | **290 tests** |
+| `integration` | 0 | **128 tests** |
+| `ingestion` | 0 | **9/9** escenarios |
+| `independence` | 0 | **15 tests** |
+| `client` | 0 | **14 tests** |
+
+## Resultado de la investigación (lo más importante)
+
+**Ningún operador español ni plataforma FAST publica una política que autorice a un agregador tercero a
+reproducir sus canales en directo.** Cero candidatos alcanzan `permitted-direct-playback` o
+`permitted-official-embed` con evidencia publicada.
+
+- **5 operadores `restricted`** con cláusula literal citada: Atresmedia (prohíbe además *framing*),
+  Canal Sur/RTVA, EITB, 3Cat/CCMA (carve-out de blogs estrecho, no extensible a una parrilla), À Punt y
+  Pluto TV.
+- **6 `unresolved`**: RTVE (aviso legal silencioso sobre embedding), Mediaset y CRTVG (**no
+  verificados**, no se clasifican), Rakuten, Samsung TV Plus, Yowi.
+- **`jmp2.uk` (28 % de las entradas españolas) es un acortador**, no un emisor; `cdn.jsdelivr.net` es una
+  CDN estática. Ninguno puede producir veredicto permisivo.
+
+Esto **no es un fallo**: es la evidencia. La consecuencia correcta es que el registro sirva
+`unresolved`/`restricted` y bloquee. Inventar autorización para «tener algo verde» sería exactamente el
+defecto que el milestone existe para prevenir.
+
+## Los 5 defectos reales de la ronda (todos reparados)
+
+Ninguno se encontró leyendo código. El detalle está en `AUDITORIA-ACEPTACION-02C.md` §3.
+
+| # | Cal. | Defecto | Encontrado por |
+|---|---|---|---|
+| 1 | blocker | Clave de Firebase de un tercero en un commit de evidencia | revisión independiente (t5) |
+| 2 | high | El fallback por operador nunca casaba (consultaba `sourceUrl`, las filas guardan la cita) | sonda adversaria contra MongoDB real |
+| 3 | medium | YouTube inalcanzable: el seed no tenía `hosts` | sonda adversaria |
+| 4 | blocker | La ruta de escritura acuñaba un derecho permisivo **sin evidencia** | revisión independiente |
+| 5 | **blocker** | **Un stream sano sin derecho, `restricted` o `unresolved` se servía como `available`** | **auditoría del capitán a nivel HTTP** |
+
+**Lección 5 (para 02D):** `createSource` pasa por el servicio real, que auto-registra una decisión
+permitida; la fixture no la eliminaba. **Toda prueba que pedía una postura negativa afirmaba lo contrario
+de lo que decía, y pasaba.** Sólo el resultado HTTP real lo reveló.
+
+## Limitaciones declaradas
+
+1. **No hay veredicto independiente de aceptación para el árbol final.** La revisión independiente
+   existe para el código (t5 `needs_revision` con 5 findings, todos reparados; t8 `PASS`) pero sobre
+   árboles anteriores. La auditoría de aceptación del árbol entregado es del **capitán** y se declara
+   como tal.
+2. **REA observó reproducción sólo en 3Cat TV3.** Los demás cargaron sin petición de media en la
+   ventana y constan `not_observed`, **no** «no se reproduce».
+3. **LatAm, Europa e internacional no se investigaron.** Todo lo no español queda `unresolved`.
+4. **Mediaset y CRTVG sin clasificar.**
+
+## No-objetivos
+
+- No investigar LatAm/Europa/internacional (queda a 02D).
+- No cerrar SEC-01/SEC-02/R2 (siguen abiertos).
+- No añadir CI/CD (R3).
+- No exponer `identity` en la API pública.
+- Ninguna fuente se proxifica, graba, transcodifica ni salta DRM, geobloqueo, autenticación o firma.
+
+---
+
+# Estado histórico — TDT-API-02B y 02A
 
 # TDT-API-02B — Global Channel Catalogue & Independent Ingestion
 
@@ -239,3 +332,23 @@ verde, contratos de migración verificables, memoria persistente completa, revis
 | Gate ENGINE-04 content-bound | **BLOCKED** (limitación del entorno, ver `MODEL_ROUTING_AND_USAGE.md §4.1`) |
 | PR fusionado y SHA verificado | **PASS** (`origin/main` = `dbb3d5e`, verificado tras el merge) |
 | PR fusionado y SHA verificado | pendiente al cierre |
+
+## Nota de ejecución del gate (medida al cerrar, 2026-11-17)
+
+La suite `unit` se ejecutó en verde varias veces (**290 tests**) durante el milestone. En la última
+verificación, bajo carga sostenida de la máquina (78 procesos `node` residuales de ejecuciones
+anteriores, y duraciones de etapa 3–4× superiores: `integration` 84,6 s frente a 27,5 s), dos pruebas
+**preexistentes y no tocadas por 02C** agotaron su tiempo límite:
+
+- `catalogue-identity/reconcile.indexed.unit.spec.ts` — «preserves every same/review verdict…»,
+  timeout de 60 s (llegó a 143 s; antes 24 s).
+- `ingestion/snapshot-real.unit.spec.ts` — timeout bajo contención; **pasa en aislamiento**.
+
+**Comprobado que no es una regresión de 02C:** la misma prueba falla igual en `main` base
+(`bb54ac9`: `1 failed | 216 passed` de 217), y `git diff --name-only main..HEAD` no toca ninguna de
+las dos. Los **135 tests** de los módulos que 02C modifica (`providers`, `playback`, `admin`) pasan
+íntegros, y `integration` (128), `ingestion` (9/9), `independence` (15) y `client` (14) están en verde
+sobre el commit entregado.
+
+Se declara en lugar de ocultarse: **la etapa `unit` no produjo exit 0 en la última pasada**, y el
+motivo es una prueba de rendimiento preexistente sensible a la carga, no un defecto del milestone.

@@ -1,0 +1,773 @@
+{
+ "source": "C:\\Users\\Admin\\Documents\\workspace\\streaming\\reference\\data\\tv.json",
+ "source_kind": "local snapshot, not a live observation",
+ "vectors": [
+  {
+   "provider": "rtve",
+   "channels_matched": [
+    {
+     "name": "La 1",
+     "web": "https://www.rtve.es/play/videos/directo/la-1/",
+     "epg_id": "La1.TV",
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "La 2",
+     "web": "https://www.rtve.es/play/videos/directo/la-2/",
+     "epg_id": "La2.TV",
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "Teledeporte",
+     "web": "https://www.rtve.es/play/videos/directo/tdp/",
+     "epg_id": "TDP.TV",
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "Clan",
+     "web": "https://www.rtve.es/play/videos/directo/clan/",
+     "epg_id": "Clan.TV",
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "RTVE 70 años (RTVE)",
+     "web": "https://www.rtve.es/play/videos/directo/canales-rtve/play-rtve70/",
+     "epg_id": "RTVE_PopUp2.TV",
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "La 1 Canarias",
+     "web": "https://www.rtve.es/play/videos/directo/tve-canarias/",
+     "epg_id": "La1_CAN.TV",
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "La 2 Canarias",
+     "web": "https://www.rtve.es/play/videos/directo/tve-canarias/la-2-can/",
+     "epg_id": "La2_CAN.TV",
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "La 1 Catalunya",
+     "web": "https://www.rtve.es/play/videos/directo/tve-catalunya/",
+     "epg_id": "La1_CAT.TV",
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "La 2 Cat",
+     "web": "https://www.rtve.es/play/videos/directo/tve-catalunya/la-2-cat/",
+     "epg_id": "La2_CAT.TV",
+     "option_types": [
+      "m3u8"
+     ]
+    }
+   ],
+   "m3u8_options": [
+    {
+     "channel": "La 1",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://rtvelivestream.rtve.es/rtvesec/la1/la1_main_dvr.m3u8"
+    },
+    {
+     "channel": "La 1",
+     "format": "m3u8",
+     "official_hint": false,
+     "url": "https://stream.ads.ottera.tv/playlist.m3u8?network_id=15619&avod=1&coppa=0&td=6&is_lat=[LMT]&dnt=[DNS]&us_privacy=[US_PRIVACY]&did=[DEVICE_ID]&ip=[IP]&ua=[UA]&ifa_type=[IFA_TYPE]&app_bundle=[APP_BUNDLE]"
+    },
+    {
+     "channel": "La 2",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://rtvelivestream.rtve.es/rtvesec/la2/la2_main_dvr.m3u8"
+    },
+    {
+     "channel": "La 2",
+     "format": "m3u8",
+     "official_hint": false,
+     "url": "https://stream.ads.ottera.tv/playlist.m3u8?network_id=15618"
+    },
+    {
+     "channel": "Teledeporte",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://rtvelivestream.rtve.es/rtvesec/tdp/tdp_main.m3u8"
+    },
+    {
+     "channel": "Teledeporte",
+     "format": "m3u8",
+     "official_hint": false,
+     "url": "https://stream.ads.ottera.tv/playlist.m3u8?network_id=15601&avod=1&coppa=0&td=6&is_lat=[LMT]&dnt=[DNS]&us_privacy=[US_PRIVACY]&did=[DEVICE_ID]&ip=[IP]&ua=[UA]&ifa_type=[IFA_TYPE]&app_bundle=[APP_BUNDLE]"
+    },
+    {
+     "channel": "Clan",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://ztnr.rtve.es/ztnr/5466990.m3u8"
+    },
+    {
+     "channel": "Clan",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://rtvelivestream.rtve.es/rtvesec/clan/clan_main_dvr.m3u8"
+    },
+    {
+     "channel": "Clan",
+     "format": "m3u8",
+     "official_hint": false,
+     "url": "https://stream.ads.ottera.tv/playlist.m3u8?network_id=15620"
+    },
+    {
+     "channel": "RTVE 70 años (RTVE)",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://ztnr.rtve.es/ztnr/17232941.m3u8"
+    },
+    {
+     "channel": "RTVE 70 años (RTVE)",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://rtvelivestream.rtve.es/eventual/gofast/playm28_main_dvr.m3u8"
+    },
+    {
+     "channel": "La 1 Canarias",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://rtvelivestream.rtve.es/rtvesec/can/la1_can_main_dvr.m3u8"
+    }
+   ],
+   "m3u8_option_count": 15
+  },
+  {
+   "provider": "mediaset",
+   "channels_matched": [
+    {
+     "name": "Cuatro",
+     "web": "https://www.mediasetinfinity.es/directo/cuatro/",
+     "epg_id": "Cuatro.TV",
+     "option_types": []
+    },
+    {
+     "name": "Telecinco",
+     "web": "https://www.mediasetinfinity.es/directo/telecinco/",
+     "epg_id": "Telecinco.TV",
+     "option_types": []
+    },
+    {
+     "name": "Energy",
+     "web": "https://www.mitele.es/directo/energy",
+     "epg_id": "Energy.TV",
+     "option_types": []
+    },
+    {
+     "name": "Divinity",
+     "web": "https://www.mitele.es/directo/divinity",
+     "epg_id": "Divinity.TV",
+     "option_types": []
+    },
+    {
+     "name": "Boing",
+     "web": "https://www.mitele.es/directo/boing",
+     "epg_id": "Boing.TV",
+     "option_types": []
+    },
+    {
+     "name": "Factoría de Carnaval",
+     "web": "https://multicarnaval.com",
+     "epg_id": null,
+     "option_types": [
+      "m3u8"
+     ]
+    }
+   ],
+   "m3u8_options": [
+    {
+     "channel": "Factoría de Carnaval",
+     "format": "m3u8",
+     "official_hint": false,
+     "url": "https://eu1.servers10.com:8081/8116/index.m3u8"
+    }
+   ],
+   "m3u8_option_count": 1
+  },
+  {
+   "provider": "atresmedia",
+   "channels_matched": [
+    {
+     "name": "Meganoticias Chile",
+     "web": "https://www.meganoticias.cl/senal-en-vivo/",
+     "epg_id": null,
+     "option_types": [
+      "youtube"
+     ]
+    },
+    {
+     "name": "La Mega Mundial USA",
+     "web": "https://www.lamegamundial.com",
+     "epg_id": null,
+     "option_types": [
+      "m3u8"
+     ]
+    }
+   ],
+   "m3u8_options": [
+    {
+     "channel": "La Mega Mundial USA",
+     "format": "m3u8",
+     "official_hint": false,
+     "url": "https://server80.servistreaming.com:3477/stream/play.m3u8"
+    }
+   ],
+   "m3u8_option_count": 1
+  },
+  {
+   "provider": "ccma_3cat",
+   "channels_matched": [
+    {
+     "name": "Esport3",
+     "web": "https://www.3cat.cat/3cat/directes/esport3/",
+     "epg_id": "E3.TV",
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "SX3",
+     "web": "https://www.3cat.cat/3cat/directes/sx3/",
+     "epg_id": "SX3.TV",
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "TV3",
+     "web": "https://www.3cat.cat/3cat/directes/tv3/",
+     "epg_id": "TV3.TV",
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "33",
+     "web": "https://www.3cat.cat/3cat/directes/33/",
+     "epg_id": "C33.TV",
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "Canal 33 Madrid",
+     "web": "https://www.canal33.info",
+     "epg_id": "C33M.TV",
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "TV3 CAT",
+     "web": "https://www.3cat.cat/3cat/directes/tv3/",
+     "epg_id": "TVC.TV",
+     "option_types": [
+      "m3u8"
+     ]
+    }
+   ],
+   "m3u8_options": [
+    {
+     "channel": "Esport3",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://directes-tv-cat.3catdirectes.cat/live-origin/esport3-hls/master.m3u8"
+    },
+    {
+     "channel": "Esport3",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://directes-tv-es.3catdirectes.cat/live-origin/esport3-hls/master.m3u8"
+    },
+    {
+     "channel": "SX3",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://directes-tv-cat.3catdirectes.cat/live-content/super3-hls/master.m3u8"
+    },
+    {
+     "channel": "SX3",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://directes-tv-cat.3catdirectes.cat/live-origin/super3-hls/master.m3u8"
+    },
+    {
+     "channel": "SX3",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://directes-tv-es.3catdirectes.cat/live-content/super3-hls/master.m3u8"
+    },
+    {
+     "channel": "SX3",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://directes-tv-es.3catdirectes.cat/live-origin/super3-hls/master.m3u8"
+    },
+    {
+     "channel": "TV3",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://directes3-tv-cat.3catdirectes.cat/live-content/tv3-hls/master.m3u8"
+    },
+    {
+     "channel": "TV3",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://directes-tv-int-dev.3catdirectes.cat/live-content/tv3-uhd-cmaf/master.m3u8"
+    },
+    {
+     "channel": "33",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://directes-tv-cat.3catdirectes.cat/live-content/c33-super3-hls/master.m3u8"
+    },
+    {
+     "channel": "33",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://directes-tv-cat.3catdirectes.cat/live-origin/c33-super3-hls/master.m3u8"
+    },
+    {
+     "channel": "33",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://directes-tv-es.3catdirectes.cat/live-content/c33-super3-hls/master.m3u8"
+    },
+    {
+     "channel": "33",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://directes-tv-es.3catdirectes.cat/live-origin/c33-super3-hls/master.m3u8"
+    }
+   ],
+   "m3u8_option_count": 16
+  },
+  {
+   "provider": "canalsur",
+   "channels_matched": [
+    {
+     "name": "Canal Sur Andalucía",
+     "web": "https://www.canalsurmas.es/videos/131772-canal-sur-andalucia",
+     "epg_id": "CanalSurA.TV",
+     "option_types": [
+      "m3u8",
+      "youtube"
+     ]
+    },
+    {
+     "name": "Canal Sur 2 Accesible",
+     "web": "https://www.canalsurmas.es/videos/77595-canal-sur-2-accesible",
+     "epg_id": "CanalSurA.TV",
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "Canal Sur Más Noticias",
+     "web": "https://www.canalsurmas.es/videos/131524-canal-sur-mas-live-14",
+     "epg_id": null,
+     "option_types": [
+      "m3u8"
+     ]
+    }
+   ],
+   "m3u8_options": [
+    {
+     "channel": "Canal Sur Andalucía",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://live-24-canalsur.interactvty.pro/9bb0f4edcb8946e79f5017ddca6c02b0/74cdbd1b401a7598ab8f3e9b5652c9909daa60dd4f6f96f28396a3f1cfd926f2.m3u8"
+    },
+    {
+     "channel": "Canal Sur Andalucía",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://dfk2a268yviz9.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-ddiii1m6jt6of/CanalSurAndaluciaES.m3u8"
+    },
+    {
+     "channel": "Canal Sur 2 Accesible",
+     "format": "m3u8",
+     "official_hint": false,
+     "url": "https://rtva-channel22.flumotion.cloud/playlist.m3u8"
+    },
+    {
+     "channel": "Canal Sur Más Noticias",
+     "format": "m3u8",
+     "official_hint": false,
+     "url": "https://rtva-channel42.flumotion.cloud/playlist.m3u8"
+    }
+   ],
+   "m3u8_option_count": 4
+  },
+  {
+   "provider": "eitb",
+   "channels_matched": [
+    {
+     "name": "ETB Deportes (Kirolak 360)",
+     "web": "https://kirolakeitb.eus/es/kirolak-360/en-directo/",
+     "epg_id": "ETBD.TV",
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "ETB 1",
+     "web": "https://etbon.eus/ch/etb-1",
+     "epg_id": "ETB1.TV",
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "ETB 2",
+     "web": "https://etbon.eus/ch/etb-2",
+     "epg_id": "ETB2.TV",
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "ETB 1 On",
+     "web": "https://etbon.eus/ch/etb-1on",
+     "epg_id": "ETB1ON.TV",
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "ETB 2 On",
+     "web": "https://etbon.eus/ch/etb-2on",
+     "epg_id": "ETB2ON.TV",
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "ETB Eventos 1",
+     "web": "https://etbon.eus/ch/oca-1",
+     "epg_id": "ETBON_Oca1.TV",
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "ETB Eventos 2",
+     "web": "https://etbon.eus/ch/oca-2",
+     "epg_id": "ETBON_Oca2.TV",
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "El Conquistador (ETB On)",
+     "web": "https://www.etbon.eus/ch/el-conquistador",
+     "epg_id": "ETBON_Conquistador.TV",
+     "option_types": []
+    },
+    {
+     "name": "Herri Txiki (ETB On)",
+     "web": "https://www.etbon.eus/ch/herri-txiki",
+     "epg_id": "ETBON_Herritxiki.TV",
+     "option_types": []
+    },
+    {
+     "name": "Vaya Semanita (ETB On)",
+     "web": "https://www.etbon.eus/ch/vaya-semanita",
+     "epg_id": "ETBON_VayaSemanita.TV",
+     "option_types": []
+    },
+    {
+     "name": "Euskal Herriko Bertsolari Txapelketa (ETB On)",
+     "web": "https://etbon.eus/ch/finalak",
+     "epg_id": "ETBON_Vascos_mundo.TV",
+     "option_types": []
+    },
+    {
+     "name": "Euskadi Meteo (ETB On)",
+     "web": "https://www.etbon.eus/ch/euskadi-meteo",
+     "epg_id": null,
+     "option_types": [
+      "m3u8"
+     ]
+    }
+   ],
+   "m3u8_options": [
+    {
+     "channel": "ETB Deportes (Kirolak 360)",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://multimedia.eitb.eus/live-content/oka1hd-hls/master.m3u8"
+    },
+    {
+     "channel": "ETB Deportes (Kirolak 360)",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://multimedia.eitb.eus/live-content/oka2hd-hls/master.m3u8"
+    },
+    {
+     "channel": "ETB Deportes (Kirolak 360)",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://multimedia.eitb.eus/live-content/oka3hd-hls/master.m3u8"
+    },
+    {
+     "channel": "ETB 1",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://cdn1.etbon.eus/etb1/index.m3u8"
+    },
+    {
+     "channel": "ETB 2",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://cdn1.etbon.eus/etb2/index.m3u8"
+    },
+    {
+     "channel": "ETB 1 On",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://cdn1.etbon.eus/etb1on/index.m3u8"
+    },
+    {
+     "channel": "ETB 2 On",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://cdn1.etbon.eus/etb2on/index.m3u8"
+    },
+    {
+     "channel": "ETB Eventos 1",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://cdn1.etbon.eus/oc1/index.m3u8"
+    },
+    {
+     "channel": "ETB Eventos 2",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://cdn1.etbon.eus/oc2/index.m3u8"
+    },
+    {
+     "channel": "Euskadi Meteo (ETB On)",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://cdn1.etbon.eus/meteo/index.m3u8"
+    }
+   ],
+   "m3u8_option_count": 10
+  },
+  {
+   "provider": "crtvg",
+   "channels_matched": [
+    {
+     "name": "TVG",
+     "web": "https://www.agalega.gal/videos/76475-tvg",
+     "epg_id": "TVGAL.TV",
+     "option_types": [
+      "m3u8",
+      "youtube"
+     ]
+    },
+    {
+     "name": "TVG 2",
+     "web": "https://www.agalega.gal/videos/77550-tv-g2",
+     "epg_id": "TVG2.TV",
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "TVG Xabarin",
+     "web": "https://www.agalega.gal/videos/76534-xabarin-tv",
+     "epg_id": null,
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "TVG Pequerrech@s",
+     "web": "https://www.agalega.gal/videos/76535-xabarin-r1",
+     "epg_id": null,
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "TVG Cativ@s",
+     "web": "https://www.agalega.gal/videos/76536-xabarin-tv2",
+     "epg_id": null,
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "TVG Mociñ@s",
+     "web": "https://www.agalega.gal/videos/76537-xabarin-tv3",
+     "epg_id": null,
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "TVG Eventos",
+     "web": "https://www.agalega.gal/videos/category/11998-directos",
+     "epg_id": null,
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "TVG Mira Radio Galega",
+     "web": "https://www.agalega.gal/videos/76478-mira-rg",
+     "epg_id": null,
+     "option_types": [
+      "m3u8",
+      "youtube"
+     ]
+    },
+    {
+     "name": "TVG Universo Castelao",
+     "web": "https://www.agalega.gal/videos/315378-universo-castelao",
+     "epg_id": null,
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "Parlamento de Galicia",
+     "web": "https://www.es.parlamentodegalicia.es/EmisionDirecto/",
+     "epg_id": null,
+     "option_types": [
+      "m3u8"
+     ]
+    },
+    {
+     "name": "Xunta de Galicia",
+     "web": "https://www.xunta.gal/video-en-directo",
+     "epg_id": null,
+     "option_types": [
+      "m3u8"
+     ]
+    }
+   ],
+   "m3u8_options": [
+    {
+     "channel": "TVG",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://crtvg-europa.flumotion.cloud/playlist_dvr.m3u8"
+    },
+    {
+     "channel": "TVG 2",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://crtvg-tvg2.flumotion.cloud/playlist_dvr.m3u8"
+    },
+    {
+     "channel": "TVG Xabarin",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://crtvg-infantil-schlive.flumotion.cloud/crtvglive/smil:channel5PRG.smil/playlist.m3u8"
+    },
+    {
+     "channel": "TVG Pequerrech@s",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://crtvg-xabarinr1-schlive.flumotion.cloud/crtvglive/smil:channel6PRG.smil/playlist.m3u8"
+    },
+    {
+     "channel": "TVG Cativ@s",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://crtvg-xabarinr2-schlive.flumotion.cloud/crtvglive/smil:channel7PRG.smil/playlist.m3u8"
+    },
+    {
+     "channel": "TVG Mociñ@s",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://crtvg-xabarinr3-schlive.flumotion.cloud/crtvglive/smil:channel8PRG.smil/playlist.m3u8"
+    },
+    {
+     "channel": "TVG Eventos",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://crtvg-events1.flumotion.cloud/playlist.m3u8"
+    },
+    {
+     "channel": "TVG Eventos",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://crtvg-events2.flumotion.cloud/playlist.m3u8"
+    },
+    {
+     "channel": "TVG Eventos",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://crtvg-events3.flumotion.cloud/playlist.m3u8"
+    },
+    {
+     "channel": "TVG Eventos",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://crtvg-events4.flumotion.cloud/playlist.m3u8"
+    },
+    {
+     "channel": "TVG Mira Radio Galega",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://crtvg-mirarg-schlive.flumotion.cloud/crtvglive/smil:channel1PRG.smil/playlist.m3u8"
+    },
+    {
+     "channel": "TVG Universo Castelao",
+     "format": "m3u8",
+     "official_hint": true,
+     "url": "https://crtvg-universo-castelao-schlive.flumotion.cloud/playlist.m3u8"
+    }
+   ],
+   "m3u8_option_count": 14
+  },
+  {
+   "provider": "apunt",
+   "channels_matched": [
+    {
+     "name": "À Punt",
+     "web": "https://www.apuntmedia.es/directe/directe-tv_136_1392524.html",
+     "epg_id": "APUNT.TV",
+     "option_types": [
+      "m3u8"
+     ]
+    }
+   ],
+   "m3u8_options": [
+    {
+     "channel": "À Punt",
+     "format": "m3u8",
+     "official_hint": false,
+     "url": "https://fastly.live.brightcove.com/1846756479408303045/eu-central-1/6057955885001/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJob3N0IjoiZWFxNWh4LmVncmVzcy53YzQ3bTEiLCJhY2NvdW50X2lkIjoiNjA1Nzk1NTg4NTAwMSIsImVobiI6ImZhc3RseS5saXZlLmJyaWdodGNvdmUuY29tIiwiaXNzIjoiYmxpdmUtcGxheWJhY2stc291cmNlLWFwaSIsInN1YiI6InBhdGhtYXB0b2tlbiIsImF1ZCI6WyI2MDU3OTU1ODg1MDAxIl0sImp0aSI6IjE4NDY3NTY0Nzk0MDgzMDMwNDUifQ.o6wb_VA-TVxl3ERgr7FKLlaTjY7smErmsf73QAydySE/playlist-hls-dvr.m3u8"
+    }
+   ],
+   "m3u8_option_count": 1
+  }
+ ]
+}

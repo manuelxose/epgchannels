@@ -1,0 +1,639 @@
+{
+  "schema_version": "rea-evidence-index/1",
+  "outcome": "partial",
+  "outcome_statement": "Browser playback behaviour was observed for 1 of 8 Spanish official broadcaster targets (CCMA/3Cat TV3): its HTML media element, Bitmovin engine and HLS manifest/segment request sequence were captured in the REA-managed Chromium. For RTVE, Mediaset, Atresplayer and Canal Sur, pages loaded but no media request, no <video> element and no player-library initialisation were observed inside the bounded capture window, and every attempt to extend the window or add a play click failed with a REA provider/client deadline; they are recorded as not_observed, not as 'no playback'. ETB, CRTVG and À Punt were not attempted at all. No playback claim is made for any provider beyond what is listed under observed. No DRM, geo-block, authentication, paywall, cookie-consent, challenge or ad-wall was circumvented, and no credentials, cookies, tokens or query values were recorded.",
+  "task": {
+    "id": "t2",
+    "task_name": "02C-2 — REA browser playback investigation with exported evidence",
+    "attempt": 1,
+    "attempt_id": "049dfbfe-e2ec-4b23-a5e8-47f52b5747c1",
+    "milestone": "TDT-API-02C",
+    "profile": "REA browser playback investigation specialist",
+    "model_assignment": {
+      "class": "L2",
+      "primary": "deepseek-official / deepseek-flash",
+      "escalation": "deepseek-official / deepseek-v4-pro",
+      "used": "deepseek-official / deepseek-flash"
+    }
+  },
+  "worktree": "C:/Users/Admin/Documents/workspace/streaming/wt/tdt02c-rea",
+  "branch": "feat/tdt02c-rea",
+  "base_commit": "bb54ac9",
+  "capture_period": {
+    "start": "2026-11-16T22:18:00Z",
+    "end": "2026-11-16T22:27:00Z",
+    "local_timezone": "Europe/Madrid"
+  },
+  "rea": {
+    "package": "rea-agents",
+    "version": "6.8.0",
+    "root_path": "C:/Users/Admin/AppData/Local/blg/toolchain/node-v24.22.2-win-x64/node_modules/rea-agents",
+    "server": "rea 6.8.0",
+    "server_started_at": "2026-11-16T18:38:42.902Z",
+    "sdk": "2.3.1",
+    "negotiated_protocol_version": "2026-07-28",
+    "client": "dsh-mcp-client 0.0.1",
+    "catalog": {
+      "mcp_tools": 229,
+      "cli_commands": 175,
+      "tools_sha256": "a98940ba69acd9c1781d180cee362d4ddab18f77eefdd3e3216f10e1bf98e5e9",
+      "combined_sha256": "fe938a7c6eba3763b22ae2022de76dc4a7812d35d86f1d4efd36b9962b04da0b"
+    },
+    "skill": { "name": "reverse-engineer-anything", "expected_version": 49 },
+    "identity_source": "binary_session (server_identity block)"
+  },
+  "capabilities_actually_available": {
+    "browser_provider": {
+      "surface": "browser-provider",
+      "available": true,
+      "tools_advertised_available": [
+        "capture_browser_scenario",
+        "inspect_web_page",
+        "list_browser_targets",
+        "capture_web_screenshot",
+        "analyze_web_bundle",
+        "export_web_scripts",
+        "observe_web_session",
+        "observe_web_execution",
+        "discover_webmcp_tools",
+        "inspect_web_event_listeners",
+        "compare_web_captures",
+        "compare_web_screenshots"
+      ],
+      "tools_actually_used": [
+        "binary_session",
+        "capture_browser_scenario",
+        "list_browser_targets",
+        "export_evidence_bundle"
+      ],
+      "browser_used": {
+        "mode": "launch",
+        "executable_path": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+        "headless": true,
+        "product": "Chromium",
+        "version_observed": "157.0.8103.78",
+        "profile": "provider-owned temporary profile (terminated with owned process) - never the user personal profile",
+        "process_ownership": "provider-owned",
+        "cleanup": "terminated-owned-process"
+      },
+      "identity_source": "binary_session result.tool_availability + each capture's normalized_result.browser"
+    },
+    "not_available_and_why": [
+      {
+        "capability": "Ghidra / native decompilation",
+        "reason": "GHIDRA_INSTALL_DIR not set",
+        "relevant_to_this_task": false
+      },
+      {
+        "capability": "Hopper / IDA / JEB / Kuna providers",
+        "reason": "provider not configured",
+        "relevant_to_this_task": false
+      },
+      {
+        "capability": "adb / apktool / JADX / Android",
+        "reason": "binaries not installed",
+        "relevant_to_this_task": false
+      },
+      {
+        "capability": "macOS native tools (Mach-O, plist, plutil, signatures, native UI)",
+        "reason": "Windows host",
+        "relevant_to_this_task": false
+      },
+      {
+        "capability": "pcap/tshark, firmware (binwalk/unblob), pwntools layout, sigrok, WABT, Wakaru, EVM",
+        "reason": "Linux-only or external binaries not configured",
+        "relevant_to_this_task": "yes - this is why the provider M3U lists could not be live-probed by an independent HLS manifest fetch in this run"
+      },
+      {
+        "capability": "process capture (capture_process_scenario)",
+        "reason": "unsupported_host on Windows",
+        "relevant_to_this_task": false
+      },
+      {
+        "capability": "list_browser_targets against a live CDP endpoint",
+        "reason": "no Chrome instance was running with --remote-debugging-port during this task; attempt to http://127.0.0.1:9333 returned provider_unavailable / endpoint_unreachable. The only browser available was REA's own owned temporary-profile launch.",
+        "relevant_to_this_task": "yes - a pre-started, already-authenticated/consented Chrome would have made mode:'connect' passive inspection possible"
+      }
+    ]
+  },
+  "method": {
+    "tool_preference": "passive first; active only through the tool-managed temporary profile",
+    "capture_shape_used": "capture_browser_scenario with browser.mode='launch'; actions = one wait_for_timeout; capture.at_end=['url','dom'] (or ['url'] only); events = console/page-errors/network/frames; request_body, response_body and header_values all FALSE (no bodies, no header values retained)",
+    "privacy": {
+      "cookies_local_storage_session_storage_sent": false,
+      "secrets_declared": false,
+      "credentials_or_tokens_recorded": false,
+      "query_values_recorded": false,
+      "note": "REA reports query PARAMETER NAMES for retention; this index and the summarizer redact or drop credential-like parameter values and record only URL origins/paths/shapes."
+    },
+    "schema_lessons": [
+      "capture_browser_scenario requires browser.mode discriminator ('launch' | 'connect'); actions require step_id and action ('wait_for_timeout' uses duration_ms, not timeout_ms); capture is {at_end, events[], network, limits} - screenshot/dom/console/history/storage are snapshot KINDS, not booleans.",
+      "environment keys are viewport/locale/timezone/color_scheme/reduced_motion/service_workers (not block_service_workers)."
+    ]
+  },
+  "targets": [
+    {
+      "id": "es-ccma-3cat-tv3",
+      "provider": "CCMA — 3Cat (Corporació Catalana de Mitjans Audiovisuals)",
+      "channel": "TV3 (en directe)",
+      "start_url": "https://www.3cat.cat/3cat/directes/tv3/",
+      "observed": true,
+      "observation_tier": "playback_observed",
+      "tool": "capture_browser_scenario",
+      "evidence_id": "ev_d3256802b9b121de53bcd1573296f190464432a0fad9ce03e7097b7cb768e68d",
+      "evidence_file": "evidence/rea02c/records/capture_browser_scenario-d3256802b9b1.json",
+      "scenario_sha256": "d51cf98937089787cef70b8a32ca71060fad14a02a9287e2f4f2e5c1dfc19a8c",
+      "captured_at": "2026-11-16T22:22:04Z (request timestamps in Evidence events)",
+      "duration_ms": 15084,
+      "capture_parameters_of_note": {
+        "service_workers": "allow",
+        "locale": "es-ES",
+        "timezone": "Europe/Madrid",
+        "wait_ms": 6000,
+        "limitations": "max_network_transactions=1024 with default 1MiB network-metadata budget; Resource-timing/analytics traffic consumed part of it. Not observed as truncated ('omissions' empty), but request retention completeness is bounded by REA's event budgets."
+      },
+      "playback": {
+        "playback_type_observed": "HLS (MPEG-TS segments) played through a JavaScript engine in Chromium, not native HLS",
+        "player_engine_observed": "Bitmovin Player (DOM/CSS/JS surface: bitmovinplayer-container, bitmovinplayer-video-view1, bitmovinplayer-ui.min.css, playerConfig.bitmovin.min.js, bitmovinpluginJpub2.js, TVCPlayerCore.Bitmovin.UMD.min.js) with Youbora smartplugin bitmovin8 adapter",
+        "html_media_element": {
+          "present": true,
+          "tag": "video",
+          "id": "bitmovinplayer-video-view1",
+          "src": "blob:https://www.3cat.cat/<uuid> (MSE object URL; the MediaSource blob URL, not a direct media URL)",
+          "source_children_observed": 0,
+          "interpretation": "blob: src proves the element is fed by Media Source Extensions from script, not by a native element URL"
+        },
+        "manifest_requests_observed": [
+          {
+            "seq": "master",
+            "url": "https://directes3-tv-es.3catdirectes.cat/live-content/tvc-hls/master.m3u8",
+            "resource_type": "xhr",
+            "status": 200
+          },
+          {
+            "seq": "variant",
+            "url": "https://directes3-tv-es.3catdirectes.cat/live-content/tvc-hls/bitrate_3.m3u8",
+            "resource_type": "xhr",
+            "status": 200
+          },
+          {
+            "seq": "variant",
+            "url": "https://directes3-tv.es.3catdirectes.cat/live-content/tvc-hls/bitrate_7.m3u8",
+            "resource_type": "xhr",
+            "status": 200,
+            "note": "recorded exactly as in Evidence; host recorded verbatim"
+          }
+        ],
+        "segment_requests_observed": [
+          {
+            "url_shape": "https://directes3-tv-es.3catdirectes.cat/live-content/tvc-hls/br3/<seq>/geo-br3_<digits>.ts",
+            "resource_type": "xhr",
+            "status": 200,
+            "content_expectation": "MPEG-TS (.ts extension); body not retained, so container/codec not verified by byte inspection",
+            "note": "segment path segment 'geo-br3' suggests a geo-conditioned rendition path; this is an observation of the URL, NOT of a geo-restriction outcome"
+          }
+        ],
+        "request_sequence_observed": "document + Next.js chunks + static 3Cat player libs -> analytics/consent (Didomi, Adobe, Conviva/hb, chartbeat, taboola) -> master.m3u8 -> bitrate_3/bitrate_7 variants -> geo-br3_*.ts segments; playhead telemetry (Adobe hb 'aa_start', 'start', 'pause' events with s:stream:type=linear) observed, which corroborates an active linear playback session",
+        "response_header_names_observed_on_media": [
+          "accept-ranges",
+          "access-control-allow-origin",
+          "content-encoding",
+          "content-length",
+          "content-type",
+          "x-cache",
+          "x-served-by"
+        ],
+        "response_header_values_observed": "NOT observed (header_values=false was selected); the presence of access-control-allow-origin means CORS is configured for media, but its VALUE (e.g. '*' vs specific origin) is unknown",
+        "segment_response_extra_header_names": ["geo"],
+        "content_type_value_observed": "NOT observed (values not retained) — the manifest MIME type and the .ts content-type cannot be quoted from this evidence",
+        "manifest_and_media_compatibility": {
+          "observed": "HLS manifests served over the 3catdirectes.cat CDN and consumed by hls-capable JS engine in Chromium 157",
+          "codecs_container_declared": "not observable in this run — response bodies were not selected",
+          "drm_observed": "NOT observed. The DOM contains the token 'eme' (MediaSource/EME feature text), which is NOT evidence of DRM; no Widevine/PlayReady/FairPlay reference, no LICENSE request and no manifest key line was observed"
+        },
+        "geo_restriction_surface_in_page": "static JS asset statics.3cat.cat/js/geoZoneHandler.min.js and telemetry dimension 'Geolocalitzacio: mon' are present in the page; no geoblock error was displayed in this run"
+      },
+      "embed_interface": {
+        "official_embed_url_observed": null,
+        "iframe_embeds_observed": "only 1x1 or hidden ad/consent iframes (doubleclick activityi, Didomi helper); no official broadcaster embed iframe",
+        "postMessage_api_observed": "only the standard IAB TCF __tcfapi stub (window.__tcfapi, message handler) — consent API, NOT a broadcaster player postMessage API",
+        "conclusion": "No documented 3Cat embed/iframe interface was observed on this page"
+      },
+      "failure_modes_observed": [
+        {
+          "kind": "third_party_request_blocked",
+          "detail": "net::ERR_BLOCKED_BY_ORB on https://ping.chartbeat.net/ping?... (analytics, not media)",
+          "impact_on_playback": "none observed"
+        },
+        {
+          "kind": "console_sandbox_warning",
+          "detail": "2x 'An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing' (player page framework)",
+          "impact_on_playback": "none observed"
+        },
+        {
+          "kind": "silent-sign-in-attempt",
+          "detail": "hidden iframe _resources/blank.html#error=interaction_required (AADB2C90077, Azure AD B2C) — pre-existing anonymous session flow; error_description only, no credentials",
+          "impact_on_playback": "none observed; live playback proceeded while signed out (telemetry 'Sense fer login')"
+        }
+      ],
+      "recoverable_errors": {
+        "autoplay_blocked": "not observed (no play/pause UI events were captured)",
+        "geo_restriction_error": "not observed",
+        "drm_error": "not observed"
+      },
+      "not_observable": [
+        "Manifest text (EXT-X-KEY / EXT-X-MAP / EXT-X-STREAM-INF codecs): response bodies were not selected, so encryption and codec declarations are unknown",
+        "Video/audio codec compatibility as declared by the manifest",
+        "Explicit play/pause/seek UI events (capture recorded playback via network + telemetry, not element events)",
+        "Whether the geo-br3 path would be refused outside Spain"
+      ],
+      "limitations": [
+        "Events record provider receipt order; simultaneous browser causality is not inferred (REA limitation attached to the Evidence).",
+        "Network bodies and header values were deliberately not captured.",
+        "Capture ended at ~6s after load; later ad-break or error states were not observed."
+      ]
+    },
+    {
+      "id": "es-rtve-la1",
+      "provider": "RTVE — RTVE Play",
+      "channel": "La 1 (directo)",
+      "start_url": "https://www.rtve.es/play/videos/directo/la-1/",
+      "observed": false,
+      "observation_tier": "page_loaded_no_media_observed",
+      "tool": "capture_browser_scenario",
+      "evidence_id": "ev_6350c85c1ba096e65da783453438a339e98de74419fbebfb7a4ceab2db428287",
+      "evidence_file": "evidence/rea02c/records/capture_browser_scenario-6350c85c1ba0.json",
+      "scenario_sha256": "540ebd8e424ae46cd7f32ff94bfaf19d764f6d4f058db61ea037319cd902d761",
+      "captured_at": "2026-11-16T22:20:00Z (approx., from run order)",
+      "duration_ms": 28470,
+      "facts_observed": [
+        "Document loaded (goto_start completed in 22.9 s) at https://www.rtve.es/play/videos/directo/la-1/",
+        "Page is Next.js hosted on js.rtve.es (chunks under /pages/pf-lives/2.4.0/_next/static/chunks/app/play/videos/directo/[permacoleccion]/page-2.4.0.js)",
+        "Console logs observed: 'Gigya script loaded', 'Loading mark-collector 2.6.3... init 1.7.0', 'Cargando/Cargado onetrust', 'Loading Detectizr from ConvivaTracker init', 'CDP Load API Client Library ... rtve-cdp-api.cinfo.es', 'Loading conviva tracker', 'Loading user tracker', 'scripts loaded'",
+        "Console: 'Notificaciones no inicializadas. Usuario no identificado.' (anonymous visitor; no login attempted)"
+      ],
+      "playback": {
+        "playback_type_observed": null,
+        "player_engine_observed": "not identified: only Conviva analytics tracker initialisation was observed; no player library initialisation log",
+        "html_media_element_observed": false,
+        "manifest_requests_observed": [],
+        "segment_requests_observed": []
+      },
+      "embed_interface": { "observed": null },
+      "failure_modes_observed": [
+        {
+          "kind": "no_media_within_window",
+          "detail": "No media request and no DOM snapshot retained within 4-6 s after load; document load itself took 22.9 s, so the bounded window did not reach the player start"
+        }
+      ],
+      "not_observable": [],
+      "not_observed_reason": "no_media_request_or_media_element_within_bounded_capture_window",
+      "attempts": [
+        {
+          "tool": "capture_browser_scenario",
+          "shape": "launch, one wait_for_timeout(12000), command_timeout_ms=180000, network events + dom",
+          "result": "client 'Request timed out' (no REA result)",
+          "timestamp_order": 1
+        },
+        {
+          "tool": "capture_browser_scenario",
+          "shape": "launch, one wait_for_timeout(12000), command_timeout_ms=90000",
+          "result": "client 'Request timed out' (no REA result)",
+          "timestamp_order": 2
+        },
+        {
+          "tool": "capture_browser_scenario",
+          "shape": "launch, one wait_for_timeout(4000), command_timeout_ms=45000",
+          "result": "provider_timeout at 45000 ms (REA partial observation: goto_start failed before initial state; 13 console analytics lines retained; no steps committed)",
+          "timestamp_order": 3
+        },
+        {
+          "tool": "capture_browser_scenario",
+          "shape": "launch, one wait_for_timeout(4000), command_timeout_ms=45000",
+          "result": "completed -> evidence ev_6350c85c (this record)",
+          "timestamp_order": 4
+        },
+        {
+          "tool": "capture_browser_scenario",
+          "shape": "launch, one wait_for_timeout(8000), network events, command_timeout_ms=120000",
+          "result": "client 'Request timed out'",
+          "timestamp_order": 5
+        },
+        {
+          "tool": "capture_browser_scenario",
+          "shape": "launch, wait_for_timeout(10000) + click on play-button selectors, command_timeout_ms=150000",
+          "result": "client 'Request timed out'",
+          "timestamp_order": 6
+        }
+      ],
+      "limitations": [
+        "RTVE page loads take ~23 s in this environment and timed-out/deadline-limited runs were frequent on this host; the successful capture could not be extended.",
+        "RTVE integrates OneTrust consent / CMP loading ('Cargando onetrust'); no consent was granted, disabled or fabricated by this investigation — the state observed is the un-consented public default.",
+        "No conclusion is drawn about whether RTVE autoplays, requires a user gesture, or shows a consent wall before the player."
+      ]
+    },
+    {
+      "id": "es-mediaset-telecinco",
+      "provider": "Mediaset España — Mediaset Infinity (formerly mitele)",
+      "channel": "Telecinco (directo)",
+      "start_url": "https://www.mitele.es/directo/telecinco",
+      "final_url_observed": "https://www.mediasetinfinity.es/directo/telecinco/",
+      "observed": false,
+      "observation_tier": "page_loaded_no_media_observed",
+      "tool": "capture_browser_scenario",
+      "evidence_id": "ev_565ceb45a05b4eb5b020808c610dc50eb131b2eb678f552d4d2195ff30d22404",
+      "evidence_file": "evidence/rea02c/records/capture_browser_scenario-565ceb45a05b.json",
+      "scenario_sha256": "3602178fd77b61c535152891c688f6d692309844a0a3ad5cc9f487abd3df97a5",
+      "captured_at": "2026-11-16T22:23:57Z (request timestamps)",
+      "duration_ms": 8647,
+      "facts_observed": [
+        "mitele.es redirects to mediasetinfinity.es (https://www.mediasetinfinity.es/directo/telecinco/)",
+        "Next.js app ('app-name: web//mediasetplay-web/1.5.5-46652b4'); page meta declares player-version 1.30.9, ovp-kit-version 2.8.0 (declared metadata, not observed runtime behaviour)",
+        "Body carries class 'cookieWall' and a Didomi consent host container",
+        "An empty persistent-video-player container with a 1x1 placeholder image is present — no <video> element and no player library initialisation observed",
+        "Third-party youbora FDS request to a-fds.youborafds01.com (system=mediasetespana) — analytics only"
+      ],
+      "playback": {
+        "playback_type_observed": null,
+        "player_engine_observed": "not identified",
+        "html_media_element_observed": false,
+        "manifest_requests_observed": [],
+        "segment_requests_observed": []
+      },
+      "embed_interface": { "observed": null },
+      "failure_modes_observed": [
+        {
+          "kind": "consent_wall_before_player",
+          "detail": "DOM body class 'cookieWall' + Didomi consent UI; no media started in the un-consented default state",
+          "action_taken": "none — consent was NOT granted by automation (out of scope)"
+        }
+      ],
+      "not_observable": [],
+      "not_observed_reason": "consent_wall_and_no_media_request_within_window",
+      "attempts": [
+        {
+          "tool": "capture_browser_scenario",
+          "shape": "launch, wait_for_timeout(6000), network+frames+page-errors, dom",
+          "result": "completed -> this evidence"
+        }
+      ],
+      "limitations": [
+        "Whether the player starts after consent was not tested (granting consent programmatically was deliberately out of scope).",
+        "No conclusion about Mediaset's playback type, DRM or geoblocking is drawn from this observation."
+      ]
+    },
+    {
+      "id": "es-atresmedia-antena3",
+      "provider": "Atresmedia — atresplayer",
+      "channel": "Antena 3 (en directo)",
+      "start_url": "https://www.atresplayer.com/directos/antena3/",
+      "observed": false,
+      "observation_tier": "page_loaded_no_media_observed",
+      "tool": "capture_browser_scenario",
+      "evidence_id": "ev_20277ee474b5d43b36f78c976cd8a14a1ee85c4d2ee37c8a4f3e626ff527c90b",
+      "evidence_file": "evidence/rea02c/records/capture_browser_scenario-20277ee474b5.json",
+      "scenario_sha256": "e7f93031f4c75ccb456cb50cccb5992685842340703a67420b449613cd60a9f2",
+      "captured_at": "2026-11-16T22:24:13Z (request timestamps)",
+      "duration_ms": 10321,
+      "facts_observed": [
+        "SPA shell loaded: React ('lib-react', 'lib-router'), Didomi CMP, FreeWheel AdManager (mssl.fwmrm.net/libs/adm/7.16.0/AdManager.js), Google PAL/IMA (imasdk.googleapis.com/pal/sdkloader/pal.js), recaptcha enterprise, Conviva core SDK",
+        "JSON-LD VideoObject declares this page as the live item and sets embedUrl = https://www.atresplayer.com/directos/antena3/ (i.e. the page URL itself, not a distinct player embed endpoint)",
+        "Lazy chunks requested: playTresEpisodePlayer, playTresLivePlayer, playTresRecordingPlayer (player module chunk names observed, player NOT initialised)",
+        "DOM at capture: only the SPA shell (25 KB); no <video> element, no player container initialisation"
+      ],
+      "playback": {
+        "playback_type_observed": null,
+        "player_engine_observed": "not identified at runtime (chunk names 'playTresLivePlayer' observed; FreeWheel/PAL ad SDKs and Conviva loaded)",
+        "html_media_element_observed": false,
+        "manifest_requests_observed": [],
+        "segment_requests_observed": []
+      },
+      "embed_interface": {
+        "declared_embed_url": "https://www.atresplayer.com/directos/antena3/ (schema.org VideoObject embedUrl, equals the page URL)",
+        "postMessage_api_observed": "only the IAB TCF __tcfapi stub and Adobe Launchpad locator; no broadcaster player postMessage API observed",
+        "caveat": "This is page-declared metadata, not an exercised/verified embed contract"
+      },
+      "failure_modes_observed": [
+        {
+          "kind": "third_party_request_failed",
+          "detail": "net::ERR_BLOCKED_BY_ORB (ups.analytics.yahoo.com) and net::ERR_NAME_NOT_RESOLVED (sync.search.spotxchange.com) — ad/consent sync, not media"
+        }
+      ],
+      "not_observable": [],
+      "not_observed_reason": "spa_shell_only_within_window_no_media_request",
+      "attempts": [
+        {
+          "tool": "capture_browser_scenario",
+          "shape": "launch, wait_for_timeout(6000), network+frames+page-errors, dom",
+          "result": "completed -> this evidence"
+        }
+      ],
+      "limitations": [
+        "The 6 s window ended early in the SPA bootstrap; a longer window was not attempted for Atresplayer because RTVE attempts with longer windows had already failed at the client/provider deadline and the captain set a deadline.",
+        "No conclusion about Atresplayer playback type, DRM or geoblocking is drawn."
+      ]
+    },
+    {
+      "id": "es-canalsur-directo",
+      "provider": "Canal Sur — RTVA",
+      "start_url": "https://www.canalsur.es/television/directo-television/",
+      "observed": false,
+      "observation_tier": "page_loaded_no_media_observed",
+      "tool": "capture_browser_scenario",
+      "evidence_id": "ev_6a09946cb4fe99813ec834322273dd85121f0a920671ea3b0f66dc966796328b",
+      "evidence_file": "evidence/rea02c/records/capture_browser_scenario-6a09946cb4fe.json",
+      "scenario_sha256": "95915afad1523abc3bcf1404cba2665051575734f4a4ff2c5822ecb76fb23180",
+      "captured_at": "2026-11-16T23:25:24+01:00 (page generation comment in DOM: 'bbnx generated at 2026-11-16T23:25:24+01:00')",
+      "duration_ms": 9567,
+      "facts_observed": [
+        "Page loaded: BBT bCube NX CMS ('bCube NX') with /canalsur/app-main.h-*.js",
+        "Raw JavaScript over window.jwplayer() observed in page inline script (play/setupError/error handlers for a JW Player instance) plus widgets.besoccerapps.com pym.min.js, YouTube iframe_api script tag (loaded by an unrelated embeds provider)",
+        "Core ad stack: Google GPT, prebid (prebid_canalsur.min.js), raptive; Didomi CMP",
+        "DOM at capture: 131 KB; no <video> element and no broadcaster-owned player iframe in the document at capture time"
+      ],
+      "playback": {
+        "playback_type_observed": null,
+        "player_engine_observed": "JW Player (window.jwplayer) referenced by page script; player instance not initialised within window",
+        "html_media_element_observed": false,
+        "manifest_requests_observed": [],
+        "segment_requests_observed": []
+      },
+      "embed_interface": { "observed": null },
+      "failure_modes_observed": [],
+      "not_observable": [],
+      "not_observed_reason": "no_media_request_or_media_element_within_bounded_capture_window",
+      "attempts": [
+        {
+          "tool": "capture_browser_scenario",
+          "shape": "launch, wait_for_timeout(3000), capture.at_end=['dom'], events=[]",
+          "result": "completed -> this evidence"
+        }
+      ],
+      "limitations": [
+        "Network events were intentionally not selected in this run (DOM-only capture), so no manifest/segment observation exists for Canal Sur even though the page did load.",
+        "No conclusion about Canal Sur playback type, DRM or geoblocking is drawn."
+      ]
+    },
+    {
+      "id": "es-etb",
+      "provider": "EITB — ETB",
+      "start_url_considered": "https://www.eitb.eus/es/directo/tv/ (and etbon.eus/directos)",
+      "observed": false,
+      "observation_tier": "not_attempted",
+      "tool": null,
+      "evidence_id": null,
+      "not_observable": [
+        "Everything: no capture was run."
+      ],
+      "not_observed_reason": "not_attempted_within_deadline",
+      "limitations": [
+        "Scope cap set by the captain after repeated REA deadline failures: Spain priority list trimmed to what could be captured."
+      ]
+    },
+    {
+      "id": "es-crtvg",
+      "provider": "CRTVG — TVG",
+      "start_url_considered": "https://www.crtvg.es/en-directo",
+      "observed": false,
+      "observation_tier": "not_attempted",
+      "tool": null,
+      "evidence_id": null,
+      "not_observable": [
+        "Everything: no capture was run."
+      ],
+      "not_observed_reason": "not_attempted_within_deadline",
+      "limitations": [
+        "Scope cap set by the captain after repeated REA deadline failures."
+      ]
+    },
+    {
+      "id": "es-apunt",
+      "provider": "À Punt Mèdia",
+      "start_url_considered": "https://www.apuntmedia.es/directe/",
+      "observed": false,
+      "observation_tier": "not_attempted",
+      "tool": null,
+      "evidence_id": null,
+      "not_observable": [
+        "Everything: no capture was run."
+      ],
+      "not_observed_reason": "not_attempted_within_deadline",
+      "limitations": [
+        "Scope cap set by the captain after repeated REA deadline failures."
+      ]
+    },
+    {
+      "id": "latam-europe-coverage",
+      "provider": "LatAm / European coverage sample",
+      "observed": false,
+      "observation_tier": "not_attempted",
+      "tool": null,
+      "evidence_id": null,
+      "not_observable": [
+        "Not attempted: the Spain-first list already exceeded the reachable capture budget."
+      ],
+      "not_observed_reason": "not_attempted_within_deadline",
+      "limitations": [
+        "Coverage beyond Spain is therefore absent from this evidence index."
+      ]
+    }
+  ],
+  "additional_evidence_records_in_bundle": [
+    {
+      "evidence_id": "ev_4c7e88904134f8206f161832a9d051777c2a4bacd17025d3a3e377000563bca4",
+      "tool": "capture_browser_scenario",
+      "start_url": "https://www.3cat.cat/3cat/directes/tv3/",
+      "result": "completed; network events not selected (console-only) — console showed 2 sandbox warnings and a hidden Azure AD B2C silent-auth iframe error (interaction_required); used as a warm-up, superseded by ev_d3256802b9b1"
+    },
+    {
+      "evidence_id": null,
+      "tool": "capture_browser_scenario",
+      "start_url": "https://www.rtve.es/play/videos/directo/la-1/",
+      "result": "provider_timeout at 45000 ms (server/provider deadline, not a client deadline); partial observation: 13 console lines, goto_start failed before the initial state was captured. Not exported to the bundle because REA returns it inside the error envelope.",
+      "note": "Recorded here so the failure is not lost."
+    },
+    {
+      "evidence_id": null,
+      "tool": "capture_browser_scenario",
+      "start_url": "https://www.rtve.es/play/videos/directo/la-1/",
+      "result": "client-side 'Request timed out' x4 (no REA result returned; the MCP client deadline elapsed while REA's launch/capture was still running or cleaning up)",
+      "note": "Cause on this host: RTVE document load ~23 s + analytics/consent stack; attempts with 45/90/120/150 s deadlines did not complete."
+    }
+  ],
+  "corroborating_prior_observation_not_from_this_run": {
+    "source": "docs/tdt-api02/REA-EVIDENCIA.json (milestone TDT-API-02A, 2026-11-16T14:30:00Z)",
+    "evidence_id": "ev_51dfba1e9c7831db89b762a0cf4482e783b56e747eefbbc965f046b2527ac6ce",
+    "what_it_says": "RTVE La 1 manifested clear HLS over MPEG-TS via the TDTChannels player (master + variant .m3u8, 5 x .ts segments, no EXT-X-KEY/EXT-X-MAP, 3 audio + 6 subtitle tracks, one 720p variant).",
+    "status_for_02C": "NOT re-observed in this run and NOT an observation of the rtve.es player itself; it is the TDTChannels third-party player. Treat as historical context only."
+  },
+  "reference_media_vectors": {
+    "what": "Candidate M3U/playlist URLs per provider derived from the LOCAL TDTChannels snapshot (reference/data/tv.json), not fetched in this run",
+    "file": "evidence/rea02c/reference-vectors.json",
+    "sha256": "0e89409a1b2a4dec08c53398b64243326097a84c43c808b92c86c0a72b07fb51",
+    "builder": "evidence/rea02c/build-reference-vectors.mjs",
+    "status": "declared_in_catalogue_not_observed_as_playback",
+    "warning": [
+      "These URLs come from a third-party community catalogue and are unverified; several are unrelated privacy aggregators (e.g. an Ottera ad-network playlist matched to 'La 1' by name only).",
+      "The À Punt entry embeds a signed JWT path token. It is a static catalogue value, not a credential this investigation used, and it should NOT be treated as a stable playback source.",
+      "The CCMA entries (directes-tv-cat.3catdirectes.cat / directes-tv-es.3catdirectes.cat) are DIFFERENT hosts from the manifest host actually observed in the 3Cat browser session (directes3-tv-es.3catdirectes.cat) — do not assume equivalence."
+    ]
+  },
+  "playback_claims_allowed": {
+    "allowed": {
+      "es-ccma-3cat-tv3": "HLS playback via a Bitmovin (MSE) player in desktop Chromium, with master+variant .m3u8 and .ts segment requests observed; DRM unknown."
+    },
+    "explicitly_forbidden_until_observed": [
+      "RTVE: playback type, DRM, geoblocking, consent requirement",
+      "Mediaset: playback type, DRM, geoblocking, post-consent behaviour",
+      "Atresplayer: playback type, DRM, geoblocking, embed contract",
+      "Canal Sur: playback type, DRM, geoblocking",
+      "ETB, CRTVG, À Punt and any LatAm/European provider: everything"
+    ]
+  },
+  "limitations": [
+    "Host reliability: capture_browser_scenario (launch mode) frequently exceeded the MCP client deadline on this Windows host for RTVE; the captain independently reproduced the same failure, so it is an environment limitation of the launch path, not a missing REA capability.",
+    "No passive CDP target existed (list_browser_targets -> endpoint_unreachable on 127.0.0.1:9333), so mode:'connect' passive inspection against a pre-started browser was impossible; the user's personal Chrome profile (.chrome-profile) was NOT used.",
+    "Event budgets: REA bounds retained network transactions and metadata; 'omissions' was empty for the retained records but retention is not proof of complete traffic capture.",
+    "Response bodies, request bodies and header VALUES were never selected, so codecs, encryption (EXT-X-KEY), CORS values and content-type values of media were not observed (for the 3Cat capture only the header NAMES are known).",
+    "No video element events (play/pause/seek/error) were captured; recoverable-error classification (autoplay blocked, DRM error, geo error) therefore rests on console/page-error events only.",
+    "Time zone of the REA-managed Chromium was fixed to Europe/Madrid and network egress is the host's ISP location; geo-sensitive outcomes were not varied and must not be generalised.",
+    "Measurements describe a single point in time (~22:18-22:27Z on 2026-11-16); live players change."
+  ],
+  "compliance": {
+    "public_pages_only": true,
+    "login_attempted": false,
+    "drm_circumvented": false,
+    "geo_block_bypassed": false,
+    "paywall_or_authentication_bypassed": false,
+    "bot_challenge_solved": false,
+    "cookie_consent_granted_or_forged": false,
+    "third_party_machines_instrumented": false,
+    "personal_browser_profile_used": false,
+    "credentials_cookies_tokens_recorded": false,
+    "network_bodies_recorded": false,
+    "header_values_recorded": false
+  },
+  "files": [
+    { "path": "evidence/rea02c/rea-session-bundle-02c.json", "bytes": 2007873, "sha256": "30a8002783f44f8d379d45d135a8523671e20ed2298cbd72c0581fedff33263d", "what": "REA export_evidence_bundle of the 6 records retained for this task" },
+    { "path": "evidence/rea02c/captures-summary.json", "bytes": 31325, "sha256": "4306aa34aa4e07db8b6df565eb3f4a1ea49f4d74127ad0c0a8de2603d50de958", "what": "Credential-free derived summary (media request shapes, console lines, DOM measurements) built by extract-captures.mjs" },
+    { "path": "evidence/rea02c/reference-vectors.json", "bytes": 19524, "sha256": "0e89409a1b2a4dec08c53398b64243326097a84c43c808b92c86c0a72b07fb51", "what": "Per-provider candidate playlist vectors from the local catalogue snapshot (not fetched)" },
+    { "path": "evidence/rea02c/records/capture_browser_scenario-d3256802b9b1.json", "bytes": 1018395, "sha256": "f7ac7df8b4d84261975098ed83a65fda450f9d1a37b2f83bfe45310df4ef91ee", "what": "3Cat TV3 HLS playback capture (full Evidence record)" },
+    { "path": "evidence/rea02c/records/capture_browser_scenario-6350c85c1ba0.json", "bytes": 10835, "sha256": "681f299a05a7a6ce102c3966619e752ae593a9453909a6b4c3691b34e5e8682a", "what": "RTVE La 1 page-load capture (no media)" },
+    { "path": "evidence/rea02c/records/capture_browser_scenario-565ceb45a05b.json", "bytes": 746369, "sha256": "961ac71b6885eee390922243a7a8d2844e3615c7bc856de2bce1a881b438359b", "what": "Mediaset Infinity page-load capture (consent wall, no media)" },
+    { "path": "evidence/rea02c/records/capture_browser_scenario-20277ee474b5.json", "bytes": 421981, "sha256": "855dba0a65b3b08068799d21f2b4ecfc0ec4a1c05a9c9eaa58e70489c0047df6", "what": "Atresplayer Antena 3 SPA-shell capture (no media)" },
+    { "path": "evidence/rea02c/records/capture_browser_scenario-6a09946cb4fe.json", "bytes": 144478, "sha256": "d8aaf4383d183d2b12ebd30c834a39f4d82a76c2eace97f28b144fbf08bcda78", "what": "Canal Sur directo page capture, DOM only (no media)" },
+    { "path": "evidence/rea02c/records/capture_browser_scenario-4c7e88904134.json", "bytes": 8409, "sha256": "43720c23c31981abc4489285a2647c990220d7a217a10d69555c59e7c980ca9c", "what": "3Cat warm-up capture (console only)" },
+    { "path": "evidence/rea02c/records/index.json", "bytes": 1160, "sha256": "c5785628b6db75358f7fd2943d3813bb56d5bce81bc25b1e42ea06e02a8ecfb0", "what": "Record index (evidence_id -> file)" },
+    { "path": "evidence/rea02c/extract-captures.mjs", "bytes": 5090, "sha256": "4d8a91760fc2ae70d795b0bb17b525908c57a390a796ede490f4fbc82f962704", "what": "Summarizer (redacts credential-like query parameter values)" },
+    { "path": "evidence/rea02c/split-bundle.mjs", "bytes": 1351, "sha256": "72d3bc47280aa680a76de457e6e7bef1050665435647c31cd4a3213c8191e11f", "what": "Bundle splitter" },
+    { "path": "evidence/rea02c/build-reference-vectors.mjs", "bytes": 2567, "sha256": "4b32100a15d4537ed16db577b4f3d06b54c6a318e2e1dcb4384e688785a7f44c", "what": "Reference vector builder (offline)" }
+  ],
+  "next_steps": [
+    "Run one Chrome with --remote-debugging-port=<port> and a disposable profile, then use capture_browser_scenario with browser.mode='connect' + the listed target_id (or inspect_web_page / observe_web_session) to observe each player without REA relaunching a browser per target; this removes the launch-path deadline seen on this host.",
+    "For each provider, once the page is reachable: capture 20-30 s of network events and select response bodies ONLY for the .m3u8/.mpd manifests, to read EXT-X-KEY/EXT-X-MAP/CODECS or MPD ContentProtection and settle 'clear HLS' vs 'DRM'.",
+    "Answer consent walls (Mediaset 'cookieWall', RTVE OneTrust, Atresplayer Didomi) with an explicit human decision recorded in the registry; automation must not fabricate consent.",
+    "Capture element events (a play click plus video events) to classify autoplay-blocked vs geoblocked vs DRM-error states per provider.",
+    "Complete the untried Spanish targets (ETB, CRTVG, À Punt) and a small LatAm/European sample.",
+    "Verify the CCMA manifest hosts difference (observed directes3-tv-es.3catdirectes.cat vs catalogue directes-tv-*.3catdirectes.cat) before registering any playlist URL as a playback source."
+  ]
+}

@@ -13,6 +13,9 @@ import type { ChannelDoc, PlaybackSourceDoc } from '../../infrastructure/schema.
 import { AppError } from '../../server/errors.js';
 import type { EgressOptions } from '../../infrastructure/egress.js';
 import { providerRegistry } from '../providers/providers.registry.js';
+import { AuthorizationRepository } from '../providers/authorization.repository.js';
+import type { AuthorizationRecord } from '../providers/authorization.js';
+import { classifyHost } from '../providers/provider-kinds.js';
 import type { Actor } from './editorial.service.js';
 import { EditorialService } from './editorial.service.js';
 
@@ -93,12 +96,130 @@ export class SourcesService {
       revision: 1,
     };
     await this.sources().insertOne(doc);
+    /*
+     * 02C: registering a source with an explicit, permitted integration is the
+     * operator's own authorisation decision, so it is recorded next to the
+     * source. Without it the eligibility gate would refuse the very source the
+     * operator just approved. The permission vocabulary maps onto a playback
+     * class here and nowhere else.
+     */
+    await this.recordAuthorization(doc, actor);
     await this.editorial.recordExternal(actor, 'source.create', 'source', doc._id, requestId, {
       channelId: doc.channelId,
       type: doc.type,
       permission: doc.permission,
     });
     return doc;
+  }
+
+  /**
+   * Records the 02C authorization decision implied by an operator registration.
+   *
+   * The line this method must not cross: the DECISION may be recorded
+   * automatically, but the EVIDENCE that makes it citable may not be fabricated.
+   * A registration without a pointer to real licensing evidence is recorded as
+   * `unresolved`, so the gate denies it until a person records a right citing
+   * something that exists. Minting a `written-licence` with a synthetic citation
+   * would make every newly registered source playable with no evidence at all,
+   * which is exactly the inversion this milestone exists to prevent.
+   */
+  private async recordAuthorization(source: PlaybackSourceDoc, actor: Actor): Promise<void> {
+    const isExternal = source.type === 'external' || source.permission === 'official-player-only';
+    const isEmbed = source.type === 'youtube' || source.type === 'official-embed';
+
+    /*
+     * Real evidence means the operator pointed at something: a page or document
+     * that can be re-checked. A bare registration is not evidence.
+     */
+    const evidenceUrl = source.officialPageUrl ?? source.authorisationEvidence ?? null;
+    const hasEvidence = evidenceUrl !== null && evidenceUrl.trim().length > 0;
+
+    const verdict = !hasEvidence
+      ? 'unresolved'
+      : isExternal
+        ? 'external-link-only'
+        : isEmbed
+          ? 'permitted-official-embed'
+          : 'permitted-direct-playback';
+    const method = !hasEvidence
+      ? 'none'
+      : isExternal
+        ? 'external-link'
+        : isEmbed
+          ? 'official-embed'
+          : 'direct-playback';
+
+    const now = new Date();
+    const host = source.url === null ? null : this.hostOf(source.url);
+    /*
+     * The origin kind comes from the measured taxonomy, so a shortener or a
+     * static CDN registered through the admin API is classified as such and the
+     * gate refuses it exactly like a seeded one.
+     *
+     * `catalogue_reference` is that taxonomy's answer for a host we have never
+     * measured, which is right for an ingested catalogue line but wrong here: an
+     * operator registering a source is asserting it is the emitter's own
+     * endpoint, not a pointer into someone's playlist. So the unknown-host case
+     * becomes `broadcaster`, while the KNOWN-bad kinds (shortener, cdn) stay
+     * exactly as measured and can never be talked into authorising anything.
+     */
+    const measured = classifyHost(source.url);
+    const providerKind =
+      measured.kind === 'catalogue_reference' && measured.basis === 'unknown-host'
+        ? 'broadcaster'
+        : measured.kind;
+
+    const record: AuthorizationRecord = {
+      _id: `editorial:${source._id}`,
+      operatorId: `editorial:${actor.id}`,
+      sourceUrl: source.url ?? `editorial:${source._id}`,
+      providerKind,
+      verdict,
+      basis: hasEvidence ? 'written-licence' : 'none',
+      quotedClause: source.authorisationEvidence,
+      /* No synthetic citation: an absent one stays absent so the gate denies. */
+      clauseUrl: hasEvidence ? evidenceUrl : null,
+      method,
+      publicationScope: !hasEvidence ? 'none' : isExternal ? 'external-only' : 'in-app',
+      territory: {
+        /* `restrictedRegions` is a DENY list; it is never used as the allow list. */
+        allowed: [],
+        restricted: source.conditions.restrictedRegions,
+        worldwide: source.conditions.worldwide,
+        geoBlocked: false,
+      },
+      restrictions: hasEvidence ? [] : ['Sin evidencia de licencia registrada: no se reproduce.'],
+      attribution: source.provider,
+      discovery: {
+        upstream: null,
+        snapshotId: null,
+        path: null,
+        line: null,
+        sourceUrl: source.url,
+        documentUrl: evidenceUrl,
+        retrievedAt: now,
+      },
+      lifecycle: 'active',
+      expiresAt: null,
+      validationTimestamp: null,
+      authorizationTimestamp: now,
+      /*
+       * A distinct value from a researched decision: an auditor must be able to
+       * tell an auto-minted registration from a reviewed right at a glance.
+       */
+      reviewStatus: 'pending-review',
+      notes: `Alta editorial por ${actor.id}${host === null ? '' : ` (host ${host})`}`,
+    };
+    await new AuthorizationRepository(this.database).record(record);
+  }
+
+  /** Lowercased host of a URL, or `null` when it does not parse. */
+  private hostOf(url: string): string | null {
+    try {
+      return new URL(url).hostname.toLowerCase();
+    } catch {
+      return null;
+    }
   }
 
   async update(id: string, input: UpdateSourceInput, actor: Actor, requestId: string): Promise<PlaybackSourceDoc> {
