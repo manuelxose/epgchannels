@@ -30,12 +30,15 @@ import { MAX_MANIFEST_PARSE_BYTES, parseManifest, samplePlaylistUris } from './m
 import {
   runValidation,
   statusCategory,
+  transportCategory,
   type BrowserProbeResult,
   type EgressFn,
   type EgressRequest,
   type EgressResponse,
   type ValidationResult,
 } from './validator.js';
+import { EgressFailure, safeFetch } from '../infrastructure/safe-egress.js';
+import { startHttpFixture, type HttpFixture } from './fixtures/http-fixtures.js';
 import { BACKOFF_MAX_MS, computeBackoff, deterministicJitterUnit, statusForOutcome } from './backoff.js';
 
 const NOW = new Date('2026-11-17T10:00:00.000Z');
@@ -864,6 +867,188 @@ describe('status mapping', () => {
     expect(isRetryable(statusCategory(418))).toBe(false);
     expect(isRetryable(statusCategory(503))).toBe(true);
   });
+});
+
+/**
+ * Transport classification: the structured `EgressFailure.code` decides, message
+ * text is only a fallback. Every case below was a real misclassification found
+ * by running the engine against live fixtures, not a hypothetical.
+ */
+describe('transport classification - the code is the contract, not the message', () => {
+  const coded = (code: string, message: string): Error => new EgressFailure(code as never, message);
+
+  it('REGRESSION: a redirect loop is redirect-unsafe, never response-too-large', () => {
+    // The message contains "exceeded", which the old message regex matched as a
+    // size failure. This single case is why the repair exists.
+    const error = coded('too-many-redirects', 'Redirect limit 5 exceeded');
+    expect(transportCategory(error)).toBe('redirect-unsafe');
+    expect(transportCategory(error)).not.toBe('response-too-large');
+  });
+
+  it('a redirect-unsafe code is redirect-unsafe', () => {
+    expect(transportCategory(coded('redirect-unsafe', 'Redirect left http(s)'))).toBe('redirect-unsafe');
+  });
+
+  it('TIMEOUT: a timeout code wins over a message that also says "exceeded"', () => {
+    // Upstream messages a timeout as "Egress exceeded 2000 ms" — the same word
+    // that made a timeout look like a size failure.
+    const error = coded('timeout', 'Egress exceeded 2000 ms');
+    expect(transportCategory(error)).toBe('timeout');
+    expect(transportCategory(error)).not.toBe('response-too-large');
+  });
+
+  it('a 2xx whose content-type is not allowed is unsupported-format', () => {
+    const error = coded('content-type-not-allowed', 'Content-Type "text/html" is not allowed');
+    expect(transportCategory(error)).toBe('unsupported-format');
+  });
+
+  it('FALLBACK: a plain Error with no code is still classified from its message', () => {
+    expect(transportCategory(new Error('connection refused'))).toBe('connection-refused');
+    expect(transportCategory(new Error('getaddrinfo ENOTFOUND example.test'))).toBe('dns-failure');
+    expect(transportCategory(new Error('something entirely unexpected'))).toBe('unknown-error');
+  });
+
+  it('the full code table maps exactly as contracted', () => {
+    const table: ReadonlyArray<readonly [string, string]> = [
+      ['timeout', 'timeout'],
+      ['dns-failure', 'dns-failure'],
+      ['tls-failure', 'tls-failure'],
+      ['connection-failed', 'connection-refused'],
+      ['private-address', 'ssrf-blocked'],
+      ['dns-rebind', 'ssrf-blocked'],
+      ['host-blocked', 'ssrf-blocked'],
+      ['scheme-not-allowed', 'ssrf-blocked'],
+      ['invalid-url', 'ssrf-blocked'],
+      ['credential-in-url', 'ssrf-blocked'],
+      ['redirect-unsafe', 'redirect-unsafe'],
+      ['too-many-redirects', 'redirect-unsafe'],
+      ['response-too-large', 'response-too-large'],
+      ['content-type-not-allowed', 'unsupported-format'],
+    ];
+    for (const [code, expected] of table) {
+      // A misleading message on purpose: the code must decide regardless.
+      expect(`${code} -> ${transportCategory(coded(code, 'exceeded timeout redirect'))}`).toBe(`${code} -> ${expected}`);
+    }
+  });
+
+  it('an unrecognised code is unknown-error and is NOT guessed from the message', () => {
+    // A message that the fallback would happily call `timeout`: the code path must
+    // win and say "we do not know this cause", so a moving contract surfaces.
+    expect(transportCategory(coded('brand-new-code', 'timed out'))).toBe('unknown-error');
+  });
+});
+
+/**
+ * TWO-SIDED through the real path: a real socket, the real `safeFetch`, the real
+ * `runValidation`. Hand-made error objects prove the mapping table; only this
+ * proves the classifier agrees with what the egress layer actually throws.
+ */
+describe('transport classification - proven through the real safeFetch path', () => {
+  /** Adapts the real egress executor to the validator's injected seam. */
+  const realEgress: EgressFn = async (request) => {
+    const response = await safeFetch({
+      url: request.url,
+      ...(request.method === undefined ? {} : { method: request.method }),
+      timeoutMs: request.timeoutMs,
+      maxBytes: request.maxBytes,
+      ...(request.allowedContentPrefixes === undefined
+        ? {}
+        : { allowedContentPrefixes: request.allowedContentPrefixes }),
+      // A local fixture is a loopback destination: the only reason this flag
+      // exists. Production never sets it.
+      allowLoopbackForTests: true,
+    });
+    return {
+      status: response.status,
+      ok: response.ok,
+      contentType: response.contentType,
+      bytes: response.bytes,
+      body: response.body,
+      finalUrl: response.finalUrl,
+      latencyMs: response.latencyMs,
+    };
+  };
+
+  let fixture: HttpFixture | null = null;
+
+  async function withFixture<T>(routes: Parameters<typeof startHttpFixture>[0], body: (f: HttpFixture) => Promise<T>): Promise<T> {
+    fixture = await startHttpFixture(routes);
+    try {
+      return await body(fixture);
+    } finally {
+      await fixture.close();
+      fixture = null;
+    }
+  }
+
+  /** Runs one manifest probe against the fixture through the real engine. */
+  function probeFixture(url: string, segmentSample = 0) {
+    return runValidation({
+      source: source({ url }),
+      authorization: authorization({ sourceUrl: url }),
+      registry: createDefaultAdapterRegistry(),
+      egress: realEgress,
+      segmentSample,
+      now: NOW,
+      // The fixture is loopback; DNS is not what is under test here.
+      dns: async () => ({ host: '127.0.0.1', addresses: [{ address: '127.0.0.1', family: 4 }] }),
+    });
+  }
+
+  it('a 4 MiB undeclared (chunked) body is response-too-large', async () => {
+    await withFixture(
+      { '/big.m3u8': { streamBytes: 4 * 1024 * 1024, contentType: HLS_MIME, chunkSize: 64 * 1024 } },
+      async (f) => {
+        const result = await probeFixture(f.url('/big.m3u8'));
+        expect(result.failure?.category).toBe('response-too-large');
+        expect(result.depthReached).toBe('transport');
+        expect(result.outcome).toBe('failing');
+      },
+    );
+  }, 30_000);
+
+  it('a server that never answers is timeout', async () => {
+    await withFixture({ '/hang.m3u8': { hang: true } }, async (f) => {
+      const result = await probeFixture(f.url('/hang.m3u8'));
+      expect(result.failure?.category).toBe('timeout');
+      expect(result.depthReached).toBe('transport');
+    });
+  }, 30_000);
+
+  it('a 302 loop is redirect-unsafe, not response-too-large', async () => {
+    await withFixture({ '/loop.m3u8': { location: '/loop.m3u8', status: 302 } }, async (f) => {
+      const result = await probeFixture(f.url('/loop.m3u8'));
+      expect(result.failure?.category).toBe('redirect-unsafe');
+      expect(result.failure?.category).not.toBe('response-too-large');
+      expect(result.depthReached).toBe('transport');
+    });
+  }, 30_000);
+
+  it('REGRESSION GUARD: a 2xx with a non-manifest content-type is unsupported-format at transport', async () => {
+    await withFixture(
+      // Exactly the "HTTP 200 is not a manifest" case: 2xx, HTML, no redirect.
+      { '/page.m3u8': { status: 200, contentType: 'text/html; charset=utf-8', body: '<!doctype html><html></html>' } },
+      async (f) => {
+        const result = await probeFixture(f.url('/page.m3u8'));
+        expect(result.failure?.category).toBe('unsupported-format');
+        expect(result.depthReached).toBe('transport');
+        expect(result.outcome).toBe('failing');
+        // And it is never healthy, which is the whole point of the axis split.
+        expect(result.outcome).not.toBe('healthy');
+      },
+    );
+  }, 30_000);
+
+  it('POSITIVE CONTROL: a real manifest from the same fixture is manifest-accepted at depth manifest', async () => {
+    await withFixture(
+      { '/ok.m3u8': { status: 200, contentType: HLS_MIME, body: MEDIA_PLAYLIST } },
+      async (f) => {
+        const result = await probeFixture(f.url('/ok.m3u8'));
+        expect(result.failure).toBeNull();
+        expect(result.depthReached).toBe('manifest');
+      },
+    );
+  }, 30_000);
 });
 
 describe('back-off — deterministic, capped, bounded', () => {
