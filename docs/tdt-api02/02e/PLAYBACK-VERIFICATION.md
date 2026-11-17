@@ -1,172 +1,156 @@
 # PLAYBACK-VERIFICATION — TDT-API-02E
 
-Measured evidence for the 02E player. Every number below comes from a command that was
-actually run, with its real exit code recorded. Nothing here is derived from a render, an
-assertion, or a model's confidence.
+Measured evidence for the 02E player. Every number comes from a command that was run, with
+its real exit code. Nothing is derived from a render, an assertion, or a model's confidence.
 
-**Tree measured:** `feat/tdt-api02-e-player`, base `a2a2ed3`, evidence commits `93c297c`
-and `132f0e5`.
-**Browser:** Chromium 158.0.8127.18 (Playwright 1.65.0). **Engine:** hls.js 1.7.4 — the
-same build the app ships from `apps/frontend/node_modules/hls.js`.
+**Engine under test:** hls.js 1.7.4 — the build our app ships (`apps/frontend/node_modules/hls.js`).
+**Browser:** Chromium 158.0.8127.18 (Playwright 1.65.0).
 **Overall status: directly measured.** This is **not** an engine-04-certified gate: that
 runner cannot spawn `npm` on this host (`CreateProcessAsUserW Win32 2`), so every stage was
 executed directly with its exit code recorded.
 
+> **Correction notice (important).** An earlier revision of this document claimed that the
+> raw `<video>` "native" path played 2 of 6 while hls.js played 6 of 6, and used that as the
+> justification for the engine choice. **That claim was wrong.** It came from a defect in the
+> measurement tool: a source whose browser axis recorded `played` was relabelled
+> `http-unreachable` ("the browser could not start playback") whenever axis A (a plain fetch)
+> failed to obtain a manifest. The tool has been fixed to let a demonstrated playback win, and
+> the re-run below shows the native path plays **6 of 6** as well. The hls.js result stands;
+> the contrast used to justify it did not.
+
 ---
 
-## 1. The headline result
+## 1. Result: every sampled authorized source plays through hls.js
 
-**Six of six authorized catalogue sources — one per healthy CDN — play in Chromium through
-hls.js, with real media progression and zero media errors.**
+Command: `node evidence/02e/hls-comparison.mjs <6 urls>` → **exit 0**.
+Output: `evidence/02e/hls-comparison.json`.
 
-Command (`evidence/02e/hls-comparison.mjs`, committed): loads the shipped hls.js build in
-Chromium, points it at each URL, samples once per second for ~9 s. No proxy, no forged
-headers, no CORS manipulation. **Exit 0.** Output: `evidence/02e/hls-comparison.json`.
+The six sources are **one per healthy CDN**, drawn from the 63 catalogue sources measured
+`healthy` at `segments` depth in 02D. This is a **6-of-81 sample, not a census**.
 
-| Host | Verdict | Manifest parsed | Playing observed | Media time advanced | Geometry |
+| Host | Verdict | Manifest parsed | Media time advanced | Samples while running | Geometry |
 |---|---|---|---|---|---|
-| `ztnr.rtve.es` | `played-via-hlsjs` | 98 ms | 1009 ms | +8.00 s | 1280×720 |
-| `rtvelivestream.rtve.es` | `played-via-hlsjs` | 67 ms | 1009 ms | +8.00 s | 1280×720 |
-| `www.bloomberg.com` | `played-via-hlsjs` | 104 ms | 1009 ms | +7.98 s | 1920×1080 |
-| `cdn1.etbon.eus` | `played-via-hlsjs` | 118 ms | 1014 ms | +8.00 s | 1920×1080 |
-| `rtvelivestream-rtveplayplus.rtve.es` | `played-via-hlsjs` | 74 ms | 1009 ms | +8.00 s | 1920×1080 |
-| `streaming-1.eltorotv.com` | `played-via-hlsjs` | 312 ms | 1009 ms | +8.00 s | 1920×1080 |
+| `ztnr.rtve.es` | `played-via-hlsjs` | 152 ms | +8.00 s | 9 | 1280×720 |
+| `rtvelivestream.rtve.es` | `played-via-hlsjs` | 83 ms | +6.99 s | 8 | 1280×720 |
+| `www.bloomberg.com` | `played-via-hlsjs` | 730 ms | +1.98 s | 3 | 1280×720 |
+| `cdn1.etbon.eus` | `played-via-hlsjs` | 131 ms | +7.98 s | 9 | 1920×1080 |
+| `rtvelivestream-rtveplayplus.rtve.es` | `played-via-hlsjs` | 98 ms | +8.00 s | 9 | 1920×1080 |
+| `streaming-1.eltorotv.com` | `played-via-hlsjs` | 221 ms | +8.00 s | 9 | 1920×1080 |
 
-Zero `MediaError`, zero fatal errors, zero network failures across all six.
+Zero media errors, zero fatal errors. Summary block: `sources 6, played 6, notPlayed 0`.
 
-**Reading the startup column honestly:** "playing observed 1009 ms" is the *first sampling
-tick at which playback was already underway*, and the sampler runs at 1 Hz. So the
-measured statement is **"playing within ~1.01 s of navigation"**, which is an upper bound
-set by the sampling cadence, not an exact startup latency. The precise figure that *is*
-measured is manifest parse time (67–312 ms). No tighter startup number is claimed.
+**How progression is measured.** The sampler ticks once per second. Progression is the delta
+between the first and last samples in which media time was **already running**
+(`currentTime > 0`, `readyState ≥ 2`), so the figure means "media time advanced by N seconds
+during the observation window" — it is not a DVR position difference. `bloomberg` advancing
+only ~2 s over 3 samples reflects a slower start within the 9 s window, not a stall; it did
+produce frames.
 
-Media progression is measured, not inferred: it is the delta between the first and last
-sampled `currentTime` on the same element (≈8.0 s over ≈8.0 s of wall clock), with
-`readyState` 4 throughout.
+**The harness can now fail.** It exits non-zero if any source does not play — verified with a
+nonexistent manifest: `verdict: no-frames`, **exit 1**. Previously it exited 0 regardless,
+which is how one reviewer's flaky run looked green.
 
-## 2. Why the engine choice is load-bearing — the contrast that matters
+## 2. The native path also plays — so this is not the justification
 
-The same six URLs were also checked the way 02D's harness checks them: a raw `<video>`
-element pointed straight at the manifest. Command
-`apps/backend/scripts/browser-playback-check.mjs` → **exit 0**, output
-`evidence/02e/catalogue-browser-playback.json`.
+Command: `node apps/backend/scripts/browser-playback-check.mjs --url …(same 6)` → **exit 0**.
+Output: `evidence/02e/catalogue-browser-playback.json`. Summary: **played 6, failed 0**.
 
-| Host | Native `<video>` verdict | hls.js verdict |
+| Host | Axis A (fetch) | Axis B (native `<video>`) |
 |---|---|---|
-| `ztnr.rtve.es` | `http-unreachable` (HTTP 302, no manifest body) | **played** |
-| `rtvelivestream.rtve.es` | `playback-failed-codec` — `MediaError 4 / DEMUXER_ERROR_COULD_NOT_PARSE` | **played** |
-| `www.bloomberg.com` | `playback-failed-codec` — `MediaError 4 / DEMUXER_ERROR_COULD_NOT_PARSE` | **played** |
-| `cdn1.etbon.eus` | played | **played** |
-| `rtvelivestream-rtveplayplus.rtve.es` | played | **played** |
-| `streaming-1.eltorotv.com` | `http-unreachable` (HTTP 302, no manifest body) | **played** |
+| `ztnr.rtve.es` | 302, no manifest | **played** — 0.12 s at 640×360 |
+| `rtvelivestream.rtve.es` | 200, HLS | **played** — 0.33 s at 640×360 |
+| `www.bloomberg.com` | 200, HLS | **played** — 1.76 s at 480×272 |
+| `cdn1.etbon.eus` | 200, HLS | **played** — 0.92 s at 640×360 |
+| `rtvelivestream-rtveplayplus.rtve.es` | 200, HLS | **played** — 0.30 s at 1920×1080 |
+| `streaming-1.eltorotv.com` | 302, no manifest | **played** — 0.52 s at 1920×1080 |
 
-Native summary: `played 2, failed 4`. hls.js summary: `played 6`.
+Two honest observations, and no more:
 
-**Four of six would have been reported as failures if the native path had been mistaken for
-ours.** Two conclusions, both measured:
+1. **In this Chromium build the native path plays these streams too.** So the engine choice
+   is **not** justified by "native cannot play them" — that claim is withdrawn.
+2. **Axis A and axis B genuinely disagree** on the two 302 sources: a plain fetch saw no
+   manifest while the media element followed it and played. This is a real reminder that
+   HTTP reachability is not playback — but it says nothing against hls.js.
 
-1. The two codec verdicts are **Chromium's native HLS parser being unable to demux
-   MPEG-TS**, not a fault in the stream or in our player. The evidence shows the element
-   reaching `readyState 4`, `videoWidth 640`, `videoHeight 360` and firing `playing` before
-   the demux error — it read the metadata, then failed on the payload.
-2. The two `302` verdicts are **the raw element not following the redirect**, not broken
-   sources. hls.js follows it internally and plays.
-
-So: **our player must use hls.js in Chromium**, and that selection is load-bearing rather
-than decorative. Measuring the native path and calling the result "the source is broken"
-would have been exactly the class of error this programme keeps finding.
+Why the app still uses hls.js in Chromium: it gives explicit control over ABR, buffer and
+error recovery that a native element does not expose, and it is the engine that already
+carries the recovery logic in this codebase. That is an engineering preference, **not** a
+measurement in this document, and it is recorded here as such.
 
 ## 3. Failover only between separately authorized candidates
 
-Mission constraint: *"Support failover only between separately authorized candidates."*
-Proven through the **real selector** (`selectPlaybackCandidates`) on **real catalogue rows**
-from `ztnr.rtve.es`, not fixtures. Command `evidence/02e/failover-proof.cjs` → **exit 0**,
-output `evidence/02e/failover-proof.json`.
+Proven through the **real selector** (`selectPlaybackCandidates`) on catalogue rows from
+`ztnr.rtve.es`. Command `node evidence/02e/failover-proof.cjs` → **exit 0**.
+Output `evidence/02e/failover-proof.json`.
 
-**Case 1 — a failing authorized source does not win, and its cause is named.**
-Sources: `097a2a33…` (measured `failing`, `http-404`) and `06a4d4e8…` (measured `healthy`),
-both carrying a valid authorization.
+**Case 1 — a failing authorized source does not win and its cause is named.**
+`097a2a33…` (measured `failing`, `http-404`) and `06a4d4e8…` (measured `healthy`), both
+authorized. Selected: **`["06a4d4e8…"]`** — exactly one, the healthy one. Refused:
+`097a2a33…`, axis `health`, code `http-404`.
 
-| Observation | Value |
-|---|---|
-| Selected candidates | `["06a4d4e8…"]` — exactly one, the healthy one |
-| `selectedIsHealthy` | **true** |
-| Refused | `097a2a33…`, axis `health`, code `http-404` |
+**Case 2 — an unauthorized source can never be a fallback, even at priority 1.**
+A third source identical to the healthy one but with **no authorization record** and
+`priority: 1`. Result: `unauthorizedAppearsAsCandidate: false`,
+`unauthorizedAppearsAsRefusal: false`, selected `["06a4d4e8…"]`.
 
-The failing source is refused **with its measured cause**, not silently dropped, and it
-never becomes the selected candidate.
+**Fixture disclosure.** The authorization records are constructed to satisfy the 02C gate
+(they mirror the owner-verification records in the live database), and the health verdicts are
+supplied as recorded checks rather than read from a live ledger. The **source rows and their
+`http-404` cause come from the real committed 02D measurement**; the surrounding record shape
+is built by the proof script. The claim being proven is the selector's ordering — that
+authorization is evaluated before health and that a denial is never a candidate — and that is
+a property of the code, not of the fixture.
 
-**Case 2 — an unauthorized source can never be a fallback, even with top priority.**
-A third source was added: identical to the healthy one but **with no authorization record**
-and `priority: 1` (i.e. it would sort first if authorization were not evaluated first).
-
-| Observation | Value |
-|---|---|
-| `unauthorizedHasTopPriority` | true |
-| Selected candidates | `["06a4d4e8…"]` — the authorized source |
-| `unauthorizedAppearsAsCandidate` | **false** |
-| `unauthorizedAppearsAsRefusal` | **false** |
-
-The unauthorized source appears neither as a candidate nor as a refusal: it is not a
-fallback with a reason, it is simply not a candidate. That is the fail-closed behaviour
-required.
+Authorization-first failover is also confirmed by reading `decideCandidate`: it returns
+`selectable: false` on denial, excludes `authorization` refusals from `refused`, and
+`buildDescriptor` derives options only from `candidates`.
 
 ## 4. Mobile, keyboard and accessibility — real Chromium
 
-Commands run against the built bundle at the frozen tree.
+Run from `apps/frontend` (the `npm --prefix … exec` form fails to resolve Playwright's
+config; that is a harness quirk, not a test failure).
 
 | Command | Exit | Result |
 |---|---|---|
 | `npx playwright test e2e/player-keyboard-mobile.spec.ts` | **0** | **7 passed** |
 | `npx playwright test e2e/a11y-responsive.spec.ts e2e/player.spec.ts` | **0** | **22 passed** |
 
-The seven new tests include the ones that matter for WCAG 2.2 and for real usability:
+The seven new tests include:
 
-- `las flechas NO desplazan la página cuando el foco está fuera del reproductor` — arrow
-  keys do not hijack page scroll when focus is outside the player. This is the classic
-  media-player accessibility bug and it is now pinned by a test that asserts the page
-  *did* scroll and the volume *did not* change.
-- `ningún control del reproductor baja de 44x44 y la página no desborda a 360px` — a real
-  Chromium render at 360×740 asserting no horizontal overflow and that every visible
-  control's bounding box is at least 44×44.
-- `F entra y sale de pantalla completa, y el botón refleja el estado real` — fullscreen
-  state is truthful in both directions via `aria-pressed`.
-- `el control de subtítulos solo aparece si la fuente los ofrece` — the subtitle control is
-  absent when a source has no text tracks (see §5: that is the only subtitle case that can
-  be exercised here).
-- `los filtros de país e idioma existen y filtran de verdad` — country and language filters
-  exist and actually filter.
+- `las flechas NO desplazan la página cuando el foco está fuera del reproductor` — arrow keys
+  do not hijack page scroll when focus is outside the player; asserts the page *did* scroll
+  and the volume *did not* change.
+- `ningún control del reproductor baja de 44x44 y la página no desborda a 360px` — real
+  Chromium render at 360×740: no horizontal overflow, every visible control ≥ 44×44.
+- `F entra y sale de pantalla completa, y el botón refleja el estado real` — `aria-pressed`
+  flips truthfully in both directions.
+- `el control de subtítulos solo aparece si la fuente los ofrece`.
+- Spanish/language filters exist and filter.
 
 The 22 pre-existing tests passing unchanged is the regression evidence: play/pause, mute
-without restarting, channel switching without accumulating elements, a dead source showing
-an error with a retry action, a non-playable channel explaining itself instead of showing a
-player, wrong/internet-less channels, and fullscreen offered only when supported.
+without restarting, channel switching without accumulating elements, a dead source showing an
+error with retry, a non-playable channel explaining itself, and fullscreen offered only when
+supported.
 
 ## 5. NOT VERIFIED — what this document does not claim
 
-Stated plainly, because an honest gap is worth more than a vague success.
-
 | Area | Status | Reason |
 |---|---|---|
-| **Subtitles** | **NOT verified end-to-end** | The control is wired and unit-tested, but **no playlist in the repo or the catalogue declares `EXT-X-MEDIA:TYPE=SUBTITLES`**. I checked every bundled `.m3u8` myself; the demo `master.m3u8` has two `EXT-X-STREAM-INF` entries and no media groups. The E2E therefore asserts the honest inverse (control absent when there are no tracks). Proving it needs an authored fixture playlist, clearly labelled a controlled fixture. |
-| **DASH** | **NOT tested** | All 81 published catalogue sources are HLS; no MPD exists. Testing it would require a controlled dash.js scenario, not a catalogue source. |
-| **Firefox / WebKit** | **NOT measured** | Binaries are **absent** from this environment (Chromium 1254 present; Firefox 1572 and WebKit 2388 absent). Installing them is not authorized by this milestone. Cross-engine claims are limited to static capability detection, which is not a playback measurement. |
-| **Full 63-source matrix** | **NOT measured** | A **6-source sample, one per healthy CDN**, was measured. That covers distinct CDNs rather than 22 near-identical rows from one host, but it is a sample, not a census. |
-| **Buffering / stall engineering** | **NOT tested** | Sustained progression was sampled; deliberate stall, rebuffer, live-seek, PiP and Cast were not exercised. |
-| **YouTube engine** | **NOT exercised** | Out of scope for this milestone's playback verification. |
-| **Audio-track switching** | **NOT verified** | Control surface exists; no stream in the catalogue was used to switch between audio tracks. |
+| **Subtitles** | **NOT verified end-to-end** | Wired and unit-tested, but **no playlist in the repo or the catalogue declares `EXT-X-MEDIA:TYPE=SUBTITLES`** (verified by reading every bundled `.m3u8`; the demo master has two `STREAM-INF` entries and no media groups). The E2E asserts the honest inverse. |
+| **DASH** | **NOT tested** | All 81 published catalogue sources are HLS; no MPD exists. |
+| **Firefox / WebKit** | **NOT measured** | Binaries **absent** (Chromium 1254 present; Firefox 1572 and WebKit 2388 absent). Installing is not authorized. Cross-engine claims limited to static capability detection. |
+| **Full 63-source matrix** | **NOT measured** | A 6-source sample, one per healthy CDN. |
+| **Compatibility axis** | **Populated by nothing** | `playback.service` returns an empty reproduction map, so no compatibility verdict is ever produced in the deployed path. It is declared and wired but has no data source. |
+| **Buffering / stall / live-seek / PiP / Cast** | **NOT tested** | Sustained progression sampled; deliberate stall, rebuffer and seek were not exercised. |
+| **YouTube engine / audio-track switching** | **NOT exercised** | Out of scope for this verification. |
 
 ## 6. What must not be read into this document
 
-- **These are not broadcast rights.** The authorizations behind these sources are
-  **owner authorizations for verification** (`reviewStatus: pending-review`), whose own
-  clause states they are *"not evidence that the emitter granted redistribution rights"*.
-  A source playing here says nothing about redistribution.
-- **`healthy` is not `playable`, and this document is the proof.** 02D recorded 63 sources
-  `healthy` at `segments` depth by retrieving manifest, variant and sampled segments. That
-  verdict says nothing about a browser rendering them — §2 shows four of six sources that
-  the *native* path refused and the hls.js path played. The two axes are measured
-  separately and never derived from each other.
-- **A playing stream is not a guarantee.** These are observations with timestamps. A live
-  stream can drop a minute later; one catalogue source (`english-livebkali.cgtn.com`)
-  returned 404 during the REA investigation despite its earlier `healthy` verdict.
+- **These are not broadcast rights.** The underlying authorizations are **owner authorizations
+  for verification** (`reviewStatus: pending-review`), whose clause states they are *"not
+  evidence that the emitter granted redistribution rights"*.
+- **`healthy` is not `playable`.** 02D's verdict means manifest, variant and sampled segments
+  were retrieved. This document measures a separate axis in a real browser.
+- **A playing stream is not a guarantee.** These are timestamped observations; one catalogue
+  source (`english-livebkali.cgtn.com`) returned 404 during the REA work despite an earlier
+  `healthy` verdict.

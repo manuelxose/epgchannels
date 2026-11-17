@@ -132,6 +132,19 @@ for (const url of urls) {
   const samples = result.samples ?? [];
   const last = samples[samples.length - 1] ?? {};
   const first = samples[0] ?? {};
+  /*
+   * Progression is measured only over samples where media time was ALREADY
+   * running. A live stream seeks to the DVR edge when playback starts, so the
+   * first tick can sit at 0 (or anywhere) and the last tick at a DVR position:
+   * subtracting them yields nonsense like "+3592 s" for a 9-second observation.
+   * Taking the first and last samples with currentTime > 0 measures actual
+   * playback progression, which is the claim being made.
+   */
+  const running = samples.filter(
+    (s) => typeof s.currentTime === 'number' && s.currentTime > 0 && s.readyState >= 2,
+  );
+  const runFirst = running[0] ?? null;
+  const runLast = running[running.length - 1] ?? null;
   results.push({
     url,
     host: new URL(url).host,
@@ -139,11 +152,13 @@ for (const url of urls) {
     playingMs: result.playingMs ?? null,
     levels: result.levels ?? null,
     level: result.level ?? null,
-    currentTimeStart: first.currentTime ?? null,
-    currentTimeEnd: last.currentTime ?? null,
+    currentTimeFirstSample: first.currentTime ?? null,
+    currentTimeStart: runFirst?.currentTime ?? null,
+    currentTimeEnd: runLast?.currentTime ?? null,
+    samplesWhileRunning: running.length,
     advancedSeconds:
-      typeof first.currentTime === 'number' && typeof last.currentTime === 'number'
-        ? Number((last.currentTime - first.currentTime).toFixed(2))
+      runFirst !== null && runLast !== null && running.length > 1
+        ? Number((runLast.currentTime - runFirst.currentTime).toFixed(2))
         : null,
     videoWidth: last.width ?? 0,
     videoHeight: last.height ?? 0,
@@ -154,7 +169,7 @@ for (const url of urls) {
     verdict:
       result.fatal != null
         ? 'not-observable'
-        : (last.currentTime ?? 0) > 0 && (last.width ?? 0) > 0
+        : runLast !== null && (runLast.currentTime ?? 0) > 0 && (last.width ?? 0) > 0
           ? 'played-via-hlsjs'
           : 'no-frames',
   });
@@ -164,6 +179,8 @@ for (const url of urls) {
 await browser.close();
 server.close();
 
+const played = results.filter((r) => r.verdict === 'played-via-hlsjs').length;
+
 console.log(
   JSON.stringify(
     {
@@ -171,11 +188,30 @@ console.log(
       generatedAt: new Date().toISOString(),
       engine: 'hls.js (the build shipped in apps/frontend/node_modules)',
       note:
-        'Same streams the native <video> check refused with MEDIA_ERR_SRC_NOT_SUPPORTED. ' +
-        'Chromium cannot demux MPEG-TS natively; hls.js can. This is the path our app actually uses.',
+        'The path our app actually uses in Chromium. Chromium\'s own <video> cannot demux ' +
+        'MPEG-TS, so the native check is reported separately and is not our path.',
+      summary: {
+        sources: results.length,
+        played,
+        notPlayed: results.length - played,
+        verdicts: [...new Set(results.map((r) => r.verdict))],
+      },
       results,
     },
     null,
     2,
   ),
 );
+
+/*
+ * Exit non-zero when any source did not play. Previously this script exited 0
+ * regardless, so a live stream that happened to yield no frames silently
+ * produced a "successful" run — a review re-run saw `no-frames` on 1 of 2
+ * attempts and the committed evidence still looked green. A measurement tool
+ * that cannot fail is not a measurement. Live streams ARE variable; that is
+ * exactly why a partial result must surface as a failure rather than vanish.
+ */
+if (played !== results.length) {
+  console.error(`hls-comparison: ${played}/${results.length} played — not every source produced frames`);
+  process.exit(1);
+}

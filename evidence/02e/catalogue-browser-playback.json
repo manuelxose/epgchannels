@@ -1,6 +1,6 @@
 {
   "tool": "browser-playback-check",
-  "generatedAt": "2026-11-17T15:02:47.243Z",
+  "generatedAt": "2026-11-17T15:44:59.506Z",
   "axes": "axisA = plain HTTP fetch of the manifest (reachability). axisB = observed playback in real Chromium. The verdict is never derived from axisA.",
   "browser": {
     "available": true,
@@ -10,10 +10,10 @@
   "timeoutMs": 20000,
   "summary": {
     "sources": 6,
-    "played": 2,
-    "failed": 4,
+    "played": 6,
+    "failed": 0,
     "notObservable": 0,
-    "httpOkButNotPlayable": 2
+    "httpOkButNotPlayable": 0
   },
   "sources": [
     {
@@ -22,7 +22,7 @@
         "status": 302,
         "contentType": "application/x-mpegURL",
         "bytes": 0,
-        "elapsedMs": 266,
+        "elapsedMs": 117,
         "startsWithExtM3u": false,
         "manifest": null,
         "redirect": "https://rtvelivestream.rtve.es/rtvesec/oca/irtve03_main.m3u8?idasset=6108704",
@@ -30,13 +30,13 @@
         "error": null
       },
       "axisB": {
-        "verdict": "http-unreachable",
-        "reason": "axis A did not obtain a manifest (HTTP 302, not an HLS body); the browser could not start playback (observed: playhead advanced to 0.32s at 640x360 (readyState 4))",
+        "verdict": "played",
+        "reason": "playhead advanced to 0.12s at 640x360 (readyState 4) (axis A saw no manifest: HTTP 302 — the element followed what the fetch client did not)",
         "media": {
           "readyState": 4,
           "peakReadyState": 4,
           "networkState": 2,
-          "currentTime": 0.315095,
+          "currentTime": 0.122783,
           "playheadAdvanced": true,
           "paused": false,
           "ended": false,
@@ -70,8 +70,8 @@
           "failureTexts": []
         },
         "consoleBounded": [],
-        "explainedBy": "axisA-not-a-manifest",
-        "browserFinding": "played"
+        "axisANeverSawManifest": true,
+        "axisAConcern": "axis A saw no manifest (HTTP 302); the browser played anyway"
       }
     },
     {
@@ -80,7 +80,7 @@
         "status": 200,
         "contentType": "application/vnd.apple.mpegurl",
         "bytes": 800,
-        "elapsedMs": 78,
+        "elapsedMs": 82,
         "startsWithExtM3u": true,
         "manifest": {
           "kind": "master",
@@ -96,25 +96,22 @@
         "error": null
       },
       "axisB": {
-        "verdict": "playback-failed-codec",
-        "reason": "MediaError 4 (MEDIA_ERR_SRC_NOT_SUPPORTED): PipelineStatus::DEMUXER_ERROR_COULD_NOT_PARSE",
+        "verdict": "played",
+        "reason": "playhead advanced to 0.33s at 640x360 (readyState 4)",
         "media": {
           "readyState": 4,
           "peakReadyState": 4,
-          "networkState": 3,
-          "currentTime": 0,
-          "playheadAdvanced": false,
-          "paused": true,
+          "networkState": 2,
+          "currentTime": 0.330253,
+          "playheadAdvanced": true,
+          "paused": false,
           "ended": false,
           "playingEvent": true,
-          "pausedAfterPlaying": true,
+          "pausedAfterPlaying": false,
           "videoWidth": 640,
           "videoHeight": 360,
           "duration": null,
-          "mediaError": {
-            "code": 4,
-            "message": "PipelineStatus::DEMUXER_ERROR_COULD_NOT_PARSE"
-          },
+          "mediaError": null,
           "playResult": "resolved",
           "playError": null,
           "events": [
@@ -122,8 +119,7 @@
             "loadedmetadata",
             "loadeddata",
             "canplay",
-            "playing",
-            "error"
+            "playing"
           ],
           "timedOut": false
         },
@@ -151,8 +147,8 @@
       "axisA": {
         "status": 200,
         "contentType": "application/vnd.apple.mpegurl; charset=utf-8",
-        "bytes": 2140,
-        "elapsedMs": 401,
+        "bytes": 2180,
+        "elapsedMs": 106,
         "startsWithExtM3u": true,
         "manifest": {
           "kind": "master",
@@ -168,25 +164,22 @@
         "error": null
       },
       "axisB": {
-        "verdict": "playback-failed-codec",
-        "reason": "MediaError 4 (MEDIA_ERR_SRC_NOT_SUPPORTED): PipelineStatus::DEMUXER_ERROR_COULD_NOT_PARSE",
+        "verdict": "played",
+        "reason": "playhead advanced to 1.76s at 480x272 (readyState 4)",
         "media": {
           "readyState": 4,
           "peakReadyState": 4,
-          "networkState": 3,
-          "currentTime": 0,
-          "playheadAdvanced": false,
-          "paused": true,
+          "networkState": 2,
+          "currentTime": 1.756973,
+          "playheadAdvanced": true,
+          "paused": false,
           "ended": false,
           "playingEvent": true,
-          "pausedAfterPlaying": true,
+          "pausedAfterPlaying": false,
           "videoWidth": 480,
           "videoHeight": 272,
           "duration": null,
-          "mediaError": {
-            "code": 4,
-            "message": "PipelineStatus::DEMUXER_ERROR_COULD_NOT_PARSE"
-          },
+          "mediaError": null,
           "playResult": "resolved",
           "playError": null,
           "events": [
@@ -194,8 +187,7 @@
             "loadedmetadata",
             "loadeddata",
             "canplay",
-            "playing",
-            "error"
+            "playing"
           ],
           "timedOut": false
         },
@@ -224,7 +216,7 @@
         "status": 200,
         "contentType": "application/x-mpegURL",
         "bytes": 3125,
-        "elapsedMs": 132,
+        "elapsedMs": 128,
         "startsWithExtM3u": true,
         "manifest": {
           "kind": "master",
@@ -241,12 +233,12 @@
       },
       "axisB": {
         "verdict": "played",
-        "reason": "playhead advanced to 1.02s at 640x360 (readyState 4)",
+        "reason": "playhead advanced to 0.92s at 640x360 (readyState 4)",
         "media": {
           "readyState": 4,
           "peakReadyState": 4,
           "networkState": 2,
-          "currentTime": 1.015264,
+          "currentTime": 0.915805,
           "playheadAdvanced": true,
           "paused": false,
           "ended": false,
@@ -298,7 +290,7 @@
           "kind": "media",
           "variantCount": 0,
           "segmentCount": 1440,
-          "mediaSequence": 311342,
+          "mediaSequence": 311848,
           "targetDuration": 5,
           "endList": false,
           "extensions": 6
@@ -309,12 +301,12 @@
       },
       "axisB": {
         "verdict": "played",
-        "reason": "playhead advanced to 0.29s at 1920x1080 (readyState 4)",
+        "reason": "playhead advanced to 0.30s at 1920x1080 (readyState 4)",
         "media": {
           "readyState": 4,
           "peakReadyState": 4,
           "networkState": 2,
-          "currentTime": 0.28785,
+          "currentTime": 0.2963,
           "playheadAdvanced": true,
           "paused": false,
           "ended": false,
@@ -360,7 +352,7 @@
         "status": 302,
         "contentType": null,
         "bytes": 0,
-        "elapsedMs": 112,
+        "elapsedMs": 114,
         "startsWithExtM3u": false,
         "manifest": null,
         "redirect": "https://edge-nodo-002.streaming.hitcloser.net/eltorotv-streaming-web/index.m3u8",
@@ -368,13 +360,13 @@
         "error": null
       },
       "axisB": {
-        "verdict": "http-unreachable",
-        "reason": "axis A did not obtain a manifest (HTTP 302, not an HLS body); the browser could not start playback (observed: playhead advanced to 0.53s at 1920x1080 (readyState 4))",
+        "verdict": "played",
+        "reason": "playhead advanced to 0.52s at 1920x1080 (readyState 4) (axis A saw no manifest: HTTP 302 — the element followed what the fetch client did not)",
         "media": {
           "readyState": 4,
           "peakReadyState": 4,
           "networkState": 2,
-          "currentTime": 0.526991,
+          "currentTime": 0.520759,
           "playheadAdvanced": true,
           "paused": false,
           "ended": false,
@@ -416,8 +408,8 @@
           ]
         },
         "consoleBounded": [],
-        "explainedBy": "axisA-not-a-manifest",
-        "browserFinding": "played"
+        "axisANeverSawManifest": true,
+        "axisAConcern": "axis A saw no manifest (HTTP 302); the browser played anyway"
       }
     }
   ]

@@ -275,6 +275,15 @@ describe('D-023 real path: the selector over the measured 02D catalogue', () => 
     const descriptor = decide(rows, rights, new Map());
     expect(descriptor.playback.options).toHaveLength(81);
     expect(descriptor.playback.options.every((option) => option.health?.state === 'not-verified')).toBe(true);
+    /*
+     * `not-verified` must also carry `origin: 'none'`: nothing was consulted, so
+     * there is no ledger and no source record behind the verdict. Asserting the
+     * state alone would still pass if a future change reported `not-verified`
+     * while claiming it came from the ledger — a smaller lie, but the same kind.
+     */
+    expect(descriptor.playback.options.every((option) => option.health?.origin === 'none')).toBe(true);
+    // And nothing on this axis was a browser claim.
+    expect(descriptor.playback.options.every((option) => option.compatibility?.state === 'unknown')).toBe(true);
   });
 
   it('MUTATION CHECK (health outranking authorization): removing every right makes the healthiest catalogue offer nothing', () => {

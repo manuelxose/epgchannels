@@ -1,13 +1,21 @@
 {
   "tool": "evidence/02e/hls-comparison.mjs",
-  "generatedAt": "2026-11-17T15:05:45.563Z",
+  "generatedAt": "2026-11-17T15:44:42.446Z",
   "engine": "hls.js (the build shipped in apps/frontend/node_modules)",
-  "note": "Same streams the native <video> check refused with MEDIA_ERR_SRC_NOT_SUPPORTED. Chromium cannot demux MPEG-TS natively; hls.js can. This is the path our app actually uses.",
+  "note": "The path our app actually uses in Chromium. Chromium's own <video> cannot demux MPEG-TS, so the native check is reported separately and is not our path.",
+  "summary": {
+    "sources": 6,
+    "played": 6,
+    "notPlayed": 0,
+    "verdicts": [
+      "played-via-hlsjs"
+    ]
+  },
   "results": [
     {
       "url": "https://ztnr.rtve.es/ztnr/6108704.m3u8",
       "host": "ztnr.rtve.es",
-      "manifestMs": 98,
+      "manifestMs": 152,
       "playingMs": 1009,
       "levels": [
         {
@@ -24,8 +32,10 @@
         }
       ],
       "level": 2,
-      "currentTimeStart": 5.7,
-      "currentTimeEnd": 13.7,
+      "currentTimeFirstSample": 5.64,
+      "currentTimeStart": 5.64,
+      "currentTimeEnd": 13.64,
+      "samplesWhileRunning": 9,
       "advancedSeconds": 8,
       "videoWidth": 1280,
       "videoHeight": 720,
@@ -38,8 +48,8 @@
     {
       "url": "https://rtvelivestream.rtve.es/rtvesec/rne/rne_r4_cam_main_dvr.m3u8",
       "host": "rtvelivestream.rtve.es",
-      "manifestMs": 67,
-      "playingMs": 1009,
+      "manifestMs": 83,
+      "playingMs": 2008,
       "levels": [
         {
           "height": 360,
@@ -55,9 +65,11 @@
         }
       ],
       "level": 2,
-      "currentTimeStart": 3585.66,
-      "currentTimeEnd": 3593.66,
-      "advancedSeconds": 8,
+      "currentTimeFirstSample": 0,
+      "currentTimeStart": 3585.36,
+      "currentTimeEnd": 3592.35,
+      "samplesWhileRunning": 8,
+      "advancedSeconds": 6.99,
       "videoWidth": 1280,
       "videoHeight": 720,
       "mediaErrorCode": null,
@@ -69,8 +81,8 @@
     {
       "url": "https://www.bloomberg.com/media-manifest/streams/qt.m3u8",
       "host": "www.bloomberg.com",
-      "manifestMs": 104,
-      "playingMs": 1009,
+      "manifestMs": 730,
+      "playingMs": 7021,
       "levels": [
         {
           "height": 272,
@@ -93,12 +105,14 @@
           "bitrate": 3000000
         }
       ],
-      "level": 4,
-      "currentTimeStart": 33.58,
-      "currentTimeEnd": 41.56,
-      "advancedSeconds": 7.98,
-      "videoWidth": 1920,
-      "videoHeight": 1080,
+      "level": 2,
+      "currentTimeFirstSample": 0,
+      "currentTimeStart": 33.74,
+      "currentTimeEnd": 35.72,
+      "samplesWhileRunning": 3,
+      "advancedSeconds": 1.98,
+      "videoWidth": 1280,
+      "videoHeight": 720,
       "mediaErrorCode": null,
       "fatal": null,
       "errors": [],
@@ -108,8 +122,8 @@
     {
       "url": "https://cdn1.etbon.eus/meteo/index.m3u8",
       "host": "cdn1.etbon.eus",
-      "manifestMs": 118,
-      "playingMs": 1014,
+      "manifestMs": 131,
+      "playingMs": 1009,
       "levels": [
         {
           "height": 360,
@@ -145,9 +159,11 @@
         }
       ],
       "level": 7,
-      "currentTimeStart": 282.45,
-      "currentTimeEnd": 290.45,
-      "advancedSeconds": 8,
+      "currentTimeFirstSample": 282.34,
+      "currentTimeStart": 282.34,
+      "currentTimeEnd": 290.32,
+      "samplesWhileRunning": 9,
+      "advancedSeconds": 7.98,
       "videoWidth": 1920,
       "videoHeight": 1080,
       "mediaErrorCode": null,
@@ -159,7 +175,7 @@
     {
       "url": "https://rtvelivestream-rtveplayplus.rtve.es/rtvesec/int/tvei_asia_main_dvr_1080.m3u8",
       "host": "rtvelivestream-rtveplayplus.rtve.es",
-      "manifestMs": 74,
+      "manifestMs": 98,
       "playingMs": 1009,
       "levels": [
         {
@@ -168,8 +184,10 @@
         }
       ],
       "level": 0,
-      "currentTimeStart": 7185.7,
-      "currentTimeEnd": 7193.7,
+      "currentTimeFirstSample": 7185.57,
+      "currentTimeStart": 7185.57,
+      "currentTimeEnd": 7193.57,
+      "samplesWhileRunning": 9,
       "advancedSeconds": 8,
       "videoWidth": 1920,
       "videoHeight": 1080,
@@ -182,17 +200,19 @@
     {
       "url": "https://streaming-1.eltorotv.com/lb0/eltorotv-streaming-web/index.m3u8",
       "host": "streaming-1.eltorotv.com",
-      "manifestMs": 312,
+      "manifestMs": 221,
       "playingMs": 1009,
       "levels": [
         {
           "height": 1080,
-          "bitrate": 4420000
+          "bitrate": 4960000
         }
       ],
       "level": 0,
-      "currentTimeStart": 6.14,
-      "currentTimeEnd": 14.14,
+      "currentTimeFirstSample": 6.25,
+      "currentTimeStart": 6.25,
+      "currentTimeEnd": 14.25,
+      "samplesWhileRunning": 9,
       "advancedSeconds": 8,
       "videoWidth": 1920,
       "videoHeight": 1080,

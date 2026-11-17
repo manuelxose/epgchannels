@@ -119,6 +119,12 @@ export const NOT_VERIFIED: SourceHealthVerdict = Object.freeze({
  * Outcomes that are verdicts about the stream. `ineligible` is deliberately
  * absent: a refusal to connect is a fact about rights, recorded on the
  * authorization axis, not about the stream.
+ *
+ * `degraded` maps to `healthy` because the contract's closed union has no
+ * fourth state and the stream *is* attemptable — but a degraded check is not an
+ * unqualified pass, so the degradation is preserved in `failure` (see
+ * `resolveSourceHealth`) instead of being discarded. Reporting it as plain
+ * `healthy` with `failure: null` would have been the small lie.
  */
 function verdictOf(check: RecordedCheck): PlaybackHealth {
   if (check.outcome === 'healthy' || check.outcome === 'degraded') return 'healthy';
@@ -146,7 +152,13 @@ export function resolveSourceHealth(
         state,
         origin: 'health-ledger',
         depth: check.depth,
-        failure: check.failure?.category ?? null,
+        /*
+         * A `degraded` check becomes `healthy` in the closed union, so the
+         * degradation has to survive somewhere: its category, or the explicit
+         * marker `degraded` when the engine recorded no category. Without this
+         * a degraded source was indistinguishable from a clean `ok`.
+         */
+        failure: check.failure?.category ?? (check.outcome === 'degraded' ? 'degraded' : null),
         observedAt: check.observedAt,
       };
     }
