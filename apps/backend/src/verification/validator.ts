@@ -195,15 +195,22 @@ export const MANIFEST_MAX_BYTES = 2 * 1024 * 1024;
  * The numbers, each doing exactly one job:
  *
  * - `MANIFEST_MAX_BYTES` (2 MiB): the whole manifest. Fetched in full.
- * - `SEGMENT_MAX_BYTES` (4 MiB): the **tolerated** whole-segment size. This is the
- *   value the egress layer checks against a declared `content-length`, so it is
- *   what decides `response-too-large`. It is a *tolerance*, not a download
- *   budget: we never intend to keep a whole segment. 4 MiB is chosen because
- *   real HD HLS segments are ~1.8 MiB (measured) and a 4 MiB ceiling still
- *   refuses a hostile 10 MiB body. Changing this is a contract-bound change and
- *   was authorised by the captain.
+ * - `SEGMENT_MAX_BYTES` (4 MiB): a **declared-length sanity tolerance only** — the
+ *   value the egress layer compares against a segment's declared `content-length`
+ *   when one is visible. It is NOT a bandwidth budget and, since the prefix read
+ *   landed, it is NOT a guarantee that an oversized segment is refused: prefix
+ *   mode deliberately skips the declared-length pre-check (that skip is what lets
+ *   a 1.8 MiB segment be sampled at all), and the 64 KiB cap is checked first, so
+ *   a very large segment that streams successfully is reported healthy *because
+ *   we only sample it*. This is the captain's ruling (option a), recorded in
+ *   `DOCUMENTED CONSEQUENCE` in the unit spec: the health verdict means the
+ *   manifest, the variant and sampled segments are retrievable and of the right
+ *   kind — it does not mean "any size is acceptable". Total transfer stays
+ *   bounded by `SEGMENT_PROBE_BYTES`. 4 MiB is chosen because real HD HLS
+ *   segments measure ~1.8 MiB. Changing this is a contract-bound change and was
+ *   authorised by the captain.
  * - `SEGMENT_PROBE_BYTES` (64 KiB): the **sampling** budget — how much we are
- *   willing to read and keep per sampled segment.
+ *   willing to read and keep per sampled segment, regardless of its size.
  */
 export const SEGMENT_MAX_BYTES = 4 * 1024 * 1024;
 export const SEGMENT_PROBE_BYTES = 64 * 1024;
@@ -850,20 +857,19 @@ function segmentFailureCategory(failureResult: Extract<SegmentProbeResult, { ok:
  *
  * The shape, and why each step is there:
  *
- * 1. **HEAD first.** The cheapest question — does this exist, and how big is it?
- *    A 404 costs no body at all. The declared length is vetted against
- *    `SEGMENT_MAX_BYTES`, so the size defence still exists and still reports
- *    `response-too-large` for a genuinely oversized segment. `maxBytes` is set
- *    high here because a HEAD carries no body; using the probe budget would make
- *    every real HD segment look oversized, which is exactly the bug being fixed.
+ * 1. **HEAD first.** The cheapest question — does this exist? A 404 costs no body
+ *    at all. On these CDNs a HEAD reports no `content-length`, so it can only
+ *    answer existence; the declared length stays UNKNOWN here rather than being
+ *    read as "0 bytes, it fits".
  * 2. **Bounded prefix GET.** The probe then reads at most
- *    `SEGMENT_PROBE_BYTES`, which is the contract's *per-sampled-segment* budget.
- *    The seam's `maxBytes` is a hard ceiling, so a compliant server simply
- *    cannot deliver more than that through this call.
- * 3. **A ceiling breach is not a failure.** If the prefix read stops at the
- *    probe budget, that means the server sent more than we asked to sample. The
- *    segment was proved retrievable, which is the only thing sampling asserts;
- *    the whole-segment ceiling was already vetted by the HEAD.
+ *    `SEGMENT_PROBE_BYTES` (the contract's per-sampled-segment budget) and
+ *    releases the socket. `maxBytes` carries `SEGMENT_MAX_BYTES` as a
+ *    declared-length tolerance; the prefix cap, not the tolerance, is what bounds
+ *    the transfer.
+ * 3. **Reaching the cap is success, not a failure.** A segment longer than our
+ *    sample is the normal case; it was proved retrievable, which is all sampling
+ *    asserts. Only a *declared* length above the tolerance, or a non-2xx answer,
+ *    produces a failure.
  */
 async function probeSegment(
   egress: EgressFn,
@@ -971,10 +977,12 @@ async function probeSegment(
     const category = transportCategory(error);
     if (category === 'response-too-large') {
       /*
-       * The declared segment exceeded SEGMENT_MAX_BYTES. This is the size defence
-       * working exactly as intended: keep it, name it, and never turn it into a
-       * healthy row. A *streamed* overrun past the probe budget cannot reach this
-       * branch, because the ceiling is what we asked for.
+       * A declared length above `SEGMENT_MAX_BYTES` — but only on a path where the
+       * egress layer still applies that pre-check. In prefix mode the declared
+       * pre-check is skipped by design and the 64 KiB cap ends the read first, so
+       * the common outcome for a large-but-real segment is success, not this
+       * branch. Kept so a caller without a prefix cap (or with one above the
+       * declared length) still gets the truthful `response-too-large`.
        */
       return {
         ok: false,
