@@ -107,6 +107,14 @@ la salud agregada queda **intacta** y `uncertainty` queda escrito en la nueva fi
 Cada categoría mapea a **una** de las causas del eje: `authorization` (sólo `ineligible`),
 `network`, `protocol`, `content`, `browser`, `policy`.
 
+> **Alcance real del vocabulario (verificado en implementación).** El vocabulario es completo, pero no
+> toda categoría es *alcanzable* por el motor: `georestriction` y `expired-source` no se pueden producir
+> en ninguna capa, porque una restricción geográfica registrada o un `lifecycle` caducado hacen la
+> fuente **inelegible en la capa 1** (02C), no fallida. Se conservan en el tipo porque un adaptador
+> futuro sí podría observarlas desde la red, pero **hoy no se emiten**, y los tests lo afirman
+> explícitamente en vez de fabricar un caso. `unknown-error` es exclusivamente la categoría del check
+> huérfano por lease vencido (§6).
+
 ---
 
 ## 2. Defensas SSRF (SEC-01 se cierra aquí)
@@ -179,8 +187,13 @@ observable.
 ## 6. Recuperación tras caída
 
 - Cada check toma un `lease` con TTL. Un check `running` cuyo `lease.expiresAt` venció se
-  **reclama** como `failed` con `outcome: 'unknown-error'` y `uncertainty.leaseExpired: true` —
-  **nunca** como sano.
+  **reclama** como `state: 'failed'`, `outcome: 'unknown'`, `failure.category: 'unknown-error'` y
+  `uncertainty.leaseExpired: true` — **nunca** como sano.
+  > **Corrección (2026-11-17, durante la implementación).** La versión inicial de este contrato decía
+  > `outcome: 'unknown-error'`, que no es un `CheckOutcomeCode` válido: `outcome` pertenece al
+  > vocabulario de resultados (`healthy|degraded|failing|unknown|unverifiable`) y una **categoría de
+  > fallo** es otro vocabulario (`§1.3`). Se corrige el contrato, no el código: la ambigüedad era del
+  > texto. Un check huérfano es «no sé, y no lo sé porque el proceso murió», que es `unknown`.
 - El estado agregado se actualiza con CAS (`revision`); un escritor obsoleto falla y reintenta,
   nunca sobrescribe.
 - Al arrancar, el planificador reconcilia: filas `pending` huérfanas se re-encolan; no se duplica
@@ -219,3 +232,34 @@ Ver `MILESTONE_STATUS.md`. Como mínimo:
 6. Reproducción real en navegador sobre al menos una fuente autorizada, con veredicto separado del
    `HTTP 200` (documento que pruebe la diferencia).
 7. Revisión independiente `pass`; PR fusionado con SHA verificado.
+
+---
+
+## 9. El defecto más importante de esta ronda: verde con la vía real apagada
+
+`safeFetch` se entregó con **131 tests adversariales en verde** y, aun así, **no podía descargar
+ninguna URL `https` pública**. La causa: el `lookup` inyectado en el conector, que fija la IP validada,
+respondía con una dirección única, mientras que Node lo invoca con `{ all: true }` y en ese modo exige
+un **array**. Todo test pasaba porque **todos inyectaban `deps.lookup`**: el banco de pruebas
+ejercitaba la "vía de prueba", nunca la vía que usa producción.
+
+Es el mismo patrón que el defecto 5 de 02C, en otro eje: allí una fixture construía por un servicio
+que auto-creaba el estado que la prueba examinaba; aquí los tests sustituían exactamente la costura
+donde estaba el fallo. **Lección operativa:** una defensa de red no está probada mientras su única
+cobertura inyecte la capa que puede romperse. Hace falta, como mínimo, **una** prueba por costura
+crítica que recorra la ruta real (aquí: una petición real a un host público y una petición real a un
+fixture de loopback **sin** `lookup` simulado).
+
+Se encontraron así cuatro defectos que ningún test podía ver, todos al ejecutar el motor contra la red
+real y contra fixtures reales:
+
+| # | Defecto | Cómo se manifestó |
+|---|---|---|
+| 1 | `lookup` incompatible con `all: true` | **toda** descarga `https` real fallaba con `ERR_INVALID_IP_ADDRESS` |
+| 2 | el filtro de `content-type` se aplicaba a respuestas de error | un 404, 403, 451 y 503 se reportaban como `unknown-error` en vez de por su estado |
+| 3 | cuerpo sobredimensionado mal reportado | se reportaba `invalid-manifest` en vez de `response-too-large` |
+| 4 | servidor que nunca responde mal reportado | `response-too-large` en vez de `timeout` |
+
+Ninguno de los cuatro era detectable leyendo el código ni ejecutando la suite. La tabla de la §8.2
+("cero sockets") seguía siendo cierta y no habría detectado nada de esto: por eso el criterio 6 de
+aceptación exige además una prueba **real** contra `HTTP 200`, no sólo el control negativo.
