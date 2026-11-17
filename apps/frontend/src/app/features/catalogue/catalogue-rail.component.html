@@ -40,6 +40,43 @@
       </label>
 
       <label class="rail__select rail__select--compact">
+        <span class="visually-hidden">Filtrar por país</span>
+        <select
+          aria-label="Filtrar por país"
+          data-testid="country-filter"
+          [value]="query.country()"
+          (change)="onCountry($event)"
+        >
+          <option value="all">Todos los países</option>
+          @for (country of query.countries(); track country.code) {
+            <option [value]="country.code">{{ country.label }} ({{ country.channelCount }})</option>
+          }
+        </select>
+        <app-icon name="chevron-down" [size]="16" />
+      </label>
+
+      <!--
+        Language: the options come from the languages the catalogue actually
+        publishes, so an empty filter is never offered. A channel the API does
+        not label is not counted under any language.
+      -->
+      <label class="rail__select rail__select--compact">
+        <span class="visually-hidden">Filtrar por idioma</span>
+        <select
+          aria-label="Filtrar por idioma"
+          data-testid="language-filter"
+          [value]="query.language()"
+          (change)="onLanguage($event)"
+        >
+          <option value="all">Todos los idiomas</option>
+          @for (language of query.languages(); track language.code) {
+            <option [value]="language.code">{{ language.label }} ({{ language.channelCount }})</option>
+          }
+        </select>
+        <app-icon name="chevron-down" [size]="16" />
+      </label>
+
+      <label class="rail__select rail__select--compact">
         <span class="visually-hidden">Filtrar por disponibilidad</span>
 
         <select aria-label="Filtrar por disponibilidad" [value]="query.availability()" (change)="onAvailability($event)">

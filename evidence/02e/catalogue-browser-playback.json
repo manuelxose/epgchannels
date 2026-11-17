@@ -1,0 +1,416 @@
+{
+  "tool": "browser-playback-check",
+  "generatedAt": "2026-11-17T15:44:59.506Z",
+  "axes": "axisA = plain HTTP fetch of the manifest (reachability). axisB = observed playback in real Chromium. The verdict is never derived from axisA.",
+  "browser": {
+    "available": true,
+    "via": "sibling:apps/frontend/node_modules/playwright/index.mjs",
+    "version": "158.0.8127.18"
+  },
+  "timeoutMs": 20000,
+  "summary": {
+    "sources": 6,
+    "played": 6,
+    "failed": 0,
+    "notObservable": 0,
+    "httpOkButNotPlayable": 0
+  },
+  "sources": [
+    {
+      "url": "https://ztnr.rtve.es/ztnr/6108704.m3u8",
+      "axisA": {
+        "status": 302,
+        "contentType": "application/x-mpegURL",
+        "bytes": 0,
+        "elapsedMs": 117,
+        "startsWithExtM3u": false,
+        "manifest": null,
+        "redirect": "https://rtvelivestream.rtve.es/rtvesec/oca/irtve03_main.m3u8?idasset=6108704",
+        "corsAllowOrigin": "*",
+        "error": null
+      },
+      "axisB": {
+        "verdict": "played",
+        "reason": "playhead advanced to 0.12s at 640x360 (readyState 4) (axis A saw no manifest: HTTP 302 — the element followed what the fetch client did not)",
+        "media": {
+          "readyState": 4,
+          "peakReadyState": 4,
+          "networkState": 2,
+          "currentTime": 0.122783,
+          "playheadAdvanced": true,
+          "paused": false,
+          "ended": false,
+          "playingEvent": true,
+          "pausedAfterPlaying": false,
+          "videoWidth": 640,
+          "videoHeight": 360,
+          "duration": null,
+          "mediaError": null,
+          "playResult": "resolved",
+          "playError": null,
+          "events": [
+            "waiting",
+            "loadedmetadata",
+            "loadeddata",
+            "canplay",
+            "playing"
+          ],
+          "timedOut": false
+        },
+        "network": {
+          "blockedByCors": false,
+          "corsProbe": {
+            "ok": true,
+            "status": 200,
+            "type": "cors"
+          },
+          "failedRequests": [],
+          "failedRequestCount": 0,
+          "errorResponses": [],
+          "failureTexts": []
+        },
+        "consoleBounded": [],
+        "axisANeverSawManifest": true,
+        "axisAConcern": "axis A saw no manifest (HTTP 302); the browser played anyway"
+      }
+    },
+    {
+      "url": "https://rtvelivestream.rtve.es/rtvesec/rne/rne_r4_cam_main_dvr.m3u8",
+      "axisA": {
+        "status": 200,
+        "contentType": "application/vnd.apple.mpegurl",
+        "bytes": 800,
+        "elapsedMs": 82,
+        "startsWithExtM3u": true,
+        "manifest": {
+          "kind": "master",
+          "variantCount": 3,
+          "segmentCount": 0,
+          "mediaSequence": null,
+          "targetDuration": null,
+          "endList": false,
+          "extensions": 3
+        },
+        "redirect": null,
+        "corsAllowOrigin": "*",
+        "error": null
+      },
+      "axisB": {
+        "verdict": "played",
+        "reason": "playhead advanced to 0.33s at 640x360 (readyState 4)",
+        "media": {
+          "readyState": 4,
+          "peakReadyState": 4,
+          "networkState": 2,
+          "currentTime": 0.330253,
+          "playheadAdvanced": true,
+          "paused": false,
+          "ended": false,
+          "playingEvent": true,
+          "pausedAfterPlaying": false,
+          "videoWidth": 640,
+          "videoHeight": 360,
+          "duration": null,
+          "mediaError": null,
+          "playResult": "resolved",
+          "playError": null,
+          "events": [
+            "waiting",
+            "loadedmetadata",
+            "loadeddata",
+            "canplay",
+            "playing"
+          ],
+          "timedOut": false
+        },
+        "network": {
+          "blockedByCors": false,
+          "corsProbe": null,
+          "failedRequests": [
+            {
+              "resourceType": "media",
+              "kind": "aborted",
+              "count": 1
+            }
+          ],
+          "failedRequestCount": 1,
+          "errorResponses": [],
+          "failureTexts": [
+            "net::ERR_ABORTED"
+          ]
+        },
+        "consoleBounded": []
+      }
+    },
+    {
+      "url": "https://www.bloomberg.com/media-manifest/streams/qt.m3u8",
+      "axisA": {
+        "status": 200,
+        "contentType": "application/vnd.apple.mpegurl; charset=utf-8",
+        "bytes": 2180,
+        "elapsedMs": 106,
+        "startsWithExtM3u": true,
+        "manifest": {
+          "kind": "master",
+          "variantCount": 5,
+          "segmentCount": 0,
+          "mediaSequence": null,
+          "targetDuration": null,
+          "endList": false,
+          "extensions": 3
+        },
+        "redirect": null,
+        "corsAllowOrigin": "*",
+        "error": null
+      },
+      "axisB": {
+        "verdict": "played",
+        "reason": "playhead advanced to 1.76s at 480x272 (readyState 4)",
+        "media": {
+          "readyState": 4,
+          "peakReadyState": 4,
+          "networkState": 2,
+          "currentTime": 1.756973,
+          "playheadAdvanced": true,
+          "paused": false,
+          "ended": false,
+          "playingEvent": true,
+          "pausedAfterPlaying": false,
+          "videoWidth": 480,
+          "videoHeight": 272,
+          "duration": null,
+          "mediaError": null,
+          "playResult": "resolved",
+          "playError": null,
+          "events": [
+            "waiting",
+            "loadedmetadata",
+            "loadeddata",
+            "canplay",
+            "playing"
+          ],
+          "timedOut": false
+        },
+        "network": {
+          "blockedByCors": false,
+          "corsProbe": null,
+          "failedRequests": [
+            {
+              "resourceType": "media",
+              "kind": "aborted",
+              "count": 1
+            }
+          ],
+          "failedRequestCount": 1,
+          "errorResponses": [],
+          "failureTexts": [
+            "net::ERR_ABORTED"
+          ]
+        },
+        "consoleBounded": []
+      }
+    },
+    {
+      "url": "https://cdn1.etbon.eus/meteo/index.m3u8",
+      "axisA": {
+        "status": 200,
+        "contentType": "application/x-mpegURL",
+        "bytes": 3125,
+        "elapsedMs": 128,
+        "startsWithExtM3u": true,
+        "manifest": {
+          "kind": "master",
+          "variantCount": 16,
+          "segmentCount": 0,
+          "mediaSequence": null,
+          "targetDuration": null,
+          "endList": false,
+          "extensions": 5
+        },
+        "redirect": null,
+        "corsAllowOrigin": "*",
+        "error": null
+      },
+      "axisB": {
+        "verdict": "played",
+        "reason": "playhead advanced to 0.92s at 640x360 (readyState 4)",
+        "media": {
+          "readyState": 4,
+          "peakReadyState": 4,
+          "networkState": 2,
+          "currentTime": 0.915805,
+          "playheadAdvanced": true,
+          "paused": false,
+          "ended": false,
+          "playingEvent": true,
+          "pausedAfterPlaying": false,
+          "videoWidth": 640,
+          "videoHeight": 360,
+          "duration": null,
+          "mediaError": null,
+          "playResult": "resolved",
+          "playError": null,
+          "events": [
+            "waiting",
+            "loadedmetadata",
+            "loadeddata",
+            "canplay",
+            "playing"
+          ],
+          "timedOut": false
+        },
+        "network": {
+          "blockedByCors": false,
+          "corsProbe": null,
+          "failedRequests": [
+            {
+              "resourceType": "media",
+              "kind": "aborted",
+              "count": 1
+            }
+          ],
+          "failedRequestCount": 1,
+          "errorResponses": [],
+          "failureTexts": [
+            "net::ERR_ABORTED"
+          ]
+        },
+        "consoleBounded": []
+      }
+    },
+    {
+      "url": "https://rtvelivestream-rtveplayplus.rtve.es/rtvesec/int/tvei_asia_main_dvr_1080.m3u8",
+      "axisA": {
+        "status": 200,
+        "contentType": "application/vnd.apple.mpegurl",
+        "bytes": 159980,
+        "elapsedMs": 87,
+        "startsWithExtM3u": true,
+        "manifest": {
+          "kind": "media",
+          "variantCount": 0,
+          "segmentCount": 1440,
+          "mediaSequence": 311848,
+          "targetDuration": 5,
+          "endList": false,
+          "extensions": 6
+        },
+        "redirect": null,
+        "corsAllowOrigin": "*",
+        "error": null
+      },
+      "axisB": {
+        "verdict": "played",
+        "reason": "playhead advanced to 0.30s at 1920x1080 (readyState 4)",
+        "media": {
+          "readyState": 4,
+          "peakReadyState": 4,
+          "networkState": 2,
+          "currentTime": 0.2963,
+          "playheadAdvanced": true,
+          "paused": false,
+          "ended": false,
+          "playingEvent": true,
+          "pausedAfterPlaying": false,
+          "videoWidth": 1920,
+          "videoHeight": 1080,
+          "duration": null,
+          "mediaError": null,
+          "playResult": "resolved",
+          "playError": null,
+          "events": [
+            "waiting",
+            "loadedmetadata",
+            "loadeddata",
+            "canplay",
+            "playing"
+          ],
+          "timedOut": false
+        },
+        "network": {
+          "blockedByCors": false,
+          "corsProbe": null,
+          "failedRequests": [
+            {
+              "resourceType": "media",
+              "kind": "aborted",
+              "count": 1
+            }
+          ],
+          "failedRequestCount": 1,
+          "errorResponses": [],
+          "failureTexts": [
+            "net::ERR_ABORTED"
+          ]
+        },
+        "consoleBounded": []
+      }
+    },
+    {
+      "url": "https://streaming-1.eltorotv.com/lb0/eltorotv-streaming-web/index.m3u8",
+      "axisA": {
+        "status": 302,
+        "contentType": null,
+        "bytes": 0,
+        "elapsedMs": 114,
+        "startsWithExtM3u": false,
+        "manifest": null,
+        "redirect": "https://edge-nodo-002.streaming.hitcloser.net/eltorotv-streaming-web/index.m3u8",
+        "corsAllowOrigin": "*",
+        "error": null
+      },
+      "axisB": {
+        "verdict": "played",
+        "reason": "playhead advanced to 0.52s at 1920x1080 (readyState 4) (axis A saw no manifest: HTTP 302 — the element followed what the fetch client did not)",
+        "media": {
+          "readyState": 4,
+          "peakReadyState": 4,
+          "networkState": 2,
+          "currentTime": 0.520759,
+          "playheadAdvanced": true,
+          "paused": false,
+          "ended": false,
+          "playingEvent": true,
+          "pausedAfterPlaying": false,
+          "videoWidth": 1920,
+          "videoHeight": 1080,
+          "duration": null,
+          "mediaError": null,
+          "playResult": "resolved",
+          "playError": null,
+          "events": [
+            "waiting",
+            "loadedmetadata",
+            "loadeddata",
+            "canplay",
+            "playing"
+          ],
+          "timedOut": false
+        },
+        "network": {
+          "blockedByCors": false,
+          "corsProbe": {
+            "ok": true,
+            "status": 200,
+            "type": "cors"
+          },
+          "failedRequests": [
+            {
+              "resourceType": "media",
+              "kind": "aborted",
+              "count": 1
+            }
+          ],
+          "failedRequestCount": 1,
+          "errorResponses": [],
+          "failureTexts": [
+            "net::ERR_ABORTED"
+          ]
+        },
+        "consoleBounded": [],
+        "axisANeverSawManifest": true,
+        "axisAConcern": "axis A saw no manifest (HTTP 302); the browser played anyway"
+      }
+    }
+  ]
+}

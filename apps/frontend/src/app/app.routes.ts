@@ -25,5 +25,9 @@ export const routes: Routes = [
     title: 'Parrilla de programación · TDT Player',
     loadComponent: () => import('./features/schedule/schedule-page.component').then((m) => m.SchedulePageComponent),
   },
+  {
+    path: 'admin',
+    loadChildren: () => import('./features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
+  },
   { path: '**', redirectTo: 'television' },
 ];

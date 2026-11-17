@@ -14,11 +14,14 @@
  */
 import type {
   CategoryListResponse,
+  ChannelAvailabilityResponse,
   ChannelListQuery,
   ChannelListResponse,
   ChannelResponse,
+  CountryListResponse,
   EpgFeedEntry,
   HealthResponse,
+  LanguageListResponse,
   PlaybackDescriptor,
   ScheduleResponse,
 } from '@tdt/contracts';
@@ -29,6 +32,18 @@ export interface ChannelsApi {
   list(query?: Partial<ChannelListQuery> & { signal?: AbortSignal }): Promise<ChannelListResponse>;
   get(slug: string, options?: { signal?: AbortSignal }): Promise<ChannelResponse>;
   all(query?: Partial<ChannelListQuery> & { signal?: AbortSignal }): Promise<ChannelListResponse['data']>;
+  /** Public availability aggregate: authorisation-first, never a stream URL. */
+  availability(slug: string, options?: { signal?: AbortSignal }): Promise<ChannelAvailabilityResponse>;
+  /**
+   * The complete guide day of one channel.
+   *
+   * `date` (`YYYY-MM-DD`, read in the channel's zone) or `from` + `hours`
+   * (explicit window); the two are mutually exclusive.
+   */
+  epg(
+    slug: string,
+    options?: { date?: string; timezone?: string; from?: string; hours?: number; signal?: AbortSignal },
+  ): Promise<ScheduleResponse>;
 }
 
 export interface PlaybackApi {
@@ -58,9 +73,35 @@ export interface EpgApi {
   }): Promise<EpgFeedEntry[]>;
 }
 
+/**
+ * `/countries/{code}/regions` response.
+ *
+ * The rows reuse the published `/regions` fields and add `aggregate`, which marks
+ * the `INTL` row folding channels with no region assigned. That row exists so the
+ * counts add up; a client must not offer it as a filter value.
+ */
+export interface CountryRegionsResponse {
+  readonly country: CountryListResponse['data'][number];
+  readonly data: ReadonlyArray<{
+    readonly country: string;
+    readonly code: string;
+    readonly name: string;
+    readonly channelCount: number;
+    readonly playableCount: number;
+    readonly aggregate: boolean;
+  }>;
+  readonly attribution: { readonly notices: readonly string[]; readonly includesThirdPartyData: boolean };
+}
+
 export interface CatalogueApi {
   categories(options?: { signal?: AbortSignal }): Promise<CategoryListResponse>;
   regions(options?: { signal?: AbortSignal }): Promise<unknown>;
+  /** Countries with real counts, including the `INT` international aggregate. */
+  countries(options?: { signal?: AbortSignal }): Promise<CountryListResponse>;
+  /** Regions of one country, with counts. `code` is ISO alpha-2 or `INT`. */
+  countryRegions(code: string, options?: { signal?: AbortSignal }): Promise<CountryRegionsResponse>;
+  /** Languages the catalogue declares, including the `multi` marker. */
+  languages(options?: { signal?: AbortSignal }): Promise<LanguageListResponse>;
 }
 
 export interface SystemApi {
@@ -116,6 +157,22 @@ export function createTdtClient(options: ClientOptions): TdtClient {
       }
       return collected;
     },
+    availability: (slug, requestOptions) =>
+      http.request<ChannelAvailabilityResponse>(
+        'GET',
+        `/channels/${encodeURIComponent(slug)}/availability`,
+        toRequest(requestOptions),
+      ),
+    epg: (slug, requestOptions = {}) =>
+      http.request<ScheduleResponse>('GET', `/channels/${encodeURIComponent(slug)}/epg`, {
+        query: {
+          date: requestOptions.date,
+          timezone: requestOptions.timezone,
+          from: requestOptions.from,
+          hours: requestOptions.hours,
+        },
+        ...(requestOptions.signal ? { signal: requestOptions.signal } : {}),
+      }),
   };
 
   const playback: PlaybackApi = {
@@ -167,6 +224,16 @@ export function createTdtClient(options: ClientOptions): TdtClient {
     categories: (requestOptions) =>
       http.request<CategoryListResponse>('GET', '/categories', toRequest(requestOptions)),
     regions: (requestOptions) => http.request('GET', '/regions', toRequest(requestOptions)),
+    countries: (requestOptions) =>
+      http.request<CountryListResponse>('GET', '/countries', toRequest(requestOptions)),
+    countryRegions: (code, requestOptions) =>
+      http.request<CountryRegionsResponse>(
+        'GET',
+        `/countries/${encodeURIComponent(code)}/regions`,
+        toRequest(requestOptions),
+      ),
+    languages: (requestOptions) =>
+      http.request<LanguageListResponse>('GET', '/languages', toRequest(requestOptions)),
   };
 
   const system: SystemApi = {

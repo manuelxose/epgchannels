@@ -21,6 +21,8 @@ import {
 } from './schemas.js';
 import type { Logger } from '../infrastructure/logging.js';
 import type { AppContext } from './context.js';
+import type { Metrics } from './middleware.js';
+import { collectAdminMetrics } from '../modules/admin/admin-metrics.js';
 import { AppError } from './errors.js';
 import { ChannelsService, attributionFor, toChannel } from '../modules/channels/channels.service.js';
 import { buildDescriptor, sourceIssues } from '../modules/playback/playback.service.js';
@@ -30,6 +32,29 @@ import type { ChannelDoc, EpgSourceDoc, JobRunDoc, PlaybackSourceDoc } from '../
 import { COLLECTIONS } from '../infrastructure/mongo.js';
 import { CATEGORY_LABELS, CATEGORY_ORDER, SPAIN_REGIONS } from '../shared/taxonomy.js';
 import { createVerificationAdminRouter } from '../modules/admin/verification.admin.js';
+/*
+ * TDT-API-02FG integration: public discovery (t6) and the operations console
+ * (t7A) both extend this router. The import block is the merge of the two
+ * branches; neither side's symbols are dropped.
+ */
+import {
+  CountryAggregates,
+  LanguageAggregates,
+  countryRegionsResponseSchema,
+  publicLanguageListResponseSchema,
+} from '../modules/channels/catalogue.aggregates.js';
+import { PublicApiService } from '../modules/channels/public-api.service.js';
+import { epgDayQuerySchema } from '../modules/channels/local-day.js';
+import { publicChannelListQuerySchema } from '../modules/channels/public-filters.js';
+import {
+  countryListResponseSchema,
+  channelAvailabilityResponseSchema,
+  epgCoverageSchema,
+} from '@tdt/contracts';
+import { AdminConsoleService } from '../modules/admin/admin-console.service.js';
+import { createAdminConsoleRouter } from '../modules/admin/admin-console.router.js';
+import { MergedMetrics, emptyMetricsView } from '../modules/admin/admin-metrics.js';
+import type { Actor } from '../modules/admin/editorial.service.js';
 
 const uuid = z.string().uuid();
 const slugParam = z.string().min(1).max(120);
@@ -88,7 +113,7 @@ async function adminChannelPayload(context: AppContext, channel: ChannelDoc) {
   };
 }
 
-export function createRouter(context: AppContext, logger: Logger): Router {
+export function createRouter(context: AppContext, logger: Logger, metrics?: Metrics): Router {
   const router = Router();
   const channels = new ChannelsService(context.database);
 
@@ -133,6 +158,23 @@ export function createRouter(context: AppContext, logger: Logger): Router {
     type: 'user' as const,
     id: request.admin?.email ?? 'unknown',
   });
+
+  /**
+   * Attribution for a payload derived from the published catalogue.
+   *
+   * These endpoints report *counts*, not records, so reading every channel to
+   * describe them would defeat the aggregation. One bounded projection of
+   * `provenance` is enough: a source is editorial or third-party for every record
+   * it appears in, and the notices are deduplicated by text anyway.
+   */
+  async function attributionForCatalogue(context: AppContext) {
+    const docs = await context.database
+      .collection<ChannelDoc>(COLLECTIONS.channels)
+      .find({ editorialStatus: 'published', mergedInto: null }, { projection: { _id: 1, provenance: 1 } })
+      .limit(200)
+      .toArray();
+    return attributionFor(docs as unknown as ChannelDoc[]);
+  }
 
   // ---------------------------------------------------------------- health
   router.get(
@@ -185,10 +227,63 @@ export function createRouter(context: AppContext, logger: Logger): Router {
   );
 
   // -------------------------------------------------------------- channels
+  /*
+   * TDT-API-02FG public discovery surface. Registered before `/channels/:slug`
+   * so a country path can never be read as a channel slug, and kept public:
+   * these are catalogue axes, not administration.
+   */
+  const countries = new CountryAggregates(context.database, context.playback);
+  const languages = new LanguageAggregates(context.database, context.playback);
+  const publicApi = new PublicApiService(context.database, context.playback, context.epg);
+
+  /** `ES`, `INT`, or any 2-letter ISO code the catalogue may carry. */
+  const countryCodeParam = z
+    .string()
+    .trim()
+    .min(2)
+    .max(3)
+    .transform((value) => value.toUpperCase());
+
+  router.get(
+    '/countries',
+    handle(async (_request, response) => {
+      const data = await countries.entries();
+      response.json(
+        countryListResponseSchema.parse({ data, attribution: await attributionForCatalogue(context) }),
+      );
+    }),
+  );
+
+  router.get(
+    '/countries/:code/regions',
+    handle(async (request, response) => {
+      const code = parse(z.object({ code: countryCodeParam }), 'params', request).code;
+      const result = await countries.regions(code);
+      if (!result) throw AppError.notFound('País no encontrado en el catálogo.');
+      response.json(
+        countryRegionsResponseSchema.parse({
+          country: result.entry,
+          data: result.data,
+          attribution: await attributionForCatalogue(context),
+        }),
+      );
+    }),
+  );
+
+  router.get(
+    '/languages',
+    handle(async (_request, response) => {
+      const data = await languages.list();
+      response.json(
+        publicLanguageListResponseSchema.parse({ data, attribution: await attributionForCatalogue(context) }),
+      );
+    }),
+  );
+
   router.get(
     '/channels',
     handle(async (request, response) => {
-      const query = parse(channelListQuerySchema, 'query', request);
+      const query = parse(publicChannelListQuerySchema, 'query', request);
       const result = await context.channels.list(
         {
           q: query.q,
@@ -237,6 +332,38 @@ export function createRouter(context: AppContext, logger: Logger): Router {
     }),
   );
 
+  /**
+   * TDT-API-02FG: a complete guide day in the channel's own zone.
+   *
+   * `?date=YYYY-MM-DD` (local day) or `?from=` + `?hours=` (explicit window). The
+   * window is computed on the zone, so a DST edge shortens or lengthens the day
+   * instead of silently shifting a whole grid. An unmapped or empty guide answers
+   * honestly (`not-mapped` / `empty`) and never invents a programme.
+   */
+  router.get(
+    '/channels/:slug/epg',
+    handle(async (request, response) => {
+      const slug = requireSlug(request);
+      const query = parse(epgDayQuerySchema, 'query', request);
+      response.json(await publicApi.epgDay(slug, query));
+    }),
+  );
+
+  /**
+   * TDT-API-02FG: public availability of one channel.
+   *
+   * Authorisation first: the payload is built from the same descriptor the player
+   * receives and then reduced to booleans and counts, so it can never carry a
+   * stream URL, a source id, a provider name, a credential or a licence clause.
+   */
+  router.get(
+    '/channels/:slug/availability',
+    handle(async (request, response) => {
+      const slug = requireSlug(request);
+      response.json(channelAvailabilityResponseSchema.parse(await publicApi.availability(slug)));
+    }),
+  );
+
   // ------------------------------------------------------------------- epg
   const feedHandler =
     (mode: 'now' | 'next'): RequestHandler =>
@@ -259,6 +386,51 @@ export function createRouter(context: AppContext, logger: Logger): Router {
 
   router.get('/epg/now', handle(feedHandler('now')));
   router.get('/epg/next', handle(feedHandler('next')));
+
+  /**
+   * TDT-API-02FG: published EPG coverage per channel.
+   *
+   * Fed by `EpgService.coverage()` — the single shared measurement that the
+   * public API, `/channels/:slug/availability` and the admin console all read —
+   * so there is exactly one definition of "this channel's guide is fresh/stale/
+   * empty/not-mapped" in the platform.
+   */
+  router.get(
+    '/epg/channels',
+    handle(async (request, response) => {
+      /*
+       * The full coverage table is ~400 rows and the schema validates every one of
+       * them. Parsing it unbounded cost 140 s measured (zod over a large array,
+       * with no paging bound); the response is now bounded to one country or one
+       * coverage status per request, and `totals` still describes the WHOLE
+       * catalogue so a client can render the overall picture from any page.
+       */
+      const query = parse(
+        z.object({
+          country: z.string().min(2).max(3).optional(),
+          status: z.enum(['fresh', 'stale', 'empty', 'not-mapped']).optional(),
+          limit: z.coerce.number().int().min(1).max(500).default(200),
+        }),
+        'query',
+        request,
+      );
+      const coverage = await context.epg.coverage();
+      const filtered = coverage.entries.filter(
+        (entry) =>
+          (query.country === undefined || entry.country === query.country) &&
+          (query.status === undefined || entry.status === query.status),
+      );
+      response.json(
+        epgCoverageSchema.parse({
+          data: {
+            entries: filtered.slice(0, query.limit),
+            totals: coverage.totals,
+            asOf: coverage.asOf,
+          },
+        }),
+      );
+    }),
+  );
 
   // ------------------------------------------------------------ categories
   router.get(
@@ -757,6 +929,47 @@ export function createRouter(context: AppContext, logger: Logger): Router {
       );
       const created = await context.epg.createEditorialProgramme(input, `manual:${actorOf(request).id}`);
       response.status(201).json({ data: created });
+    }),
+  );
+
+  /*
+   * TDT-API-02FG console: overview, catalogue workbench, identity, duplicates,
+   * source health/history/assign/remove, EPG coverage/mappings/runs and the
+   * operations view. Registered BEFORE the 02D verification router so its own
+   * `/verification/*` paths stay untouched — the console adds no path that
+   * collides with them.
+   *
+   * The guard is passed in, not assumed: the factory refuses to serve a route it
+   * cannot protect. Ingestion and job control additionally require `admin`.
+   */
+  router.use(
+    '/admin',
+    createAdminConsoleRouter({
+      database: context.database,
+      console: new AdminConsoleService(context.database),
+      editorial: context.editorial,
+      sources: context.sources,
+      jobControl: context.jobControl,
+      epg: context.epg,
+      egressOptions: context.egressOptions,
+      playback: context.playback,
+      ingestion: context.epgIngestion,
+      metrics: async () =>
+        collectAdminMetrics({
+          /*
+           * The context's registry, which is the one `PlaybackService` counts into.
+           * The `metrics` argument from `createApp` is the HTTP registry that
+           * `/metrics` renders; both are consulted so the console reports real
+           * traffic and real playback instead of whichever half it happened to see.
+           */
+          metrics: new MergedMetrics(context.metrics, metrics ?? emptyMetricsView()),
+          databaseLatencyMs: await context.database.ping().catch(() => null),
+          cacheEnabled: context.cache.enabled,
+          windowSeconds: Math.max(1, Math.round(process.uptime())),
+        }),
+      logger,
+      requireEditor,
+      requireAdmin,
     }),
   );
 

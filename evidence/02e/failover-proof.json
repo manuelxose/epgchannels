@@ -1,0 +1,30 @@
+{
+  "tool": "data/02e-failover-proof.cjs",
+  "generatedAt": "2026-11-17T15:06:36.273Z",
+  "case1_authorized_failing_then_healthy": {
+    "host": "ztnr.rtve.es",
+    "failingSourceId": "097a2a33-150c-4f01-9ff8-245b75db1501",
+    "healthySourceId": "06a4d4e8-5be7-460e-9a81-97e292574446",
+    "selected": [
+      "06a4d4e8-5be7-460e-9a81-97e292574446"
+    ],
+    "selectedIsHealthy": true,
+    "refused": [
+      {
+        "sourceId": "097a2a33-150c-4f01-9ff8-245b75db1501",
+        "axis": "health",
+        "code": "http-404"
+      }
+    ]
+  },
+  "case2_unauthorized_never_a_candidate": {
+    "unauthorizedSourceId": "06a4d4e8-5be7-460e-9a81-97e292574446-unauthorized",
+    "unauthorizedHasTopPriority": true,
+    "selected": [
+      "06a4d4e8-5be7-460e-9a81-97e292574446"
+    ],
+    "unauthorizedAppearsAsCandidate": false,
+    "unauthorizedAppearsAsRefusal": false
+  },
+  "pass": true
+}

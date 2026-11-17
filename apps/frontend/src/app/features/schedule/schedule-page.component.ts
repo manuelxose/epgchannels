@@ -259,7 +259,10 @@ export class SchedulePageComponent {
   });
 
   constructor() {
-    void this.catalog.ensureCatalog();
+    // This page is the one that shows the guide grid, so it is the one that loads
+    // it: the catalogue no longer pays 21 per-channel requests for a snapshot only
+    // this view renders.
+    void this.catalog.ensureCatalog().then(() => this.catalog.ensureEpg());
     setInterval(() => this.now.set(new Date()), 30_000);
   }
 

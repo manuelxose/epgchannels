@@ -1,6 +1,6 @@
 // GENERATED — do not edit by hand.
 // Source: openapi/openapi.json (TDT Platform API v1).
-// Generated: 2026-11-16T08:10:07.483Z
+// Generated: 2026-11-17T17:18:10.533Z
 
 export type ApiError = {
   readonly error: {
@@ -161,6 +161,21 @@ export type PlaybackDescriptor = {
       readonly externalUrl: string | null;
       readonly geoRestricted: boolean;
       readonly preferred: boolean;
+      readonly health?: {
+        readonly state: "healthy" | "failing" | "not-verified";
+        readonly origin: "health-ledger" | "source-record" | "none";
+        readonly depth: string | null;
+        readonly failure: string | null;
+        readonly observedAt: string | null;
+      };
+      readonly compatibility?: unknown;
+      readonly observedAt?: string | null;
+    }>;
+    readonly unavailableOptions?: ReadonlyArray<{
+      readonly sourceId: string;
+      readonly type: "hls" | "dash" | "youtube" | "official-embed" | "external";
+      readonly axis: "compatibility" | "health" | "address";
+      readonly code: string;
     }>;
     readonly reason: string | null;
   };
@@ -196,6 +211,21 @@ export type PlaybackResponse = {
         readonly externalUrl: string | null;
         readonly geoRestricted: boolean;
         readonly preferred: boolean;
+        readonly health?: {
+          readonly state: "healthy" | "failing" | "not-verified";
+          readonly origin: "health-ledger" | "source-record" | "none";
+          readonly depth: string | null;
+          readonly failure: string | null;
+          readonly observedAt: string | null;
+        };
+        readonly compatibility?: unknown;
+        readonly observedAt?: string | null;
+      }>;
+      readonly unavailableOptions?: ReadonlyArray<{
+        readonly sourceId: string;
+        readonly type: "hls" | "dash" | "youtube" | "official-embed" | "external";
+        readonly axis: "compatibility" | "health" | "address";
+        readonly code: string;
       }>;
       readonly reason: string | null;
     };
@@ -596,13 +626,193 @@ export type AuditListQuery = {
   readonly action?: string;
 };
 
+export type CountryEntry = {
+  readonly code: string;
+  readonly name: string;
+  readonly international: boolean;
+  readonly channelCount: number;
+  readonly playableCount: number;
+  readonly regionCount: number;
+};
+
+export type CountryListResponse = {
+  readonly data: ReadonlyArray<{
+    readonly code: string;
+    readonly name: string;
+    readonly international: boolean;
+    readonly channelCount: number;
+    readonly playableCount: number;
+    readonly regionCount: number;
+  }>;
+  readonly attribution: {
+    readonly notices: ReadonlyArray<string>;
+    readonly includesThirdPartyData: boolean;
+  };
+};
+
+export type CountryRegionEntry = {
+  readonly country: string;
+  readonly code: string;
+  readonly name: string;
+  readonly channelCount: number;
+  readonly playableCount: number;
+  readonly aggregate: boolean;
+};
+
+export type CountryRegionsResponse = {
+  readonly country: {
+    readonly code: string;
+    readonly name: string;
+    readonly international: boolean;
+    readonly channelCount: number;
+    readonly playableCount: number;
+    readonly regionCount: number;
+  };
+  readonly data: ReadonlyArray<{
+    readonly country: string;
+    readonly code: string;
+    readonly name: string;
+    readonly channelCount: number;
+    readonly playableCount: number;
+    readonly aggregate: boolean;
+  }>;
+  readonly attribution: {
+    readonly notices: ReadonlyArray<string>;
+    readonly includesThirdPartyData: boolean;
+  };
+};
+
+export type LanguageEntry = {
+  readonly code: string;
+  readonly name: string;
+  readonly channelCount: number;
+  readonly playableCount: number;
+};
+
+export type LanguageListResponse = {
+  readonly data: ReadonlyArray<{
+    readonly code: string;
+    readonly name: string;
+    readonly channelCount: number;
+    readonly playableCount: number;
+  }>;
+  readonly attribution: {
+    readonly notices: ReadonlyArray<string>;
+    readonly includesThirdPartyData: boolean;
+  };
+};
+
+export type ChannelAvailability = {
+  readonly slug: string;
+  readonly playable: boolean;
+  readonly playbackStatus: "available" | "degraded" | "unavailable" | "external";
+  readonly geoRestricted: boolean;
+  readonly authorisedSources: number;
+  readonly lastVerifiedAt: string | null;
+  readonly epg: {
+    readonly availability: "available" | "empty" | "not-mapped" | "withdrawn";
+    readonly updatedAt: string | null;
+  };
+};
+
+export type ChannelAvailabilityResponse = {
+  readonly data: {
+    readonly slug: string;
+    readonly playable: boolean;
+    readonly playbackStatus: "available" | "degraded" | "unavailable" | "external";
+    readonly geoRestricted: boolean;
+    readonly authorisedSources: number;
+    readonly lastVerifiedAt: string | null;
+    readonly epg: {
+      readonly availability: "available" | "empty" | "not-mapped" | "withdrawn";
+      readonly updatedAt: string | null;
+    };
+  };
+  readonly attribution: {
+    readonly notices: ReadonlyArray<string>;
+    readonly includesThirdPartyData: boolean;
+  };
+};
+
+export type EpgCoverageEntry = {
+  readonly channelId: string;
+  readonly slug: string;
+  readonly name: string;
+  readonly country: string;
+  readonly language: string;
+  readonly timezone: string;
+  readonly mapped: boolean;
+  readonly sourceId: string | null;
+  readonly sourceName: string | null;
+  readonly status: "fresh" | "stale" | "empty" | "not-mapped";
+  readonly availability: "available" | "empty" | "not-mapped" | "withdrawn";
+  readonly programmes: number;
+  readonly lastProgrammeEnd: string | null;
+  readonly staleAfter: string | null;
+};
+
+export type EpgCoverageResponse = {
+  readonly data: {
+    readonly entries: ReadonlyArray<{
+      readonly channelId: string;
+      readonly slug: string;
+      readonly name: string;
+      readonly country: string;
+      readonly language: string;
+      readonly timezone: string;
+      readonly mapped: boolean;
+      readonly sourceId: string | null;
+      readonly sourceName: string | null;
+      readonly status: "fresh" | "stale" | "empty" | "not-mapped";
+      readonly availability: "available" | "empty" | "not-mapped" | "withdrawn";
+      readonly programmes: number;
+      readonly lastProgrammeEnd: string | null;
+      readonly staleAfter: string | null;
+    }>;
+    readonly totals: {
+      readonly channels: number;
+      readonly mapped: number;
+      readonly fresh: number;
+      readonly stale: number;
+      readonly empty: number;
+      readonly notMapped: number;
+    };
+    readonly asOf: string;
+  };
+};
+
+export type EpgDayQuery = {
+  readonly date?: string;
+  readonly timezone?: string;
+  readonly from?: string;
+  readonly hours?: number;
+};
+
+export type PublicChannelListQuery = {
+  readonly page?: number;
+  readonly pageSize?: number;
+  readonly q?: string;
+  readonly country?: string;
+  readonly region?: string;
+  readonly category?: "generalista" | "informativos" | "deportes" | "infantil" | "musica" | "cultura" | "cine-series" | "documentales" | "entretenimiento" | "religion" | "local" | "autonomica" | "internacional" | "otros";
+  readonly language?: string;
+  readonly playable?: boolean | "true" | "false" | "1" | "0";
+  readonly sort?: "name" | "name-desc" | "updated" | "relevance";
+};
+
 /** Every documented operation, as generated from the contract. */
 export const OPENAPI_OPERATIONS = {
   getHealth: { method: "GET", path: "/health" },
+  listCountries: { method: "GET", path: "/countries" },
+  listCountryRegions: { method: "GET", path: "/countries/{code}/regions" },
+  listLanguages: { method: "GET", path: "/languages" },
   listChannels: { method: "GET", path: "/channels" },
   getChannel: { method: "GET", path: "/channels/{slug}" },
   getPlayback: { method: "GET", path: "/channels/{slug}/playback" },
   getSchedule: { method: "GET", path: "/channels/{slug}/schedule" },
+  getChannelEpgDay: { method: "GET", path: "/channels/{slug}/epg" },
+  getChannelAvailability: { method: "GET", path: "/channels/{slug}/availability" },
+  listEpgCoverage: { method: "GET", path: "/epg/channels" },
   getEpgNow: { method: "GET", path: "/epg/now" },
   getEpgNext: { method: "GET", path: "/epg/next" },
   listCategories: { method: "GET", path: "/categories" },

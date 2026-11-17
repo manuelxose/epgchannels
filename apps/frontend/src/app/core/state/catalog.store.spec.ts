@@ -166,10 +166,30 @@ describe('CatalogStore + CatalogueQuery integration (our API)', () => {
     expect(store.channels()[0].availability).toBe('playable');
     expect(store.channels()[2].availability).toBe('external');
     expect(store.channels()[3].availability).toBe('no-emission');
+    // The catalogue alone issues no guide request: 21 per-channel `/schedule`
+    // calls used to fire on every home visit for a snapshot the home never shows.
+    expect(fetchMock.mock.calls.filter(([input]) => String(input).endsWith('/schedule'))).toHaveLength(0);
 
-    await vi.waitFor(() => expect(store.epgStatus()).toBe('ready'));
+    await store.ensureEpg();
+    expect(store.epgStatus()).toBe('ready');
     expect(store.scheduleFor(store.channelById('la-1'))?.programs).toHaveLength(1);
     expect(store.scheduleFor(store.channelById('la-2'))?.programs).toHaveLength(0);
+  });
+
+  it('joins a guide request already in flight instead of fetching it twice', async () => {
+    const store = TestBed.inject(CatalogStore);
+    await store.ensureCatalog();
+    const scheduleCalls = () =>
+      fetchMock.mock.calls.filter(([input]) => String(input).includes('/schedule')).length;
+    expect(scheduleCalls()).toBe(0);
+
+    // Three callers race on opening a channel (detail effect, loader, clock).
+    // Nothing is cached yet, so only the in-flight guard keeps this at one request.
+    const racers = [store.ensureEpg(['la-1']), store.ensureEpg(['la-1']), store.ensureEpg(['la-1'])];
+    await Promise.all(racers);
+
+    expect(scheduleCalls()).toBe(1);
+    expect(store.epgStatus()).toBe('ready');
   });
 
   it('never falls back to a third-party catalogue: an unreachable API is an error', async () => {
@@ -255,9 +275,68 @@ describe('CatalogStore + CatalogueQuery integration (our API)', () => {
       query.setQuery('la');
       query.setCategory('generalista');
       query.setAvailability('playable');
+      query.setCountry('ES');
+      query.setLanguage('ca');
       query.clearFilters();
       expect(query.view().isFiltered).toBe(false);
       expect(query.view().filteredCount).toBe(4);
+    });
+
+    it('filters by country, built from the countries the catalogue actually has', () => {
+      const query = TestBed.inject(CatalogueQuery);
+      // Every fixture is published from ES, so the option list holds exactly one
+      // entry and never offers a filter that cannot match anything.
+      expect(query.countries().map((country) => country.code)).toEqual(['ES']);
+      expect(query.countries()[0]?.channelCount).toBe(4);
+
+      query.setCountry('ES');
+      expect(query.view().filteredCount).toBe(4);
+      expect(query.view().isFiltered).toBe(true);
+
+      query.setCountry('FR');
+      expect(query.view().filteredCount).toBe(0);
+      expect(query.view().pageChannels).toEqual([]);
+    });
+
+    it('filters by language, and does not claim a language for unlabelled channels', () => {
+      const query = TestBed.inject(CatalogueQuery);
+      // The API labels every fixture `es`.
+      expect(query.languages().map((language) => language.code)).toEqual(['es']);
+      expect(query.channelsWithoutLanguage()).toBe(0);
+
+      query.setLanguage('es');
+      expect(query.view().filteredCount).toBe(4);
+
+      query.setLanguage('ca');
+      expect(query.view().filteredCount).toBe(0);
+    });
+
+    it('excludes an unlabelled channel from every language filter', async () => {
+      // `Canal Sur` alone publishes no language.
+      const mixed: ApiChannelFixture[] = [
+        { slug: 'con-idioma', name: 'Con Idioma', category: 'generalista', playbackStatus: 'available' },
+        { slug: 'sin-idioma', name: 'Sin Idioma', category: 'generalista', playbackStatus: 'available' },
+      ];
+      fetchMock.mockImplementation((input: string, init?: RequestInit) => {
+        const url = new URL(String(input), 'http://localhost');
+        if (url.pathname === '/api/v1/channels') {
+          const body = channelListBody(mixed, 1, 100);
+          body.data[1].language = null as unknown as string;
+          return Promise.resolve(jsonResponse(body));
+        }
+        return routeFetch(input as string, init);
+      });
+
+      const store = TestBed.inject(CatalogStore);
+      await store.reloadCatalog();
+
+      const query = TestBed.inject(CatalogueQuery);
+      query.clearFilters();
+      expect(query.view().filteredCount).toBe(2);
+      expect(query.channelsWithoutLanguage()).toBe(1);
+
+      query.setLanguage('es');
+      expect(query.view().pageChannels.map((channel) => channel.name)).toEqual(['Con Idioma']);
     });
 
     it(`pages by ${PAGE_SIZE} and clamps requests`, async () => {

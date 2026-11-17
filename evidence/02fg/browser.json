@@ -1,0 +1,242 @@
+{
+  "schemaVersion": "tdt-02fg-browser/1",
+  "generatedAt": "2026-11-17T18:30:27.288Z",
+  "web": "http://127.0.0.1:4400",
+  "api": "http://127.0.0.1:4410",
+  "checks": [
+    {
+      "id": "api-health",
+      "ok": true,
+      "status": 200,
+      "publishedChannels": 412
+    },
+    {
+      "id": "public/countries",
+      "ok": true,
+      "status": 200,
+      "bytes": 468,
+      "rows": 2
+    },
+    {
+      "id": "public/countries/ES/regions",
+      "ok": true,
+      "status": 200,
+      "bytes": 2260,
+      "rows": 18
+    },
+    {
+      "id": "public/languages",
+      "ok": true,
+      "status": 200,
+      "bytes": 394,
+      "rows": 2
+    },
+    {
+      "id": "public/channels?country=INT&pageSize=5",
+      "ok": true,
+      "status": 200,
+      "bytes": 2079,
+      "rows": 5
+    },
+    {
+      "id": "public/channels?language=multi&pageSize=5",
+      "ok": true,
+      "status": 200,
+      "bytes": 2079,
+      "rows": 5
+    },
+    {
+      "id": "public/channels?pageSize=5&sort=name",
+      "ok": true,
+      "status": 200,
+      "bytes": 2112,
+      "rows": 5
+    },
+    {
+      "id": "public/epg/channels?limit=5",
+      "ok": true,
+      "status": 200,
+      "bytes": 1689
+    },
+    {
+      "id": "public/epg/now?limit=3",
+      "ok": true,
+      "status": 200,
+      "bytes": 1067,
+      "rows": 3
+    },
+    {
+      "id": "public/epg/next?limit=3",
+      "ok": true,
+      "status": 200,
+      "bytes": 1067,
+      "rows": 3
+    },
+    {
+      "id": "countries-sum-equals-catalogue",
+      "ok": true,
+      "totalFromCountries": 412,
+      "publishedChannels": 412
+    },
+    {
+      "id": "availability-has-no-stream-url",
+      "ok": true,
+      "slug": "1-plus-1-ucrania",
+      "bytes": 4321
+    },
+    {
+      "id": "admin-bootstrap",
+      "ok": true,
+      "status": 201,
+      "email": "captain02fg-1794940212706@tdt.invalid"
+    },
+    {
+      "id": "admin-login",
+      "ok": true,
+      "status": 200
+    },
+    {
+      "id": "admin/admin/me",
+      "ok": true,
+      "status": 200,
+      "bytes": 124
+    },
+    {
+      "id": "admin/admin/overview",
+      "ok": true,
+      "status": 200,
+      "bytes": 593
+    },
+    {
+      "id": "admin/admin/catalogue",
+      "ok": true,
+      "status": 200,
+      "bytes": 1885
+    },
+    {
+      "id": "admin/admin/sources/health",
+      "ok": true,
+      "status": 200,
+      "bytes": 2419
+    },
+    {
+      "id": "admin/admin/duplicates",
+      "ok": true,
+      "status": 200,
+      "bytes": 114405
+    },
+    {
+      "id": "admin/admin/epg/coverage",
+      "ok": true,
+      "status": 200,
+      "bytes": 140320
+    },
+    {
+      "id": "admin/admin/epg/mappings",
+      "ok": true,
+      "status": 200,
+      "bytes": 108
+    },
+    {
+      "id": "admin/admin/epg/ingestion-runs",
+      "ok": true,
+      "status": 200,
+      "bytes": 11
+    },
+    {
+      "id": "admin/admin/operations/jobs",
+      "ok": true,
+      "status": 200,
+      "bytes": 563
+    },
+    {
+      "id": "admin/admin/operations/metrics",
+      "ok": true,
+      "status": 200,
+      "bytes": 191
+    },
+    {
+      "id": "admin/admin/operations/errors",
+      "ok": true,
+      "status": 200,
+      "bytes": 56
+    },
+    {
+      "id": "admin/admin/audits",
+      "ok": true,
+      "status": 200,
+      "bytes": 1118
+    },
+    {
+      "id": "admin-catalogue-detail",
+      "ok": true,
+      "slug": "plus-24"
+    },
+    {
+      "id": "admin-source-history",
+      "ok": true,
+      "sourceId": "469dd709-1f56-4d58-9c9c-3aa5117c8b49",
+      "status": 200
+    },
+    {
+      "id": "admin-job-pause-resume",
+      "ok": true,
+      "job": "epg-refresh",
+      "pause": 200,
+      "pausedWhilePaused": true,
+      "resume": 200,
+      "pausedAfterResume": false
+    },
+    {
+      "id": "player-catalogue-renders",
+      "ok": true,
+      "tiles": 21,
+      "consoleErrors": 1
+    },
+    {
+      "id": "player-international-nav",
+      "ok": true,
+      "selected": {
+        "value": "INT",
+        "label": "INT (118)"
+      },
+      "optionCount": 3,
+      "countryScopedRequests": 0
+    },
+    {
+      "id": "player-real-media-progression",
+      "ok": true,
+      "found": true,
+      "first": 7186.05611,
+      "last": 7188.591374,
+      "advanced": 2.535,
+      "readyState": 4,
+      "paused": false,
+      "videoWidth": 1280,
+      "mediaError": null,
+      "errors": 0
+    },
+    {
+      "id": "player-epg-panel-present",
+      "ok": true,
+      "matches": 4
+    },
+    {
+      "id": "responsive-no-horizontal-overflow",
+      "ok": true,
+      "overflow": 0
+    },
+    {
+      "id": "admin-ui-reachable",
+      "ok": true,
+      "emailFields": 1
+    },
+    {
+      "id": "admin-ui-no-console-errors-on-boot",
+      "ok": true,
+      "consoleErrors": []
+    }
+  ],
+  "failed": 0,
+  "verdict": "PASS"
+}

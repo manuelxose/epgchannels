@@ -29,6 +29,8 @@ import {
 } from '../../../core/integrations/remote-playback';
 import { resolveCastConfiguration, sendToCastDevice } from '../../../core/integrations/cast-sender';
 import { formatTimeRange, type NowNext } from '../../../core/epg/now-next';
+import { clampVolume, resolvePlayerCommand, VOLUME_STEP, type PlayerCommand } from './player-keyboard';
+import { PlaybackTelemetryService } from '../../../core/telemetry/playback-telemetry.service';
 
 /**
  * The application's own video player.
@@ -52,6 +54,7 @@ export class PlayerComponent implements OnDestroy {
 
   protected readonly controller = inject(PlayerController);
   protected readonly preferences = inject(PreferencesStore);
+  protected readonly telemetry = inject(PlaybackTelemetryService);
   protected readonly Math = Math;
 
   private readonly videoRef = viewChild<ElementRef<HTMLVideoElement>>('video');
@@ -62,6 +65,14 @@ export class PlayerComponent implements OnDestroy {
   protected readonly status = this.controller.status;
   protected readonly muted = signal(false);
   protected readonly volume = signal(this.preferences.volume());
+  /**
+   * Whether the stage currently holds the browser's fullscreen. Read from the
+   * `fullscreenchange` event rather than assumed, so the button's label and
+   * `aria-pressed` always describe reality (including an Escape key exit).
+   */
+  protected readonly isFullscreen = signal(false);
+  /** Last playback status seen, so telemetry records transitions only. */
+  private lastTelemetryStatus: string | undefined;
   /** Channel+source identity currently loaded; guards against needless reloads. */
   private loadedKey = '';
 
@@ -314,9 +325,143 @@ export class PlayerComponent implements OnDestroy {
         this.controller.reportLiveEngineVisibility(Boolean(frame && frame.getBoundingClientRect().height > 0));
       }, 3_000);
     }
+    /*
+     * Telemetry: ONE effect over the player's own state transitions.
+     *
+     * No timer, no polling and no per-frame work — the effect runs only when a
+     * status actually changes, so a paused, failed or hidden player costs
+     * nothing. `untracked` keeps the recording itself from becoming a
+     * dependency. Records are non-identifying and never leave the device
+     * (PlaybackTelemetry has no transport unless one is injected).
+     */
+    effect(() => {
+      const status = this.status();
+      const source = this.source();
+      const channel = this.channel();
+      const engine = this.snapshot().engine;
+      untracked(() => this.recordStatusTransition(status, channel?.id, source, engine));
+    });
+
+    /*
+     * Keyboard shortcuts, scoped explicitly.
+     *
+     * The listener sits on the stage, not on the document, so a key pressed
+     * anywhere else on the page is never intercepted. Arrow keys additionally
+     * require focus INSIDE the player (`resolvePlayerCommand` enforces it), so
+     * they can never hijack page scrolling — the component only calls
+     * `preventDefault` when a command was actually resolved.
+     */
+    if (typeof document !== 'undefined') {
+      this.onFullscreenChange = () => {
+        this.isFullscreen.set(document.fullscreenElement === this.shellRef()?.nativeElement);
+      };
+      document.addEventListener('fullscreenchange', this.onFullscreenChange);
+    }
   }
 
-  /** When this view mounted, used to give a returning player time to appear. */
+  /** Bound so it can be removed; a fresh arrow each time would leak. */
+  private onFullscreenChange: (() => void) | undefined;
+
+  /**
+   * Handles a key press on the player surface.
+   *
+   * Returns without calling `preventDefault` for anything the player does not
+   * act on, so browser and assistive-technology behaviour is untouched.
+   */
+  protected onKeydown(event: KeyboardEvent): void {
+    const shell = this.shellRef()?.nativeElement;
+    const playerHasFocus = Boolean(shell && event.target instanceof Node && shell.contains(event.target));
+    const command = resolvePlayerCommand(event, playerHasFocus);
+    if (!command) {
+      return;
+    }
+    // Only keys we act on lose their default behaviour.
+    event.preventDefault();
+    this.telemetry.record({ name: 'control', code: command, channelId: this.channel().id });
+    this.runCommand(command);
+  }
+
+  /** Executes a resolved player command. */
+  private runCommand(command: PlayerCommand): void {
+    switch (command) {
+      case 'toggle-play':
+        void this.controller.togglePlay();
+        break;
+      case 'toggle-mute':
+        this.toggleMute();
+        break;
+      case 'toggle-fullscreen':
+        void this.toggleFullscreen();
+        break;
+      case 'seek-live':
+        this.controller.seekToLive();
+        break;
+      case 'volume-up':
+      case 'volume-down':
+        this.nudgeVolume(command === 'volume-up' ? VOLUME_STEP : -VOLUME_STEP);
+        break;
+    }
+  }
+
+  /** Applies a relative volume change and un-mutes, so the change is audible. */
+  private nudgeVolume(delta: number): void {
+    const next = clampVolume((this.muted() ? 0 : this.volume()) + delta);
+    this.volume.set(next);
+    this.preferences.setVolume(next);
+    this.controller.setVolume(next);
+    if (next > 0 && this.muted()) {
+      this.muted.set(false);
+      this.controller.setMuted(false);
+    }
+  }
+
+  /** Turns a status change into at most one telemetry record. */
+  private recordStatusTransition(
+    status: string,
+    channelId: string | undefined,
+    source: MediaSource | undefined,
+    engine: string,
+  ): void {
+    if (status === this.lastTelemetryStatus) {
+      return;
+    }
+    const previous = this.lastTelemetryStatus;
+    this.lastTelemetryStatus = status;
+
+    const common = { channelId, format: source?.format, engine };
+    switch (status) {
+      case 'loading':
+        // A new attempt begins: this is the clock the first frame is measured against.
+        this.telemetry.record({ name: 'playback-start', ...common });
+        break;
+      case 'playing':
+        this.telemetry.record(
+          previous === 'loading' || previous === 'buffering'
+            ? { name: 'first-frame', ...common }
+            : { name: 'playing', ...common },
+        );
+        break;
+      case 'buffering':
+        this.telemetry.record({ name: 'buffering', ...common });
+        break;
+      case 'error':
+      case 'unavailable':
+      case 'blocked':
+      case 'unsupported': {
+        // The code comes from the engine/controller, never from a guess.
+        const code = this.snapshot().error?.code ?? status.toUpperCase();
+        this.telemetry.record({ name: 'error', code, ...common });
+        // A fallback that happened is recorded as such, so a channel that
+        // eventually played is not reported as a plain failure.
+        if (this.snapshot().failedSources.length > 0 && status === 'unavailable') {
+          this.telemetry.record({ name: 'source-fallback', code, ...common });
+        }
+        break;
+      }
+      default:
+        break;
+    }
+  }
   private readonly mountedAt = Date.now();
 
   private visibilityTimer: ReturnType<typeof setInterval> | undefined;
@@ -325,6 +470,10 @@ export class PlayerComponent implements OnDestroy {
     if (this.visibilityTimer !== undefined) {
       clearInterval(this.visibilityTimer);
       this.visibilityTimer = undefined;
+    }
+    if (this.onFullscreenChange && typeof document !== 'undefined') {
+      document.removeEventListener('fullscreenchange', this.onFullscreenChange);
+      this.onFullscreenChange = undefined;
     }
     this.controller.detachMedia();
   }
@@ -363,6 +512,21 @@ export class PlayerComponent implements OnDestroy {
 
   protected onAudio(event: Event): void {
     this.controller.setAudioTrack(Number((event.target as HTMLSelectElement).value));
+  }
+
+  /**
+   * Subtitle selection. `<select>` values are strings, so `'off'` is handled
+   * explicitly instead of being coerced into `NaN`.
+   */
+  protected onSubtitle(event: Event): void {
+    const value = (event.target as HTMLSelectElement).value;
+    this.controller.setSubtitleTrack(value === 'off' ? 'off' : Number(value));
+  }
+
+  /** The subtitle control's current value, always in the `<select>` vocabulary. */
+  protected subtitleValue(): string {
+    const selection = this.snapshot().subtitleSelection;
+    return typeof selection === 'number' ? String(selection) : 'off';
   }
 
   protected goLive(): void {
@@ -493,16 +657,50 @@ export class PlayerComponent implements OnDestroy {
     }
   }
 
+  /**
+   * Enters or leaves fullscreen on the whole stage (video + our controls), and
+   * keeps keyboard focus on the control that was used.
+   *
+   * Restoring focus matters: when the fullscreen element closes, the browser
+   * moves focus to `<body>`, which leaves a keyboard user at the top of the
+   * document with nothing focused (WCAG 2.2 Focus Not Obscured / focus order).
+   */
   protected async toggleFullscreen(): Promise<void> {
     const shell = this.shellRef()?.nativeElement;
     if (!shell || typeof shell.requestFullscreen !== 'function') {
       return;
     }
-    if (document.fullscreenElement) {
-      await document.exitFullscreen();
-    } else {
-      await shell.requestFullscreen();
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else {
+        await shell.requestFullscreen();
+      }
+    } catch {
+      // A refused or unsupported request must not break the player; the sheet
+      // simply stays as it is and the button keeps its truthful state.
+      return;
     }
+    this.isFullscreen.set(document.fullscreenElement === shell);
+    this.restoreControlFocus();
+  }
+
+  /**
+   * Returns focus to the fullscreen button after the fullscreen mode changed.
+   *
+   * The element is looked up by its stable hook rather than by a viewChild,
+   * because the control bar is re-created whenever the player leaves a terminal
+   * state. Deferred to the next frame so the browser has finished moving focus.
+   */
+  private restoreControlFocus(): void {
+    const shell = this.shellRef()?.nativeElement;
+    if (!shell || typeof window === 'undefined') {
+      return;
+    }
+    window.setTimeout(() => {
+      const button = shell.querySelector<HTMLElement>('[data-control="fullscreen"]');
+      button?.focus();
+    }, 0);
   }
 
   protected async togglePictureInPicture(): Promise<void> {

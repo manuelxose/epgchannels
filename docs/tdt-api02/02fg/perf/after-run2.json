@@ -1,0 +1,507 @@
+{
+  "command": "perf-measure",
+  "label": "after2",
+  "measuredAt": "2026-11-17T17:40:46.609Z",
+  "environment": {
+    "node": "v24.18.0",
+    "platform": "win32-x64",
+    "cpus": 20,
+    "apiBase": "http://127.0.0.1:4010/api/v1",
+    "dataCounts": {
+      "channels": 768,
+      "publishedChannels": 412,
+      "sources": 1364,
+      "programmes": 11112
+    }
+  },
+  "api": {
+    "base": "http://127.0.0.1:4010/api/v1",
+    "catalogueWalk": {
+      "pages": 5,
+      "pageCount": 5,
+      "totalBytes": 150405,
+      "elapsedMs": 187
+    },
+    "endpointCount": 13,
+    "totalResponseBytes": 109017,
+    "endpoints": [
+      {
+        "path": "/channels?page=1&pageSize=100",
+        "status": 200,
+        "responseBytes": 36480,
+        "latencyMs": {
+          "samples": 25,
+          "p50": 37,
+          "p95": 47,
+          "max": 48,
+          "mean": 36
+        }
+      },
+      {
+        "path": "/channels?page=1&pageSize=24",
+        "status": 200,
+        "responseBytes": 9117,
+        "latencyMs": {
+          "samples": 25,
+          "p50": 33,
+          "p95": 46,
+          "max": 48,
+          "mean": 33
+        }
+      },
+      {
+        "path": "/channels?country=INT&page=1&pageSize=100",
+        "status": 400,
+        "responseBytes": 201,
+        "latencyMs": {
+          "samples": 25,
+          "p50": 30,
+          "p95": 44,
+          "max": 145,
+          "mean": 35
+        }
+      },
+      {
+        "path": "/channels?language=multi&page=1&pageSize=100",
+        "status": 400,
+        "responseBytes": 211,
+        "latencyMs": {
+          "samples": 25,
+          "p50": 31,
+          "p95": 39,
+          "max": 42,
+          "mean": 31
+        }
+      },
+      {
+        "path": "/channels?q=la&page=1&pageSize=100",
+        "status": 200,
+        "responseBytes": 32725,
+        "latencyMs": {
+          "samples": 25,
+          "p50": 36,
+          "p95": 47,
+          "max": 56,
+          "mean": 38
+        }
+      },
+      {
+        "path": "/channels?playable=true&page=1&pageSize=24",
+        "status": 200,
+        "responseBytes": 8831,
+        "latencyMs": {
+          "samples": 25,
+          "p50": 32,
+          "p95": 40,
+          "max": 45,
+          "mean": 31
+        }
+      },
+      {
+        "path": "/channels/plus-24",
+        "status": 200,
+        "responseBytes": 2255,
+        "latencyMs": {
+          "samples": 25,
+          "p50": 86,
+          "p95": 116,
+          "max": 126,
+          "mean": 89
+        }
+      },
+      {
+        "path": "/channels/plus-24/playback",
+        "status": 200,
+        "responseBytes": 2915,
+        "latencyMs": {
+          "samples": 25,
+          "p50": 103,
+          "p95": 123,
+          "max": 142,
+          "mean": 103
+        }
+      },
+      {
+        "path": "/channels/plus-24/schedule",
+        "status": 200,
+        "responseBytes": 398,
+        "latencyMs": {
+          "samples": 25,
+          "p50": 37,
+          "p95": 56,
+          "max": 64,
+          "mean": 39
+        }
+      },
+      {
+        "path": "/epg/now?limit=20",
+        "status": 200,
+        "responseBytes": 6639,
+        "latencyMs": {
+          "samples": 25,
+          "p50": 89,
+          "p95": 173,
+          "max": 328,
+          "mean": 102
+        }
+      },
+      {
+        "path": "/epg/next?limit=20",
+        "status": 200,
+        "responseBytes": 6639,
+        "latencyMs": {
+          "samples": 25,
+          "p50": 94,
+          "p95": 165,
+          "max": 172,
+          "mean": 98
+        }
+      },
+      {
+        "path": "/categories",
+        "status": 200,
+        "responseBytes": 784,
+        "latencyMs": {
+          "samples": 25,
+          "p50": 26,
+          "p95": 38,
+          "max": 51,
+          "mean": 27
+        }
+      },
+      {
+        "path": "/regions",
+        "status": 200,
+        "responseBytes": 1822,
+        "latencyMs": {
+          "samples": 25,
+          "p50": 21,
+          "p95": 31,
+          "max": 33,
+          "mean": 21
+        }
+      }
+    ],
+    "revalidation304": {
+      "samples": 25,
+      "p50": 15,
+      "p95": 22,
+      "max": 22,
+      "mean": 15
+    },
+    "revalidationStatus": 304
+  },
+  "mongo": {
+    "uri": "mongodb://127.0.0.1:27117/?replicaSet=rs0",
+    "database": "tdt_platform",
+    "counts": {
+      "channels": 768,
+      "playback_sources": 1364,
+      "programmes": 11112,
+      "source_authorizations_02c": 81,
+      "epg_sources": 2
+    },
+    "indexInventory": {
+      "channels": [
+        "_id_",
+        "slug_unique",
+        "status_category_name",
+        "country_region_name",
+        "search_text",
+        "alias_lookup",
+        "updated_desc",
+        "language_name"
+      ],
+      "playback_sources": [
+        "_id_",
+        "channel_priority",
+        "channel_status",
+        "verify_queue"
+      ],
+      "programmes": [
+        "_id_",
+        "channel_start",
+        "channel_external_unique",
+        "end_expiry",
+        "source_start"
+      ]
+    },
+    "probes": [
+      {
+        "name": "channels.list page 1 (published, name sort)",
+        "collection": "channels",
+        "plan": {
+          "stages": [
+            "SORT",
+            "FETCH",
+            "IXSCAN"
+          ],
+          "indexNames": [
+            "status_category_name"
+          ],
+          "rejectedIndexes": [],
+          "docsExamined": 412,
+          "keysExamined": 412,
+          "returned": 100,
+          "inMemorySort": true,
+          "collectionScan": false,
+          "executionTimeMs": 5
+        },
+        "queryLatencyMs": {
+          "samples": 15,
+          "p50": 24,
+          "p95": 65,
+          "max": 65,
+          "mean": 25
+        },
+        "countLatencyMs": {
+          "samples": 15,
+          "p50": 5,
+          "p95": 6,
+          "max": 6,
+          "mean": 5
+        }
+      },
+      {
+        "name": "channels.list country INT",
+        "collection": "channels",
+        "plan": {
+          "stages": [
+            "SORT",
+            "FETCH",
+            "IXSCAN"
+          ],
+          "indexNames": [
+            "country_region_name"
+          ],
+          "rejectedIndexes": [
+            "status_category_name"
+          ],
+          "docsExamined": 302,
+          "keysExamined": 302,
+          "returned": 100,
+          "inMemorySort": true,
+          "collectionScan": false,
+          "executionTimeMs": 12
+        },
+        "queryLatencyMs": {
+          "samples": 15,
+          "p50": 17,
+          "p95": 21,
+          "max": 21,
+          "mean": 17
+        },
+        "countLatencyMs": {
+          "samples": 15,
+          "p50": 4,
+          "p95": 6,
+          "max": 6,
+          "mean": 4
+        }
+      },
+      {
+        "name": "channels.list search (regex over searchText)",
+        "collection": "channels",
+        "plan": {
+          "stages": [
+            "SORT",
+            "FETCH",
+            "IXSCAN"
+          ],
+          "indexNames": [
+            "status_category_name"
+          ],
+          "rejectedIndexes": [],
+          "docsExamined": 412,
+          "keysExamined": 412,
+          "returned": 88,
+          "inMemorySort": true,
+          "collectionScan": false,
+          "executionTimeMs": 6
+        },
+        "queryLatencyMs": {
+          "samples": 15,
+          "p50": 16,
+          "p95": 25,
+          "max": 25,
+          "mean": 17
+        },
+        "countLatencyMs": {
+          "samples": 15,
+          "p50": 6,
+          "p95": 8,
+          "max": 8,
+          "mean": 6
+        }
+      },
+      {
+        "name": "channels.bySlug",
+        "collection": "channels",
+        "plan": {
+          "stages": [
+            "LIMIT",
+            "FETCH",
+            "IXSCAN"
+          ],
+          "indexNames": [
+            "slug_unique"
+          ],
+          "rejectedIndexes": [],
+          "docsExamined": 1,
+          "keysExamined": 1,
+          "returned": 1,
+          "inMemorySort": false,
+          "collectionScan": false,
+          "executionTimeMs": 0
+        },
+        "queryLatencyMs": {
+          "samples": 15,
+          "p50": 3,
+          "p95": 5,
+          "max": 5,
+          "mean": 4
+        }
+      },
+      {
+        "name": "sources by channelId (descriptor)",
+        "collection": "playback_sources",
+        "plan": {
+          "stages": [
+            "FETCH",
+            "IXSCAN"
+          ],
+          "indexNames": [
+            "channel_priority"
+          ],
+          "rejectedIndexes": [
+            "channel_status"
+          ],
+          "docsExamined": 2,
+          "keysExamined": 2,
+          "returned": 2,
+          "inMemorySort": false,
+          "collectionScan": false,
+          "executionTimeMs": 0
+        },
+        "queryLatencyMs": {
+          "samples": 15,
+          "p50": 4,
+          "p95": 11,
+          "max": 11,
+          "mean": 4
+        }
+      },
+      {
+        "name": "feed channel window (published, name sort, limit 20)",
+        "collection": "channels",
+        "plan": {
+          "stages": [
+            "SORT",
+            "FETCH",
+            "IXSCAN"
+          ],
+          "indexNames": [
+            "status_category_name"
+          ],
+          "rejectedIndexes": [],
+          "docsExamined": 412,
+          "keysExamined": 412,
+          "returned": 20,
+          "inMemorySort": true,
+          "collectionScan": false,
+          "executionTimeMs": 4
+        },
+        "queryLatencyMs": {
+          "samples": 15,
+          "p50": 9,
+          "p95": 13,
+          "max": 13,
+          "mean": 9
+        }
+      },
+      {
+        "name": "programmes schedule window",
+        "collection": "programmes",
+        "plan": {
+          "stages": [
+            "FETCH",
+            "IXSCAN"
+          ],
+          "indexNames": [
+            "channel_start"
+          ],
+          "rejectedIndexes": [
+            "channel_external_unique",
+            "end_expiry"
+          ],
+          "docsExamined": 0,
+          "keysExamined": 0,
+          "returned": 0,
+          "inMemorySort": false,
+          "collectionScan": false,
+          "executionTimeMs": 2
+        },
+        "queryLatencyMs": {
+          "samples": 15,
+          "p50": 4,
+          "p95": 29,
+          "max": 29,
+          "mean": 6
+        }
+      }
+    ]
+  },
+  "bundle": {
+    "available": true,
+    "directory": "C:\\Users\\Admin\\Documents\\workspace\\streaming\\wt\\02fg-integration\\apps\\frontend\\dist\\tdt-player-rebuild\\browser",
+    "fileCount": 16,
+    "totalJsBytes": 1877161,
+    "totalCssBytes": 5186,
+    "largest": [
+      {
+        "name": "chunk-_zFWxNMW.js",
+        "bytes": 852688
+      },
+      {
+        "name": "chunk-DxUSis_G.js",
+        "bytes": 591459
+      },
+      {
+        "name": "chunk-80rbjhzq.js",
+        "bytes": 248417
+      },
+      {
+        "name": "chunk-D1GBBSEW.js",
+        "bytes": 74006
+      },
+      {
+        "name": "main-BMCUQBIX.js",
+        "bytes": 57045
+      },
+      {
+        "name": "chunk-CjwWqmXO.js",
+        "bytes": 22749
+      },
+      {
+        "name": "chunk-DcfdB8ht.js",
+        "bytes": 10801
+      },
+      {
+        "name": "chunk-BL6vwslt.js",
+        "bytes": 6145
+      }
+    ],
+    "initialAssets": [
+      "styles-UJXA3VJQ.css",
+      "styles-UJXA3VJQ.css",
+      "chunk-80rbjhzq.js",
+      "chunk-Da4-SChG.js",
+      "main-BMCUQBIX.js"
+    ],
+    "initialBytes": 316467
+  },
+  "playback": {
+    "available": false,
+    "reason": "--skip-playback true"
+  }
+}

@@ -63,6 +63,12 @@ export interface Channel {
   readonly categoryId: string;
   readonly categoryName: string;
   readonly country: string;
+  /**
+   * BCP-47 language tag as the API publishes it (`es`, `ca`, `en`…), or
+   * `undefined` when the catalogue did not state one. Never inferred from the
+   * country: a channel whose language is unknown is not claimed to be Spanish.
+   */
+  readonly language?: string;
   readonly webUrl?: string;
   readonly logoSrc?: string;
   readonly epgId?: string;

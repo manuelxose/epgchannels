@@ -1,0 +1,139 @@
+{
+  "command": "partg-integration-check",
+  "base": "http://127.0.0.1:4400",
+  "measuredAt": "2026-11-17T17:38:57.807Z",
+  "journeys": [
+    {
+      "journey": "catalogue-loads",
+      "ok": true,
+      "evidence": {
+        "tiles": 21,
+        "catalogueMs": 1974,
+        "apiRequests": 6,
+        "requests": [
+          {
+            "path": "/api/v1/categories",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels?page=1&pageSize=100",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels?page=2&pageSize=100",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels?page=3&pageSize=100",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels?page=4&pageSize=100",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/channels?page=5&pageSize=100",
+            "method": "GET"
+          }
+        ]
+      }
+    },
+    {
+      "journey": "channel-select",
+      "ok": true,
+      "evidence": {
+        "navigationTarget": "/television/plus-24",
+        "title": "+24 en directo · TDT Player",
+        "videoElements": 1,
+        "apiRequests": [
+          "/api/v1/categories",
+          "/api/v1/channels?page=1&pageSize=100",
+          "/api/v1/channels/plus-24",
+          "/api/v1/channels/plus-24/playback",
+          "/api/v1/channels?page=2&pageSize=100",
+          "/api/v1/channels?page=3&pageSize=100",
+          "/api/v1/channels?page=4&pageSize=100",
+          "/api/v1/channels?page=5&pageSize=100",
+          "/api/v1/channels/plus-24",
+          "/api/v1/channels/plus-24/playback",
+          "/api/v1/channels/plus-24/schedule?hours=24"
+        ]
+      }
+    },
+    {
+      "journey": "international-navigation",
+      "ok": true,
+      "evidence": {
+        "optionLabel": "INT (118)",
+        "internationalTilesAfterChoosingINT": 22,
+        "apiRequests": []
+      }
+    },
+    {
+      "journey": "country-filter",
+      "ok": true,
+      "evidence": {
+        "esTiles": 22,
+        "allTiles": 22,
+        "note": "ES (294 published) must be a non-empty subset of all (412)"
+      }
+    },
+    {
+      "journey": "search",
+      "ok": true,
+      "evidence": {
+        "query": "la",
+        "tilesBefore": 22,
+        "tilesAfterSearch": 22
+      }
+    },
+    {
+      "journey": "responsive",
+      "ok": true,
+      "evidence": {
+        "viewports": [
+          {
+            "width": 360,
+            "height": 780,
+            "label": "mobile-360",
+            "horizontalOverflowPx": 0
+          },
+          {
+            "width": 768,
+            "height": 1024,
+            "label": "tablet-768",
+            "horizontalOverflowPx": 0
+          },
+          {
+            "width": 1440,
+            "height": 900,
+            "label": "desktop-1440",
+            "horizontalOverflowPx": 0
+          }
+        ]
+      }
+    },
+    {
+      "journey": "error-handling",
+      "ok": true,
+      "evidence": {
+        "apiAborted": "**/api/v1/channels**",
+        "textSample": "Saltar al contenido\nTDTPlayer\nTelevisión\nParrilla\n\nGuía y reproductor para señales que sus emisores publican en abierto.\n\nFiltrar por categoría\nTodas las categorías\nFiltrar por país\nTodos los países\nFiltrar por idioma\nTodos los idiomas\nFiltrar por disponibilidad\nTodas\nReproducibles\nExternas\nSin emis"
+      }
+    },
+    {
+      "journey": "now-next-surface",
+      "ok": true,
+      "evidence": {
+        "hasNow": true,
+        "hasNext": true
+      }
+    }
+  ],
+  "consoleErrors": [],
+  "summary": {
+    "total": 8,
+    "ok": 8,
+    "failed": []
+  }
+}

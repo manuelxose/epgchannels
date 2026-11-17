@@ -151,12 +151,13 @@ export class CataloguePageComponent {
   constructor() {
     void this.catalog.ensureCatalog();
 
-    // Rescue the rail if a channel appears while the catalogue was still empty.
-    effect(() => {
-      if (this.catalog.status() === 'ready' && this.catalog.epgStatus() === 'idle') {
-        void this.catalog.ensureEpg();
-      }
-    });
+    /*
+     * No guide is loaded here on purpose. The catalogue view never renders EPG
+     * data (it shows tiles, and the schedule page owns the guide), while asking
+     * for it cost 21 per-channel `/schedule` requests on every home visit for a
+     * snapshot nothing displayed. The guide is fetched where it is shown: the
+     * watch page for one channel, the schedule page for the grid.
+     */
   }
 
   protected retry(): void {
