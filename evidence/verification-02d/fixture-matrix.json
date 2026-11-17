@@ -1,0 +1,135 @@
+{
+  "ok": false,
+  "mode": "fixture",
+  "generatedAt": "2026-11-17T10:34:28.813Z",
+  "cases": 14,
+  "matched": 6,
+  "results": [
+    {
+      "case": "healthy-hls",
+      "expect": "healthy",
+      "outcome": "degraded",
+      "failure": null,
+      "depthReached": "playlist",
+      "latencyMs": 24,
+      "requests": 1
+    },
+    {
+      "case": "http-200-not-a-manifest",
+      "expect": "invalid-manifest",
+      "outcome": "failing",
+      "failure": "unknown-error",
+      "depthReached": "transport",
+      "latencyMs": 6,
+      "requests": 1
+    },
+    {
+      "case": "http-200-empty-playlist",
+      "expect": "invalid-manifest",
+      "outcome": "failing",
+      "failure": "invalid-manifest",
+      "depthReached": "manifest",
+      "latencyMs": 3,
+      "requests": 1
+    },
+    {
+      "case": "http-200-no-segments",
+      "expect": "invalid-manifest",
+      "outcome": "failing",
+      "failure": "invalid-manifest",
+      "depthReached": "manifest",
+      "latencyMs": 4,
+      "requests": 1
+    },
+    {
+      "case": "missing-segments",
+      "expect": "missing-segments",
+      "outcome": "degraded",
+      "failure": null,
+      "depthReached": "playlist",
+      "latencyMs": 4,
+      "requests": 1
+    },
+    {
+      "case": "segments-forbidden",
+      "expect": "segments-forbidden",
+      "outcome": "degraded",
+      "failure": null,
+      "depthReached": "playlist",
+      "latencyMs": 3,
+      "requests": 1
+    },
+    {
+      "case": "http-404",
+      "expect": "http-404",
+      "outcome": "failing",
+      "failure": "http-404",
+      "depthReached": "transport",
+      "latencyMs": 4,
+      "requests": 1
+    },
+    {
+      "case": "http-403",
+      "expect": "http-403",
+      "outcome": "failing",
+      "failure": "http-403",
+      "depthReached": "transport",
+      "latencyMs": 3,
+      "requests": 1
+    },
+    {
+      "case": "http-451",
+      "expect": "http-451",
+      "outcome": "failing",
+      "failure": "http-451",
+      "depthReached": "transport",
+      "latencyMs": 3,
+      "requests": 1
+    },
+    {
+      "case": "http-503",
+      "expect": "http-5xx",
+      "outcome": "failing",
+      "failure": "http-5xx",
+      "depthReached": "transport",
+      "latencyMs": 2,
+      "requests": 1
+    },
+    {
+      "case": "oversized-body",
+      "expect": "response-too-large",
+      "outcome": "failing",
+      "failure": "invalid-manifest",
+      "depthReached": "manifest",
+      "latencyMs": 3,
+      "requests": 1
+    },
+    {
+      "case": "timeout",
+      "expect": "timeout",
+      "outcome": "failing",
+      "failure": "response-too-large",
+      "depthReached": "transport",
+      "latencyMs": 15010,
+      "requests": 1
+    },
+    {
+      "case": "redirect-to-metadata",
+      "expect": "ssrf-blocked",
+      "outcome": "failing",
+      "failure": "redirect-unsafe",
+      "depthReached": "transport",
+      "latencyMs": 5,
+      "requests": 1
+    },
+    {
+      "case": "redirect-loop",
+      "expect": "redirect-unsafe",
+      "outcome": "failing",
+      "failure": "response-too-large",
+      "depthReached": "transport",
+      "latencyMs": 10,
+      "requests": 6
+    }
+  ]
+}
