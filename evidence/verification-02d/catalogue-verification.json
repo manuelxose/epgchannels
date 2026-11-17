@@ -1,0 +1,1155 @@
+{
+  "ok": true,
+  "generatedAt": "2026-11-17T13:52:09.142Z",
+  "database": "tdt_platform",
+  "requested": 81,
+  "verified": 81,
+  "withAuthorization": 81,
+  "egressRequests": 396,
+  "wallMs": 15918,
+  "byOutcome": {
+    "failing": 18,
+    "healthy": 63
+  },
+  "byFailure": {
+    "missing-segments": 1,
+    "http-404": 9,
+    "unsupported-format": 8
+  },
+  "results": [
+    {
+      "sourceId": "097a2a33-150c-4f01-9ff8-245b75db1501",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "failing",
+      "failure": "missing-segments",
+      "depthReached": "playlist",
+      "latencyMs": 379,
+      "egressRequests": 4,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "06a4d4e8-5be7-460e-9a81-97e292574446",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 474,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "07d9a412-86ee-4c4f-89cc-d67434fbaf7d",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 514,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "1257f5db-6a29-4c6c-b97e-24148d110444",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "failing",
+      "failure": "http-404",
+      "depthReached": "transport",
+      "latencyMs": 118,
+      "egressRequests": 1,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "0a214a3e-dca9-4265-a153-b74c0ba23e9d",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 487,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "0da44a97-4df0-4123-bd75-979d17d4fbc9",
+      "host": "rtvelivestream.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 757,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "22eb751e-7d83-429c-89ab-0821ac65ad1f",
+      "host": "rtvelivestream.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 694,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "24430a64-d6e0-4fab-ae24-11bbd784674b",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 573,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "254c16da-0821-4839-b7e7-e0915deea7db",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 503,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "24bc8c60-70fe-4523-bd69-f267814dd272",
+      "host": "www.bloomberg.com",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 997,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "2155d95d-8a2c-4ecd-80fa-d86bc3e5cf77",
+      "host": "english-livebkali.cgtn.com",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 2049,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "26c90795-7c89-4c0e-b98e-f36415b42054",
+      "host": "laxarxames.cat",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "failing",
+      "failure": "unsupported-format",
+      "depthReached": "transport",
+      "latencyMs": 176,
+      "egressRequests": 1,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "259572ea-a447-4f45-9d26-10e385cdc7c8",
+      "host": "rtvelivestream.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 480,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "32d36920-949c-4f86-a9db-3de653f664fd",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "failing",
+      "failure": "http-404",
+      "depthReached": "transport",
+      "latencyMs": 130,
+      "egressRequests": 1,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "335449f3-4d44-4813-b717-4136d30aea7a",
+      "host": "laxarxames.cat",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "failing",
+      "failure": "unsupported-format",
+      "depthReached": "transport",
+      "latencyMs": 154,
+      "egressRequests": 1,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "3043a821-e685-49b0-b46e-5881564dc882",
+      "host": "rtvelivestream.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 411,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "3239653d-734b-4c45-a850-2c18f8e64f99",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 452,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "35344748-2d5d-4279-8bbb-992e6ec86fa1",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "failing",
+      "failure": "http-404",
+      "depthReached": "transport",
+      "latencyMs": 146,
+      "egressRequests": 1,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "417e3760-78aa-45a3-ae7a-57fb85dd0816",
+      "host": "www.laxarxames.cat",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "failing",
+      "failure": "unsupported-format",
+      "depthReached": "transport",
+      "latencyMs": 213,
+      "egressRequests": 1,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "34cb6f62-ab43-44b7-b6ca-0df1da08cd89",
+      "host": "rtvelivestream.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 401,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "45661636-288f-4232-be03-817f13d78693",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "failing",
+      "failure": "http-404",
+      "depthReached": "transport",
+      "latencyMs": 160,
+      "egressRequests": 1,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "3679b56c-1a31-468e-a724-de17e12f1b40",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 552,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "4204e797-ad27-4f8e-a16a-8bfd9ca419e5",
+      "host": "rtvelivestream.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 471,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "4b2dce05-e338-47aa-b93e-8f03690182df",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "failing",
+      "failure": "http-404",
+      "depthReached": "transport",
+      "latencyMs": 598,
+      "egressRequests": 1,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "4a245610-a1be-4e61-96c9-e6a3080e489c",
+      "host": "rtvelivestream.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 910,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "480f784d-11b8-49f8-a9ba-019364f5a836",
+      "host": "cdn1.etbon.eus",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 1051,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "53e0dad3-c73a-426f-9d5c-946631e524ba",
+      "host": "rtvelivestream.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 487,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "57dea018-b680-4f78-a3c8-9d455ce9271b",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 522,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "59d57a42-98b3-4c9a-8c0e-5c8c200f55fa",
+      "host": "rtvelivestream.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 426,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "55fbcef8-72cb-42ed-a9a3-d15a857cf5ac",
+      "host": "www.bloomberg.com",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 1074,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "5db5adfa-224d-4e83-84f2-d128b8ab0913",
+      "host": "rtvelivestream.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 394,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "63f8950d-213b-4a79-98cd-4011c005fa88",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "failing",
+      "failure": "http-404",
+      "depthReached": "transport",
+      "latencyMs": 138,
+      "egressRequests": 1,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "653e08d8-a2c4-4265-9316-9e4b806488c0",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "failing",
+      "failure": "http-404",
+      "depthReached": "transport",
+      "latencyMs": 151,
+      "egressRequests": 1,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "6345fae6-3cc7-46b8-93e2-cc978fb7d4bb",
+      "host": "rtvelivestream.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 407,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "65757913-c6d9-4745-b344-293b712de585",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "failing",
+      "failure": "http-404",
+      "depthReached": "transport",
+      "latencyMs": 141,
+      "egressRequests": 1,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "663c082f-4745-421c-9599-d1caa99e19d3",
+      "host": "www.laxarxames.cat",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "failing",
+      "failure": "unsupported-format",
+      "depthReached": "transport",
+      "latencyMs": 198,
+      "egressRequests": 1,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "663463f8-45d2-4bdc-9957-d78491d75b3b",
+      "host": "rtvelivestream.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 418,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "5dad41e0-85b9-4f6a-a019-d0361a723f06",
+      "host": "www.bloomberg.com",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 1439,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "6749db7c-b720-4bac-8af7-a11477b8af44",
+      "host": "rtvelivestream.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 446,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "6e7bd34b-54db-4ed1-a9a4-25b4b99a0088",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "failing",
+      "failure": "http-404",
+      "depthReached": "transport",
+      "latencyMs": 163,
+      "egressRequests": 1,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "6af08498-e109-42f8-b5f0-5e63449f1a66",
+      "host": "rtvelivestream.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 528,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "6b2f07d1-f42f-4c59-8fde-0af1e916510c",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 523,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "7653ed06-9a86-4875-858f-7bf741e23a1e",
+      "host": "laxarxames.cat",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "failing",
+      "failure": "unsupported-format",
+      "depthReached": "transport",
+      "latencyMs": 125,
+      "egressRequests": 1,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "753431a4-a41c-41c4-97c5-1e6de66b775a",
+      "host": "rtvelivestream.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 610,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "7c9d08f1-c8eb-4f43-92f3-5cc93741b30e",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 612,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "7686549b-7bbc-4f5b-adaf-e39963d15ccb",
+      "host": "rtvelivestream.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 706,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "80e1ccc9-ed45-4ba3-8faa-bc0d1ecb5370",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 478,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "80fd84b1-60ae-4b84-b8b4-17c327006cd3",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 495,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "83d44b4f-1d43-4969-a382-7799f81e8a18",
+      "host": "cdn1.etbon.eus",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 503,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "8767c928-3bcc-4b37-847c-7e6efbfc4095",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 744,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "89e69c2f-bc4e-4a91-b3d4-c183df604748",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 680,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "91a2d257-c31f-4987-bd09-7293703ac361",
+      "host": "rtvelivestream.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 454,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "889e3c33-c1fe-4f93-a635-6d89659f843c",
+      "host": "cdn1.etbon.eus",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 1085,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "927c9519-3fe7-44a8-9bb5-5d9234cbf9cd",
+      "host": "rtvelivestream.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 465,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "945138a9-620f-4ee9-a40c-b0acae12cecd",
+      "host": "rtvelivestream-rtveplayplus.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 398,
+      "egressRequests": 5,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "94140c8f-4bb7-43d7-b312-2074bdc2ed2b",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 520,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "985088ef-aa98-4eb9-ab45-26c4ea574367",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 491,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "99f186e4-b36e-4e14-99a3-3dca7bb03918",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 474,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "a2b87a64-a632-4b1c-972f-2ea6ba881cf3",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 500,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "a54faf60-eeb1-4adb-9057-f696eb954a02",
+      "host": "cdn1.etbon.eus",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 468,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "aca10471-a8ad-467a-bcf3-de9705b761be",
+      "host": "laxarxames.cat",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "failing",
+      "failure": "unsupported-format",
+      "depthReached": "transport",
+      "latencyMs": 125,
+      "egressRequests": 1,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "aa12a1e9-4689-45f7-b7c2-6de1f8c71cea",
+      "host": "rtvelivestream-rtveplayplus.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 396,
+      "egressRequests": 5,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "b1e45eaf-e6ca-4102-8c75-e85797353e27",
+      "host": "rtvelivestream.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 470,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "ae626b97-1693-4de1-bf75-a5e0db87bb8e",
+      "host": "cdn1.etbon.eus",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 497,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "b42ad8af-dd8e-44b2-8d9d-39013606a901",
+      "host": "cdn1.etbon.eus",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 501,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "bcc33208-962a-41c8-86eb-b90a6708ae06",
+      "host": "rtvelivestream-rtveplayplus.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 452,
+      "egressRequests": 5,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "b7b2b49b-0f5a-4787-85f8-1ef09900d547",
+      "host": "rtvelivestream.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 523,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "c1e021e8-4974-4ccd-be0e-006175f6c93b",
+      "host": "rtvelivestream.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 553,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "c4db96aa-0211-43a0-b608-683128d029c3",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 530,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "cb7b9ca5-22a7-4d75-9b73-5deae1dad0e1",
+      "host": "rtvelivestream.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 482,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "c66c9bee-e9fd-4781-b9fc-c061a2bccf76",
+      "host": "www.bloomberg.com",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 743,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "cf309419-9c85-40e9-94d8-d208781ac686",
+      "host": "laxarxames.cat",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "failing",
+      "failure": "unsupported-format",
+      "depthReached": "transport",
+      "latencyMs": 130,
+      "egressRequests": 1,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "cd67aa91-a80d-458a-b7d4-0ab24f643af6",
+      "host": "cdn1.etbon.eus",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 458,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "d8f7673e-6cec-46b3-bdb4-9f06196eadec",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 526,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "ec570b04-2265-447d-a8d8-05f551d8bf2a",
+      "host": "rtvelivestream.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 480,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "f09e1c8b-d29d-45bc-8148-e3c119644d60",
+      "host": "rtvelivestream.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 517,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "f0bd0ce5-3d16-4fae-953a-ef7da2956234",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 491,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "f70dcfff-d6d0-4968-9fb0-43e7665915c5",
+      "host": "laxarxames.cat",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "failing",
+      "failure": "unsupported-format",
+      "depthReached": "transport",
+      "latencyMs": 191,
+      "egressRequests": 1,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "e1dad230-ba89-4b6b-abcc-47ac39afaa98",
+      "host": "streaming-1.eltorotv.com",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 1376,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "fba200fc-b5be-4485-9c58-469f96b26f0b",
+      "host": "ztnr.rtve.es",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 673,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    },
+    {
+      "sourceId": "f23202e8-01b6-4a3b-a33f-6d2ff52e9a32",
+      "host": "english-livebkali.cgtn.com",
+      "hasAuthorization": true,
+      "verdict": "permitted-direct-playback",
+      "outcome": "healthy",
+      "failure": null,
+      "depthReached": "segments",
+      "latencyMs": 2593,
+      "egressRequests": 6,
+      "uncertaintyNotes": [
+        "dns-not-observed"
+      ]
+    }
+  ]
+}

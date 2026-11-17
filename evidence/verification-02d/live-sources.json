@@ -1,12 +1,12 @@
 {
   "ok": true,
   "mode": "live",
-  "generatedAt": "2026-11-17T11:52:49.754Z",
+  "generatedAt": "2026-11-17T13:50:30.841Z",
   "database": "tdt_platform",
   "catalogue": {
     "publishedHlsOrDash": 81,
-    "withAuthorizationRecord": 0,
-    "withoutAuthorizationRecord": 81
+    "withAuthorizationRecord": 81,
+    "withoutAuthorizationRecord": 0
   },
   "verified": [
     {
@@ -15,7 +15,7 @@
       "outcome": "failing",
       "failure": "missing-segments",
       "depthReached": "playlist",
-      "latencyMs": 1086,
+      "latencyMs": 362,
       "egressRequests": 2,
       "uncertainty": {
         "browserNotProbed": false,
@@ -40,7 +40,7 @@
       "outcome": "healthy",
       "failure": null,
       "depthReached": "segments",
-      "latencyMs": 470,
+      "latencyMs": 537,
       "egressRequests": 6,
       "uncertainty": {
         "browserNotProbed": true,
@@ -65,7 +65,7 @@
       "outcome": "healthy",
       "failure": null,
       "depthReached": "segments",
-      "latencyMs": 469,
+      "latencyMs": 406,
       "egressRequests": 6,
       "uncertainty": {
         "browserNotProbed": true,
@@ -90,7 +90,7 @@
       "outcome": "healthy",
       "failure": null,
       "depthReached": "segments",
-      "latencyMs": 430,
+      "latencyMs": 428,
       "egressRequests": 6,
       "uncertainty": {
         "browserNotProbed": true,

@@ -126,9 +126,15 @@ significa «cualquier tamaño es aceptable». El ancho de banda por muestra sí 
 - **No** dice que un `played` implique disponibilidad futura: un directo puede caer un minuto después.
   Es una observación con marca de tiempo, no una garantía.
 
-## 5-bis. Limitación principal, declarada sin adornos
+## 5-bis. Limitación principal — **RESUELTA el 2026-11-17**
 
-**El motor no ha verificado ni una sola fuente del catálogo real.** Medido sobre la base de datos viva:
+> **Estado vigente: resuelta.** El propietario del producto autorizó la verificación de todas las
+> fuentes, se registró la decisión y **el motor ha verificado las 81 fuentes publicadas**. El resultado
+> está en §5-ter. El texto siguiente se conserva como historia de por qué estaba bloqueado y de cómo se
+> desbloqueó.
+
+**El motor no había verificado ni una sola fuente del catálogo real.** Medido sobre la base de datos viva
+antes de la autorización:
 
 | Dato | Valor medido |
 |---|---|
@@ -148,7 +154,60 @@ más la prueba de reproducción en navegador de §2.
 
 Por qué no se «arregla» creando autorizaciones: fabricar un derecho para que una fuente pase el gate es
 exactamente el defecto que la revisión independiente de 02C encontró, y este milestone no lo repite. La
-única vía honesta es que un operador registre autorizaciones reales con evidencia citable.
+única vía honesta es que **el propietario del producto** autorice y que la decisión quede registrada con
+su ámbito declarado.
+
+## 5-ter. Resultado tras la autorización del propietario (2026-11-17)
+
+**Qué se autorizó, dicho con precisión.** El propietario del producto autorizó *la plataforma a
+**verificar** estas fuentes* (sondeo técnico de manifiesto, variante y segmentos muestreados). **No** es
+una declaración de que cada emisor haya concedido derechos de redistribución: eso es otra pregunta
+(D-017) sobre la que aquí no hay evidencia. Cada registro lo dice en sus propios campos
+(`quotedClause`, `reviewStatus: pending-review`, `notes`), de modo que un auditor distingue una
+autorización del propietario de una licencia del emisor.
+
+**Mecanismo.** `apps/backend/scripts/authorize-verification.mjs` escribe un registro por fuente en
+`source_authorizations_02c`, con la URL del registro de decisiones como cita. Después:
+
+```
+node apps/backend/scripts/verify-catalogue.mjs --limit 81 --concurrency 3
+```
+
+**Resultado medido sobre el catálogo real completo:**
+
+| Métrica | Valor |
+|---|---|
+| Fuentes verificadas | **81 de 81** (todas con autorización resuelta por el mismo lookup que usa el gate) |
+| Sanas a profundidad `segments` | **63** |
+| Fallando | **18** |
+| Peticiones externas totales | **396** (≈ 4,9 por fuente) |
+| Tiempo de pared | **15,9 s** con concurrencia 3 |
+| Categorías de fallo | `http-404` ×9, `unsupported-format` ×8, `missing-segments` ×1 |
+
+Los fallos **se concentran en dos hosts** y son diagnóstico accionable, no ruido:
+
+- **`ztnr.rtve.es` → 9 × `http-404`** (más 1 `missing-segments`): esas 10 fuentes apuntan a manifiestos
+  que ya no existen en ese host.
+- **`laxarxames.cat` / `www.laxarxames.cat` → 8 × `unsupported-format`**: responden con un
+  `content-type` que no es HLS/DASH.
+
+Esto es exactamente lo que el motor debía producir: no «un número de sanos», sino **qué está roto y por
+qué, por host**, para que el operador pueda actuar.
+
+### Nota metodológica: dos errores de instrumento en esta medición
+
+Al construir esta medicina aparecieron dos fallos **en mis herramientas de medida**, ambos del tipo que
+02D lleva toda la ronda persiguiendo:
+
+1. El censo consultaba `forSourceId` (que sólo casa ids `editorial:`/`fixture:`) mientras el gate consulta
+   `decisionsForSources` (por `sourceUrl`). Reportaba «0 autorizaciones» **con 81 filas en la colección**.
+   Corregido para usar el mismo lookup que el gate.
+2. Mi primer registro usaba `_id = <operador>:<host>`, que el gate no consulta, y omitía `clauseUrl` y
+   atribución, de modo que el gate respondía `authorization-missing-quote` y `attribution-missing`. Eran
+   rechazos **correctos** del gate; el defectuoso era el registro.
+
+Lección, la misma de D-023 vista desde otro ángulo: **un instrumento de medida que pregunta algo distinto
+de lo que pregunta el sistema produce una cifra que parece autorizada y es falsa.**
 
 ## 6. Reproducir
 

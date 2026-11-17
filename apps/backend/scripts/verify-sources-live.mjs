@@ -552,11 +552,17 @@ async function runLiveMode(client) {
     close: async () => undefined,
   });
 
-  let withAuthorization = 0;
-  for (const source of published) {
-    const record = await authorization.forSourceId(source._id);
-    if (record) withAuthorization += 1;
-  }
+  /*
+   * Count with the SAME lookup the gate uses (`decisionsForSources`, keyed by
+   * sourceUrl), not `forSourceId`, which only matches `editorial:`/`fixture:` ids.
+   * A census that asks a different question from the gate reports a number that
+   * looks authoritative and is wrong - it would have said "0 authorizations"
+   * with 81 rows in the collection.
+   */
+  const decisions = await authorization.decisionsForSources(
+    published.map((source) => ({ _id: source._id, url: source.url })),
+  );
+  const withAuthorization = published.filter((source) => decisions.has(source._id)).length;
 
   // 2. Operator-declared real sources, verified end to end.
   const results = [];
