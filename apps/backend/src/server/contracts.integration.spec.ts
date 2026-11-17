@@ -55,8 +55,17 @@ beforeEach(async () => {
   await harness.context.database.collection(COLLECTIONS.epgSources).deleteMany({});
 });
 
-/** Routes the contract suite deliberately does not exercise in this file. */
+/**
+ * Routes the contract suite deliberately does not exercise in this file.
+ *
+ * Authentication routes are listed by name; the administration console is
+ * covered structurally below, because it grows one milestone at a time and a
+ * forgotten entry here would let an admin route escape both tests.
+ */
 const ADMIN_AND_AUTH = new Set([
+  '/auth/bootstrap',
+  '/auth/login',
+  '/auth/logout',
   '/admin/channels',
   '/admin/channels/{id}',
   '/admin/sources',
@@ -91,7 +100,9 @@ describe('OpenAPI document', () => {
     const document = buildOpenApi('http://127.0.0.1:4010');
     const documented = new Set(Object.keys(document.paths));
     for (const path of documented) {
-      if (ADMIN_AND_AUTH.has(path)) continue;
+      /* Every `/admin/*` route requires a session; it is exercised with a
+         token by its own suite, so here it only has to be documented. */
+      if (ADMIN_AND_AUTH.has(path) || path.startsWith('/admin/')) continue;
       const concrete = path
         .replace('{slug}', 'la-1')
         .replace('{code}', 'ES')
