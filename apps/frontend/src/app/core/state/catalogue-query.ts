@@ -143,6 +143,11 @@ export class CatalogueQuery {
 
   /** The first selected category, or `'all'`; kept for existing callers. */
   readonly categoryId = computed(() => this.categories()[0] ?? 'all');
+
+  /** Display label for a category id, taken from the catalogue taxonomy. */
+  labelForCategory(id: string): string {
+    return this.catalog.categories().find((category) => category.id === id)?.name ?? id;
+  }
   /** The first selected country, or `'all'`; kept for existing callers. */
   readonly country = computed(() => this.countries()[0] ?? 'all');
   /** The first selected language, or `'all'`; kept for existing callers. */

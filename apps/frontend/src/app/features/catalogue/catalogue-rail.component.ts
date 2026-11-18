@@ -12,7 +12,7 @@ import {
 import { IconComponent } from '../../shared/ui/icon.component';
 import { EmptyStateComponent } from '../../shared/ui/empty-state.component';
 import { ChannelTileComponent } from './channel-tile.component';
-import { CatalogueQuery } from '../../core/state/catalogue-query';
+import { CatalogueQuery, countryLabel, languageDisplayName } from '../../core/state/catalogue-query';
 import { CatalogStore } from '../../core/state/catalog.store';
 import { PreferencesStore } from '../../core/state/preferences.store';
 
@@ -76,8 +76,23 @@ export class CatalogueRailComponent {
     return [...select.selectedOptions].map((option) => option.value).filter((value) => value !== '');
   }
 
-  protected onCategories(event: Event): void {
-    this.query.setCategories(this.selectedValues(event));
+  /** Which filter panel is open, if any. One at a time. */
+  protected readonly openMenu = signal<'category' | 'country' | 'language' | null>(null);
+
+  protected toggleMenu(menu: 'category' | 'country' | 'language'): void {
+    this.openMenu.update((current) => (current === menu ? null : menu));
+  }
+
+  protected toggleCategory(id: string): void {
+    this.query.toggleCategory(id);
+  }
+
+  protected toggleCountry(code: string): void {
+    this.query.toggleCountry(code);
+  }
+
+  protected toggleLanguage(code: string): void {
+    this.query.toggleLanguage(code);
   }
 
   protected isCategorySelected(id: string): boolean {
@@ -105,16 +120,41 @@ export class CatalogueRailComponent {
   }
 
   /**
-   * Visible summary of a multi-select. "Filtro ninguno" means no filter (every
-   * value shows), never "nothing matches".
+   * Visible summary of a multi-select. "Sin filtro" means every value shows,
+   * never "nothing matches".
    *
    * Wording avoids gender agreement on purpose: "Todos"/"Todas" and
    * "seleccionado"/"seleccionada" cannot both be right for "país" and "categoría",
    * and a label that reads wrong makes the filter look broken.
    */
   protected selectionHint(values: readonly string[], noun: string): string {
-    if (values.length === 0) return `Sin filtro de ${noun}`;
-    return `${values.length} ${noun} en el filtro`;
+    if (values.length === 0) return `Sin filtro · ${noun}`;
+    return `Filtro · ${values.length} ${noun}`;
+  }
+
+  /** The taxonomy's own short label for a category id (chips must be readable). */
+  protected categoryLabel(id: string): string {
+    return this.query.labelForCategory(id);
+  }
+
+  protected countryLabelFor(code: string): string {
+    return countryLabel(code);
+  }
+
+  protected languageLabelFor(code: string): string {
+    return languageDisplayName(code);
+  }
+
+  protected removeCategory(id: string): void {
+    this.query.setCategories(this.query.categories().filter((entry) => entry !== id));
+  }
+
+  protected removeCountry(code: string): void {
+    this.query.setCountries(this.query.countries().filter((entry) => entry !== code));
+  }
+
+  protected removeLanguage(code: string): void {
+    this.query.setLanguages(this.query.languages().filter((entry) => entry !== code));
   }
 
   protected onFavorite(channelId: string): void {

@@ -60,3 +60,5 @@ data/
 evidence/rea02c/rea-session-bundle-*.json
 evidence/rea02c/records/capture_*.json
 
+
+tmp-*

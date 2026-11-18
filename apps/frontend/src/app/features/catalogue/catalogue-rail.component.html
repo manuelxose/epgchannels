@@ -21,75 +21,170 @@
 
     <div class="rail__selects">
       <!--
-        Multi-select filters (TDT-API-02FG). `multiple` is what lets a person
-        pick two categories at once; the previous single `<select>` replaced the
-        value instead of adding to it, which is why "several filters" never
-        combined. Ctrl/Cmd or Shift click adds and removes, as in any listbox.
-      -->
-      <label class="rail__select rail__select--multi">
-        <span class="visually-hidden">Filtrar por categoría</span>
-        <select
-          aria-label="Filtrar por categoría (selección múltiple)"
-          data-testid="category-filter"
-          multiple
-          size="5"
-          (change)="onCategories($event)"
-        >
-          @for (group of query.groupedCategories(); track group.country) {
-            <optgroup [label]="group.country">
-              @for (category of group.categories; track category.id) {
-                <option [value]="category.id" [selected]="isCategorySelected(category.id)">
-                  {{ category.name }} ({{ category.channelCount }})
-                </option>
-              }
-            </optgroup>
-          }
-        </select>
-        <span class="rail__select-hint">{{ selectionHint(query.categories(), 'categoría') }}</span>
-      </label>
+        Multi-select filters (TDT-API-02FG), as a real drop-down.
 
-      <label class="rail__select rail__select--compact rail__select--multi">
-        <span class="visually-hidden">Filtrar por país</span>
-        <select
-          aria-label="Filtrar por país (selección múltiple)"
-          data-testid="country-filter"
-          multiple
-          size="5"
-          (change)="onCountries($event)"
+        A `<select multiple>` has no closed state: the browser paints every
+        option, and styling it to 40px only made the options overflow on top of
+        the row (measured on the 397px screenshot). So the closed box is our own
+        button with a summary, and the options live in a panel that opens on
+        demand — checkboxes, one click per value, keyboard and screen-reader
+        friendly through the checkbox role each option already has.
+      -->
+      <div class="rail__select">
+        <button
+          type="button"
+          class="rail__trigger"
+          data-testid="category-trigger"
+          aria-haspopup="true"
+          [attr.aria-expanded]="openMenu() === 'category'"
+          aria-controls="filter-category-panel"
+          (click)="toggleMenu('category')"
         >
-          @for (country of query.countryOptions(); track country.code) {
-            <option [value]="country.code" [selected]="isCountrySelected(country.code)">
-              {{ country.label }} ({{ country.channelCount }})
-            </option>
-          }
-        </select>
-        <span class="rail__select-hint">{{ selectionHint(query.countries(), 'país') }}</span>
-      </label>
+          <span class="rail__select-summary">
+            <span>{{ selectionHint(query.categories(), 'categoría') }}</span>
+            @if (query.categories().length > 0) {
+              <span class="rail__select-count">{{ query.categories().length }}</span>
+            }
+          </span>
+          <app-icon name="chevron-down" [size]="16" />
+        </button>
+        @if (openMenu() === 'category') {
+          <div class="rail__panel" id="filter-category-panel" role="group" aria-label="Categorías">
+            @for (group of query.groupedCategories(); track group.country) {
+              <p class="rail__panel-group">{{ group.country }}</p>
+              @for (category of group.categories; track category.id) {
+                <label class="rail__option">
+                  <input
+                    type="checkbox"
+                    [checked]="isCategorySelected(category.id)"
+                    (change)="toggleCategory(category.id)"
+                  />
+                  <span class="rail__option-label">{{ category.name }}</span>
+                  <span class="rail__option-count">{{ category.channelCount }}</span>
+                </label>
+              }
+            }
+          </div>
+        }
+        <span id="filter-category-summary" class="rail__select-hint">{{ selectionHint(query.categories(), 'categoría') }}</span>
+        @if (query.categories().length > 0) {
+          <ul class="rail__chips" aria-label="Categorías aplicadas">
+            @for (category of query.categories(); track category) {
+              <li>
+                <button type="button" class="rail__chip" (click)="removeCategory(category)">
+                  <span class="rail__chip-label">{{ categoryLabel(category) }}</span>
+                  <app-icon name="close" [size]="12" />
+                  <span class="visually-hidden">Quitar filtro</span>
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+
+      <div class="rail__select">
+        <button
+          type="button"
+          class="rail__trigger"
+          data-testid="country-trigger"
+          aria-haspopup="true"
+          [attr.aria-expanded]="openMenu() === 'country'"
+          aria-controls="filter-country-panel"
+          (click)="toggleMenu('country')"
+        >
+          <span class="rail__select-summary">
+            <span>{{ selectionHint(query.countries(), 'país') }}</span>
+            @if (query.countries().length > 0) {
+              <span class="rail__select-count">{{ query.countries().length }}</span>
+            }
+          </span>
+          <app-icon name="chevron-down" [size]="16" />
+        </button>
+        @if (openMenu() === 'country') {
+          <div class="rail__panel" id="filter-country-panel" role="group" aria-label="Países">
+            @for (country of query.countryOptions(); track country.code) {
+              <label class="rail__option">
+                <input
+                  type="checkbox"
+                  [checked]="isCountrySelected(country.code)"
+                  (change)="toggleCountry(country.code)"
+                />
+                <span class="rail__option-label">{{ country.label }}</span>
+                <span class="rail__option-count">{{ country.channelCount }}</span>
+              </label>
+            }
+          </div>
+        }
+        <span id="filter-country-summary" class="rail__select-hint">{{ selectionHint(query.countries(), 'país') }}</span>
+        @if (query.countries().length > 0) {
+          <ul class="rail__chips" aria-label="Países aplicados">
+            @for (country of query.countries(); track country) {
+              <li>
+                <button type="button" class="rail__chip" (click)="removeCountry(country)">
+                  <span class="rail__chip-label">{{ countryLabelFor(country) }}</span>
+                  <app-icon name="close" [size]="12" />
+                  <span class="visually-hidden">Quitar filtro</span>
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </div>
 
       <!--
         Language: the options come from the languages the catalogue actually
         publishes, so an empty filter is never offered. A channel the API does
         not label is not counted under any language.
       -->
-      <label class="rail__select rail__select--compact rail__select--multi">
-        <span class="visually-hidden">Filtrar por idioma</span>
-        <select
-          aria-label="Filtrar por idioma (selección múltiple)"
-          data-testid="language-filter"
-          multiple
-          size="5"
-          (change)="onLanguages($event)"
+      <div class="rail__select">
+        <button
+          type="button"
+          class="rail__trigger"
+          data-testid="language-trigger"
+          aria-haspopup="true"
+          [attr.aria-expanded]="openMenu() === 'language'"
+          aria-controls="filter-language-panel"
+          (click)="toggleMenu('language')"
         >
-          @for (language of query.languageOptions(); track language.code) {
-            <option [value]="language.code" [selected]="isLanguageSelected(language.code)">
-              {{ language.label }} ({{ language.channelCount }})
-            </option>
-          }
-        </select>
-        <span class="rail__select-hint">{{ selectionHint(query.languages(), 'idioma') }}</span>
-      </label>
+          <span class="rail__select-summary">
+            <span>{{ selectionHint(query.languages(), 'idioma') }}</span>
+            @if (query.languages().length > 0) {
+              <span class="rail__select-count">{{ query.languages().length }}</span>
+            }
+          </span>
+          <app-icon name="chevron-down" [size]="16" />
+        </button>
+        @if (openMenu() === 'language') {
+          <div class="rail__panel" id="filter-language-panel" role="group" aria-label="Idiomas">
+            @for (language of query.languageOptions(); track language.code) {
+              <label class="rail__option">
+                <input
+                  type="checkbox"
+                  [checked]="isLanguageSelected(language.code)"
+                  (change)="toggleLanguage(language.code)"
+                />
+                <span class="rail__option-label">{{ language.label }}</span>
+                <span class="rail__option-count">{{ language.channelCount }}</span>
+              </label>
+            }
+          </div>
+        }
+        @if (query.languages().length > 0) {
+          <ul class="rail__chips" aria-label="Idiomas aplicados">
+            @for (language of query.languages(); track language) {
+              <li>
+                <button type="button" class="rail__chip" (click)="removeLanguage(language)">
+                  <span class="rail__chip-label">{{ languageLabelFor(language) }}</span>
+                  <app-icon name="close" [size]="12" />
+                  <span class="visually-hidden">Quitar filtro</span>
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </div>
 
-      <label class="rail__select rail__select--compact">
+      <label class="rail__select">
         <span class="visually-hidden">Filtrar por disponibilidad</span>
 
         <select aria-label="Filtrar por disponibilidad" [value]="query.availability()" (change)="onAvailability($event)">
