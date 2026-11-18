@@ -1,12 +1,29 @@
 :host {
-  display: block;
+  /*
+   * A block host plus a tall child does not shrink: measured, the host was 786px
+   * and the rail inside it 996px, so the extra 210px overflowed and the pager
+   * ended up below the viewport. A flex column with a child that may shrink is
+   * what bounds it, and hidden overflow makes the clamp visible instead of
+   * letting the pager escape.
+   */
+  display: flex;
+  flex-direction: column;
   min-width: 0;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .rail {
   display: flex;
   flex-direction: column;
   gap: var(--s-3);
+  /*
+   * height: 100% alone does not resolve inside a flex column parent, so the
+   * rail kept growing with its content (996px) and pushed the pager off-screen.
+   * Filling the parent with flex and allowing it to shrink is what bounds it.
+   */
+  flex: 1 1 auto;
   height: 100%;
   min-height: 0;
 }
@@ -71,19 +88,22 @@
 
 .rail__selects {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) 46px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--s-2);
+  align-items: start;
 }
 
 .rail__select {
   position: relative;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 
 .rail__select select {
   width: 100%;
-  height: 46px;
+  height: 40px;
   padding: 0 var(--s-8) 0 var(--s-3);
   border-radius: var(--r-md);
   border: 1px solid var(--border);
@@ -94,6 +114,199 @@
   appearance: none;
   cursor: pointer;
   text-overflow: ellipsis;
+}
+
+/* The closed box: a real button with a summary, not a multi-select. */
+.rail__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  width: 100%;
+  height: 40px;
+  padding: 0 var(--s-3);
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rail__trigger:hover {
+  border-color: var(--border-strong);
+}
+
+.rail__trigger[aria-expanded='true'] {
+  border-color: var(--signal);
+  box-shadow: 0 0 0 1px var(--signal);
+}
+
+.rail__trigger app-icon {
+  flex: none;
+  color: var(--text-subtle);
+}
+
+/* The open panel: one checkbox per value, scrollable, never past the rail. */
+.rail__panel {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% - 18px);
+  left: 0;
+  right: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: var(--s-2);
+  border-radius: var(--r-md);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-1);
+  box-shadow: 0 16px 32px -18px rgba(0, 0, 0, 0.9);
+}
+
+.rail__panel-group {
+  margin: var(--s-2) 0 2px;
+  color: var(--text-subtle);
+  font-size: var(--fs-xs, 11px);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rail__option {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 4px;
+  border-radius: var(--r-sm, 6px);
+  cursor: pointer;
+}
+
+.rail__option:hover {
+  background: var(--surface-2);
+}
+
+.rail__option input {
+  flex: none;
+  accent-color: var(--signal);
+}
+
+.rail__option-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rail__option-count {
+  flex: none;
+  color: var(--text-muted);
+  font-size: var(--fs-xs, 11px);
+}
+
+/* Which values are applied, inside the closed box. */
+.rail__select-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+  padding-right: var(--s-6);
+}
+
+.rail__select-summary text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rail__select-count {
+  flex: none;
+  padding: 0 var(--s-2);
+  border-radius: var(--r-pill);
+  background: var(--signal-soft);
+  color: var(--signal);
+  font-size: var(--fs-xs, 11px);
+  font-weight: 700;
+}
+
+/* The chosen values, listed under the control as removable chips. */
+.rail__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rail__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  max-width: 100%;
+  padding: 1px 4px 1px 6px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-pill);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: var(--fs-xs, 11px);
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.rail__chip:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.rail__chip-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/*
+ * A multi-select cannot be one 46px box: the browser renders its own list of
+ * options, and the UA `size` (made relative to rows by the row height above)
+ * pushed the control box from 46px to 229px and buried the pager below the
+ * viewport. Closed it keeps the original height, scrolls instead of stretching,
+ * and the chosen values are listed underneath as chips.
+ */
+.rail__select select[multiple] {
+  height: 40px;
+  padding: 0 var(--s-3);
+  overflow-y: auto;
+  cursor: default;
+}
+
+.rail__select select[multiple]:hover,
+.rail__select select[multiple]:focus {
+  /* A multi-select is a list, not a drop-down: no chevron, no caret cursor. */
+  border-color: var(--border);
+}
+
+.rail__select select[multiple]:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 1px;
+}
+
+.rail__select-hint {
+  color: var(--text-muted);
+  font-size: var(--fs-xs, 11px);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Both columns keep the same height, so the four controls read as one row. */
+@media (max-width: 1023px) {
+  .rail__selects {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .rail__select select:hover {
@@ -143,7 +356,12 @@
 }
 
 .rail__scroll {
-  flex: 1;
+  /*
+   * shrink 1 with min-height 0: an auto minimum here came from the grid's
+   * auto-fill row sizing, so the scroll area refused to get shorter than its
+   * content and pushed the pager off-screen.
+   */
+  flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
@@ -188,9 +406,13 @@
 }
 
 @media (max-width: 720px) {
-  .rail__scroll {
-    overflow: visible;
-  }
+  /*
+   * The grid does NOT get `overflow: visible` on small screens any more. That
+   * rule came from the version where the page scrolled as a whole; now the rail
+   * is a bounded box with its own scroll area, and making it visible painted all
+   * 724px of tiles and pushed the pager below the viewport (measured at
+   * 397x863: pager at y=883). The grid keeps scrolling inside the rail.
+   */
 
   .rail__grid {
     grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
