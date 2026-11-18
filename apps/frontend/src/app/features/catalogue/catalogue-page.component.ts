@@ -58,7 +58,18 @@ import { IconComponent } from '../../shared/ui/icon.component';
     .layout__rail {
       position: sticky;
       top: calc(var(--header-h) + var(--s-3));
-      max-height: calc(100dvh - var(--header-h) - var(--s-6));
+      /*
+       * max-height alone does not bound the child: as a grid item with
+       * align-items:start the aside still sized to its content, the inner rail
+       * grew to 2 816px and the pager ended up 2 869px below the fold (the
+       * catalogue looked unpaginated). A flex column plus an explicit height
+       * gives the scroll area a real ceiling and keeps the pager pinned.
+       */
+      height: calc(100dvh - var(--header-h) - var(--s-6));
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
       padding: var(--s-3);
       border-radius: var(--r-lg);
       border: 1px solid var(--border);
@@ -115,9 +126,21 @@ import { IconComponent } from '../../shared/ui/icon.component';
         grid-template-columns: minmax(0, 1fr);
       }
 
+      /*
+       * Keep the rail bounded: with no max-height it grew to the full page of
+       * tiles, so the pager sat thousands of pixels below the viewport on a
+       * phone — the catalogue looked like it had no pagination at all.
+       *
+       * On narrow screens the stage (video) sits above the rail, so the rail
+       * only has the space the viewport leaves under it. Any taller and the
+       * pager lands off-screen again.
+       */
       .layout__rail {
         position: static;
-        max-height: none;
+        max-height: 54dvh;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
       }
     }
 

@@ -113,8 +113,8 @@ function isEligibleSource(
   }).playable;
 }
 
-export function channelRef(channel: Pick<ChannelDoc, '_id' | 'slug' | 'name'>): ChannelRef {
-  return { id: channel._id, slug: channel.slug, name: channel.name };
+export function channelRef(channel: Pick<ChannelDoc, '_id' | 'slug' | 'name'> & { country?: string | null }): ChannelRef {
+  return { id: channel._id, slug: channel.slug, name: channel.name, country: channel.country ?? null };
 }
 
 /** Issues for every source we deliberately do not expose, with its real cause. */

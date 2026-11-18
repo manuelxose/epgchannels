@@ -35,6 +35,9 @@ export const channelRefSchema = z.object({
   id: idSchema,
   slug: slugSchema,
   name: z.string(),
+  // ISO 3166-1 alpha-2 of the channel's country; `INT` for international feeds.
+  // The guide groups its rows by country, so it travels with the reference.
+  country: z.string().min(2).max(3).nullable().optional(),
 });
 export type ChannelRef = z.infer<typeof channelRefSchema>;
 

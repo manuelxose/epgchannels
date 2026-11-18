@@ -280,6 +280,9 @@ export class ChannelsService {
     slug: string,
     playback: import('../playback/playback.service.js').PlaybackService,
   ): Promise<import('@tdt/contracts').ChannelResponse | null> {
+    // A channel is addressable by its public slug only — never by its internal
+    // id (contracts.integration.spec: the id must answer 404). Clients that
+    // publish both identifiers must therefore link by slug.
     const channel = await this.channels().findOne({ slug, editorialStatus: 'published', mergedInto: null });
     if (!channel) return null;
     const sources = await this.database

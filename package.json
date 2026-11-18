@@ -24,6 +24,7 @@
     "migrate": "node apps/backend/dist/migrations/run.js",
     "import:catalogue": "node apps/backend/dist/scripts/import-catalogue.js",
     "import:guide": "node apps/backend/dist/scripts/import-guide.js",
+    "refresh:epg": "node scripts/refresh-epg.mjs",
     "openapi:export": "node apps/backend/dist/scripts/export-openapi.js",
     "client:generate": "npm --prefix packages/api-client run client:generate",
     "audit:bootstrap": "node apps/backend/dist/scripts/bootstrap-audit.js",

@@ -78,7 +78,9 @@
 
   /* Layout */
   --header-h: 64px;
-  --rail-w: clamp(280px, 24vw, 360px);
+  /* Wide enough for a 5–6 column tile grid: at 360px the grid fitted only three
+     88px tiles per row and left most of the viewport empty on desktop. */
+  --rail-w: clamp(280px, 34vw, 520px);
   --info-w: clamp(240px, 20vw, 320px);
   --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--signal);
 }

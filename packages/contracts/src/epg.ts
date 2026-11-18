@@ -87,6 +87,10 @@ export const epgFeedQuerySchema = z.object({
   country: z.string().length(2).optional(),
   category: z.string().min(1).max(40).optional(),
   limit: z.coerce.number().int().min(1).max(100).default(50),
+  page: z.coerce.number().int().min(1).default(1),
+  // Off by default: the feed answers "what is on", so unmapped channels would
+  // otherwise flood the first pages with empty rows.
+  includeUnmapped: z.coerce.boolean().default(false),
   from: isoTimestampSchema.optional(),
 });
 export type EpgFeedQuery = z.infer<typeof epgFeedQuerySchema>;

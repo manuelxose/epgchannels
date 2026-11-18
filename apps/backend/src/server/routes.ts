@@ -28,7 +28,7 @@ import { ChannelsService, attributionFor, toChannel } from '../modules/channels/
 import { buildDescriptor, sourceIssues } from '../modules/playback/playback.service.js';
 import { decidePublication } from '../modules/playback/publication-policy.js';
 import { providerRegistry } from '../modules/providers/providers.registry.js';
-import type { ChannelDoc, EpgSourceDoc, JobRunDoc, PlaybackSourceDoc } from '../infrastructure/schema.js';
+import type { ChannelDoc, EpgSourceDoc, JobRunDoc, PlaybackSourceDoc, ProgrammeDoc } from '../infrastructure/schema.js';
 import { COLLECTIONS } from '../infrastructure/mongo.js';
 import { CATEGORY_LABELS, CATEGORY_ORDER, SPAIN_REGIONS } from '../shared/taxonomy.js';
 import { createVerificationAdminRouter } from '../modules/admin/verification.admin.js';
@@ -379,10 +379,31 @@ export function createRouter(context: AppContext, logger: Logger, metrics?: Metr
       if (query.channel && query.channel.length > 0) filter['slug'] = { $in: query.channel };
       if (query.country) filter['country'] = query.country;
       if (query.category) filter['category'] = query.category;
+      // `page` makes the feed walkable: without it every call returned the same
+      // first `limit` channels sorted by name, so a caller could never reach the
+      // rest of the catalogue.
+      const page = Math.max(1, Math.trunc((request.query['page'] as number | undefined) ?? 1));
+
+      // The feed answers "what is on", so by default it only walks channels that
+      // actually hold programmes in the window. Paging over the whole catalogue
+      // buried the real emissions behind thousands of unmapped channels (a grid
+      // sorted by name showed three channels and looked broken). `includeUnmapped`
+      // restores the full listing for callers that want coverage, not content.
+      if (!query.includeUnmapped) {
+        const covering = await context.database
+          .collection<ProgrammeDoc>(COLLECTIONS.programmes)
+          .distinct('channelId', {
+            end: { $gt: new Date(at.getTime() - 12 * 3_600_000) },
+            start: { $lt: new Date(at.getTime() + 48 * 3_600_000) },
+          });
+        filter['_id'] = { $in: covering };
+      }
+
       const docs = await context.database
         .collection<ChannelDoc>(COLLECTIONS.channels)
         .find(filter)
-        .sort({ name: 1 })
+        .sort({ name: 1, _id: 1 })
+        .skip((page - 1) * query.limit)
         .limit(query.limit)
         .toArray();
       const entries = await context.epg.feed(docs, at, mode);

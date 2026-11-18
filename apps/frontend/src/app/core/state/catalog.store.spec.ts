@@ -387,7 +387,9 @@ describe('CatalogStore + CatalogueQuery integration (our API)', () => {
     });
 
     it(`pages by ${PAGE_SIZE} and clamps requests`, async () => {
-      const manyChannels: ApiChannelFixture[] = Array.from({ length: 25 }, (_, index) => ({
+      // One page plus four, so the second page is short by a fixed amount and
+      // the test does not depend on the exact value of PAGE_SIZE.
+      const manyChannels: ApiChannelFixture[] = Array.from({ length: PAGE_SIZE + 4 }, (_, index) => ({
         slug: `canal-${index + 1}`,
         name: `Canal ${index + 1}`,
         category: 'generalista',

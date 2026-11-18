@@ -223,11 +223,21 @@ describe('GET /epg/now and /epg/next', () => {
     expect(next.body.data[0].programme.title).toBe('Documental');
   });
 
-  it('does not claim a programme for a channel without a guide', async () => {
+  /*
+   * The feed answers "what is on", so a channel with no guide is left out of the
+   * default listing instead of appearing as an empty row. It is still reachable
+   * on request (`includeUnmapped`), and even then it must never be handed a
+   * programme it does not have.
+   */
+  it('leaves a channel without a guide out of the feed, and never invents a programme', async () => {
     await createChannel(harness, { name: 'Sin Guía', status: 'published' });
     const now = await request(harness.app).get('/api/v1/epg/now').expect(200);
-    expect(now.body.data[0].programme).toBeNull();
-    expect(now.body.data[0].availability).toBe('not-mapped');
+    expect(now.body.data.some((entry: { channel: { name: string } }) => entry.channel.name === 'Sin Guía')).toBe(false);
+
+    const all = await request(harness.app).get('/api/v1/epg/now?includeUnmapped=true').expect(200);
+    const entry = all.body.data.find((row: { channel: { name: string } }) => row.channel.name === 'Sin Guía');
+    expect(entry.programme).toBeNull();
+    expect(entry.availability).toBe('not-mapped');
   });
 });
 

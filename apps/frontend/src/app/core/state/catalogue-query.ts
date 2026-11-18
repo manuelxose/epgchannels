@@ -5,7 +5,14 @@ import { PreferencesStore } from './preferences.store';
 import type { Channel } from '../models/catalog.model';
 import { matchesQuery, normalizeForSearch, searchForms, SPANISH_COLLATOR } from '../text/normalize';
 
-export const PAGE_SIZE = 21;
+/**
+ * Channels rendered per page in the catalogue grid.
+ *
+ * It was 21 (a 3×7 tile grid), which turned an 8 758-channel catalogue into 418
+ * pages — the pager became unusable and the counter read "1–21 de 8758". 96
+ * fills the rail at any viewport width and keeps the page count in the dozens.
+ */
+export const PAGE_SIZE = 96;
 
 export type AvailabilityFilter = 'all' | 'playable' | 'external' | 'no-emission';
 
